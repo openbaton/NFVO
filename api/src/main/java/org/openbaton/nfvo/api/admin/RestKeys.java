@@ -17,13 +17,7 @@
 package org.openbaton.nfvo.api.admin;
 
 import com.google.gson.Gson;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.spec.InvalidKeySpecException;
-import java.util.List;
-import javax.validation.Valid;
+import io.swagger.annotations.ApiOperation;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.core.interfaces.KeyManagement;
@@ -40,6 +34,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.spec.InvalidKeySpecException;
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/keys")
 public class RestKeys {
@@ -54,6 +56,11 @@ public class RestKeys {
    *
    * @param key object containing the key which needs to be uploaded
    */
+  @ApiOperation(
+    value = " Importing a Key",
+    notes =
+        "Pass the Key as JSON content in the Request Body. The Key should contain the name and public key."
+  )
   @RequestMapping(
     method = RequestMethod.POST,
     consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -71,6 +78,11 @@ public class RestKeys {
    *
    * @param name : name of the key to be created
    */
+  @ApiOperation(
+    value = "Generate a Key",
+    notes =
+        "Generates a new key for the given project from a name that is passed in the Request Body"
+  )
   @RequestMapping(
     value = "generate",
     method = RequestMethod.POST,
@@ -90,6 +102,7 @@ public class RestKeys {
    *
    * @param id : the id of the key to be removed
    */
+  @ApiOperation(value = "Remove a Key", notes = "The id of the key is specified in the URL")
   @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(
@@ -98,6 +111,10 @@ public class RestKeys {
     keyManagement.delete(projectId, id);
   }
 
+  @ApiOperation(
+    value = "Remove multiple Keys",
+    notes = "The ids of the Keys is passed in a list in the Request Body"
+  )
   @RequestMapping(
     value = "/multipledelete",
     method = RequestMethod.POST,
@@ -117,6 +134,7 @@ public class RestKeys {
    *
    * @return List<User>: The list of Users available
    */
+  @ApiOperation(value = "Retrieve all Keys", notes = "Returns all the keys created for the project with id specified in the header")
   @RequestMapping(method = RequestMethod.GET)
   public Iterable<Key> findAll(@RequestHeader(value = "project-id") String projectId) {
     return keyManagement.query(projectId);
@@ -128,6 +146,7 @@ public class RestKeys {
    * @param id : The id of the Key
    * @return User: The Key selected
    */
+  @ApiOperation(value = "Retrieve a key", notes = "The id of the key is specified in the URL")
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
   public Key findById(
       @RequestHeader(value = "project-id") String projectId, @PathVariable("id") String id)

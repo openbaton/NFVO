@@ -26,10 +26,21 @@ dependencies {
     compile("org.hsqldb:hsqldb:2.3.4")
 
     compile 'com.google.code.gson:gson:2.8.0'
+    compile "io.springfox:springfox-swagger2:2.6.1"
 
     compile("org.springframework.boot:spring-boot-starter-websocket:" + springBootVersion)
 
     testCompile("com.jayway.jsonpath:json-path-assert:2.2.0")
     testCompile("org.mockito:mockito-all:1.10.19")
     testCompile("junit:junit:"+junitVersion)
+}
+
+
+sourceSets {
+    main {
+        java {
+            if(!project.hasProperty("swagger"))
+                exclude '**/swagger/**';
+        }
+    }
 }

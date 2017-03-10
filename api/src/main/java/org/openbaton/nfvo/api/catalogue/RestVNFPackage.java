@@ -18,10 +18,7 @@ package org.openbaton.nfvo.api.catalogue;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.List;
-import javax.validation.Valid;
+import io.swagger.annotations.ApiOperation;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
@@ -51,6 +48,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/vnf-packages")
 @ConfigurationProperties(prefix = "nfvo.marketplace.privateip")
@@ -69,6 +71,12 @@ public class RestVNFPackage {
 
   @Autowired private VNFPackageManagement vnfPackageManagement;
   /** Adds a new VNFPackage to the VNFPackages repository */
+  @ApiOperation(
+    value = "Adding a VNFPackage",
+    notes =
+        "The request parameter 'file' specifies an archive which is needed to instantiate a VNFPackage. "
+            + "On how to create such an archive refer to: http://openbaton.github.io/documentation/vnfpackage/"
+  )
   @RequestMapping(method = RequestMethod.POST)
   @ResponseBody
   public String onboard(
@@ -87,6 +95,11 @@ public class RestVNFPackage {
     } else throw new IOException("File is empty!");
   }
 
+  @ApiOperation(
+    value = "Adding a VNFPackage from the Open Baton marketplace",
+    notes =
+        "The JSON object in the request body contains a field named link, which holds the URL to the package on the Open Baton Marketplace"
+  )
   @RequestMapping(
     value = "/marketdownload",
     method = RequestMethod.POST,
@@ -109,6 +122,10 @@ public class RestVNFPackage {
    *
    * @param id: id of the package to delete
    */
+  @ApiOperation(
+    value = "Remove a VNFPackage",
+    notes = "The id of the package that has to be removed in in the URL"
+  )
   @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(
@@ -122,6 +139,10 @@ public class RestVNFPackage {
    * @param ids: The List of the VNFPackage Id to be deleted
    * @throws NotFoundException, WrongAction
    */
+  @ApiOperation(
+    value = "Removing multiple VNFPackages",
+    notes = "A list of VNF Package ids has to be provided in the Request Body"
+  )
   @RequestMapping(
     value = "/multipledelete",
     method = RequestMethod.POST,
@@ -139,11 +160,16 @@ public class RestVNFPackage {
    *
    * @return List<VNFPackage>: The list of VNFPackages available
    */
+  @ApiOperation(value = "Retrieve all VNFPackages", notes = "Returns all VNF Packages onboarded on the specified project")
   @RequestMapping(method = RequestMethod.GET)
   public Iterable<VNFPackage> findAll(@RequestHeader(value = "project-id") String projectId) {
     return vnfPackageManagement.queryByProjectId(projectId);
   }
 
+  @ApiOperation(
+    value = "Retrieve a script from a VNF Package",
+    notes = "The ids of the package and the script are provided in the URL"
+  )
   @RequestMapping(
     value = "{id}/scripts/{scriptId}",
     method = RequestMethod.GET,
@@ -164,6 +190,10 @@ public class RestVNFPackage {
         "Script with id " + scriptId + " was not found into package with id " + id);
   }
 
+  @ApiOperation(
+    value = "Update a script of a VNF Package",
+    notes = "The updated script has to be passed in the Request Body"
+  )
   @RequestMapping(
     value = "{id}/scripts/{scriptId}",
     method = RequestMethod.PUT,
@@ -194,6 +224,7 @@ public class RestVNFPackage {
    * @param id : The id of the VNFPackage
    * @return VNFPackage: The VNFPackage selected
    */
+  @ApiOperation(value = "Retrieve a VNFPackage", notes = "Returns the VNF Package corresponding to the id specified in the URL")
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
   public VNFPackage findById(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
@@ -207,6 +238,10 @@ public class RestVNFPackage {
    * @param id : The id of the VNFPackage
    * @return VNFPackage The VNFPackage updated
    */
+  @ApiOperation(
+    value = "Update a VNFPackage",
+    notes = "The updated VNF Package is passed in the request body"
+  )
   @RequestMapping(
     value = "{id}",
     method = RequestMethod.PUT,

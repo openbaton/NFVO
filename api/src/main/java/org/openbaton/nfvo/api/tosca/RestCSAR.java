@@ -18,6 +18,7 @@ package org.openbaton.nfvo.api.tosca;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import io.swagger.annotations.ApiOperation;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -63,6 +64,12 @@ public class RestCSAR {
 
   @RequestMapping(value = "/api/v1/csar-nsd", method = RequestMethod.POST)
   @ResponseBody
+  @ApiOperation(
+    value = "Add a CSAR Network Service",
+    notes =
+        "The request parameter 'file' specifies an archive which is needed to onboard a Network Service as CSAR. "
+            + "On how to create such an archive refer to: http://openbaton.github.io/documentation/tosca-CSAR-onboarding/"
+  )
   public NetworkServiceDescriptor onboardNSD(
       @RequestParam("file") MultipartFile file,
       @RequestHeader(value = "project-id") String projectId)
@@ -77,6 +84,7 @@ public class RestCSAR {
     } else throw new IOException("File is empty!");
   }
 
+  @ApiOperation(value = "", notes = "", hidden = true)
   @RequestMapping(value = "/api/v1/csar-vnfd", method = RequestMethod.POST)
   @ResponseBody
   public String onboardVNFD(
@@ -94,6 +102,7 @@ public class RestCSAR {
     } else throw new IOException("File is empty!");
   }
 
+  @ApiOperation(value = "", notes = "", hidden = true)
   @RequestMapping(
     value = "/api/v1/csar-vnf/marketdownload",
     method = RequestMethod.POST,
@@ -129,6 +138,11 @@ public class RestCSAR {
     return "{ \"id\": \"" + virtualNetworkFunctionDescriptor.getVnfPackageLocation() + "\"}";
   }
 
+  @ApiOperation(
+    value = "Download a Network Service CSAR from the Open Baton Marketplace",
+    notes =
+        "The Request Body takes a JSON with the parameter link which holds the URL to the CSAR on the Open Baton Marketplace"
+  )
   @RequestMapping(
     value = "/api/v1/csar-ns/marketdownload",
     method = RequestMethod.POST,
