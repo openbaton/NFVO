@@ -158,25 +158,32 @@ configure_new_installation () {
 }
 
 configure_for_upgrade () {
+    ## Procedure to merge old and new properties files ##
+
+    # The old properties file is copied in /tmp before this upgrade procedure is executed (see 'prerm' file)
     cp /tmp/${OPENBATON_COMPONENT_CONFIG_FILE} /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.old
     cp ${OPENBATON_BASE_CONFIG_DIR}/${OPENBATON_COMPONENT_CONFIG_FILE} /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new
 
-    # Procedure to merge old and new properties files
+    # Extract the properties keys from the old properties file
     awk -F'=' '{if($0 ~ "=") {print $1 "="}}' /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.old > /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.old_keys
     sed -i s/\#//g /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.old_keys
     sed -i s/\ //g /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.old_keys
 
+    # Extract the properties keys from the new properties file
     awk -F'=' '{if($0 ~ "=") {print $1 "="}}' /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new > /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new_keys
     sed -i s/\#//g /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new_keys
     sed -i s/\ //g /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new_keys
 
+    # Extract the common properties keys between the old and new properties files
     grep -Fwf /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new_keys /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.old_keys > /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.common_keys
 
+    # Extract the all line from the old property file for each common properties key
     sed -i s/=//g /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new_keys
-    grep -Fwf /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new_keys /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.old      > /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.common_keys_lines
+    grep -Fwf /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new_keys /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.old      > /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.common_keys_old_lines
 
+    # For each common key overwrite the old property value in the new properties file
     exec 3</tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.common_keys
-    exec 4</tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.common_keys_lines
+    exec 4</tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.common_keys_old_lines
     while IFS='' read -r key <&3 && read -r line <&4; do
         key=$(echo $key | awk -F'=' '{print $1}')
         sed -i "s|.*${key}\s*=.*|${line}|" /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new
@@ -184,20 +191,22 @@ configure_for_upgrade () {
     exec 3<&-
     exec 4<&-
 
+    # Overwrite the new properties file with the 'upgraded' new properties file
     mv /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new ${OPENBATON_BASE_CONFIG_DIR}/${OPENBATON_COMPONENT_CONFIG_FILE}
-
-    log_success_msg "Upgrading Open Baton ${OPENBATON_COMPONENT_NAME_FANCY} installation .."
 
     # Clear tmp files used for upgrade
     rm /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}*
-}
 
+    log_success_msg "Upgrading Open Baton ${OPENBATON_COMPONENT_NAME_FANCY} installation .."
+}
 
 start_component () {
     # Allow the use of the .deb package to install Open Baton with Docker (the Docker file developer need to manage the starting of the NFVO in the Docker file) 
     if [ "${OPENBATON_COMPONENT_AUTOSTART}" = "true" ]; then
         if systemctl start openbaton-${OPENBATON_COMPONENT_NAME}.service >/dev/null 2>&1 ; then
             log_success_msg "Starting the Open Baton ${OPENBATON_COMPONENT_NAME_FANCY} .."
+        elif service openbaton-${OPENBATON_COMPONENT_NAME} start >/dev/null 2>&1 ; then
+           log_success_msg "Starting the Open Baton ${OPENBATON_COMPONENT_NAME_FANCY} .."
         elif start openbaton-${OPENBATON_COMPONENT_NAME} >/dev/null 2>&1 ; then
            log_success_msg "Starting the Open Baton ${OPENBATON_COMPONENT_NAME_FANCY} .."
         else 
