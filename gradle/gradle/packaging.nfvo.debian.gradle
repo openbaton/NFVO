@@ -27,7 +27,19 @@ ext {
     jarSubpathName = "${componentName}".replaceAll("-", "/")
 }
 
-task makeDeb(type: Deb, dependsOn: [jar, build]) {
+task logDebianPackageJavaDependency() {
+    // print the logs about the correct java dependency
+    doLast() {
+        if (project.hasProperty('javaVersion') && (javaVersion == "8")) {
+            println " * Adding debian package dependency to Java 8"
+        }
+        else {
+            println " * Adding debian package dependency to Java 7"
+        }
+    }
+}
+
+task makeDeb(type: Deb, dependsOn: [jar, build, logDebianPackageJavaDependency]) {
     packageName = (applicationRelease) ? "${fullName}-${versionName}" : "${fullName}-${versionName}-nightly"
     version = debianApplicationVersionFull
     //release = 1
@@ -47,11 +59,9 @@ task makeDeb(type: Deb, dependsOn: [jar, build]) {
 
     // set the correct java dependency
     if (project.hasProperty('javaVersion') && (javaVersion == "8")) {
-        println " * Building the debian package with Java 8"
         requires('openjdk-8-jre')
     }
     else {
-        println " * Building the debian package with Java 7"
         requires('openjdk-7-jre')
     }
 
