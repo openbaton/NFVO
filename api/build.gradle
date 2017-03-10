@@ -39,7 +39,8 @@ dependencies {
 sourceSets {
     main {
         java {
-            exclude '**/swagger/**'
+            if(!project.hasProperty("swagger"))
+                exclude '**/swagger/**';
         }
     }
 }
