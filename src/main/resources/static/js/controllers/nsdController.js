@@ -633,7 +633,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         $scope.nsdToSend = data;
         $scope.nsdToSend.vnfd.map(function (vnfd) {
             $scope.vnfdnames.push(vnfd.name);
-            if (vnfd.configurations.length < 1) {
+            if (vnfd.configurations === undefined || vnfd.configurations.length < 1) {
                 $scope.launchConfiguration.configurations[vnfd.name] = {name:"", configurationParameters:[]};
             } else {
                 $scope.launchConfiguration.configurations[vnfd.name] = angular.copy(vnfd.configurations);
