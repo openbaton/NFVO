@@ -30,14 +30,12 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 /** Created by lto on 20/04/15. */
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class})
 @ContextConfiguration(classes = {Application.class})
 @TestPropertySource(properties = {"timezone = GMT", "port: 4242"})
-@WebAppConfiguration
 public class IntegrationClassSuiteTest {
 
   @Autowired ConfigurableApplicationContext context;
