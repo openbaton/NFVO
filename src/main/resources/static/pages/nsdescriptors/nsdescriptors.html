@@ -1472,7 +1472,7 @@
                                 <label for="Configuration Name" class="col-sm-4 control-label">Configuration name</label>
 
                                 <div class="col-sm-6">
-                                    <input ng-disabled="launchConfiguration.configurations[vnfdname].id.length > 0"type="text" class="form-control" id="Configuration Name" ng-model="launchConfiguration.configurations[vnfdname].name" />
+                                    <input ng-disabled="launchConfiguration.configurations[vnfdname].id.length > 0 && launchConfiguration.configurations[vnfdname].name.length > 0"type="text" class="form-control" id="Configuration Name" ng-model="launchConfiguration.configurations[vnfdname].name" />
                                 </div>
                             </div>
                         </div>

@@ -333,7 +333,7 @@
 							</table>
 						</div>
 					</tab>
-					<tab heading="Configuration Parameters">
+					<tab heading="Configuration Parameters" ng-show="!angular.isUndefined(vnfdinfo.configurations) && !angular.equals(vnfdinfo.configurations, {}) && !angular.isUndefined(vnfdinfo.configurations.configurationParameters) && vnfdinfo.configurations.configurationParameters.length > 0">
                         <h3>{{vnfdinfo.configurations.name}}</h3>
 						<div class="table-responsive">
 							<table class="table table-bordered table-striped table-hover tablesorter" id="">
@@ -350,6 +350,7 @@
 							</table>
 						</div>
 					</tab>
+				
 				</tabset>
 				<br/>
 				<br/>
