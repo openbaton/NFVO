@@ -19,6 +19,10 @@ package org.openbaton.nfvo.api.catalogue;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.swagger.annotations.ApiOperation;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
+import javax.validation.Valid;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
@@ -47,11 +51,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.validation.Valid;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/vnf-packages")
@@ -160,7 +159,10 @@ public class RestVNFPackage {
    *
    * @return List<VNFPackage>: The list of VNFPackages available
    */
-  @ApiOperation(value = "Retrieve all VNFPackages", notes = "Returns all VNF Packages onboarded on the specified project")
+  @ApiOperation(
+    value = "Retrieve all VNFPackages",
+    notes = "Returns all VNF Packages onboarded on the specified project"
+  )
   @RequestMapping(method = RequestMethod.GET)
   public Iterable<VNFPackage> findAll(@RequestHeader(value = "project-id") String projectId) {
     return vnfPackageManagement.queryByProjectId(projectId);
@@ -224,7 +226,10 @@ public class RestVNFPackage {
    * @param id : The id of the VNFPackage
    * @return VNFPackage: The VNFPackage selected
    */
-  @ApiOperation(value = "Retrieve a VNFPackage", notes = "Returns the VNF Package corresponding to the id specified in the URL")
+  @ApiOperation(
+    value = "Retrieve a VNFPackage",
+    notes = "Returns the VNF Package corresponding to the id specified in the URL"
+  )
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
   public VNFPackage findById(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {

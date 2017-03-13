@@ -20,6 +20,16 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import io.swagger.annotations.ApiOperation;
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import javax.validation.Valid;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -58,17 +68,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.Valid;
-import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api/v1/ns-records")
@@ -245,7 +244,10 @@ public class RestNetworkServiceRecord {
    *
    * @return List<NetworkServiceRecord>: the list of Network Service Descriptor stored
    */
-  @ApiOperation(value = "Retrieving all Network Service Records", notes = "Returns all Network Service Records on the specified project")
+  @ApiOperation(
+    value = "Retrieving all Network Service Records",
+    notes = "Returns all Network Service Records on the specified project"
+  )
   @RequestMapping(method = RequestMethod.GET)
   public List<NetworkServiceRecord> findAll(@RequestHeader(value = "project-id") String projectId) {
     return networkServiceRecordManagement.queryByProjectId(projectId);
@@ -301,7 +303,10 @@ public class RestNetworkServiceRecord {
    * @return Set<VirtualNetworkFunctionDescriptor>: List of VirtualNetworkFunctionDescriptor into
    *     NSD
    */
-  @ApiOperation(value = "Returns the Virtual Network Function Records of a NSR", notes = "Returns all the VNFRs that are part of the specified NSR")
+  @ApiOperation(
+    value = "Returns the Virtual Network Function Records of a NSR",
+    notes = "Returns all the VNFRs that are part of the specified NSR"
+  )
   @RequestMapping(
     value = "{id}/vnfrecords",
     method = RequestMethod.GET,
@@ -363,7 +368,10 @@ public class RestNetworkServiceRecord {
     networkServiceRecordManagement.deleteVNFRecord(idNsr, idVnf, projectId);
   }
 
-  @ApiOperation(value = "Add a VNFC instance to a VDU of a VNFR", notes = "Specifies and adds a VNFC instance in the VDU inside a VNFR that is inside the NSR")
+  @ApiOperation(
+    value = "Add a VNFC instance to a VDU of a VNFR",
+    notes = "Specifies and adds a VNFC instance in the VDU inside a VNFR that is inside the NSR"
+  )
   @RequestMapping(
     value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}/vnfcinstances",
     method = RequestMethod.POST,
@@ -381,7 +389,10 @@ public class RestNetworkServiceRecord {
     networkServiceRecordManagement.addVNFCInstance(id, idVnf, idVdu, component, "", projectId);
   }
 
-  @ApiOperation(value = "Add a VNFC instance to a random VDU of a VNFR", notes = "Adds a VNFC instance by only specifying the VNFR and the NSR")
+  @ApiOperation(
+    value = "Add a VNFC instance to a random VDU of a VNFR",
+    notes = "Adds a VNFC instance by only specifying the VNFR and the NSR"
+  )
   @RequestMapping(
     value = "{id}/vnfrecords/{idVnf}/vdunits/vnfcinstances",
     method = RequestMethod.POST,
@@ -398,7 +409,10 @@ public class RestNetworkServiceRecord {
     networkServiceRecordManagement.addVNFCInstance(id, idVnf, component, projectId);
   }
 
-  @ApiOperation(value = "Start an existing VNFC instance", notes = "Starts the specified VNFC Instance")
+  @ApiOperation(
+    value = "Start an existing VNFC instance",
+    notes = "Starts the specified VNFC Instance"
+  )
   @RequestMapping(
     value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}/vnfcinstances/{idVNFCI}/start",
     method = RequestMethod.POST,
@@ -474,7 +488,10 @@ public class RestNetworkServiceRecord {
         id, idVnf, idVdu, idVNFC, "standby", failedVnfcInstance, projectId);
   }
 
-  @ApiOperation(value = "Remove a VNFC Instances from a VNFR", notes = "Removes a single specified VNFC Instance")
+  @ApiOperation(
+    value = "Remove a VNFC Instances from a VNFR",
+    notes = "Removes a single specified VNFC Instance"
+  )
   @RequestMapping(
     value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}/vnfcinstances/{idVNFCI}",
     method = RequestMethod.DELETE
@@ -491,7 +508,10 @@ public class RestNetworkServiceRecord {
     networkServiceRecordManagement.deleteVNFCInstance(id, idVnf, idVdu, idVNFCI, projectId);
   }
 
-  @ApiOperation(value = "Remove all VNFC Instances from all VDUs", notes = "Deletes all VNFC Instances from all VDUS in a VNFR")
+  @ApiOperation(
+    value = "Remove all VNFC Instances from all VDUs",
+    notes = "Deletes all VNFC Instances from all VDUS in a VNFR"
+  )
   @RequestMapping(
     value = "{id}/vnfrecords/{idVnf}/vdunits/vnfcinstances",
     method = RequestMethod.DELETE
@@ -506,7 +526,10 @@ public class RestNetworkServiceRecord {
     networkServiceRecordManagement.deleteVNFCInstance(id, idVnf, projectId);
   }
 
-  @ApiOperation(value = "Remove all VNFC Instances from a VDU", notes = "Deletes all VNF Instances of the specified VDU")
+  @ApiOperation(
+    value = "Remove all VNFC Instances from a VDU",
+    notes = "Deletes all VNF Instances of the specified VDU"
+  )
   @RequestMapping(
     value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}/vnfcinstances",
     method = RequestMethod.DELETE
@@ -542,7 +565,10 @@ public class RestNetworkServiceRecord {
     networkServiceRecordManagement.executeAction(nfvMessage, id, idVnf, idVdu, idVNFCI, projectId);
   }
 
-  @ApiOperation(value = "Add a Virtual Network Function Record", notes = "Add a new VNFR to an already existing NSR")
+  @ApiOperation(
+    value = "Add a Virtual Network Function Record",
+    notes = "Add a new VNFR to an already existing NSR"
+  )
   @RequestMapping(
     value = "{id}/vnfrecords/",
     method = RequestMethod.POST,
@@ -561,7 +587,10 @@ public class RestNetworkServiceRecord {
     return vnfRecord;
   }
 
-  @ApiOperation(value = "Update a Virtual Network Function Record in a NSR", notes = "Specify the ids of the VNFR and NSR which will be updated")
+  @ApiOperation(
+    value = "Update a Virtual Network Function Record in a NSR",
+    notes = "Specify the ids of the VNFR and NSR which will be updated"
+  )
   @RequestMapping(
     value = "{idNsr}/vnfrecords/{idVnf}",
     method = RequestMethod.PUT,
@@ -600,7 +629,10 @@ public class RestNetworkServiceRecord {
     return nsd.getVnf_dependency();
   }
 
-  @ApiOperation(value = "Retrieve a list of Dependency objects from the NSR", notes = "Returns all the Dependency object of the specified NSR")
+  @ApiOperation(
+    value = "Retrieve a list of Dependency objects from the NSR",
+    notes = "Returns all the Dependency object of the specified NSR"
+  )
   @RequestMapping(
     value = "{id}/vnfdependenciesList",
     method = RequestMethod.GET,
@@ -640,7 +672,10 @@ public class RestNetworkServiceRecord {
     return null;
   }
 
-  @ApiOperation(value = "Retrieve VNF Dependencies from VNFR", notes = "Returns all VNF Dependencies that reference the specified VNFR")
+  @ApiOperation(
+    value = "Retrieve VNF Dependencies from VNFR",
+    notes = "Returns all VNF Dependencies that reference the specified VNFR"
+  )
   @RequestMapping(
     value = "{id}/vnfdependencies/{id_vnfr}",
     method = RequestMethod.GET,
@@ -656,7 +691,10 @@ public class RestNetworkServiceRecord {
     return findVNFD(nsr.getVnf_dependency(), id_vnfr);
   }
 
-  @ApiOperation(value = "Remove a VNF Dependency from a NSR", notes = "Removes a VNF Dependency based on a VNFR it concerns")
+  @ApiOperation(
+    value = "Remove a VNF Dependency from a NSR",
+    notes = "Removes a VNF Dependency based on a VNFR it concerns"
+  )
   @RequestMapping(value = "{idNsr}/vnfdependencies/{idVnfd}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteVNFDependency(
@@ -667,7 +705,10 @@ public class RestNetworkServiceRecord {
     networkServiceRecordManagement.deleteVNFDependency(idNsr, idVnfd, projectId);
   }
 
-  @ApiOperation(value = "Add a VNF Dependency to a NSR", notes = "Adds a new VNF Dependency to the specified NSR")
+  @ApiOperation(
+    value = "Add a VNF Dependency to a NSR",
+    notes = "Adds a new VNF Dependency to the specified NSR"
+  )
   @RequestMapping(
     value = "{id}/vnfdependencies/",
     method = RequestMethod.POST,
@@ -686,7 +727,10 @@ public class RestNetworkServiceRecord {
     return vnfDependency;
   }
 
-  @ApiOperation(value = "Update a VNF Dependency in a NSR", notes = "Updates a VNF Dependency based on the if of the VNF it concerns")
+  @ApiOperation(
+    value = "Update a VNF Dependency in a NSR",
+    notes = "Updates a VNF Dependency based on the if of the VNF it concerns"
+  )
   @RequestMapping(
     value = "{id}/vnfdependencies/{id_vnfd}",
     method = RequestMethod.PUT,
@@ -820,7 +864,10 @@ public class RestNetworkServiceRecord {
     return pRecord;
   }
 
-  @ApiOperation(value = "Returns the history of the VNFRs of a NSR", notes = "Returns the history of the specified VNFR")
+  @ApiOperation(
+    value = "Returns the history of the VNFRs of a NSR",
+    notes = "Returns the history of the specified VNFR"
+  )
   @RequestMapping(
     value = "{id}/vnfrecords/{id_vnf}/history",
     method = RequestMethod.GET,

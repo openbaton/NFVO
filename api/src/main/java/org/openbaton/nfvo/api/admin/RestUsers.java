@@ -19,6 +19,8 @@ package org.openbaton.nfvo.api.admin;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.swagger.annotations.ApiOperation;
+import java.util.List;
+import javax.validation.Valid;
 import org.openbaton.catalogue.security.Role;
 import org.openbaton.catalogue.security.User;
 import org.openbaton.exceptions.BadRequestException;
@@ -38,9 +40,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -169,7 +168,11 @@ public class RestUsers {
    * @param new_user : The User to be updated
    * @return User The User updated
    */
-  @ApiOperation(value = "Update a User", notes = "Updates a user based on the username specified in the url and the updated user body in the request")
+  @ApiOperation(
+    value = "Update a User",
+    notes =
+        "Updates a user based on the username specified in the url and the updated user body in the request"
+  )
   @RequestMapping(
     value = "{username}",
     method = RequestMethod.PUT,
@@ -182,7 +185,10 @@ public class RestUsers {
     return userManagement.update(new_user);
   }
 
-  @ApiOperation(value = "Changing the current User’s password", notes = "The current user can change his password by providing a new one")
+  @ApiOperation(
+    value = "Changing the current User’s password",
+    notes = "The current user can change his password by providing a new one"
+  )
   @RequestMapping(
     value = "changepwd",
     method = RequestMethod.PUT,

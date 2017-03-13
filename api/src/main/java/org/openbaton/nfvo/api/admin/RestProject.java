@@ -17,6 +17,10 @@
 package org.openbaton.nfvo.api.admin;
 
 import io.swagger.annotations.ApiOperation;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import javax.validation.Valid;
 import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
 import org.openbaton.catalogue.security.User;
@@ -40,11 +44,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.Valid;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /** Created by lto on 25/05/16. */
 @RestController
