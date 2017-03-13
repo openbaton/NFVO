@@ -619,7 +619,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
                 delete $scope.launchConfiguration.configurations[property];
                 continue;
             }
-            for (i = 0; i < $scope.launchConfiguration.configurations[property].configurationParameters.length; i++) {
+            for (i = $scope.launchConfiguration.configurations[property].configurationParameters.length - 1; i > -1; i--) {
                 if (angular.isUndefined($scope.launchConfiguration.configurations[property].configurationParameters[i].confKey) || angular.isUndefined($scope.launchConfiguration.configurations[property].configurationParameters[i].value)
                     || $scope.launchConfiguration.configurations[property].configurationParameters[i].confKey.length < 1 || $scope.launchConfiguration.configurations[property].configurationParameters[i].value.length < 1) {
                     $scope.launchConfiguration.configurations[property].configurationParameters.splice(i, 1);
