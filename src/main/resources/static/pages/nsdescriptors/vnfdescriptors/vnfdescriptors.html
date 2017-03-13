@@ -55,6 +55,8 @@
 						<th ng-click="predicate = 'type'; reverse = !reverse">VNFD type <i class="fa fa-sort"></i></th>
 						<th ng-click="predicate = 'vendor'; reverse = !reverse">Vendor <i class="fa fa-sort"></i></th>
 						<th ng-click="predicate = 'verision'; reverse = !reverse">Version <i class="fa fa-sort"></i></th>
+						 <th ng-click="predicate = 'createdAt'; reverse = !reverse">Created at<i class="fa fa-sort"></i></th>
+                        <th ng-click="predicate = 'updatedAt'; reverse = !reverse">Updated at<i class="fa fa-sort"></i></th>
 						<th>Actions <i class="fa"></i></th>
 					</tr>
 				</thead>
@@ -68,6 +70,8 @@
 						<td>{{vnfd.type}}</td>
 						<td>{{vnfd.vendor}}</td>
 						<td>{{vnfd.version}}</td>
+						<td>{{vnfd.createdAt}}</td>
+                        <td>{{vnfd.updatedAt}}</td>
 						<td>
 							<div class="btn-group">
 								<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Action

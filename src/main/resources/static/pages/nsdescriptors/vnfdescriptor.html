@@ -43,8 +43,8 @@
 	<div class="col-lg-12 top-buffer" ng-show="nsdinfo">
 		<div ng-repeat="vnfd in nsdinfo.vnfd" ng-show="vnfd.id==vnfdescriptorId">
 			<div class="col-lg-6">
-				<a href="#" data-toggle="modal" ng-click="copyJSON(vnfd)"data-target="#jsonInfo">Show JSON</a>
-          		<br/>
+				<a href="#" data-toggle="modal" ng-click="copyJSON(vnfd)" data-target="#jsonInfo">Show JSON</a>
+				<br/>
 				<div class="table-responsive">
 					<table class="table table-bordered table-hover tablesorter" id="vnfdTabletable">
 						<tbody>
@@ -64,6 +64,14 @@
 								<tr>
 									<td>Version</td>
 									<td>{{vnfd.version}}</td>
+								</tr>
+								<tr>
+									<td>Created</td>
+									<td>{{vnfd.createdAt}}</td>
+								</tr>
+								<tr>
+									<td>Updated</td>
+									<td>{{vnfd.updatedAt}}</td>
 								</tr>
 								<tr>
 									<td>Endpoint</td>
@@ -351,7 +359,7 @@
 								</table>
 							</div>
 						</tab>
-					
+
 						<tab heading="Configuration Parameters" ng-show="!angular.isUndefined(vnfd.configurations) && !angular.equals(vnfd.configurations, {}) && !angular.isUndefined(vnfd.configurations.configurationParameters) && vnfd.configurations.configurationParameters.length > 0">
 							<h3>{{vnfd.configurations.name}}</h3>
 							<div class="table-responsive">
@@ -421,7 +429,7 @@
 
 												<select name="typeSelect" class="form-control modal-select" id="value" ng-model="vimInstance" ng-options="vimInstance as vimInstance.name for vimInstance in vimInstances | orderBy:'image.name':false"
 													ng-change="">
-                                                </select>
+													</select>
 
 											</div>
 										</div>
@@ -438,17 +446,17 @@
 												</span>
 												<select name="typeSelect" class="form-control modal-select" ng-model="editObj.vm_image[$index]" ng-options="image.name as image.name for image in vimInstance.images | orderBy:'image.name':false"
 													ng-change="">
-                                                </select>
-												<!--<input type="text" class="form-control" id="value" name="value"
+													</select>
+													<!--<input type="text" class="form-control" id="value" name="value"
                                                        ng-model="cp.value"/>-->
-												<span class="input-group-btn">
+													<span class="input-group-btn">
                                                 <button class="btn btn-default"
                                                         ng-click="editObj.vm_image.splice($index,1)"
                                                         type="button"
                                                         title="Delete this image">
                                                     <span class="fa fa-trash" aria-hidden="true"></span>
-												</button>
-												</span>
+													</button>
+													</span>
 											</div>
 										</div>
 
@@ -472,22 +480,21 @@
 </div>
 <!-- /.modal -->
 <div class="modal" id="jsonInfo" tabindex="" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"><span
                         aria-hidden="true">&times;</span><span
                         class="sr-only">Close</span></button>
-                <dt class="modal-title" id="myModalLabel">JSON of VNFD: {{vnfdJSONname}}</dt>
-            </div>
-            <div class="modal-body">
-                <pre id="json">{{vnfdJSON}}</pre>
-            </div>
-            <div class="modal-footer">
-                <button type="button" id="closeModal" class="btn btn-default"
-                        data-dismiss="modal">Close
+				<dt class="modal-title" id="myModalLabel">JSON of VNFD: {{vnfdJSONname}}</dt>
+			</div>
+			<div class="modal-body">
+				<pre id="json">{{vnfdJSON}}</pre>
+			</div>
+			<div class="modal-footer">
+				<button type="button" id="closeModal" class="btn btn-default" data-dismiss="modal">Close
                 </button>
-            </div>
-        </div>
-    </div>
+			</div>
+		</div>
+	</div>
 </div>
