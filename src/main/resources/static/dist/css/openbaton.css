@@ -836,3 +836,14 @@ td p {
     height:10px;
     width:280px;
 }
+.white{
+   color: white !important;
+}
+.panelbox{
+   box-shadow: 0 5px 5px rgba(0, 0, 0, .4) !important;
+   -webkit-box-shadow:  0 5px 5px rgba(0, 0, 0, .4) !important;
+   border: none !important;
+}
+.sidebarmargin{
+   margin-top: 57px !important;
+}
