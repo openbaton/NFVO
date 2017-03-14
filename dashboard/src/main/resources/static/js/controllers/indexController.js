@@ -153,7 +153,7 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
                 $scope.userLogged = response
             })
             .error(function (response, status) {
-                showError(status, response);
+                showError(response, status);
             });
     };
 
@@ -277,7 +277,7 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
                     }
                     $rootScope.projects = response;
                 })
-               
+
         }
         else {
             $rootScope.projectSelected = project;
@@ -417,10 +417,15 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
                 //console.log($scope.quota.left.ram)
             })
             .error(function (response, status) {
-                showError(status, response);
+                //chartsHere = true;
+                $scope.quota = $scope.failedquota;
+                $cookieStore.put('QUOTA', $scope.failedquota);
+                showError({message:"Was not possible to retrieve the quota"}, "ERROR");
             });
     }
-
+    $scope.closeAlert = function (index) {
+        $scope.alerts.splice(index, 1);
+    };
     $scope.rcdownload = function () {
         http.getRC(url + '/main/openbaton-rc/')
             .success(function (response) {
@@ -448,22 +453,16 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
             }
         }
     }
-    function showError(data, status) {
-        $('.modal').modal('hide');
-        if (status === 401) {
-            console.log(status + ' Status unauthorized')
-            AuthService.logout();
-        }
-    }
+
     var urlPackages = $cookieStore.get('URL') + "/api/v1/projects/";
     $scope.projectObj = {
         'name': '',
         'description': ''
     };
-    $scope.createProject = function() {
-         $('#createProject').modal('show');
+    $scope.createProject = function () {
+        $('#createProject').modal('show');
     };
-     $scope.save = function () {
+    $scope.save = function () {
         //console.log($scope.projectObj);
         http.post(urlPackages, $scope.projectObj)
             .success(function (response) {
@@ -481,25 +480,47 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
     };
 
     function showError(data, status) {
+        if (status === 401) {
+            console.log(status + ' Status unauthorized')
+            AuthService.logout();
+        }
         if (status === 500) {
             $scope.alerts.push({
                 type: 'danger',
                 msg: 'An error occured and could not be handled properly, please, report to us and we will fix it as soon as possible'
             });
+            if ($scope.alerts.length > 1) {
+                $scope.alerts.splice(0, 1);
+            }
         } else {
             console.log('Status: ' + status + ' Data: ' + JSON.stringify(data));
             $scope.alerts.push({
                 type: 'danger',
-                msg: data.message + " Code: " + status
+                msg: data.message 
             });
         }
 
         $('.modal').modal('hide');
-        if (status === 401) {
-            console.log(status + ' Status unauthorized')
-            AuthService.logout();
-        }
+
     }
+    $scope.failedquota = {
+        "total": {
+            "version": 1,
+            "cores": 1,
+            "floatingIps": 1,
+            "instances": 1,
+            "keyPairs": 1,
+            "ram": 1
+        },
+        "left": {
+            "version": 0,
+            "cores": 0,
+            "floatingIps": 0,
+            "instances": 0,
+            "keyPairs": 0,
+            "ram": 0
+        }
+    };
     function showOk(msg) {
         $scope.alerts.push({ type: 'success', msg: msg });
         window.setTimeout(function () {

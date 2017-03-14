@@ -257,7 +257,7 @@
                     <tabset>
                         <tab heading="Info">
                             <div class="form-group" ng-repeat="(key,value) in editObj"
-                                 ng-if="key!='id' && isArray(value) && key!='hb_version' && key!='projectId' && key!='vnfPackageLocation'">
+                                 ng-if="key!='id' && isArray(value) && key!='hb_version' && key!='projectId' && key!='vnfPackageLocation' && key!='updatedAt' && key!='createdAt'">
                                 <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
 
                                 <div class="col-sm-6">
@@ -267,7 +267,7 @@
                             </div>
                         </tab>
 
-                        <tab heading="Configurations">
+                        <!--tab heading="Configurations">
                             <div class="row">
                                 <div class="col-lg-12">
                                     <div ng-if="editObj.configurations===undefined">
@@ -312,7 +312,7 @@
 
                                 </div>
                             </div>
-                        </tab>
+                        </tab-->
                     </tabset>
                 </form>
             </div>
