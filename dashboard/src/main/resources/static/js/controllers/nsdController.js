@@ -978,7 +978,8 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
     $scope.vnfdJSONname = "";
     $scope.copyJSON = function (vnfd) {
         $scope.vnfdJSONname = vnfd.name;
-        $scope.vnfdJSON = JSON.stringify(vnfd, undefined, 4);
+        $scope.vnfdJSON = vnfd;
+        $scope.jsonrendVNFD()
     }
 
     $scope.addPopToNsd = function (pop) {
@@ -1117,23 +1118,34 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         };
 
     });
-    $scope.cleanmodal = function () {
-        var jsonDiv = document.querySelector("#json");
-        jsonDiv.childNodes[0].remove();
-
-    }
     $scope.jsonrend = function () {
         renderjson.set_icons('+', '-');
         renderjson.set_show_to_level(1);
         var jsonDiv = document.querySelector("#json");
-        console.log($scope.nsdJSON);
         jsonDiv.append(
-            renderjson($scope.nsdJSON)
+        renderjson($scope.nsdJSON)
         );
     }
       $('#jsonInfo').on('hidden.bs.modal', function () {
         var jsonDiv = document.querySelector("#json");
         jsonDiv.childNodes[0].remove();
 
-            });
+    });
+    
+    $scope.jsonrendVNFD = function () {
+        renderjson.set_icons('+', '-');
+        renderjson.set_show_to_level(1);
+        var jsonDiv = document.querySelector("#jsonvnfd");
+        jsonDiv.append(
+        renderjson($scope.vnfdJSON)
+        );
+    }
+
+  
+     
+    $('#jsonInfoVNFD').on('hidden.bs.modal', function () {
+        var jsonDiv = document.querySelector("#jsonvnfd");
+        jsonDiv.childNodes[0].remove();
+
+        });
 });

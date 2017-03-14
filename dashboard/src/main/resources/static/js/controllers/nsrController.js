@@ -577,7 +577,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
                 .success(function (response, status) {
                     $scope.nsrinfo = response;
                     $scope.getLastHistoryLifecycleEvent($scope.nsrinfo.vnfr);
-                    $scope.nsrJSON = JSON.stringify(response, undefined, 4);
+                    $scope.nsrJSON = response;
                     //console.log(response);
                     //topologiesAPI.Jsplumb(response);
                 })
@@ -593,7 +593,8 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
     $scope.vnfrJSON = "";
     $scope.copyJson = function(vnfr) {
         $scope.vnfrjsonname = vnfr.name;
-        $scope.vnfrJSON = JSON.stringify(vnfr, undefined, 4);
+        $scope.vnfrJSON = vnfr;
+        $scope.jsonrendVNFR();
     }
     $scope.startVNFCI = function(vnfci, vnfr) {
       startObj = {};
@@ -620,6 +621,38 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
               showError(status, data);
           });
     };
+     $scope.cleanmodal = function () {
+        var jsonDiv = document.querySelector("#json");
+        jsonDiv.childNodes[0].remove();
 
+    }
+    $scope.jsonrend = function () {
+        renderjson.set_icons('+', '-');
+        renderjson.set_show_to_level(1);
+        var jsonDiv = document.querySelector("#json");
+        console.log($scope.nsrJSON);
+        jsonDiv.append(
+        renderjson($scope.nsrJSON)
+        );
+    }
+    $scope.jsonrendVNFR = function () {
+        renderjson.set_icons('+', '-');
+        renderjson.set_show_to_level(1);
+        var jsonDiv = document.querySelector("#jsonvnfr");
+        console.log($scope.vnfrJSON);
+        jsonDiv.append(
+        renderjson($scope.vnfrJSON)
+        );
+    }
+      $('#jsonInfo').on('hidden.bs.modal', function () {
+        var jsonDiv = document.querySelector("#json");
+        jsonDiv.childNodes[0].remove();
+
+    });
+    $('#jsonInfoVNFR').on('hidden.bs.modal', function () {
+        var jsonDiv = document.querySelector("#jsonvnfr");
+        jsonDiv.childNodes[0].remove();
+
+        });
 
 });

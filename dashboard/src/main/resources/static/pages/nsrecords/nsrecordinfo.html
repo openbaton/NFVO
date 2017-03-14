@@ -40,7 +40,7 @@
 
         <div>
             <div class="col-lg-6">
-                <a href="#" data-toggle="modal" data-target="#jsonInfo">Show JSON</a>
+                <a href="#" data-toggle="modal" data-target="#jsonInfo" ng-click="jsonrend()">Show JSON</a>
                 <br/>
                 <a href="#nsrecords/{{nsrinfo.id}}/graph">Show Graph</a>
                 <div class="table-responsive">
@@ -222,7 +222,7 @@
                 <dt class="modal-title" id="myModalLabel">JSON of NSR: {{nsdInfo.name}}</dt>
             </div>
             <div class="modal-body">
-                <pre id="json">{{nsrJSON}}</pre>
+                <div id="json"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" id="closeModal" class="btn btn-default" data-dismiss="modal">Close
