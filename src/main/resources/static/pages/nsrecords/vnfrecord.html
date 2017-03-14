@@ -47,7 +47,7 @@
         <div class="col-lg-12">
             <span ng-repeat="vnfr in nsrinfo.vnfr" ng-show="vnfr.id==vnfrecordId">
               <div class="col-lg-6">
-                   <a href="#" data-toggle="modal" ng-click="copyJson(vnfr)" data-target="#jsonInfo">Show JSON</a>
+                   <a href="#" data-toggle="modal" ng-click="copyJson(vnfr)" data-target="#jsonInfoVNFR">Show JSON</a>
               <br/>
                 <div class = "table-responsive">
                    <table
@@ -67,8 +67,8 @@
                               <td>{{vnfr.task}}</td>
                             </tr>
                             <tr>
-                              <td>Project ID</td>
-                              <td>{{vnfr.projectId}}</td>
+                              <td>ID</td>
+                              <td>{{vnfr.id}}</td>
                             </tr>
                             <!--tr>
 								<td>Created</td>
@@ -526,7 +526,7 @@
     </div>
     <!-- /.modal -->
 
-    <div class="modal" id="jsonInfo" tabindex="" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
+    <div class="modal" id="jsonInfoVNFR" tabindex="" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -536,7 +536,7 @@
                     <dt class="modal-title" id="myModalLabel">JSON of VNFR: {{vnfrjsonname}}</dt>
                 </div>
                 <div class="modal-body">
-                    <pre id="json">{{vnfrJSON}}</pre>
+                    <div id="jsonvnfr"></div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" id="closeModal" class="btn btn-default" data-dismiss="modal">Close
