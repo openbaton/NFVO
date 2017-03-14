@@ -41,7 +41,7 @@
         </alert>
         <div>
         <div class="col-lg-6">
-          <a href="#" data-toggle="modal" data-target="#jsonInfo">Show JSON</a>
+          <a href="#" data-toggle="modal" data-target="#jsonInfo" ng-click="jsonrend()">Show JSON</a>
           <br/>
           
           <div class = "table-responsive">
@@ -60,6 +60,14 @@
                       <tr>
                         <td>Version</td>
                         <td>{{nsdinfo.version}}</td>
+                      </tr>
+                      <tr>
+                        <td>Created</td>
+                        <td>{{nsdinfo.createdAt}}</td>
+                      </tr>
+                      <tr>
+                        <td>Updated</td>
+                        <td>{{nsdinfo.updatedAt}}</td>
                       </tr>
                       <tr>
                         <td>Enabled</td>
@@ -214,7 +222,7 @@
 </div>
 
 
-<div class="modal" id="jsonInfo" tabindex="" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
+<div class="modal" id="jsonInfo" tabindex="" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false" >
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -224,7 +232,7 @@
                 <dt class="modal-title" id="myModalLabel">JSON of NSD: {{nsdInfo.name}}</dt>
             </div>
             <div class="modal-body">
-                <pre id="json">{{nsdJSON}}</pre>
+                <div id="json"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" id="closeModal" class="btn btn-default"

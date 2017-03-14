@@ -53,6 +53,7 @@
                     <th ng-click="predicate = 'task'; reverse = !reverse">Task <i class="fa fa-sort"></i></th>
                     <th ng-click="predicate = 'state'; reverse = !reverse">State <i class="fa fa-sort"></i></th>
                     <th ng-click="predicate = 'createdAt'; reverse = !reverse">Created at <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'updatedAt'; reverse = !reverse">Updated at<i class="fa fa-sort"></i></th>
                     <th>Actions <i class="fa"></i></th>
                 </tr>
                 </thead>
@@ -65,6 +66,7 @@
                     <td>{{data.task}}</td>
                     <td>{{data.status}}</td>
                     <td>{{data.createdAt}}</td>
+                    <td>{{data.updatedAt}}</td>
 
                     <td>
                         <div class="btn-group">

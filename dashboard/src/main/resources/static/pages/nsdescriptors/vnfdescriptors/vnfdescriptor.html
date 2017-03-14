@@ -37,7 +37,7 @@
 	<div class="col-lg-12" ng-show="vnfdinfo">
 		<div class="col-lg-6">
 			<a href="#" data-toggle="modal" data-target="#jsonInfo">Show JSON</a>
-          <br/>
+			<br/>
 			<div class="table-responsive">
 				<table class="table table-bordered table-hover tablesorter" id="vnfdTabletable">
 					<tbody>
@@ -57,6 +57,14 @@
 							<tr>
 								<td>Version</td>
 								<td>{{vnfdinfo.version}}</td>
+							</tr>
+							<tr>
+								<td>Created</td>
+								<td>{{vnfdinfo.createdAt}}</td>
+							</tr>
+							<tr>
+								<td>Updated</td>
+								<td>{{vnfdinfo.updatedAt}}</td>
 							</tr>
 							<tr>
 								<td>Endpoint</td>
@@ -333,23 +341,28 @@
 							</table>
 						</div>
 					</tab>
-					<tab heading="Configuration Parameters">
-                        <h3>{{vnfdinfo.configurations.name}}</h3>
+					<tab heading="Configuration Parameters" ng-show="!angular.isUndefined(vnfdinfo.configurations) && !angular.equals(vnfdinfo.configurations, {}) && !angular.isUndefined(vnfdinfo.configurations.configurationParameters) && vnfdinfo.configurations.configurationParameters.length > 0">
+						<h3>{{vnfdinfo.configurations.name}}</h3>
 						<div class="table-responsive">
 							<table class="table table-bordered table-striped table-hover tablesorter" id="">
-                                <thead>
-                                    <tr>
-                                    <th>Parameter</th><th>Value</th><th>Description</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr ng-repeat="par in vnfdinfo.configurations.configurationParameters track by $index">
-                                        <td>{{par.confKey}}</td><td>{{par.value}}</td></td>{{par.description}}</td>
-                                    </tr>
-                                </tbody>
+								<thead>
+									<tr>
+										<th>Parameter</th>
+										<th>Value</th>
+										<th>Description</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="par in vnfdinfo.configurations.configurationParameters track by $index">
+										<td>{{par.confKey}}</td>
+										<td>{{par.value}}</td>
+										</td>{{par.description}}</td>
+									</tr>
+								</tbody>
 							</table>
 						</div>
 					</tab>
+
 				</tabset>
 				<br/>
 				<br/>
@@ -360,22 +373,21 @@
 	</div>
 </div>
 <div class="modal" id="jsonInfo" tabindex="" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"><span
                         aria-hidden="true">&times;</span><span
                         class="sr-only">Close</span></button>
-                <dt class="modal-title" id="myModalLabel">JSON of NSD: {{vnfdInfo.name}}</dt>
-            </div>
-            <div class="modal-body">
-                <pre id="json">{{vnfdJson}}</pre>
-            </div>
-            <div class="modal-footer">
-                <button type="button" id="closeModal" class="btn btn-default"
-                        data-dismiss="modal">Close
+				<dt class="modal-title" id="myModalLabel">JSON of NSD: {{vnfdInfo.name}}</dt>
+			</div>
+			<div class="modal-body">
+				<pre id="json">{{vnfdJson}}</pre>
+			</div>
+			<div class="modal-footer">
+				<button type="button" id="closeModal" class="btn btn-default" data-dismiss="modal">Close
                 </button>
-            </div>
-        </div>
-    </div>
+			</div>
+		</div>
+	</div>
 </div>

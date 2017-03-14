@@ -68,7 +68,9 @@
                         </th>
                         <th ng-click="predicate = 'name'; reverse = !reverse">NSD Name <i class="fa fa-sort"></i></th>
                         <th ng-click="predicate = 'vendor'; reverse = !reverse">Vendor <i class="fa fa-sort"></i></th>
-                        <th ng-click="predicate = 'verision'; reverse = !reverse">Version <i class="fa fa-sort"></i></th>
+                        <th ng-click="predicate = 'version'; reverse = !reverse">Version <i class="fa fa-sort"></i></th>
+                        <th ng-click="predicate = 'createdAt'; reverse = !reverse">Created at<i class="fa fa-sort"></i></th>
+                        <th ng-click="predicate = 'updatedAt'; reverse = !reverse">Updated at<i class="fa fa-sort"></i></th>
                         <th>Actions <i class="fa"></i></th>
                     </tr>
                 </thead>
@@ -80,7 +82,8 @@
                         <td>{{nsd.name}}</td>
                         <td>{{nsd.vendor}}</td>
                         <td>{{nsd.version}}</td>
-
+                        <td>{{nsd.createdAt}}</td>
+                        <td>{{nsd.updatedAt}}</td>
                         <td>
                             <div class="btn-group">
                                 <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Action
@@ -1475,7 +1478,7 @@
                                 <label for="Configuration Name" class="col-sm-4 control-label">Configuration name</label>
 
                                 <div class="col-sm-6">
-                                    <input ng-disabled="launchConfiguration.configurations[vnfdname].id.length > 0"type="text" class="form-control" id="Configuration Name" ng-model="launchConfiguration.configurations[vnfdname].name" />
+                                    <input ng-disabled="launchConfiguration.configurations[vnfdname].id.length > 0 && launchConfiguration.configurations[vnfdname].name.length > 0"type="text" class="form-control" id="Configuration Name" ng-model="launchConfiguration.configurations[vnfdname].name" />
                                 </div>
                             </div>
                         </div>

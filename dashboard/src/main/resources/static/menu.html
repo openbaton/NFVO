@@ -21,7 +21,7 @@
             
                                
                         
-            <div class="navbar-header" style="width:140px; height:15px;" >
+            <div class="navbar-header" style="width:140px; height:15px; margin-top: 8px;" >
                  <a href="#main"><img style="margin-left: 40%;" src="img/OpenBatonLogoTransp.png" class="img-responsive"
                                      alt="Responsive image"></a>
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -35,9 +35,7 @@
             <!-- /.navbar-header -->
                
             <ul class="nav navbar-top-links navbar-right">
-           
-               <li><a>NFVO version: {{NFVOversion}}</a></li>
-                <li class="dropdown">
+            <li class="dropdown">
                     <a href="" class="dropdown-toggle" data-toggle="dropdown" ng-init="changeProject()"><i class="fa fa-folder-open"></i> {{projectSelected.name}} <b
                             class="caret"></b></a>
                     <ul class="dropdown-menu">
@@ -81,7 +79,7 @@
                 </li>
             </ul>
             <!-- /.navbar-top-links -->
-            <div class="navbar-default sidebar" role="navigation">
+            <div class="navbar-default sidebarmargin sidebar" role="navigation">
                 <div class="sidebar-nav navbar-collapse">
                     <ul class="nav" id="side-menu">
                         
@@ -150,13 +148,12 @@
                                 <li>
                                     <a href="#vimdrivers"><i class="fa fa-arrows-h"></i> Vim drivers</a>
                                 </li>
+                               
                             </ul>
                             <!-- /.nav-second-level -->
                         </li>
                         <div class="" id="footer">
-                            <a href="#copyright">
-                                <div class="fa fa-copyright"></div>
-                                2016 Open Baton </a>
+                            <small class="text-muted">NFVO version: {{NFVOversion}}</small>
                         </div>
                     </ul>
                     <div></div>
