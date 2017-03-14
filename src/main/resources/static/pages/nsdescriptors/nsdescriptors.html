@@ -1069,7 +1069,7 @@
             </div>
             <div class="modal-body">
                 <form role="form" class="form-horizontal">
-                    <div class="form-group" ng-repeat="(key,value) in editObj" ng-if="key!='id' && isArray(value) && key!='hb_version' && key!='projectId' && key!='enabled'">
+                    <div class="form-group" ng-repeat="(key,value) in editObj" ng-if="key!='id' && isArray(value) && key!='hb_version' && key!='projectId' && key!='enabled' && key!='updatedAt' && key!='createdAt'">
                         <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
 
                         <div class="col-sm-6">

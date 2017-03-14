@@ -344,6 +344,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
                 showError(data, status);
             });
     };
+   
 
     $scope.updateVNFD = function () {
         http.put(url + $routeParams.nsdescriptorId + '/vnfdescriptors/' + $scope.editObj.id, $scope.editObj)
@@ -356,6 +357,18 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
                 showError(data, status);
             });
     };
+
+    /*$scope.updateVDU = function () {
+        http.put(url + $routeParams.nsdescriptorId + '/vnfdescriptors/' + $routeParams.vnfdescriptorId + "/vdus/" + $scope.editObj.id, $scope.editObj)
+            .success(function (response) {
+                showOk('VDU updated!');
+                loadTable();
+            })
+            .error(function (data, status) {
+                console.error('STATUS: ' + status + ' DATA: ' + JSON.stringify(data));
+                showError(data, status);
+            });
+    };*/
 
     $scope.addNewConfig = function () {
         if (angular.isUndefined($scope.editObj.configurations)) {
