@@ -95,7 +95,7 @@ app.controller('EventCtrl', function ($scope, $interval, serviceAPI, $routeParam
     /* -- multiple delete functions END -- */
 
 
-    $scope.types = ['REST', 'RABBIT', 'JMS'];
+    $scope.types = ['REST', 'RABBIT'];
     $scope.deleteEvent = function (data) {
         http.delete(url + data.id)
             .success(function (response) {

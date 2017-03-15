@@ -30,10 +30,10 @@
                 <a href="#nsrecords/{{nsrinfo.id}}"><i class="fa fa-pencil"></i>
                     NSR: {{nsrinfo.name}}</a>
             </li>
-            <li class="">
+            <!--li class="">
                 <a href="#nsrecords/{{nsrinfo.id}}/vnfrecords"><i class="fa fa-pencil-square-o"></i>
                     VNF Records</a>
-            </li>
+            </li-->
             <li class="active"><i class="fa fa-pencil-square-o"></i> VNF Record
             </li>
         </ol>
@@ -274,7 +274,7 @@
                                                 <button type="button" class="btn btn-default disabled">
                                                 {{vdu.vnfc_instance.length}}
                                             </button>
-                                                <button type="button" class="btn btn-default" ng-click="addVNFCItoVDU(vnfr, vdu)">
+                                                <button type="button" class="btn btn-default"  ng-disabled="vdu.vnfc_instance.length == vdu.scale_in_out" ng-click="addVNFCItoVDU(vnfr, vdu)">
                                                 +
                                             </button>
                                             </div>
@@ -497,7 +497,7 @@
                                 <th>Virtual link reference</th>
                                 <th>floatingIp</th>
                                 <th>Interface ID </th>
-                                <th>Delete</th>
+                                <!--th>Delete</th-->
                             </tr>
                         </thead>
                         <tbody>
@@ -506,9 +506,9 @@
                                 <td><input type="text" class="form-control" id="floatingIp" name="floatingIp" ng-model="cp.floatingIp"
                                     /></td>
                                 <td>{{cp.interfaceId}}</td>
-                                <td>
+                                <!--td>
                                     <a href="" ng-click="removeCPtoVNFCIVDU($index)"><span class="fa fa-trash"></span></a>
-                                </td>
+                                </td-->
                             </tr>
                         </tbody>
                     </table>
