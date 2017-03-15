@@ -186,7 +186,8 @@ public class RestNetworkServiceDescriptor {
   public NetworkServiceDescriptor update(
       @RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor,
       @PathVariable("id") String id,
-      @RequestHeader(value = "project-id") String projectId) {
+      @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException, BadRequestException {
     return networkServiceDescriptorManagement.update(networkServiceDescriptor, projectId);
   }
 
