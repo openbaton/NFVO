@@ -66,7 +66,8 @@ public interface NetworkServiceDescriptorManagement {
    * This operation allows updating a Network Service Descriptor (NSD), including any related VNFFGD
    * and VLD.This update might include creating/deleting new VNFFGDs and/or new VLDs.
    */
-  NetworkServiceDescriptor update(NetworkServiceDescriptor new_nsd, String projectId);
+  NetworkServiceDescriptor update(NetworkServiceDescriptor new_nsd, String projectId)
+      throws NotFoundException, BadRequestException;
 
   /**
    * This operation added a new VNFD to the NSD with {@code id}

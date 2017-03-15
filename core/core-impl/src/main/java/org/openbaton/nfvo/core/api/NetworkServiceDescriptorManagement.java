@@ -263,15 +263,26 @@ public class NetworkServiceDescriptorManagement
    * @param newNsd : the new values to be updated
    */
   @Override
-  public NetworkServiceDescriptor update(NetworkServiceDescriptor newNsd, String projectId) {
+  public NetworkServiceDescriptor update(NetworkServiceDescriptor newNsd, String projectId)
+      throws NotFoundException, BadRequestException {
     SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
-    newNsd = nsdRepository.findFirstById(newNsd.getId());
-    if (newNsd.getProjectId().equals(projectId)) {
-      newNsd.setUpdatedAt(format.format(new Date()));
-      return nsdRepository.save(newNsd);
+    if (newNsd.getId() == null || newNsd.getId().isEmpty()) {
+      throw new BadRequestException("No id found in the passed NSD");
     }
-    throw new UnauthorizedUserException(
-        "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+    NetworkServiceDescriptor updatingNsd = nsdRepository.findFirstById(newNsd.getId());
+    if (updatingNsd == null) {
+      throw new NotFoundException("Not found NSD with id " + newNsd.getId());
+    } else if (!newNsd.getProjectId().equals(projectId)) {
+      throw new UnauthorizedUserException(
+          "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+    }
+    updatingNsd.setUpdatedAt(format.format(new Date()));
+    updatingNsd.setName(newNsd.getName());
+    updatingNsd.setEnabled(newNsd.isEnabled());
+    updatingNsd.setNfvo_version(newNsd.getNfvo_version());
+    updatingNsd.setVendor(newNsd.getVendor());
+    updatingNsd.setVersion(newNsd.getVersion());
+    return nsdRepository.save(updatingNsd);
   }
 
   /**
