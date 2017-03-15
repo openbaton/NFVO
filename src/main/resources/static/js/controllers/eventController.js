@@ -31,7 +31,7 @@ app.controller('EventCtrl', function ($scope, $interval, serviceAPI, $routeParam
         'networkServiceId': '',
         'virtualNetworkFunctionId': '',
         'type': 'REST',
-        'endpoint': 'localhost:8081/events',
+        'endpoint': 'localhost:8080/events',
         'event': 'INSTANTIATE_FINISH'
     };
 
