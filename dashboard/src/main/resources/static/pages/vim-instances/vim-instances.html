@@ -219,11 +219,21 @@
 			</div>
 			<div class="modal-body">
 				<form role="form" class="form-horizontal">
-					<div class="form-group" ng-repeat="(key,value) in editObj" ng-if="key!='id' && isArray(value) && key!='hb_version' && key!='projectId'">
+					<div class="form-group" ng-repeat="(key,value) in editObj" ng-if="key!='id' && isArray(value) && key!='hb_version' && key!='projectId' && key!='active' && key!='version' && key!='type'">
 						<label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
 
 						<div class="col-sm-6">
 							<input type="text" class="form-control" id="{{key}}" name="{{key}}" ng-model="editObj[key]" />
+						</div>
+					</div>
+					<div class="row">
+					<label class="col-sm-4 control-label">type</label>
+					<div class="col-sm-6">
+							<select name="typeSelect" class="form-control modal-select"
+                                    ng-model="editObj.type"
+
+                                    ng-options="plugin.type as plugin.type for plugin in installed | orderBy:'name':false">
+                            </select>
 						</div>
 					</div>
 				</form>

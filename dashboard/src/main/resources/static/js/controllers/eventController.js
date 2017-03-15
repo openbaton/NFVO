@@ -32,7 +32,7 @@ app.controller('EventCtrl', function ($scope, $interval, serviceAPI, $routeParam
         'networkServiceId': '',
         'virtualNetworkFunctionId': '',
         'type': 'REST',
-        'endpoint': 'localhost:8081/events',
+        'endpoint': 'localhost:8080/events',
         'event': 'INSTANTIATE_FINISH'
     };
 
@@ -96,7 +96,7 @@ app.controller('EventCtrl', function ($scope, $interval, serviceAPI, $routeParam
     /* -- multiple delete functions END -- */
 
 
-    $scope.types = ['REST', 'RABBIT', 'JMS'];
+    $scope.types = ['REST', 'RABBIT'];
     $scope.deleteEvent = function (data) {
         http.delete(url + data.id)
             .success(function (response) {
