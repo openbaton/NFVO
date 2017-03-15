@@ -99,7 +99,7 @@ public class ApiRestNSDescriptorTest {
   }
 
   @Test
-  public void NSDUpdate() {
+  public void NSDUpdate() throws NotFoundException, BadRequestException {
     when(nsdManagement.update(any(networkServiceDescriptor.getClass()), anyString()))
         .thenReturn(networkServiceDescriptor);
     assertEquals(

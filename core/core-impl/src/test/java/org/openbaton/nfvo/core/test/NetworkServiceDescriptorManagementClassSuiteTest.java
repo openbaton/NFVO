@@ -211,7 +211,8 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
   @Test
   public void nsdManagementUpdateTest()
       throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
-          CyclicDependenciesException, WrongStatusException, EntityInUseException {
+          CyclicDependenciesException, WrongStatusException, EntityInUseException,
+          BadRequestException {
     when(nsdRepository.findAll()).thenReturn(new ArrayList<NetworkServiceDescriptor>());
     when(nsdRepository.findByProjectId(anyString()))
         .thenReturn(new ArrayList<NetworkServiceDescriptor>());
@@ -253,6 +254,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
 
   private NetworkServiceDescriptor createNetworkServiceDescriptor() {
     final NetworkServiceDescriptor nsd = new NetworkServiceDescriptor();
+    nsd.setId("mocked-id");
     nsd.setProjectId(projectId);
     nsd.setVendor("FOKUS");
     nsd.setName("dummy-nsd");
