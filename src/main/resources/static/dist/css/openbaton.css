@@ -844,6 +844,13 @@ td p {
    -webkit-box-shadow:  0 5px 5px rgba(0, 0, 0, .4) !important;
    border: none !important;
 }
-.sidebarmargin{
-   margin-top: 57px !important;
-}
+.sidebarmargin{margin-top: 57px !important;}
+.dailougebox li.active > a,  .dailougebox > li.active > a:focus, .dailougebox > {background-color: #337ab7 !important;  color: white !important;  border: none !important;  font-weight: normal !important  }
+.dailougebox{border: none !important; padding: 20px !important;}
+.dailougebox > li > a {border-radius: 4px !important; font-weight: normal;}
+.radiusnone{border-radius: 0px !important;  margin-left: 8px !important;}
+.nav > li > a{ cursor: default !important;}
+.cursordefault{ cursor: default;}
+.leftalign{text-align: left !important;}
+.input-margintop{margin-top: 8px;}
+.paddinbottom{padding-bottom: 3px !important;}
