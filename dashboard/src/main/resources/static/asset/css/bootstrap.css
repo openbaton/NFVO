@@ -4924,9 +4924,9 @@ textarea.input-group-sm>.input-group-btn>.btn {
 .nav-tabs>li.active>a,
 .nav-tabs>li.active>a:focus,
 .nav-tabs>li.active>a:hover {
-    color: #555;
+    color: white;
     cursor: default;
-    background-color: #fff;
+    background-color: #337ab7;
     border: 1px solid #ddd;
     border-bottom-color: transparent
 }
