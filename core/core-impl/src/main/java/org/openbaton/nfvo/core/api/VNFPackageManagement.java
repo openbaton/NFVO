@@ -24,6 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -76,6 +77,9 @@ import org.springframework.stereotype.Service;
 @ConfigurationProperties
 public class VNFPackageManagement
     implements org.openbaton.nfvo.core.interfaces.VNFPackageManagement {
+
+  @Value("${vnfd.vnfp.apacheHostname:openbaton}")
+  private String apacheHostname;
 
   @Value("${vnfd.vnfp.cascade.delete:false}")
   private boolean cascadeDelete;
@@ -200,7 +204,7 @@ public class VNFPackageManagement
       }
     }
 
-    nsdUtils.checkIntegrity(virtualNetworkFunctionDescriptor);
+    nsdUtils.checkIntegrity(virtualNetworkFunctionDescriptor, vnfPackage.getImageLink() != null);
 
     vnfPackageRepository.save(vnfPackage);
     virtualNetworkFunctionDescriptor.setVnfPackageLocation(vnfPackage.getId());
@@ -292,7 +296,26 @@ public class VNFPackageManagement
       }
       //If upload==true -> create a new Image
       if (imageDetails.get("upload").equals("true") || imageDetails.get("upload").equals("check")) {
-        vnfPackage.setImageLink((String) imageDetails.get("link"));
+
+        // check to see if there is an image to be uploaded from the tar file
+        if (imageDetails.containsKey("imageFile")) {
+          try {
+            InetAddress address = InetAddress.getByName(apacheHostname);
+            //InetAddress address = InetAddress.getByName("baton");
+            log.debug("ip address is " + address.getHostAddress());
+
+            vnfPackage.setImageLink(
+                "http://"
+                    + address.getHostAddress()
+                    + "/images/"
+                    + (String) imageDetails.get("imageFile"));
+          } catch (Exception e) {
+            log.info("failed to get ip address");
+          }
+        } else {
+          vnfPackage.setImageLink((String) imageDetails.get("link"));
+        }
+
         if (metadata.containsKey("image-config")) {
           log.debug("image-config: " + metadata.get("image-config"));
           Map<String, Object> imageConfig = (Map<String, Object>) metadata.get("image-config");

@@ -19,10 +19,16 @@ package org.openbaton.nfvo.api.catalogue;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.swagger.annotations.ApiOperation;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.validation.Valid;
+import org.apache.commons.io.FileUtils;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
@@ -87,7 +93,136 @@ public class RestVNFPackage {
 
     log.debug("Onboarding");
     if (!file.isEmpty()) {
-      byte[] bytes = file.getBytes();
+
+      byte[] bytes = new byte[0];
+      Random random = new Random();
+      int ran = random.nextInt();
+      String directory = "/tmp/random" + ran + "/";
+
+      // write the file to the filesystem
+      File tempDirectory = new File(directory);
+      if (!tempDirectory.exists()) {
+        tempDirectory.mkdir();
+      }
+
+      String name = file.getOriginalFilename();
+      File tarFile = new File(directory + name);
+      file.transferTo(tarFile);
+      log.debug("File size is " + file.getSize());
+
+      Runtime rt = Runtime.getRuntime();
+
+      try {
+        // untar the file
+        Process p1 =
+            rt.exec(new String[] {"bash", "-c", "tar -xf " + name}, new String[0], tempDirectory);
+        p1.waitFor();
+
+        // if there is an image file in the tar file find it's name and move it
+        File metadata = new File(directory + "Metadata.yaml");
+        if (!metadata.exists()) {
+          log.debug("No Metadata.yaml found");
+          throw new Exception("no Metadata.yaml file");
+        }
+
+        // get the name of the expected image
+        String metadataStr = FileUtils.readFileToString(metadata, "UTF-8");
+        log.debug("metadata: " + metadataStr);
+        Pattern filenameRegex = Pattern.compile("(imageFile\\s*:\\s*)(\\S*)");
+        Matcher matcher = filenameRegex.matcher(metadataStr);
+        String filename = "";
+        if (matcher.find()) {
+          filename = matcher.group(2);
+        }
+        log.debug("filename before replaces: " + filename);
+        // just in case there are spaces or quotations
+        filename = filename.replaceAll("\"", "");
+        filename = filename.replaceAll("\\s", "");
+
+        log.debug("filename: " + filename);
+
+        if ("" != filename) {
+          // see if the file with that name exists
+          String randomFileName = "";
+          File imageFile = new File(directory + filename);
+          if (imageFile.exists()) {
+            // what the heck, use the same random number (could do something else here)
+            int indexDot = filename.indexOf('.');
+            randomFileName = filename.substring(0, indexDot) + ran + filename.substring(indexDot);
+            log.debug("random filename is: " + randomFileName);
+
+            // make sure the folder that we are moving to exists
+            String targetDir = "/var/www/html/images/";
+            File targetDirFile = new File(targetDir);
+            if (!targetDirFile.exists()) {
+              targetDirFile.mkdir();
+            }
+
+            // figure out if there are more than 10 files and delete if so
+            Process p2a =
+                rt.exec(
+                    new String[] {
+                      "bash", "-c", "ls " + targetDir + "* -dt | sed -e '1,10d' | xargs -d '\n' rm"
+                    });
+            p2a.waitFor();
+
+            // copy the relevant file, if we copy instead of move it updates the time stamp
+            // so that we can delete all but the most recently loaded files
+            log.debug("mv " + directory + filename + " " + targetDir);
+            Process p1a =
+                rt.exec(
+                    new String[] {
+                      "bash", "-c", "cp " + directory + filename + " " + targetDir + randomFileName
+                    });
+            p1a.waitFor();
+          }
+
+          // also replace the name in the Metatdata.yaml file
+          Pattern oldFileName = Pattern.compile(filename);
+          metadataStr = oldFileName.matcher(metadataStr).replaceAll(randomFileName);
+          FileUtils.write(metadata, metadataStr);
+        }
+
+        // create a list of excluded files and delete them
+        String[] fileTypes = {"iso", "img", "qcow2", "zip", "gz", "raw"};
+        for (String type : fileTypes) {
+          Process p = rt.exec(new String[] {"bash", "-c", "rm " + directory + "*." + type});
+          p.waitFor();
+        }
+
+        String tarCmd = "tar --xform s:'./':: -C " + directory + " -cf " + directory + name + " .";
+        log.debug("tar command: " + tarCmd);
+        Process p3 = rt.exec(new String[] {"bash", "-c", tarCmd}, new String[0], tempDirectory);
+        p3.waitFor();
+
+        log.debug("un-tar'd and re-tar'd file");
+
+        // now reload the file
+        File outFile = new File(directory + name);
+        FileInputStream is = new FileInputStream(outFile);
+        bytes = new byte[(int) outFile.length()];
+        ;
+        is.read(bytes);
+        is.close();
+
+      } catch (Exception ex) {
+        // There was an error with trying to use the file system to untar and re-tar,
+        // using original file instead
+        log.error(ex.getMessage());
+        bytes = FileUtils.readFileToByteArray(tarFile);
+      }
+
+      try {
+        // now delete the temporary file and directory
+        // we use this method rather than the java provided method because we can delete the
+        // entire directory at once instead of having to delete each file and then deleting
+        // the directory
+        Process p4 = rt.exec(new String[] {"bash", "-c", "rm -rf " + directory});
+        p4.waitFor();
+      } catch (Exception ex) {
+        // oh well, not much we can do at this point
+        log.error("Unable to delete the temporary directory: " + directory);
+      }
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
           vnfPackageManagement.onboard(bytes, projectId);
       return "{ \"id\": \"" + virtualNetworkFunctionDescriptor.getVnfPackageLocation() + "\"}";
