@@ -791,13 +791,6 @@ h4 > a, h4 > a:hover {
     outline: 0;
 }
 
-.tab-content {
-    border-left: 1px solid #ddd;
-    border-right: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
-    padding: 10px;
-}
-
 /* layout.css Style */
 .upload-drop-zone {
     height: 200px;

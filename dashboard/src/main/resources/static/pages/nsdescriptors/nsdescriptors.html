@@ -1123,28 +1123,30 @@
 <div class="modal fade" tabindex="-1" role="dialog" id="launchForm">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header panel-heading">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title">{{nsdToSend.name}}</h4>
             </div>
 
-            <tabset>
+            <tabset class="dailougebox">
                 <!--<tab select="loadVnfdTabs()" heading="PoPs">-->
                 <tab heading="PoPs">
                     <div class="container-fluid">
 
                         <div class="row">
                             <p>
+                                <br/>
                                 A Point-of-Presence (PoP) defines where to deploy a VNF Component. In the following you can choose where to deploy an NSD
                                 or VNFDs.
                             </p>
-                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 thumbnail">
-                                <tabset>
-                                    <tab ng-repeat="tab in tabs" ng-attr-id="{{tab.id}}" heading="{{tab.title}}" active="tab.active" disabled="tab.disabled"
+                            <div class="border-none">
+                                <tabset style="border: none !important;">
+                                    <tab  ng-repeat="tab in tabs" ng-attr-id="{{tab.id}}" heading="{{tab.title}}" active="tab.active" disabled="tab.disabled"
                                         select="selectTab(tab.id)" ng-click="selectVnfd(tab.vnfd)">
                                         <div ng-init="selectVnfd(tab.vnfd)" class="tab-text">
                                             <p>
+                                                <br/>
                                                 The following list shows which PoPs are choosen for the selected VNFD.
                                             </p>
                                             <div ng-init="launchPopTable.expanded=false">
@@ -1185,10 +1187,11 @@
                                             <div ng-init="popTable.expanded=true">
                                                 <p style="font-size:20px">
                                                     <a href="" ng-if="popTable.expanded" ng-click="popTable.expanded = false">-</a>
-                                                    <a href="" ng-if="!popTable.expanded" ng-click="popTable.expanded = true">+</a>                                                    Available ({{launchPopsAvailable[tab.vnfd.name].pops.length}})
+                                                    <a href="" ng-if="!popTable.expanded" ng-click="popTable.expanded = true">+</a>Available ({{launchPopsAvailable[tab.vnfd.name].pops.length}})
                                                 </p>
                                                 <div ng-if="popTable.expanded">
-                                                    <table ng-table="tableParamsFilteredPops" class="table table-condensed table-bordered table-striped" show-filter="true">
+                                                   
+                                                    <table style="text-align: left !important;" ng-table="tableParamsFilteredPops" class="table table-condensed table-bordered table-striped" >
                                                         <!--<tr ng-init="key.expanded=false" ng-repeat-start="key in $data">-->
                                                         <tr ng-repeat="vimInstance in $data track by $index">
                                                             <!--<td>-->
@@ -1197,14 +1200,14 @@
                                                             <!--<a href="" ng-if="!vimInstance.expanded"-->
                                                             <!--ng-click="vimInstance.expanded = true">+</a>-->
                                                             <!--</td>-->
-                                                            <td width="300" style="word-wrap: break-word" data-title="'Name'" filter="{name: 'text'}" sortable="'name'">
-                                                                <p>{{vimInstance.name}}</p>
+                                                            <td  width="300" style="word-wrap: break-word; text-align: left !important;" data-title="'Name'" filter="{name: 'text'}" sortable="'name'">
+                                                                {{vimInstance.name}}
                                                             </td>
-                                                            <td style="width:5%">
+                                                            <td style="width:5%; text-align: center !important;">
                                                                 <a ng-if="vimInstance.name.length" title="Add a new PoP to this NSR" href="" ng-click="addPopToVnfd(tab.vnfd, vimInstance)">Add
                                                                 </a>
                                                             </td>
-                                                            <td style="width:10%">
+                                                            <td style="width:15%; text-align: center !important;">
                                                                 <a ng-if="vimInstance.name.length" title="Add a new PoP to this NSR" href="" ng-click="addPopToNsd(vimInstance)">Add to all
                                                                 </a>
                                                             </td>
