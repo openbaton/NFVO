@@ -728,7 +728,9 @@ h4 > a, h4 > a:hover {
 @media (min-height: 750px) {
     #page-wrapper {
 
-        height: 100%;
+        position: absolute !important;
+        height: calc(100% - 58px) !important;
+        width: calc(100% - 250px) !important;
     }
 }
 
