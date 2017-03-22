@@ -24,7 +24,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -77,9 +76,6 @@ import org.springframework.stereotype.Service;
 @ConfigurationProperties
 public class VNFPackageManagement
     implements org.openbaton.nfvo.core.interfaces.VNFPackageManagement {
-
-  @Value("${vnfd.vnfp.apacheHostname:openbaton}")
-  private String apacheHostname;
 
   @Value("${vnfd.vnfp.cascade.delete:false}")
   private boolean cascadeDelete;
@@ -300,15 +296,7 @@ public class VNFPackageManagement
         // check to see if there is an image to be uploaded from the tar file
         if (imageDetails.containsKey("imageFile")) {
           try {
-            InetAddress address = InetAddress.getByName(apacheHostname);
-            //InetAddress address = InetAddress.getByName("baton");
-            log.debug("ip address is " + address.getHostAddress());
-
-            vnfPackage.setImageLink(
-                "http://"
-                    + address.getHostAddress()
-                    + "/images/"
-                    + (String) imageDetails.get("imageFile"));
+            vnfPackage.setImageLink((String) imageDetails.get("imageFile"));
           } catch (Exception e) {
             log.info("failed to get ip address");
           }

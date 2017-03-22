@@ -145,6 +145,7 @@ public class RestVNFPackage {
           // see if the file with that name exists
           String randomFileName = "";
           File imageFile = new File(directory + filename);
+          String targetDir = "/tmp/openbaton/";
           if (imageFile.exists()) {
             // what the heck, use the same random number (could do something else here)
             int indexDot = filename.indexOf('.');
@@ -152,7 +153,6 @@ public class RestVNFPackage {
             log.debug("random filename is: " + randomFileName);
 
             // make sure the folder that we are moving to exists
-            String targetDir = "/var/www/html/images/";
             File targetDirFile = new File(targetDir);
             if (!targetDirFile.exists()) {
               targetDirFile.mkdir();
@@ -168,7 +168,7 @@ public class RestVNFPackage {
 
             // copy the relevant file, if we copy instead of move it updates the time stamp
             // so that we can delete all but the most recently loaded files
-            log.debug("mv " + directory + filename + " " + targetDir);
+            log.debug("cp " + directory + filename + " " + targetDir + randomFileName);
             Process p1a =
                 rt.exec(
                     new String[] {
@@ -179,8 +179,9 @@ public class RestVNFPackage {
 
           // also replace the name in the Metatdata.yaml file
           Pattern oldFileName = Pattern.compile(filename);
-          metadataStr = oldFileName.matcher(metadataStr).replaceAll(randomFileName);
+          metadataStr = oldFileName.matcher(metadataStr).replaceAll(targetDir + randomFileName);
           FileUtils.write(metadata, metadataStr);
+          log.debug("metadata is now " + metadataStr);
         }
 
         // create a list of excluded files and delete them
@@ -201,7 +202,7 @@ public class RestVNFPackage {
         File outFile = new File(directory + name);
         FileInputStream is = new FileInputStream(outFile);
         bytes = new byte[(int) outFile.length()];
-        ;
+
         is.read(bytes);
         is.close();
 
