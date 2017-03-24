@@ -69,8 +69,8 @@
                         <th ng-click="predicate = 'name'; reverse = !reverse">NSD Name <i class="fa fa-sort"></i></th>
                         <th ng-click="predicate = 'vendor'; reverse = !reverse">Vendor <i class="fa fa-sort"></i></th>
                         <th ng-click="predicate = 'version'; reverse = !reverse">Version <i class="fa fa-sort"></i></th>
-                        <th ng-click="predicate = 'createdAt'; reverse = !reverse">Created at<i class="fa fa-sort"></i></th>
-                        <th ng-click="predicate = 'updatedAt'; reverse = !reverse">Updated at<i class="fa fa-sort"></i></th>
+                        <th ng-click="predicate = 'createdAt'; reverse = !reverse">Created at <i class="fa fa-sort"></i></th>
+                        <th ng-click="predicate = 'updatedAt'; reverse = !reverse">Updated at <i class="fa fa-sort"></i></th>
                         <th>Actions <i class="fa"></i></th>
                     </tr>
                 </thead>
@@ -79,12 +79,12 @@
                         <td><input type="checkbox" ng-init="selection.ids[nsd.id] = false" ng-model="selection.ids[nsd.id]" name="group"
                                 id="{{nsd.id}}" /></td>
                         <td><a href="#nsdescriptors/{{nsd.id}}">{{nsd.id}}</a></td>
-                        <td>{{nsd.name}}</td>
-                        <td>{{nsd.vendor}}</td>
-                        <td>{{nsd.version}}</td>
-                        <td>{{nsd.createdAt}}</td>
-                        <td>{{nsd.updatedAt}}</td>
-                        <td>
+                        <td class="text-center">{{nsd.name}}</td>
+                        <td class="text-center">{{nsd.vendor}}</td>
+                        <td class="text-center">{{nsd.version}}</td>
+                        <td class="text-center">{{nsd.createdAt}}</td>
+                        <td class="text-center">{{nsd.updatedAt}}</td>
+                        <td class="text-center">
                             <div class="btn-group">
                                 <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Action
                                 <span class="caret"></span></button>
