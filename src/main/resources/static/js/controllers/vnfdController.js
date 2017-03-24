@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, $http, $window, AuthService, clipboard, $interval) {
+var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compile, $cookieStore, $routeParams, http, $http, $window, AuthService, clipboard, $interval, NgTableParams, $filter) {
 
     var baseUrl = $cookieStore.get('URL') + "/api/v1/";
     var url = baseUrl + '/vnf-descriptors/';
@@ -391,6 +391,29 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
     }
 
 $('.modal-dialog').draggable();
+
+    var paginationVNF = []
+    $scope.tableParamspaginationVNF = new NgTableParams({
+            page: 1,
+            count: 10,
+            sorting: {
+                name: 'asc'     // initial sorting
+            },
+            filter: { name: "" },
+        },
+        {
+            counts: [],
+            total: paginationVNF.length,
+            getData: function (params) {
+                paginationVNF = params.sorting() ? $filter('orderBy')($scope.vnfdescriptors, params.orderBy()) : $scope.vnfdescriptors;
+                paginationVNF = params.filter() ? $filter('filter')(paginationVNF, params.filter()) : paginationNSD;
+                $scope.tableParamspaginationVNF.total(paginationVNF.length);
+                paginationVNF = paginationVNF.slice((params.page() - 1) * params.count(), params.page() * params.count());
+                for (i = paginationVNF.length; i < params.count(); i++) {
+                }
+                return paginationVNF;
+            }
+        });
 
 });
 
