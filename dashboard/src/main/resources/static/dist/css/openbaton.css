@@ -867,3 +867,4 @@ td p {
 .input-margintop{margin-top: 8px;}
 .paddinbottom{padding-bottom: 3px !important;}
 .verticalresize{resize: vertical;}
+.ng-table-pagination{float: right;}
