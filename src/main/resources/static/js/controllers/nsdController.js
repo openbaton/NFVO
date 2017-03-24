@@ -77,7 +77,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         filter: { name: "" },
     },
         {
-            counts: [5, 10, 20],
+            counts: [],
             total: filteredLaunchKeys.length,
             getData: function (params) {
                 filteredLaunchKeys = params.sorting() ? $filter('orderBy')($scope.launchKeys, params.orderBy()) : $scope.launchKeys;
@@ -101,7 +101,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         filter: { name: "" },
     },
         {
-            counts: [5, 10, 20],
+            counts: [],
             total: filteredKeys.length,
             getData: function (params) {
                 // console.log($scope.keys);
@@ -116,6 +116,29 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
             }
         });
 
+    var paginationNSD = []
+    $scope.tableParamspaginationNSD = new NgTableParams({
+            page: 1,
+            count: 10,
+            sorting: {
+                name: 'asc'     // initial sorting
+            },
+            filter: { name: "" },
+        },
+        {
+            counts: [],
+            total: paginationNSD.length,
+            getData: function (params) {
+             paginationNSD = params.sorting() ? $filter('orderBy')($scope.nsdescriptors, params.orderBy()) : $scope.nsdescriptors;
+                paginationNSD = params.filter() ? $filter('filter')(paginationNSD, params.filter()) : paginationNSD;
+                $scope.tableParamspaginationNSD.total(paginationNSD.length);
+                paginationNSD = paginationNSD.slice((params.page() - 1) * params.count(), params.page() * params.count());
+                for (i = paginationNSD.length; i < params.count(); i++) {
+                }
+                return paginationNSD;
+            }
+        });
+
     var filteredPops = []
     $scope.tableParamsFilteredPops = new NgTableParams({
         page: 1,
@@ -126,7 +149,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         filter: { name: "" },
     },
         {
-            counts: [5, 10, 20],
+            counts: [],
             total: filteredPops.length,
             getData: function (params) {
                 filteredPops = params.sorting() ? $filter('orderBy')($scope.launchPopsAvailable[$scope.selectedVnfd.name].pops, params.orderBy()) : $scope.launchPopsAvailable[$scope.selectedVnfd.name].pops;
@@ -151,7 +174,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         filter: { name: "" },
     },
         {
-            counts: [5, 10, 20],
+            counts: [],
             total: filteredLaunchPops.length,
             getData: function (params) {
                 //console.log($scope.selectedVnfd);

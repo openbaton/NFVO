@@ -57,7 +57,7 @@
         </alert>
         <div class="table-responsive" ng-if="nsdescriptors.length > 0">
 
-            <table class="table table-bordered table-striped table-hover tablesorter" id="nsdTabletable">
+            <table ng-table="tableParamspaginationNSD"  class="table table-bordered table-striped table-hover tablesorter" id="nsdTabletable">
                 <thead>
                     <tr>
                         <td><input type="checkbox" ng-model="main.checkbox"></td>
@@ -72,7 +72,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="nsd in nsdescriptors| orderBy:predicate:reverse">
+                    <tr ng-repeat="nsd in $data | orderBy:predicate:reverse">
                         <td><input type="checkbox" ng-init="selection.ids[nsd.id] = false" ng-model="selection.ids[nsd.id]" name="group"
                                 id="{{nsd.id}}" /></td>
                         <td><a href="#nsdescriptors/{{nsd.id}}">{{nsd.id}}</a></td>
