@@ -200,7 +200,7 @@ public class VNFPackageManagement
       }
     }
 
-    nsdUtils.checkIntegrity(virtualNetworkFunctionDescriptor);
+    nsdUtils.checkIntegrity(virtualNetworkFunctionDescriptor, vnfPackage.getImageLink() != null);
 
     vnfPackageRepository.save(vnfPackage);
     virtualNetworkFunctionDescriptor.setVnfPackageLocation(vnfPackage.getId());
@@ -292,7 +292,18 @@ public class VNFPackageManagement
       }
       //If upload==true -> create a new Image
       if (imageDetails.get("upload").equals("true") || imageDetails.get("upload").equals("check")) {
-        vnfPackage.setImageLink((String) imageDetails.get("link"));
+
+        // check to see if there is an image to be uploaded from the tar file
+        if (imageDetails.containsKey("imageFile")) {
+          try {
+            vnfPackage.setImageLink((String) imageDetails.get("imageFile"));
+          } catch (Exception e) {
+            log.info("failed to get ip address");
+          }
+        } else {
+          vnfPackage.setImageLink((String) imageDetails.get("link"));
+        }
+
         if (metadata.containsKey("image-config")) {
           log.debug("image-config: " + metadata.get("image-config"));
           Map<String, Object> imageConfig = (Map<String, Object>) metadata.get("image-config");

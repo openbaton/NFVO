@@ -120,7 +120,7 @@ public class NSDUtils {
         log.debug("VNFD to fetch is: " + vnfd.getId());
         VirtualNetworkFunctionDescriptor vnfd_new = vnfdRepository.findFirstById(vnfd.getId());
         log.trace("VNFD fetched: " + vnfd_new);
-        if (!log.isTraceEnabled()) {
+        if (!log.isTraceEnabled() && null != vnfd_new) {
           log.debug("Fetched VNFD: " + vnfd_new.getName());
         }
         if (vnfd_new == null) {
@@ -366,7 +366,7 @@ public class NSDUtils {
 
     for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
         networkServiceDescriptor.getVnfd()) {
-      checkIntegrity(virtualNetworkFunctionDescriptor);
+      checkIntegrity(virtualNetworkFunctionDescriptor, false);
     }
 
     for (VNFDependency vnfDependency : networkServiceDescriptor.getVnf_dependency()) {
@@ -377,7 +377,9 @@ public class NSDUtils {
     }
   }
 
-  public void checkIntegrity(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor)
+  public void checkIntegrity(
+      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
+      boolean imageIncludedInPackage)
       throws NetworkServiceIntegrityException {
     UrlValidator urlValidator = new UrlValidator();
 
@@ -568,7 +570,7 @@ public class NSDUtils {
                         + "chosen. Please choose one from: "
                         + flavors);
               }
-              if (virtualDeploymentUnit.getVm_image() != null) {
+              if (!imageIncludedInPackage && virtualDeploymentUnit.getVm_image() != null) {
                 for (String image : virtualDeploymentUnit.getVm_image()) {
                   log.debug("Checking image: " + image);
                   if (!imageNames.contains(image) && !imageIds.contains(image)) {
