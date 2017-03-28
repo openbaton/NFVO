@@ -17,25 +17,13 @@
 <div ng-controller="IndexCtrl">
     <div id="wrapper">
         <!-- Navigation -->
-        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0" >
-            
-                               
-                        
-            <div class="navbar-header" style="width:140px; height:15px; margin-top: 8px;" >
-                 <a href="#main"><img style="margin-left: 40%;" src="img/OpenBatonLogoTransp.png" class="img-responsive"
-                                     alt="Responsive image"></a>
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-
+        <nav class="navbar navbar-default navbar-static-top"  style="margin-bottom: 0" >
+            <div class="navbar-header" style="padding-top: 6px;padding-left: 10px;padding-right: 10px;">
+                 <a href="#main"><img style="width: 140px" src="img/OpenBatonLogoTransp.png" class="img-responsive" alt="Responsive image"></a>
             </div>
             <!-- /.navbar-header -->
-               
-            <ul class="nav navbar-top-links navbar-right">
-            <li class="dropdown">
+            <ul style="width: 250px;" class="nav navbar-top-links navbar-right navbar-default" role="navigation">
+                <li class="dropdown">
                     <a href="" class="dropdown-toggle" data-toggle="dropdown" ng-init="changeProject()"><i class="fa fa-folder-open"></i> {{projectSelected.name}} <b
                             class="caret"></b></a>
                     <ul class="dropdown-menu">
@@ -54,18 +42,17 @@
                         </li>
                     </ul>
                 </li>
-
                 <li class="dropdown">
                     <a href="" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> {{username}} <b
                             class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li>
-                          <a ng-click="refreshQuota()" href=""><i class="fa fa-refresh"></i> Refresh Quota</a>
+                            <a ng-click="refreshQuota()" href=""><i class="fa fa-refresh"></i> Refresh Quota</a>
                         <li>
                         <li>
-                          <a ng-click="changePassword()" href=""><i class="fa fa-wrench"></i> Change Password</a>
+                            <a ng-click="changePassword()" href=""><i class="fa fa-wrench"></i> Change Password</a>
                         <li>
-                          <a href="http://openbaton.github.io/documentation/"><i class="fa fa-fw fa-question-circle"></i> Help</a>
+                            <a href="http://openbaton.github.io/documentation/"><i class="fa fa-fw fa-question-circle"></i> Help</a>
                         </li>
                         <li>
                             <a ng-click="rcdownload()" href=""><i class="fa fa-fw fa-cogs"></i> Get RC-file</a>
@@ -79,10 +66,9 @@
                 </li>
             </ul>
             <!-- /.navbar-top-links -->
-            <div class="navbar-default sidebarmargin sidebar" role="navigation">
-                <div class="sidebar-nav navbar-collapse">
+            <div style="width: 250px;border-top:1px solid #e7e7e7;" class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav">
                     <ul class="nav" id="side-menu">
-                        
                         <li>
                             <a href="#main" ><i class="fa fa-dashboard fa-fw"></i> Overview</a>
                         </li>
@@ -148,7 +134,6 @@
                                 <li>
                                     <a href="#vimdrivers"><i class="fa fa-arrows-h"></i> Vim drivers</a>
                                 </li>
-                               
                             </ul>
                             <!-- /.nav-second-level -->
                         </li>

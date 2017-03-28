@@ -868,3 +868,6 @@ td p {
 .paddinbottom{padding-bottom: 3px !important;}
 .verticalresize{resize: vertical;}
 .ng-table-pagination{float: right;}
+@media(min-width:1px) {#page-wrapper {position: inherit; margin: 0 0 0 250px; padding: 0 30px; border-left: 1px solid #e7e7e7;}}
+.navbar{position: unset !important;}
+@media(min-width:768px) {.sidebar {margin-top: 54px !important;}}
