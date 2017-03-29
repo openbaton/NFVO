@@ -368,6 +368,39 @@ public class RestNetworkServiceRecord {
     networkServiceRecordManagement.deleteVNFRecord(idNsr, idVnf, projectId);
   }
 
+  /**
+   * Removes multiple Virtual Network Function Records from the NSR repository
+   *
+   * @param ids: the id list of Virtual Network Function Records
+   * @throws NotFoundException
+   * @throws InterruptedException
+   * @throws ExecutionException
+   * @throws WrongStatusException
+   * @throws VimException
+   */
+  @ApiOperation(
+    value = "Removing multiple Virtual Network Function Records",
+    notes =
+        "The list of ids in the Request Body specify the Virtual Network Function Records that will be deleted"
+  )
+  @RequestMapping(
+    value = "{idNsr}/vnfrecords/multipledelete",
+    method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void vnfrMultipleDelete(
+      @RequestBody @Valid List<String> ids,
+      @PathVariable("idNsr") String idNsr,
+      @RequestHeader(value = "project-id") String projectId)
+      throws InterruptedException, ExecutionException, WrongStatusException, VimException,
+          NotFoundException {
+    log.trace("NSR ID: " + idNsr + " Project ID: " + projectId + " VNFR IDs: " + ids);
+    for (String idVnfr : ids) {
+      networkServiceRecordManagement.deleteVNFRecord(idNsr, idVnfr, projectId);
+    }
+  }
+
   @ApiOperation(
     value = "Add a VNFC instance to a VDU of a VNFR",
     notes = "Specifies and adds a VNFC instance in the VDU inside a VNFR that is inside the NSR"

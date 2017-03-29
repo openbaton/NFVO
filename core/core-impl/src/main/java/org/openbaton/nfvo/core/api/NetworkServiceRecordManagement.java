@@ -402,13 +402,20 @@ public class NetworkServiceRecordManagement
     return deployNSR(networkServiceDescriptor, projectId, body);
   }
 
-  public void deleteVNFRecord(String idNsr, String idVnf, String projectId) {
+  public void deleteVNFRecord(String idNsr, String idVnf, String projectId)
+      throws NotFoundException {
     //TODO the logic of this request for the moment deletes only the VNFR from the DB, need to be removed from the
     // running NetworkServiceRecord
-    if (!nsrRepository.findFirstById(idNsr).getProjectId().equals(projectId)) {
+    NetworkServiceRecord nsr = nsrRepository.findFirstById(idNsr);
+    if (nsr == null) throw new NotFoundException("No NSR found with ID: " + idNsr);
+    if (!nsr.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
           "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
+    VirtualNetworkFunctionRecord vnfr = vnfrRepository.findOne(idVnf);
+    if (vnfr == null) throw new NotFoundException("No VNFR found with ID: " + idVnf);
+    if (!vnfr.getProjectId().equals(projectId))
+      throw new UnauthorizedUserException("VNFR not contained in the chosen project.");
     nsrRepository.deleteVNFRecord(idNsr, idVnf);
   }
 
