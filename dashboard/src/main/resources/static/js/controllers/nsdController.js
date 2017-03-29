@@ -985,7 +985,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
                 });
     }
 
-    $scope.addPopToVnfd = function (vnfd, pop) {
+    $scope.addPopToVnfd = function (vnfd, pop, launchPopTable) {
         $scope.launchPops[vnfd.name].pops.push(pop);
         console.log($scope.launchPops);
         for (j = 0; j < vnfd.vdu.length; j++) {
@@ -997,6 +997,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         remove($scope.launchPopsAvailable[vnfd.name].pops, pop);
         $scope.tableParamsFilteredLaunchPops.reload();
         $scope.tableParamsFilteredPops.reload();
+        launchPopTable.expanded=true;
     }
 
     $scope.removePopToVnfd = function (vnfd, pop) {
@@ -1018,7 +1019,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         $scope.jsonrendVNFD()
     }
 
-    $scope.addPopToNsd = function (pop) {
+    $scope.addPopToNsd = function (pop, launchPopTable) {
         console.log($scope.launchPops)
         for (var vnfdname in $scope.launchPops) {
             console.log("Name is: " + vnfdname);
@@ -1045,6 +1046,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         ;
         $scope.tableParamsFilteredLaunchPops.reload();
         $scope.tableParamsFilteredPops.reload();
+        launchPopTable.expanded=true;
     }
 
     $scope.loadVnfdTabs = function () {
