@@ -120,15 +120,14 @@ public class NSDUtils {
         log.debug("VNFD to fetch is: " + vnfd.getId());
         VirtualNetworkFunctionDescriptor vnfd_new = vnfdRepository.findFirstById(vnfd.getId());
         log.trace("VNFD fetched: " + vnfd_new);
-        if (!log.isTraceEnabled()) {
-          log.debug("Fetched VNFD: " + vnfd_new.getName());
-        }
         if (vnfd_new == null) {
           throw new NotFoundException(
-              "Not found VNFD with id: "
+              "Not found VNFD with ID: "
                   + vnfd.getId()
-                  + ". Please do not specify an id if you want to create one "
-                  + "VirtualNetworkFunctionDescriptor. Or pick one existing");
+                  + ". Did you try to create a new VNFD instead of using an already existing one? In this case you should not have specified the VNFD's ID at all");
+        }
+        if (!log.isTraceEnabled()) {
+          log.debug("Fetched VNFD: " + vnfd_new.getName());
         }
         vnfd_add.add(vnfd_new);
         vnfd_remove.add(vnfd);
