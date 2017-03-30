@@ -116,11 +116,16 @@
 									<td>VNF Package Location</td>
 									<td><a href="#packages/{{vnfd.vnfPackageLocation}}">{{vnfd.vnfPackageLocation}}</a></td>
 								</tr>
+
+
 								<tr ng-show="vnfd.vnffgd.length > 0">
 									<td>VNF Forwarding Graph</td>
 									<td>{{vnfd.vnffgd}}</td>
 								</tr>
-
+								<tr>
+									<td>Deployment Flavour keys</td>
+									<td  ng-repeat="df in vnfd.deployment_flavour | orderBy:predicate:reverse"><span ng-show='df.flavour_key'>{{df.flavour_key}} {{$last ? '' : ', '}}</span></td>
+								</tr>
 
 						</tbody>
 					</table>
@@ -187,19 +192,11 @@
 										<tr>
 											<th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i>
 											</th>
-											<th ng-click="predicate = 'version'; reverse = !reverse">Version <i class="fa fa-sort"></i>
-											</th>
 											<th ng-click="predicate = 'vm_image'; reverse = !reverse">VM Image <i class="fa fa-sort"></i>
 											</th>
 											<th ng-click="predicate = 'vimInstanceName'; reverse = !reverse">VIM Name
 												<i class="fa fa-sort"></i>
 											</th>
-
-											<th ng-click="predicate = 'vnfc.id'; reverse = !reverse">Connection Point <i class="fa fa-sort"></i>
-											</th>
-											<!--th>
-												Action
-											</th-->
 										</tr>
 									</thead>
 									<tbody>
@@ -207,17 +204,8 @@
 											<td>
 												<a href="#nsdescriptors/{{nsdinfo.id}}/vnfdescriptors/{{vnfd.id}}/vdus/{{vdu.id}}">{{vdu.id}}</a>
 											</td>
-											<td>{{vdu.version}}</td>
-											<td>{{vdu.vm_image}}</td>
-											<td>{{vdu.vimInstanceName}}</td>
-											<!--<td>{{vdu.vnfc_instance}}</td>-->
-											<td>
-												<ul ng-repeat="vnfc in vdu.vnfc">
-													<li ng-repeat="cp in vnfc.connection_point">
-														<b>{{cp.virtual_link_reference}}</b>: <span title="floatingIp">{{cp.floatingIp}}</span>
-													</li>
-												</ul>
-											</td>
+											<td>{{vdu.vm_image | clearText}}</td>
+											<td>{{vdu.vimInstanceName | clearText}}</td>
 											<!--td>
 												<div class="btn-group">
 													<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Action
@@ -228,7 +216,6 @@
 													</ul>
 												</div>
 											</td-->
-										</tr>
 									</tbody>
 								</table>
 							</div>
@@ -254,36 +241,6 @@
 											<td>{{le.event}}</td>
 											<td><span ng-repeat="ev in le.lifecycle_events">{{ev}}<span
                                                 ng-if="!$last">, </span></span>
-											</td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
-						</tab>
-						<tab heading="Deployment Flavour">
-							<div class="table-responsive" ng-show="vnfd.deployment_flavour.length > 0">
-								<h3>Deployment Flavour</h3>
-								<table class="table table-bordered table-striped table-hover tablesorter" id="">
-									<thead>
-										<tr>
-											<th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i>
-											</th>
-											<th ng-click="predicate = 'version'; reverse = !reverse">Version <i class="fa fa-sort"></i>
-											</th>
-											<th ng-show='vnfd.deployment_flavour[0].flavour_key' ng-click="predicate = 'flavour_key'; reverse = !reverse">Flavour Key <i class="fa fa-sort"></i>
-											</th>
-											<th ng-show='vnfd.deployment_flavour[0].df_constraint' ng-click="predicate = 'vnfc.df_constraint'; reverse = !reverse">df Constraint <i class="fa fa-sort"></i>
-											</th>
-											</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr ng-repeat="df in vnfd.deployment_flavour | orderBy:predicate:reverse">
-											<td>{{df.id}}</td>
-											<td>{{df.version}}</td>
-											<td ng-show='df.flavour_key'> {{df.flavour_key}}</td>
-											<td ng-show='df.df_constraint'>
-												{{df.df_constraint}}
 											</td>
 										</tr>
 									</tbody>
