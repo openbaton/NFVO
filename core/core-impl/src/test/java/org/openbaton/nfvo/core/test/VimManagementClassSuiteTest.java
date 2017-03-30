@@ -22,6 +22,9 @@ import static org.mockito.Mockito.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
@@ -46,6 +49,7 @@ import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.AsyncResult;
 
 /** Created by lto on 20/04/15. */
 public class VimManagementClassSuiteTest {
@@ -69,6 +73,7 @@ public class VimManagementClassSuiteTest {
   private final Logger log = LoggerFactory.getLogger(ApplicationTest.class);
 
   @InjectMocks private VimManagement vimManagement;
+  @Mock private VimManagement.AsyncVimManagement asyncVimManagement;
 
   @Before
   public void init() {
@@ -89,9 +94,9 @@ public class VimManagementClassSuiteTest {
     VimInstance vimInstance = createVimInstance();
     vimManagement.refresh(vimInstance);
 
-    Assert.assertEquals(0, vimInstance.getFlavours().size());
-    Assert.assertEquals(0, vimInstance.getImages().size());
-    Assert.assertEquals(0, vimInstance.getNetworks().size());
+    Assert.assertEquals(2, vimInstance.getFlavours().size());
+    Assert.assertEquals(2, vimInstance.getImages().size());
+    Assert.assertEquals(1, vimInstance.getNetworks().size());
   }
 
   @Test
@@ -127,9 +132,9 @@ public class VimManagementClassSuiteTest {
         vimInstance_exp.getLocation().getLatitude(), vimInstance_new.getLocation().getLatitude());
     Assert.assertEquals(
         vimInstance_exp.getLocation().getLongitude(), vimInstance_new.getLocation().getLongitude());
-    Assert.assertEquals(vimInstance_exp.getFlavours().size(), 0);
-    Assert.assertEquals(vimInstance_exp.getImages().size(), 0);
-    Assert.assertEquals(vimInstance_exp.getNetworks().size(), 0);
+    Assert.assertEquals(vimInstance_exp.getFlavours().size(), 2);
+    Assert.assertEquals(vimInstance_exp.getImages().size(), 2);
+    Assert.assertEquals(vimInstance_exp.getNetworks().size(), 1);
   }
 
   @Test
@@ -163,6 +168,26 @@ public class VimManagementClassSuiteTest {
     Vim vim = mock(Vim.class);
     when(vim.queryImages(any(VimInstance.class))).thenReturn(new ArrayList<NFVImage>());
     when(vimBroker.getVim(anyString())).thenReturn(vim);
+    try {
+      Future<Set<DeploymentFlavour>> futureFlavours = mock(AsyncResult.class);
+      Future<Set<Network>> futureNetworks = mock(AsyncResult.class);
+      Future<Set<NFVImage>> futureImages = mock(AsyncResult.class);
+      when(asyncVimManagement.updateFlavors(any(VimInstance.class))).thenReturn(futureFlavours);
+      when(asyncVimManagement.updateFlavors(any(VimInstance.class)).get())
+          .thenReturn(new HashSet<DeploymentFlavour>());
+      when(asyncVimManagement.updateImages(any(VimInstance.class))).thenReturn(futureImages);
+      when(asyncVimManagement.updateImages(any(VimInstance.class)).get())
+          .thenReturn(new HashSet<NFVImage>());
+      when(asyncVimManagement.updateNetworks(any(VimInstance.class))).thenReturn(futureNetworks);
+      when(asyncVimManagement.updateNetworks(any(VimInstance.class)).get())
+          .thenReturn(new HashSet<Network>());
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    } catch (ExecutionException e) {
+      e.printStackTrace();
+    } catch (BadRequestException e) {
+      e.printStackTrace();
+    }
     doNothing().when(imageRepository).delete(any(NFVImage.class));
     doNothing().when(networkRepository).delete(any(Network.class));
   }

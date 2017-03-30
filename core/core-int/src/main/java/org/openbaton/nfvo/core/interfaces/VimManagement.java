@@ -72,4 +72,6 @@ public interface VimManagement {
           BadRequestException, AlreadyExistingException;
 
   Iterable<VimInstance> queryByProjectId(String projectId);
+
+  void checkVimInstances() throws IOException;
 }
