@@ -89,7 +89,7 @@ public interface NetworkServiceRecordManagement {
   /** This operation is used to resume a failed Network Service Record. */
   void resume(String id, String projectId) throws NotFoundException, WrongStatusException;
 
-  void deleteVNFRecord(String idNsr, String idVnf, String projectId);
+  void deleteVNFRecord(String idNsr, String idVnf, String projectId) throws NotFoundException;
 
   /**
    * Returns the VirtualNetworkFunctionRecord with idVnf into NSR with idNsr
