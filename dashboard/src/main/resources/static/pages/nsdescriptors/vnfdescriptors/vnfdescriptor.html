@@ -197,8 +197,8 @@
 											<!--a href="#nsdescriptors/{{nsdinfo.id}}/vnfdinfoescriptors/{{vnfdinfo.id}}/vdus/{{vdu.id}}">{{vdu.id}}</a-->
 											{{vdu.id}}
 										</td>
-										<td>{{vdu.vm_image}}</td>
-										<td>{{vdu.vimInstanceName}}</td>
+										<td>{{vdu.vm_image | clearText}}</td>
+										<td>{{vdu.vimInstanceName | clearText}}</td>
 										<!--<td>{{vdu.vnfc_instance}}</td>-->
 									</tr>
 								</tbody>

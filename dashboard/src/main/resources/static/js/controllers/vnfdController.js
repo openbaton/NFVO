@@ -425,3 +425,8 @@ app.filter('startFrom', function() {
         return input.slice(start);
     }
 });
+app.filter('clearText', function() {
+    return function(text) {
+        return  text ? String(text).replace(/"<[^>]+>/gm, '') : '';
+    }
+});
