@@ -414,6 +414,8 @@ public class NetworkServiceRecordManagement
     }
     VirtualNetworkFunctionRecord vnfr = vnfrRepository.findOne(idVnf);
     if (vnfr == null) throw new NotFoundException("No VNFR found with ID: " + idVnf);
+    if (!vnfr.getParent_ns_id().equals(idNsr))
+      throw new NotFoundException("Not found VNFR " + idVnf + " in the given NSR " + idNsr);
     if (!vnfr.getProjectId().equals(projectId))
       throw new UnauthorizedUserException("VNFR not contained in the chosen project.");
     nsrRepository.deleteVNFRecord(idNsr, idVnf);
