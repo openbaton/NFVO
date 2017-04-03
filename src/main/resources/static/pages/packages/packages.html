@@ -44,8 +44,7 @@
         </alert>
         <div class="table-responsive" ng-show="vnfpackages.length>0">
 
-            <table
-                    class="table table-bordered table-striped table-hover tablesorter">
+            <table ng-table="tableParamspaginationpkg" class="table table-bordered table-striped table-hover tablesorter">
                 <thead>
                 <tr>
                     <td><input type="checkbox" ng-change="selectAll()" ng-model="mainCheckbox"></td>
@@ -56,8 +55,10 @@
                     <th>Actions <i class="fa"></i></th>
                 </tr>
                 </thead>
+                </thead>
+                </thead>
                 <tbody>
-                <tr ng-repeat="data in vnfpackages| filter:search|orderBy:predicate:reverse">
+                <tr ng-repeat="data in $data | orderBy:predicate:reverse">
                     <td><input type="checkbox" ng-init="selection.ids[data.id] = false" ng-model="selection.ids[data.id]" name="group" id="{{data.id}}" /></td>
                     <td><a href="#packages/{{data.id}}">{{data.id}} </a></td>
                     <td>{{data.name}}</td>
