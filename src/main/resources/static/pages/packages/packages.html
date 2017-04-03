@@ -55,8 +55,6 @@
                     <th>Actions <i class="fa"></i></th>
                 </tr>
                 </thead>
-                </thead>
-                </thead>
                 <tbody>
                 <tr ng-repeat="data in $data | orderBy:predicate:reverse">
                     <td><input type="checkbox" ng-init="selection.ids[data.id] = false" ng-model="selection.ids[data.id]" name="group" id="{{data.id}}" /></td>
