@@ -17,10 +17,6 @@
 
 package org.openbaton.nfvo.core.api;
 
-import java.io.*;
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.plugin.mgmt.PluginStartup;
 import org.openbaton.utils.rabbit.RabbitManager;
@@ -28,6 +24,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 /** Created by rvl on 19.10.16. */
 @Service
@@ -82,36 +86,45 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
         throw new AlreadyExistingException("Plugin of type " + type + " is already installed");
       }
     }
-
     String url = "http://" + marketIp + ":" + marketPort + "/api/v1/vim-drivers/" + id + "/jar";
-    String path = pluginDir + "/install-plugin/" + name + ".jar";
-    log.info("Download URL: " + url);
-
-    File installDir = new File(pluginDir + "/install-plugin");
-
-    if (!installDir.exists()) {
-      installDir.mkdirs();
-    }
-
-    URL pluginURL = new URL(url);
-    FileOutputStream out = new FileOutputStream(path);
-    try {
-      BufferedInputStream fileInputStream = new BufferedInputStream(pluginURL.openStream());
-      byte[] buf = new byte[8192];
-      int bytesread = 0, bytesBuffered = 0;
-      while ((bytesread = fileInputStream.read(buf)) > -1) {
-        out.write(buf, 0, bytesread);
-        bytesBuffered += bytesread;
-        if (bytesBuffered > 1024 * 1024) { //flush after 1MB
-          bytesBuffered = 0;
-          out.flush();
+    File pluginFolder = new File(pluginDir);
+    File[] plugins = pluginFolder.listFiles();
+    boolean found = false;
+    if (plugins != null) {
+      for (File plugin : plugins) {
+        if (plugin.getName().toLowerCase().contains(type)) {
+          log.info(
+              "The plugin "
+                  + name
+                  + " is already downloaded, but is not started. Starting plugin now.");
+          found = true;
+          startPlugin(plugin.getPath(), name);
+          break;
         }
       }
-    } finally {
-      out.flush();
     }
-
-    startPlugin(path, name);
+    if (!found) {
+      log.info("Download URL: " + url);
+      String path = pluginDir + "/" + name + ".jar";
+      URL pluginURL = new URL(url);
+      FileOutputStream out = new FileOutputStream(path);
+      try {
+        BufferedInputStream fileInputStream = new BufferedInputStream(pluginURL.openStream());
+        byte[] buf = new byte[8192];
+        int bytesread = 0, bytesBuffered = 0;
+        while ((bytesread = fileInputStream.read(buf)) > -1) {
+          out.write(buf, 0, bytesread);
+          bytesBuffered += bytesread;
+          if (bytesBuffered > 1024 * 1024) { //flush after 1MB
+            bytesBuffered = 0;
+            out.flush();
+          }
+        }
+      } finally {
+        out.flush();
+      }
+      startPlugin(path, name);
+    }
   }
 
   @Override
