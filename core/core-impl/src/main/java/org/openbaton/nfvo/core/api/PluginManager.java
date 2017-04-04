@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -78,7 +79,7 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
   @Override
   public void downloadPlugin(String type, String name, String version)
       throws IOException, AlreadyExistingException {
-
+    String filename = name.toLowerCase() + ".jar";
     String id = type + "/" + name + "/" + version;
 
     for (String pluginId : listInstalledVimDrivers()) {
@@ -86,7 +87,6 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
         throw new AlreadyExistingException("Plugin of type " + type + " is already installed");
       }
     }
-    String url = "http://" + marketIp + ":" + marketPort + "/api/v1/vim-drivers/" + id + "/jar";
     File pluginFolder = new File(pluginDir);
     File[] plugins = pluginFolder.listFiles();
     boolean found = false;
@@ -104,12 +104,20 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
       }
     }
     if (!found) {
+      String url = "http://" + marketIp + ":" + marketPort + "/api/v1/vim-drivers/" + id + "/jar";
       log.info("Download URL: " + url);
-      String path = pluginDir + "/" + name + ".jar";
       URL pluginURL = new URL(url);
+      URLConnection conn = pluginURL.openConnection();
+      String headerField = conn.getHeaderField("Content-Disposition");
+      if (headerField != null && headerField.contains("filename=\"")) {
+        filename =
+            headerField.substring(
+                headerField.indexOf("filename=\"") + 10, headerField.length() - 1);
+      }
+      String path = pluginDir + "/" + filename;
       FileOutputStream out = new FileOutputStream(path);
       try {
-        BufferedInputStream fileInputStream = new BufferedInputStream(pluginURL.openStream());
+        BufferedInputStream fileInputStream = new BufferedInputStream(conn.getInputStream());
         byte[] buf = new byte[8192];
         int bytesread = 0, bytesBuffered = 0;
         while ((bytesread = fileInputStream.read(buf)) > -1) {
