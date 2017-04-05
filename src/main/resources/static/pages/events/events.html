@@ -119,15 +119,15 @@
                             <input type="text" class="form-control"  ng-model="eventObj.endpoint" />
                         </div>
                     </div>
-                    <div class="form-group">
+                    <div data-toggle="tooltip" title="Network Service Record(NSR) ID is internal unique Database Identifier.  The event can't support the NSR ID AND VNF ID at the same time." class="form-group">
                         <label for="nsr" class="col-sm-4 control-label">NSR ID</label>
 
                         <div class="col-sm-6">
                             <input type="text" class="form-control"  ng-model="eventObj.networkServiceId" />
                         </div>
                     </div>
-                    <label for="vnf" class="col-sm-4 control-label">VNF ID</label>
-                    <div class="form-group">
+                    <div class="form-group" data-toggle="tooltip" title="Unique internal database identifier for Virtual Network Function Record which is a part of NSR.  The event can't support the NSR ID AND VNF ID at the same time.">
+                        <label for="vnf" class="col-sm-4 control-label">VNF ID</label>
                         <div class="col-sm-6">
                             <input type="text" class="form-control" ng-model="eventObj.virtualNetworkFunctionId" />
                         </div>
