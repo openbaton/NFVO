@@ -87,52 +87,42 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
         throw new AlreadyExistingException("Plugin of type " + type + " is already installed");
       }
     }
-    File pluginFolder = new File(pluginDir);
-    File[] plugins = pluginFolder.listFiles();
-    boolean found = false;
-    if (plugins != null) {
-      for (File plugin : plugins) {
-        if (plugin.getName().toLowerCase().contains(type)) {
-          log.info(
-              "The plugin "
-                  + name
-                  + " is already downloaded, but is not started. Starting plugin now.");
-          found = true;
-          startPlugin(plugin.getPath(), name);
-          break;
+
+    String url = "http://" + marketIp + ":" + marketPort + "/api/v1/vim-drivers/" + id + "/jar";
+    String path = pluginDir + "/install-plugin/";
+    log.info("Download URL: " + url);
+
+    File installDir = new File(pluginDir + "/install-plugin");
+
+    if (!installDir.exists()) {
+      installDir.mkdirs();
+    }
+
+    URL pluginURL = new URL(url);
+    URLConnection conn = pluginURL.openConnection();
+    String headerField = conn.getHeaderField("Content-Disposition");
+    if (headerField != null && headerField.contains("filename=\"")) {
+      filename =
+          headerField.substring(headerField.indexOf("filename=\"") + 10, headerField.length() - 1);
+    }
+    path += filename;
+    FileOutputStream out = new FileOutputStream(path);
+    try {
+      BufferedInputStream fileInputStream = new BufferedInputStream(conn.getInputStream());
+      byte[] buf = new byte[8192];
+      int bytesread = 0, bytesBuffered = 0;
+      while ((bytesread = fileInputStream.read(buf)) > -1) {
+        out.write(buf, 0, bytesread);
+        bytesBuffered += bytesread;
+        if (bytesBuffered > 1024 * 1024) { //flush after 1MB
+          bytesBuffered = 0;
+          out.flush();
         }
       }
+    } finally {
+      out.flush();
     }
-    if (!found) {
-      String url = "http://" + marketIp + ":" + marketPort + "/api/v1/vim-drivers/" + id + "/jar";
-      log.info("Download URL: " + url);
-      URL pluginURL = new URL(url);
-      URLConnection conn = pluginURL.openConnection();
-      String headerField = conn.getHeaderField("Content-Disposition");
-      if (headerField != null && headerField.contains("filename=\"")) {
-        filename =
-            headerField.substring(
-                headerField.indexOf("filename=\"") + 10, headerField.length() - 1);
-      }
-      String path = pluginDir + "/" + filename;
-      FileOutputStream out = new FileOutputStream(path);
-      try {
-        BufferedInputStream fileInputStream = new BufferedInputStream(conn.getInputStream());
-        byte[] buf = new byte[8192];
-        int bytesread = 0, bytesBuffered = 0;
-        while ((bytesread = fileInputStream.read(buf)) > -1) {
-          out.write(buf, 0, bytesread);
-          bytesBuffered += bytesread;
-          if (bytesBuffered > 1024 * 1024) { //flush after 1MB
-            bytesBuffered = 0;
-            out.flush();
-          }
-        }
-      } finally {
-        out.flush();
-      }
-      startPlugin(path, name);
-    }
+    startPlugin(path, name);
   }
 
   @Override
