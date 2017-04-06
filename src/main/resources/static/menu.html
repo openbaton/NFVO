@@ -132,6 +132,9 @@
                                 <li>
                                     <a href="#vimdrivers"><i class="fa fa-arrows-h"></i> Vim drivers</a>
                                 </li>
+                                <li>
+                                    <a href="#test"><i class="fa fa-arrows-h"></i>test</a>
+                                </li>
                             </ul>
                             <!-- /.nav-second-level -->
                         </li>
@@ -251,47 +254,59 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
     <div class="modal" id="modalChangePassword" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-      <div class="modal-dialog">
+      <div class="modal-dialog" style="width: 700px;">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"
                       aria-hidden="true">&times;</button>
                 <h4 class="modal-title" id="serviceFormLabel">Change Password</h4>
             </div>
-            <div style="padding-left:10px; padding-top:10px; padding-bottom: 10px;">Password must be at least 8 characters long and contain one lower case letter, one upper case letter and one digit</div>
-            <form class="form-horizontal" role="form" id="formChangePassword">
+            <div class="col-sm-12">
+                <br/>
+                Password must be at least 8 characters long and contain one lower case letter, one upper case letter and one digit.
+               <hr>
+            </div>
+            <form class="form-horizontal col-sm-8" role="form" id="formChangePassword" style="border-right: solid 1px #e5e5e5;">
               <div class="form-group">
-                <label for="name" class="col-sm-4 control-label">Old Password</label>
-
-                <div class="col-sm-6">
+                <label style="text-align: left;" for="name" class="col-sm-4 control-label">Old Password</label>
+                  <div class="col-sm-8">
                     <input type="password" class="form-control" id="oldPassword" name="oldPassword"
                           ng-model="oldPassword"/>
                 </div>
               </div>
-              <div class="form-group">
-                <label for="name"  class="col-sm-4 control-label">New Password</label>
-
-                <div class="col-sm-6">
-                    <input type="password" ng-style="newPasswordStyle" class="form-control" id="newPassword" name="newPassword"
-                          ng-model="newPassword"/>
-                </div>
-              </div>
                 <div class="form-group">
-                  <label class="col-sm-4 control-label">New Password</label>
-
-                  <div class="col-sm-6">
-                      <input type="password" ng-style="newPasswordRepeat"  class="form-control" id="newPassword1" name="newPassword1"
-                            ng-model="newPassword1"/>
+                <label style="text-align: left;" for="name"  class="col-sm-4 control-label">New Password</label>
+                    <div class="col-sm-8">
+                    <input type="password"  class="form-control" name="newPassword" id="newPassword" autocomplete="off"  ng-model="newPassword">
+                </div>
+                </div>
+                <div class="form-group">
+                  <label style="text-align: left;" class="col-sm-4 control-label">Repeat Password</label>
+                    <div class="col-sm-8">
+                        <input type="password" class="form-control" name="newPassword1" id="newPassword1" autocomplete="off" ng-model="newPassword1">
                   </div>
               </div>
             </form>
-            <div class="modal-footer">
+            <div class="col-sm-4">
+                <br/>
+                <span id="num" class="glyphicon glyphicon-remove" style="color:#FF0004;"></span> One Number<br/>
+                <span id="8char" class="glyphicon glyphicon-remove" style="color:#FF0004;"></span> 8 Characters Long<br>
+                <span id="ucase" class="glyphicon glyphicon-remove" style="color:#FF0004;"></span> One Uppercase Letter<br>
+                <span id="lcase" class="glyphicon glyphicon-remove" style="color:#FF0004;"></span> One Lowercase Letter<br>
+                <span id="pwmatch" class="glyphicon glyphicon-remove" style="color:#FF0004;"></span> Passwords Match
+            </div>
+            <div class="row">
+                &nbsp;
+            </div>
+            <div class="modal-footer" style="clear: both;margin-top: 20px;">
               <button type="button" id="closeModal" class="btn btn-default"
                       data-dismiss="modal">Close
               </button>
               <button type="button" id="changePassword"
                      class="btn btn-primary" ng-disabled="!newPasswordStrong || !newPasswordSame" ng-click="postNew()">Change Password
              </button>
+            </div>
+                </div>
             </div><!--footer-->
          </div>
       </div>
