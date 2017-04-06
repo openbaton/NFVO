@@ -20,7 +20,17 @@ package org.openbaton.nfvo.vnfm_reg;
 import com.google.gson.Gson;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -600,11 +610,12 @@ public class VnfmManager
 
         try {
           log.debug("looking for NSD with id: " + networkServiceRecord.getDescriptor_reference());
-          if (nsdRepository
-                  .findFirstById(networkServiceRecord.getDescriptor_reference())
-                  .getVnfd()
-                  .size()
-              != networkServiceRecord.getVnfr().size()) {
+          if (virtualNetworkFunctionRecord.getStatus().ordinal() != Status.TERMINATED.ordinal()
+              && nsdRepository
+                      .findFirstById(networkServiceRecord.getDescriptor_reference())
+                      .getVnfd()
+                      .size()
+                  != networkServiceRecord.getVnfr().size()) {
             log.debug(
                 "Not all the VNFR have been created yet, it is useless to set the NSR status.");
             return;
