@@ -110,13 +110,21 @@ public class NetworkServiceDescriptorManagement
   @Override
   public NetworkServiceDescriptor onboard(
       NetworkServiceDescriptor networkServiceDescriptor, String projectId)
-      throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
-          CyclicDependenciesException, EntityInUseException {
+      throws NotFoundException, NetworkServiceIntegrityException, CyclicDependenciesException,
+          BadFormatException, EntityInUseException, BadRequestException, PluginException,
+          IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException {
     SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
     networkServiceDescriptor.setProjectId(projectId);
     log.info("Starting onboarding process for NSD: " + networkServiceDescriptor.getName());
 
-    nsdUtils.fetchExistingVnfd(networkServiceDescriptor);
+    List<String> marketIds = nsdUtils.fetchExistingVnfd(networkServiceDescriptor, projectId);
+    for (String marketId : marketIds) {
+      String link =
+          "http://" + marketIp + ":" + marketPort + "/api/v1/vnf-packages/" + marketId + "/tar";
+      VirtualNetworkFunctionDescriptor vnfd =
+          vnfPackageManagement.onboardFromMarket(link, projectId);
+      networkServiceDescriptor.getVnfd().add(vnfd);
+    }
 
     if (networkServiceDescriptor.getVld() != null) {
       for (VirtualLinkDescriptor vld : networkServiceDescriptor.getVld()) {
