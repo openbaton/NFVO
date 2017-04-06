@@ -17,12 +17,6 @@
 
 package org.openbaton.nfvo.core.api;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.Future;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
@@ -54,6 +48,13 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.Future;
 
 /** Created by lto on 13/05/15. */
 @Service
@@ -208,6 +209,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
       futureFlavors.get();
       futureNetworks.get();
     } catch (Exception e) {
+      e.printStackTrace();
       throw new VimException("Refreshing VIM caused following error: " + e.getMessage());
     }
 
@@ -386,7 +388,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
       }
       vimInstance.getImages().addAll(images_new);
       vimInstance.getImages().removeAll(images_old);
-      imageRepository.delete(images_old);
+      //      imageRepository.delete(images_old);
 
       return new AsyncResult<>(images_new);
     }
@@ -405,55 +407,58 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
       for (Network network_new : networks_refreshed) {
         boolean found = false;
         for (Network network_nfvo : vimInstance.getNetworks()) {
-          if (network_nfvo.getExtId().equals(network_new.getExtId())) {
-            network_nfvo.setName(network_new.getName());
-            network_nfvo.setExternal(network_new.getExternal());
-            network_nfvo.setShared(network_new.getExternal());
-            Set<Subnet> subnets_refreshed = new HashSet<>();
-            Set<Subnet> subnets_new = new HashSet<>();
-            Set<Subnet> subnets_old = new HashSet<>();
-            if (network_new.getSubnets() == null) {
-              throw new BadRequestException(
-                  "New network: " + network_new.getName() + " has no subnets");
-            } else if (network_new.getSubnets() == null) {
-              network_new.setSubnets(new HashSet<Subnet>());
-            }
-            subnets_refreshed.addAll(network_new.getSubnets());
-            if (network_nfvo.getSubnets() == null) {
-              network_nfvo.setSubnets(new HashSet<Subnet>());
-            }
-            for (Subnet subnet_new : subnets_refreshed) {
-              boolean found_subnet = false;
-              for (Subnet subnet_nfvo : network_nfvo.getSubnets()) {
-                if (subnet_nfvo.getExtId().equals(subnet_new.getExtId())) {
-                  subnet_nfvo.setName(subnet_new.getName());
-                  subnet_nfvo.setNetworkId(subnet_new.getNetworkId());
-                  subnet_nfvo.setGatewayIp(subnet_new.getGatewayIp());
-                  subnet_nfvo.setCidr(subnet_new.getCidr());
-                  found_subnet = true;
-                  break;
-                }
+          log.trace("" + network_nfvo.getExtId() + " == " + network_new.getExtId());
+          if (network_nfvo.getExtId() != null && network_new.getExtId() != null) {
+            if (network_nfvo.getExtId().equals(network_new.getExtId())) {
+              network_nfvo.setName(network_new.getName());
+              network_nfvo.setExternal(network_new.getExternal());
+              network_nfvo.setShared(network_new.getExternal());
+              Set<Subnet> subnets_refreshed = new HashSet<>();
+              Set<Subnet> subnets_new = new HashSet<>();
+              Set<Subnet> subnets_old = new HashSet<>();
+              if (network_new.getSubnets() == null) {
+                throw new BadRequestException(
+                    "New network: " + network_new.getName() + " has no subnets");
+              } else if (network_new.getSubnets() == null) {
+                network_new.setSubnets(new HashSet<Subnet>());
               }
-              if (!found_subnet) {
-                subnets_new.add(subnet_new);
+              subnets_refreshed.addAll(network_new.getSubnets());
+              if (network_nfvo.getSubnets() == null) {
+                network_nfvo.setSubnets(new HashSet<Subnet>());
               }
-            }
-            for (Subnet subnet_nfvo : network_nfvo.getSubnets()) {
-              boolean found_subnet = false;
               for (Subnet subnet_new : subnets_refreshed) {
-                if (subnet_nfvo.getExtId().equals(subnet_new.getExtId())) {
-                  found_subnet = true;
-                  break;
+                boolean found_subnet = false;
+                for (Subnet subnet_nfvo : network_nfvo.getSubnets()) {
+                  if (subnet_nfvo.getExtId().equals(subnet_new.getExtId())) {
+                    subnet_nfvo.setName(subnet_new.getName());
+                    subnet_nfvo.setNetworkId(subnet_new.getNetworkId());
+                    subnet_nfvo.setGatewayIp(subnet_new.getGatewayIp());
+                    subnet_nfvo.setCidr(subnet_new.getCidr());
+                    found_subnet = true;
+                    break;
+                  }
+                }
+                if (!found_subnet) {
+                  subnets_new.add(subnet_new);
                 }
               }
-              if (!found_subnet) {
-                subnets_old.add(subnet_nfvo);
+              for (Subnet subnet_nfvo : network_nfvo.getSubnets()) {
+                boolean found_subnet = false;
+                for (Subnet subnet_new : subnets_refreshed) {
+                  if (subnet_nfvo.getExtId().equals(subnet_new.getExtId())) {
+                    found_subnet = true;
+                    break;
+                  }
+                }
+                if (!found_subnet) {
+                  subnets_old.add(subnet_nfvo);
+                }
               }
+              network_nfvo.getSubnets().addAll(subnets_new);
+              network_nfvo.getSubnets().removeAll(subnets_old);
+              found = true;
+              break;
             }
-            network_nfvo.getSubnets().addAll(subnets_new);
-            network_nfvo.getSubnets().removeAll(subnets_old);
-            found = true;
-            break;
           }
         }
         if (!found) {
@@ -463,7 +468,8 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
       for (Network network_nfvo : vimInstance.getNetworks()) {
         boolean found = false;
         for (Network network_new : networks_refreshed) {
-          if (network_nfvo.getExtId().equals(network_new.getExtId())) {
+          if ((network_nfvo.getExtId() == null || network_new.getExtId() == null)
+              || network_nfvo.getExtId().equals(network_new.getExtId())) {
             found = true;
             break;
           }
@@ -472,9 +478,12 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
           networks_old.add(network_nfvo);
         }
       }
-      vimInstance.getNetworks().addAll(networks_new);
+      log.debug("Removing old networks: " + networks_old.size());
       vimInstance.getNetworks().removeAll(networks_old);
-      networkRepository.delete(networks_old);
+      log.debug("Adding new networks: " + networks_new.size());
+      vimInstance.getNetworks().addAll(networks_new);
+      //      vimRepository.save(vimInstance);
+      //      networkRepository.delete(networks_old);
       return new AsyncResult<>(networks_new);
     }
 
