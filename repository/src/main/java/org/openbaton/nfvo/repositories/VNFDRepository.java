@@ -26,4 +26,7 @@ public interface VNFDRepository extends CrudRepository<VirtualNetworkFunctionDes
   VirtualNetworkFunctionDescriptor findFirstById(String id);
 
   List<VirtualNetworkFunctionDescriptor> findByProjectId(String id);
+
+  VirtualNetworkFunctionDescriptor findFirstByVendorAndNameAndVersion(
+      String vendor, String name, String version);
 }

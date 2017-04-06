@@ -17,10 +17,6 @@
 
 package org.openbaton.nfvo.core.utils;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.jgrapht.alg.cycle.DirectedSimpleCycles;
 import org.jgrapht.alg.cycle.SzwarcfiterLauerSimpleCycles;
@@ -54,6 +50,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 /** Created by lto on 13/05/15. */
 @Service
@@ -117,20 +118,45 @@ public class NSDUtils {
     Set<VirtualNetworkFunctionDescriptor> vnfd_remove = new HashSet<>();
     for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
       if (vnfd.getId() != null) {
-        log.debug("VNFD to fetch is: " + vnfd.getId());
-        VirtualNetworkFunctionDescriptor vnfd_new = vnfdRepository.findFirstById(vnfd.getId());
-        log.trace("VNFD fetched: " + vnfd_new);
-        if (vnfd_new == null) {
-          throw new NotFoundException(
-              "Not found VNFD with ID: "
-                  + vnfd.getId()
-                  + ". Did you try to create a new VNFD instead of using an already existing one? In this case you should not have specified the VNFD's ID at all");
+        if (!vnfd.getId().contains("/")) {
+          log.debug("VNFD to fetch is: " + vnfd.getId());
+          VirtualNetworkFunctionDescriptor vnfd_new = vnfdRepository.findFirstById(vnfd.getId());
+          log.trace("VNFD fetched: " + vnfd_new);
+          if (vnfd_new == null) {
+            throw new NotFoundException(
+                "Not found VNFD with ID: "
+                    + vnfd.getId()
+                    + ". Did you try to create a new VNFD instead of using an already existing one? In this case you should not have specified the VNFD's ID at all");
+          }
+          if (!log.isTraceEnabled()) {
+            log.debug("Fetched VNFD: " + vnfd_new.getName());
+          }
+          vnfd_add.add(vnfd_new);
+          vnfd_remove.add(vnfd);
+        } else {
+          String[] id_split = vnfd.getId().split("/");
+          if (id_split.length == 3) {
+            log.debug("VNFD to fetch is: " + vnfd.getId());
+            VirtualNetworkFunctionDescriptor vnfd_new =
+                vnfdRepository.findFirstByVendorAndNameAndVersion(
+                    id_split[0], id_split[1], id_split[2]);
+            log.trace("VNFD fetched: " + vnfd_new);
+            if (vnfd_new == null) {
+              // If on the market download
+              throw new NotFoundException(
+                  "Not found VNFD with ID: "
+                      + vnfd.getId()
+                      + ". Did you try to create a new VNFD instead of using an already existing one? In this case you should not have specified the VNFD's ID at all");
+            }
+            if (!log.isTraceEnabled()) {
+              log.debug("Fetched VNFD: " + vnfd_new.getName());
+            }
+            vnfd_add.add(vnfd_new);
+            vnfd_remove.add(vnfd);
+          } else {
+            throw new NotFoundException("VNFD ID must be either in the format vendor/name/version");
+          }
         }
-        if (!log.isTraceEnabled()) {
-          log.debug("Fetched VNFD: " + vnfd_new.getName());
-        }
-        vnfd_add.add(vnfd_new);
-        vnfd_remove.add(vnfd);
       }
     }
     networkServiceDescriptor.getVnfd().removeAll(vnfd_remove);
