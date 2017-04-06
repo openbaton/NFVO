@@ -48,12 +48,12 @@ public class NetworkServiceRecordRepositoryImpl implements NetworkServiceRecordR
 
   @Override
   @Transactional
-  public void deleteVNFRecord(String idNsr, String idVnfd) {
+  public void deleteVNFRecord(String idNsr, String idVnfr) {
     SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
     NetworkServiceRecord nsr = networkServiceRecordRepository.findFirstById(idNsr);
     nsr.setUpdatedAt(format.format(new Date()));
-    nsr.getVnfr().remove(vnfrRepository.findOne(idVnfd));
-    vnfrRepository.delete(idVnfd);
+    nsr.getVnfr().remove(vnfrRepository.findFirstById(idVnfr));
+    vnfrRepository.delete(idVnfr);
   }
 
   @Override

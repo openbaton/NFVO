@@ -275,6 +275,8 @@ public class VNFPackageManagement
     if (metadata.containsKey("vim_types")) {
       List<String> vimTypes = (List<String>) metadata.get("vim_types");
       vnfPackage.setVimTypes(vimTypes);
+    } else {
+      log.warn("vim_types is not specified! it is not possible to check the vim");
     }
     if (metadata.containsKey("image")) {
       imageDetails = (Map<String, Object>) metadata.get("image");
