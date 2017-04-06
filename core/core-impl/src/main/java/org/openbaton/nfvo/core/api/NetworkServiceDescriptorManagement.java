@@ -18,16 +18,6 @@
 package org.openbaton.nfvo.core.api;
 
 import com.google.gson.Gson;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import javax.persistence.NoResultException;
 import org.openbaton.catalogue.mano.common.Security;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
@@ -64,6 +54,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
+
+import javax.persistence.NoResultException;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 /** Created by lto on 11/05/15. */
 @Service
@@ -187,50 +187,7 @@ public class NetworkServiceDescriptorManagement
     in.close();
     String json = out.toString();
     NetworkServiceDescriptor nsd = gson.fromJson(json, NetworkServiceDescriptor.class);
-
-    List<String> market_ids = new ArrayList<>();
-    for (VirtualNetworkFunctionDescriptor vnfd : nsd.getVnfd()) {
-      market_ids.add(vnfd.getId());
-    }
-    nsd.getVnfd().clear();
-    List<String> vnfd_ids = getIds(market_ids, projectId);
-    log.debug("Catalogue ids of VNFD are: " + vnfd_ids);
-    for (String vnfd_id : vnfd_ids) {
-      VirtualNetworkFunctionDescriptor vnfd = new VirtualNetworkFunctionDescriptor();
-      vnfd.setId(vnfd_id);
-      nsd.getVnfd().add(vnfd);
-    }
     return onboard(nsd, projectId);
-  }
-
-  private List<String> getIds(List<String> market_ids, String project_id)
-      throws NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
-          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException {
-    List<String> not_found_ids = new ArrayList<>();
-    not_found_ids.addAll(market_ids);
-    List<String> vnfdIds = new ArrayList<>();
-    for (String id : market_ids) {
-      for (VirtualNetworkFunctionDescriptor vnfd : vnfdRepository.findByProjectId(project_id)) {
-        String localId = vnfd.getVendor() + "/" + vnfd.getName() + "/" + vnfd.getVersion();
-        String vnfdId = vnfd.getId();
-        log.debug(localId);
-        if (localId.toLowerCase().equals(id.toLowerCase())) {
-          log.info("The vnfd " + localId + " was found onboarded on the same project.");
-          vnfdIds.add(vnfdId);
-          not_found_ids.remove(id);
-        }
-      }
-    }
-    log.debug("VNFDs found on the catalogue: " + vnfdIds);
-    for (String id : not_found_ids) {
-      String link = "http://" + marketIp + ":" + marketPort + "/api/v1/vnf-packages/" + id + "/tar";
-      VirtualNetworkFunctionDescriptor vnfd =
-          vnfPackageManagement.onboardFromMarket(link, project_id);
-      log.info(
-          "Onboarded from marketplace VNFD " + vnfd.getName() + " local id is: " + vnfd.getId());
-      vnfdIds.add(vnfd.getId());
-    }
-    return vnfdIds;
   }
 
   /**
