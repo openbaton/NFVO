@@ -21,14 +21,23 @@ import com.google.gson.JsonObject;
 import io.swagger.annotations.ApiOperation;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.validation.Valid;
+import org.apache.commons.io.comparator.LastModifiedFileComparator;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
@@ -44,6 +53,7 @@ import org.openbaton.nfvo.core.interfaces.VNFPackageManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -74,6 +84,11 @@ public class RestVNFPackage {
 
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
+  @Value("${nfvo.start.tempimagedir:/tmp}")
+  private String tempImageDir;
+  @Value("${nfvo.start.targetimagedir:/tmp/openbaton}")
+  private String targetImageDir;
+
   @Autowired private VNFPackageManagement vnfPackageManagement;
   /** Adds a new VNFPackage to the VNFPackages repository */
   @ApiOperation(
@@ -97,7 +112,8 @@ public class RestVNFPackage {
       byte[] bytes = new byte[0];
       Random random = new Random();
       int ran = random.nextInt();
-      String directory = "/tmp/random" + ran + "/";
+      String directory = 
+          tempImageDir + File.separatorChar + "random" + ran + File.separatorChar;
 
       // write the file to the filesystem
       File tempDirectory = new File(directory);
@@ -108,15 +124,22 @@ public class RestVNFPackage {
       String name = file.getOriginalFilename();
       File tarFile = new File(directory + name);
       file.transferTo(tarFile);
-      log.debug("File size is " + file.getSize());
 
-      Runtime rt = Runtime.getRuntime();
 
       try {
         // untar the file
+        Runtime rt = Runtime.getRuntime();
         Process p1 =
             rt.exec(new String[] {"bash", "-c", "tar -xf " + name}, new String[0], tempDirectory);
         p1.waitFor();
+
+        //TarArchiveInputStream tarInput = new TarArchiveInputStream(new FileInputStream(tarFile));
+        //TarArchiveEntry entry;
+        //while (null != (entry = tarInput.getNextTarEntry())) {
+        //  if (entry.getName().equals("Metadata.yaml")) {
+
+
+        log.debug("tempDirectory = " + tempDirectory.getName());
 
         // if there is an image file in the tar file find it's name and move it
         File metadata = new File(directory + "Metadata.yaml");
@@ -145,7 +168,6 @@ public class RestVNFPackage {
           // see if the file with that name exists
           String randomFileName = "";
           File imageFile = new File(directory + filename);
-          String targetDir = "/tmp/openbaton/";
           if (imageFile.exists()) {
             // what the heck, use the same random number (could do something else here)
             int indexDot = filename.indexOf('.');
@@ -153,48 +175,74 @@ public class RestVNFPackage {
             log.debug("random filename is: " + randomFileName);
 
             // make sure the folder that we are moving to exists
-            File targetDirFile = new File(targetDir);
+            File targetDirFile = new File(targetImageDir);
             if (!targetDirFile.exists()) {
               targetDirFile.mkdir();
             }
 
             // figure out if there are more than 10 files and delete if so
-            Process p2a =
-                rt.exec(
-                    new String[] {
-                      "bash", "-c", "ls " + targetDir + "* -dt | sed -e '1,10d' | xargs -d '\n' rm"
-                    });
-            p2a.waitFor();
+            File[] sortedFiles = new LastModifiedFileComparator().sort(targetDirFile.listFiles());
+            int numFilesInTargetDir = sortedFiles.length;
+            if (numFilesInTargetDir > 10) {
+              for (int i = numFilesInTargetDir; i > 10; i--) {
+                log.debug("deleting: " + sortedFiles[i - 1].getName());
+                sortedFiles[i - 1].delete();
+              }
+            }
 
-            // copy the relevant file, if we copy instead of move it updates the time stamp
-            // so that we can delete all but the most recently loaded files
-            log.debug("cp " + directory + filename + " " + targetDir + randomFileName);
-            Process p1a =
-                rt.exec(
-                    new String[] {
-                      "bash", "-c", "cp " + directory + filename + " " + targetDir + randomFileName
-                    });
-            p1a.waitFor();
+            // move the relevant file, 
+            // set the modified time to now so that we can sort when they were loaded
+            File targetImageFile = new File(targetImageDir + randomFileName);
+            imageFile.renameTo(targetImageFile);
+            imageFile.setLastModified(System.currentTimeMillis());
           }
 
           // also replace the name in the Metatdata.yaml file
           Pattern oldFileName = Pattern.compile(filename);
-          metadataStr = oldFileName.matcher(metadataStr).replaceAll(targetDir + randomFileName);
+          metadataStr = 
+              oldFileName.matcher(metadataStr).replaceAll(targetImageDir + randomFileName);
           FileUtils.write(metadata, metadataStr);
           log.debug("metadata is now " + metadataStr);
         }
 
         // create a list of excluded files and delete them
-        String[] fileTypes = {"iso", "img", "qcow2", "zip", "gz", "raw"};
-        for (String type : fileTypes) {
-          Process p = rt.exec(new String[] {"bash", "-c", "rm " + directory + "*." + type});
-          p.waitFor();
+        String[] rmFiles = tempDirectory.list(new FilenameFilter() {
+          public boolean accept(File dir, String name) {
+            return (name.toLowerCase().endsWith(".iso") || 
+                    name.toLowerCase().endsWith(".img") ||
+                    name.toLowerCase().endsWith(".qcow2") ||
+                    name.toLowerCase().endsWith(".zip") ||
+                    name.toLowerCase().endsWith(".gz") ||
+                    name.toLowerCase().endsWith(".raw"));
+          }
+        });
+        for (String fileName : rmFiles) {
+          File rmFile = new File(directory + fileName);
+          rmFile.delete();
         }
 
-        String tarCmd = "tar --xform s:'./':: -C " + directory + " -cf " + directory + name + " .";
-        log.debug("tar command: " + tarCmd);
-        Process p3 = rt.exec(new String[] {"bash", "-c", tarCmd}, new String[0], tempDirectory);
-        p3.waitFor();
+        // build the output tar file
+        File tarOut = new File(directory + name);
+        OutputStream out = new FileOutputStream(tarOut);
+        TarArchiveOutputStream aos = (TarArchiveOutputStream) new ArchiveStreamFactory().createArchiveOutputStream("tar", out);
+        List<File> tarFiles = new ArrayList<File>();
+
+        tarFiles.addAll(recurseDirectory(tempDirectory));
+
+        for (File file3 : tarFiles) {
+          if (!file3.getName().endsWith("tar") && (!file3.getName().endsWith("iso"))) {
+            TarArchiveEntry entry = new TarArchiveEntry(file3, file3.getName());
+            log.debug("file into tar file: " + file3.getName());
+            entry.setSize(file3.length());
+            aos.putArchiveEntry(entry);
+            IOUtils.copy(new FileInputStream(file3), aos);
+            aos.closeArchiveEntry();
+          }
+        }
+
+        aos.finish();
+        aos.close();
+        out.close();
 
         log.debug("un-tar'd and re-tar'd file");
 
@@ -215,11 +263,7 @@ public class RestVNFPackage {
 
       try {
         // now delete the temporary file and directory
-        // we use this method rather than the java provided method because we can delete the
-        // entire directory at once instead of having to delete each file and then deleting
-        // the directory
-        Process p4 = rt.exec(new String[] {"bash", "-c", "rm -rf " + directory});
-        p4.waitFor();
+        FileUtils.deleteDirectory(tempImageDir);
       } catch (Exception ex) {
         // oh well, not much we can do at this point
         log.error("Unable to delete the temporary directory: " + directory);
@@ -228,6 +272,30 @@ public class RestVNFPackage {
           vnfPackageManagement.onboard(bytes, projectId);
       return "{ \"id\": \"" + virtualNetworkFunctionDescriptor.getVnfPackageLocation() + "\"}";
     } else throw new IOException("File is empty!");
+  }
+
+  public List<File> recurseDirectory(File file) {
+
+    List<File> files = new ArrayList<File>();
+    log.debug("file is: " + file.getName());
+
+    if (file != null) {
+      if (file.isDirectory()){
+        log.debug("directory is: " + file.getName());
+        for (File file2 : file.listFiles()) {
+          if (file2.isDirectory()) {
+            files.addAll(recurseDirectory(file2));
+          }
+          else {
+            files.add(file2);
+          }
+        }
+      }
+      else {
+        files.add(file);
+      }
+    }
+    return files;
   }
 
   @ApiOperation(
