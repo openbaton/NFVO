@@ -17,6 +17,14 @@
 
 package org.openbaton.nfvo.core.utils;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.jgrapht.alg.cycle.DirectedSimpleCycles;
 import org.jgrapht.alg.cycle.SzwarcfiterLauerSimpleCycles;
@@ -51,15 +59,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-
 /** Created by lto on 13/05/15. */
 @Service
 @Scope("prototype")
@@ -73,6 +72,12 @@ public class NSDUtils {
 
   @Value("${nfvo.integrity.nsd.checks:in-all-vims}")
   private String inAllVims;
+
+  @Value("${nfvo.marketplace.ip:marketplace.openbaton.org}")
+  private String marketIp;
+
+  @Value("${nfvo.marketplace.port:8082}")
+  private int marketPort;
 
   public String getOrdered() {
     return ordered;
@@ -157,12 +162,17 @@ public class NSDUtils {
               try {
                 URL u =
                     new URL(
-                        "http://marketplace.openbaton.org:8082/api/v1/vnf-packages/"
+                        "http://"
+                            + marketIp
+                            + ":"
+                            + marketPort
+                            + "/api/v1/vnf-packages/"
                             + vnfd.getId());
                 HttpURLConnection huc = (HttpURLConnection) u.openConnection();
                 huc.setRequestMethod("GET");
                 huc.connect();
                 response = huc.getResponseCode();
+                huc.disconnect();
               } catch (IOException e) {
                 log.warn("Marketplace could not be reached!");
               }

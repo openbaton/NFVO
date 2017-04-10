@@ -18,6 +18,15 @@
 package org.openbaton.nfvo.core.api;
 
 import com.google.gson.Gson;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import javax.persistence.NoResultException;
 import org.openbaton.catalogue.mano.common.Security;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
@@ -54,16 +63,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
-
-import javax.persistence.NoResultException;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
 
 /** Created by lto on 11/05/15. */
 @Service
