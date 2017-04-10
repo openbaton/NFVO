@@ -26,5 +26,7 @@ dependencies {
 //    compile "org.springframework:spring-jms:" + springVersion
 
     compile 'org.apache.tomcat:tomcat-catalina:8.0.39'
+    compile group: 'commons-codec', name: 'commons-codec', version: '1.10'
+
 
 }
