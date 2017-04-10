@@ -414,15 +414,25 @@ $('.modal-dialog').draggable();
                 return paginationVNF;
             }
         });
-
-});
-
-
-app.filter('startFrom', function() {
-    return function(input, start) {
-        start = +start; //parse to int
-        return input.slice(start);
+// VNFD JSON modal Starts
+    $scope.prettyJson = function (vnfdJson) {
+        $scope.vnfdJson = vnfdJson;
+        $scope.jsonrendVNFD()
     }
+    $scope.jsonrendVNFD = function () {
+        renderjson.set_icons('+', '-');
+        renderjson.set_show_to_level(1);
+        var jsonDiv = document.querySelector("#jsonvnfd");
+        jsonDiv.append(
+            renderjson($scope.vnfdinfo)
+        );
+    }
+    $('#JsonCode').on('hidden.bs.modal', function () {
+        var jsonDiv = document.querySelector("#jsonvnfd");
+        jsonDiv.childNodes[0].remove();
+        jsonDiv.childNodes[0].remove();
+    });
+// VNFD JSON Starts
 });
 app.filter('clearText', function() {
     return function(text) {
