@@ -19,6 +19,7 @@ package org.openbaton.nfvo.system;
 
 import com.google.gson.JsonSyntaxException;
 import org.openbaton.nfvo.core.interfaces.EventDispatcher;
+import org.openbaton.nfvo.security.interfaces.ComponentManager;
 import org.openbaton.vnfm.interfaces.manager.VnfmReceiver;
 import org.openbaton.vnfm.interfaces.register.VnfmRegister;
 import org.slf4j.Logger;
@@ -47,6 +48,7 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "nfvo.rabbit")
 public class RabbitConfiguration {
   static final String queueName_vnfmRegister = "nfvo.vnfm.register";
+  static final String queueName_serviceRegister = "nfvo.service.register";
   static final String queueName_vnfmUnregister = "nfvo.vnfm.unregister";
   static final String queueName_vnfmCoreActions = "vnfm.nfvo.actions";
   static final String queueName_vnfmCoreActionsReply = "vnfm.nfvo.actions.reply";
@@ -108,6 +110,13 @@ public class RabbitConfiguration {
     this.exclusive = exclusive;
   }
 
+  /**
+   * ***************************
+   *
+   * <p>Defining Queues
+   *
+   * <p>***************************
+   */
   @Bean
   Queue queue_eventRegister() {
     return new Queue(queueName_eventRegister, durable, exclusive, autodelete);
@@ -121,6 +130,11 @@ public class RabbitConfiguration {
   @Bean
   Queue queue_vnfmUnregister() {
     return new Queue(queueName_vnfmUnregister, true, exclusive, autodelete);
+  }
+
+  @Bean
+  Queue queue_serviceRegister() {
+    return new Queue(queueName_serviceRegister, true, exclusive, true);
   }
 
   @Bean
@@ -146,6 +160,20 @@ public class RabbitConfiguration {
   @Bean
   TopicExchange exchange() {
     return new TopicExchange("openbaton-exchange");
+  }
+
+  /**
+   * ***************************
+   *
+   * <p>Defining Bindings
+   *
+   * <p>***************************
+   */
+  @Bean
+  Binding binding_serviceRegister(TopicExchange exchange) {
+    return BindingBuilder.bind(queue_serviceRegister())
+        .to(exchange)
+        .with(queueName_serviceRegister);
   }
 
   @Bean
@@ -184,6 +212,13 @@ public class RabbitConfiguration {
         .with(queueName_eventUnregister);
   }
 
+  /**
+   * ***************************
+   *
+   * <p>Defining Listeners
+   *
+   * <p>***************************
+   */
   @Bean
   MessageListenerAdapter listenerAdapter_eventRegister(EventDispatcher eventDispatcher) {
     return new MessageListenerAdapter(eventDispatcher, "register");
@@ -192,6 +227,11 @@ public class RabbitConfiguration {
   @Bean
   MessageListenerAdapter listenerAdapter_eventUnregister(EventDispatcher eventDispatcher) {
     return new MessageListenerAdapter(eventDispatcher, "unregister");
+  }
+
+  @Bean
+  MessageListenerAdapter listenerAdapter_serviceRegister(ComponentManager componentManager) {
+    return new MessageListenerAdapter(componentManager, "registerService");
   }
 
   @Bean
@@ -216,6 +256,21 @@ public class RabbitConfiguration {
   MessageListenerAdapter listenerAdapter_vnfmCoreActionsReply(
       @Qualifier("rabbitVnfmReceiver") VnfmReceiver vnfmReceiver) {
     return new MessageListenerAdapter(vnfmReceiver, "actionFinished");
+  }
+
+  /**
+   * ***************************
+   *
+   * <p>Defining Containers
+   *
+   * <p>***************************
+   */
+  @Bean
+  SimpleMessageListenerContainer container_serviceRegister(
+      ConnectionFactory connectionFactory,
+      @Qualifier("listenerAdapter_serviceRegister") MessageListenerAdapter listenerAdapter) {
+    return getSimpleMessageListenerContainer(
+        connectionFactory, listenerAdapter, queueName_serviceRegister);
   }
 
   @Bean

@@ -19,6 +19,8 @@ package org.openbaton.nfvo.security.authentication;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -36,10 +38,25 @@ import org.springframework.security.provisioning.UserDetailsManager;
 @Configuration
 @EnableAuthorizationServer
 @EnableResourceServer
+@ConfigurationProperties
 public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
   public static final String RESOURCE_ID = "oauth2-server";
 
   @Autowired private AuthenticationManager authenticationManager;
+
+  public int getUserTokenValidityDuration() {
+    return userTokenValidityDuration;
+  }
+
+  public void setUserTokenValidityDuration(int userTokenValidityDuration) {
+    this.userTokenValidityDuration = userTokenValidityDuration;
+  }
+
+  @Value("${nfvo.security.user.token.validity:600}")
+  private int userTokenValidityDuration;
+
+  @Value("${nfvo.security.service.token.validity:31556952}")
+  private int serviceTokenValidityDuration;
 
   private TokenStore tokenStore = new InMemoryTokenStore();
 
@@ -77,6 +94,16 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
     DefaultTokenServices tokenServices = new DefaultTokenServices();
     tokenServices.setSupportRefreshToken(true);
     tokenServices.setTokenStore(this.tokenStore);
+    tokenServices.setAccessTokenValiditySeconds(userTokenValidityDuration);
     return tokenServices;
   }
+
+  //  @Bean
+  //  public DefaultTokenServices serviceTokenServices() {
+  //    DefaultTokenServices tokenServices = new DefaultTokenServices();
+  //    tokenServices.setSupportRefreshToken(true);
+  //    tokenServices.setTokenStore(this.tokenStore);
+  //    tokenServices.setAccessTokenValiditySeconds(serviceTokenValidityDuration);
+  //    return tokenServices;
+  //  }
 }
