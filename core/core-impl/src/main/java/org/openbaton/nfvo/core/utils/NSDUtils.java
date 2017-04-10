@@ -149,7 +149,7 @@ public class NSDUtils {
 
         } else {
           String[] id_split = vnfd.getId().split("/");
-          if (id_split.length == 3) {
+          if (id_split.length >= 3) {
             log.debug("VNFD to fetch is: " + vnfd.getId());
             VirtualNetworkFunctionDescriptor vnfd_new =
                 vnfdRepository.findFirstByProjectIdAndVendorAndNameAndVersion(
