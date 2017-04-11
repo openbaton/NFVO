@@ -342,17 +342,33 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
 
                 });
         else {
-            http.get(url + $routeParams.vnfdescriptorId)
-                .success(function (response, status) {
-                    $scope.vnfdinfo = response;
-                    $scope.vnfdJson = JSON.stringify(response, undefined, 4);
-                    //console.log($scope.vnfdJson);
-                })
-                .error(function (data, status) {
-                    showError(status, data);
+            if (angular.isUndefined($routeParams.vduId)) {
+               // console.log('in vnfd' + $routeParams);
+                http.get(url + $routeParams.vnfdescriptorId)
+                    .success(function (response, status) {
+                        $scope.vnfdinfo = response;
+                        $scope.vnfdJson = JSON.stringify(response, undefined, 4);
+                        //console.log($scope.vnfdJson);
+                    })
+                    .error(function (data, status) {
+                        showError(status, data);
 
-                });
-            $scope.vnfdescriptorId = $routeParams.vnfdescriptorId;
+                    });
+                $scope.vnfdescriptorId = $routeParams.vnfdescriptorId;
+            }
+            else {
+                //console.log('in vdu');
+                http.get(url + $routeParams.vnfdescriptorId + '/vdus/' + $routeParams.vduId)
+                    .success(function (response, status) {
+                        $scope.vdu = response;
+                        $scope.vduPageJson = JSON.stringify(response, undefined, 4);
+                        console.log($scope.vdu);
+                    })
+                    .error(function (data, status) {
+                        showError(status, data);
+
+                    });
+            }
         }
     }
 

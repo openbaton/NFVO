@@ -194,8 +194,8 @@
 								<tbody>
 									<tr ng-repeat="vdu in vnfdinfo.vdu | orderBy:predicate:reverse">
 										<td>
-											<!--a href="#nsdescriptors/{{nsdinfo.id}}/vnfdinfoescriptors/{{vnfdinfo.id}}/vdus/{{vdu.id}}">{{vdu.id}}</a-->
-											{{vdu.id}}
+											<a href="#/vnfdescriptors/{{vnfdinfo.id}}/vdus/{{vdu.id}}">{{vdu.id}}</a>
+
 										</td>
 										<td>{{vdu.vm_image | clearText}}</td>
 										<td>{{vdu.vimInstanceName | clearText}}</td>
