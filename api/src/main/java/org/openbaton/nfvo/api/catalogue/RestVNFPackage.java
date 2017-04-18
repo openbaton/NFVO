@@ -26,7 +26,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -224,21 +223,11 @@ public class RestVNFPackage {
         // build the output tar file
         File tarOut = new File(directory + name);
         OutputStream out = new FileOutputStream(tarOut);
-        TarArchiveOutputStream aos = (TarArchiveOutputStream) new ArchiveStreamFactory().createArchiveOutputStream("tar", out);
-        List<File> tarFiles = new ArrayList<File>();
+        TarArchiveOutputStream aos =
+            (TarArchiveOutputStream)
+                new ArchiveStreamFactory().createArchiveOutputStream("tar", out);
 
-        tarFiles.addAll(recurseDirectory(tempDirectory));
-
-        for (File file3 : tarFiles) {
-          if (!file3.getName().endsWith("tar") && (!file3.getName().endsWith("iso"))) {
-            TarArchiveEntry entry = new TarArchiveEntry(file3, file3.getName());
-            log.debug("file into tar file: " + file3.getName());
-            entry.setSize(file3.length());
-            aos.putArchiveEntry(entry);
-            IOUtils.copy(new FileInputStream(file3), aos);
-            aos.closeArchiveEntry();
-          }
-        }
+        recurseDirectory(tempDirectory, aos, tempDirectory.getAbsolutePath().length());
 
         aos.finish();
         aos.close();
@@ -274,9 +263,9 @@ public class RestVNFPackage {
     } else throw new IOException("File is empty!");
   }
 
-  public List<File> recurseDirectory(File file) {
+  public void recurseDirectory(File file, TarArchiveOutputStream aos, int origFileLength)
+      throws IOException {
 
-    List<File> files = new ArrayList<File>();
     log.debug("file is: " + file.getName());
 
     if (file != null) {
@@ -284,18 +273,31 @@ public class RestVNFPackage {
         log.debug("directory is: " + file.getName());
         for (File file2 : file.listFiles()) {
           if (file2.isDirectory()) {
-            files.addAll(recurseDirectory(file2));
-          }
-          else {
-            files.add(file2);
+            recurseDirectory(file2, aos, origFileLength);
+          } else {
+            if (!file2.getName().endsWith("tar") && (!file2.getName().endsWith("iso"))) {
+              TarArchiveEntry entry =
+                  new TarArchiveEntry(file2, file2.getAbsolutePath().substring(origFileLength + 1));
+              log.debug(
+                  "file into tar file: " + file2.getAbsolutePath().substring(origFileLength + 1));
+              entry.setSize(file2.length());
+              aos.putArchiveEntry(entry);
+              IOUtils.copy(new FileInputStream(file2), aos);
+              aos.closeArchiveEntry();
+            }
           }
         }
-      }
-      else {
-        files.add(file);
+      } else {
+        if (!file.getName().endsWith("tar") && (!file.getName().endsWith("iso"))) {
+          TarArchiveEntry entry = new TarArchiveEntry(file, file.getName());
+          log.debug("file into tar file: " + file.getName());
+          entry.setSize(file.length());
+          aos.putArchiveEntry(entry);
+          IOUtils.copy(new FileInputStream(file), aos);
+          aos.closeArchiveEntry();
+        }
       }
     }
-    return files;
   }
 
   @ApiOperation(
