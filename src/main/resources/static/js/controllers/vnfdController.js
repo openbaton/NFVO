@@ -54,7 +54,7 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
             console.log(response);
         })
         .error(function (data, status) {
-            showError(status, data);
+            showError(data, status);
 
         });
 
@@ -124,7 +124,7 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
                 loadTable();
             })
             .error(function (data, status) {
-                showError(status, data);
+                showError(data, status);
 
             });
         console.log($scope.vnfdCreate);
@@ -266,7 +266,7 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
                 loadTable();
             })
             .error(function (data, status) {
-                showError(status, data);
+                showError(data, status);
 
             });
     };
@@ -287,7 +287,7 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
                 loadTable();
             })
             .error(function (response, status) {
-                showError(status, response);
+                showError(response, status);
             });
              $scope.multipleDelete = false;
             $scope.selection = {};
@@ -338,7 +338,7 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
                     //console.log(response);
                 })
                 .error(function (data, status) {
-                    showError(status, data);
+                    showError(data, status);
 
                 });
         else {
@@ -351,7 +351,7 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
                         //console.log($scope.vnfdJson);
                     })
                     .error(function (data, status) {
-                        showError(status, data);
+                        showError(data, status);
 
                     });
                 $scope.vnfdescriptorId = $routeParams.vnfdescriptorId;
@@ -365,14 +365,14 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
                         console.log($scope.vdu);
                     })
                     .error(function (data, status) {
-                        showError(status, data);
+                        showError(data, status);
 
                     });
             }
         }
     }
 
-  function showError(status, data) {
+  function showError(data, status) {
         if (status === 500) {
             $scope.alerts.push({
             type: 'danger',

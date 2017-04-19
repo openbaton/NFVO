@@ -42,7 +42,7 @@ angular.module('app').
                         $scope.vnfmanagerJSON = JSON.stringify(response, undefined, 4);
 
                     }).error(function (data, status) {
-                        showError(status, data);
+                        showError(data, status);
                     });
             else {
                 http.get(url)
@@ -50,12 +50,12 @@ angular.module('app').
                         $scope.vnfmanagers = response;
                     })
                     .error(function (data, status) {
-                        showError(status, data);
+                        showError(data, status);
                     });
             }
         }
 
-function showError(status, data) {
+function showError(data, status) {
         if (status === 500) {
             $scope.alerts.push({
             type: 'danger',

@@ -459,7 +459,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
             })
             .error(function (data, status) {
                 console.error('STATUS: ' + status + ' DATA: ' + data);
-                showError(status, JSON.stringify(data));
+                showError(JSON.stringify(data), status);
             });
 
     };
@@ -473,7 +473,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
             })
             .error(function (data, status) {
                 console.error('STATUS: ' + status + ' DATA: ' + data);
-                showError(status, JSON.stringify(data));
+                showError(JSON.stringify(data), status);
             });
     };
 

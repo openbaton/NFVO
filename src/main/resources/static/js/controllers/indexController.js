@@ -139,7 +139,7 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
                 $scope.NFVOversion = response
             })
             .error(function (response, status) {
-                showError(status, response);
+                showError(response, status);
             });
     }
 
@@ -440,7 +440,7 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
 
             })
             .error(function (response, status) {
-                showError(status, response);
+                showError(response, status);
             });
     }
 

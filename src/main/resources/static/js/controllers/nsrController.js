@@ -91,7 +91,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
                 loadTable();
             })
             .error(function (data, status) {
-                showError(status, data);
+                showError(data, status);
             });
              $scope.connection_point = {
         "floatingIp": "",
@@ -106,7 +106,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
                 loadTable();
             })
             .error(function (data, status) {
-                showError(status, data);
+                showError(data, status);
             });
     };
 
@@ -117,7 +117,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
                 loadTable();
             })
             .error(function (data, status) {
-                showError(status, data);
+                showError(data, status);
             });
     };
 
@@ -217,7 +217,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
                 loadTable();
             })
             .error(function (data, status) {
-                showError(status, data);
+                showError(data, status);
             });
           $scope.connection_pointsVDU = [];
     $scope.connection_point = {
@@ -290,7 +290,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
                         //                        window.setTimeout($scope.cleanModal(), 3000);
                     })
                     .error(function (data, status) {
-                        showError(status, data);
+                        showError(data, status);
                     });
             }
 
@@ -302,7 +302,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
                         //                        window.setTimeout($scope.cleanModal(), 3000);
                     })
                     .error(function (data, status) {
-                        showError(status, data);
+                        showError(data, status);
                     });
             }
         }
@@ -321,7 +321,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
                 setTimeout(loadTable, 500);
             })
             .error(function (data, status) {
-                showError(status, data);
+                showError(data, status);
             });
     };
 
@@ -417,7 +417,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
             })
             .error(function (data, status) {
                 console.error('STATUS: ' + status + ' DATA: ' + data);
-                showError(status, data);
+                showError(data, status);
             });
     };
 
@@ -429,7 +429,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
             })
             .error(function (data, status) {
                 console.error('STATUS: ' + status + ' DATA: ' + data);
-                showError(status, data);
+                showError(data, status);
             });
     };
 
@@ -440,7 +440,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
                 window.setTimeout(loadTable, 500);
             })
             .error(function (data, status) {
-                showError(status, data);
+                showError(data, status);
             });
     };
 
@@ -451,7 +451,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
                 window.setTimeout(loadTable, 500);
             })
             .error(function (data, status) {
-                showError(status, data);
+                showError(data, status);
             });
     };
 
@@ -513,7 +513,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
     $scope.selection.ids = {};
     /* -- multiple delete functions END -- */
 
-    function showError(status, data) {
+    function showError(data, status) {
         if (status === 500) {
             $scope.alerts.push({
             type: 'danger',
@@ -568,7 +568,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
                     console.log(response);
                 })
                 .error(function (data, status) {
-                    showError(status, data);
+                    showError(data, status);
 
                 });
         else
@@ -581,7 +581,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
                     //topologiesAPI.Jsplumb(response);
                 })
                 .error(function (data, status) {
-                    showError(status, data);
+                    showError(data, status);
                     //var destinationUrl = '#';
                     //$window.location.href = destinationUrl;
                 });
@@ -604,7 +604,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
               showOk("Stopped VNFCI with id" + vnfci.id);
           })
           .error(function (data, status) {
-              showError(status, data);
+              showError(data, status);
           });
     };
 
@@ -617,7 +617,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
               showOk("Stopped VNFCI with id" + vnfci.id);
           })
           .error(function (data, status) {
-              showError(status, data);
+              showError(data, status);
           });
     };
      $scope.cleanmodal = function () {
