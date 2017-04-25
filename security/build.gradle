@@ -20,6 +20,7 @@ dependencies {
     compile project(':catalogue')
     compile project(':exception')
     compile project(':common')
+    compile project(':utils')
 
     compile 'com.google.code.gson:gson:2.8.0'
     compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.3'
