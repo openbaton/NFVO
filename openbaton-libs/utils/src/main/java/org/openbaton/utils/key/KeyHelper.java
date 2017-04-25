@@ -1,4 +1,4 @@
-package org.openbaton.nfvo.common.utils;
+package org.openbaton.utils.key;
 
 import static org.apache.commons.codec.binary.Base64.encodeBase64;
 
