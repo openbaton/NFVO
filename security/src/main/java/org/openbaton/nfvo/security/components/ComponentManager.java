@@ -286,7 +286,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
         "http://" + brokerIp + ":" + managementPort + "/api/permissions/" + vhost + "/" + username;
     put = new HttpPut(uri);
 
-    String regexOpenbaton = "(^openbaton)";
+    String regexOpenbaton = "(^nfvo)";
     String regexManager = "(^" + username + ")";
     String regexBoth = regexOpenbaton + "|" + regexManager;
     map = new HashMap<>();
