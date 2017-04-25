@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import javax.validation.Valid;
-import org.openbaton.catalogue.nfvo.ManagerCredentials;
+import org.openbaton.catalogue.nfvo.ServiceCredentials;
 import org.openbaton.nfvo.security.interfaces.ComponentManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,24 +65,40 @@ public class RestComponents {
     return componentManager.enableService(serviceRegisterBody, projectId);
   }
 
-  /** Enable a new Manager. this generates a new Rabbit User that must be used in the Manager SDK */
-  @ApiOperation(
-    value = "Enable Manager",
-    notes =
-        "Enable a new Manager. this generates a Rabbit user that must be used in the Manager SDK"
-  )
+  @ApiOperation(value = "Register Service", notes = "Register a already enabled Service.")
   @RequestMapping(
-    value = "/managers",
+    value = "/services",
     method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
+    consumes = MediaType.TEXT_PLAIN_VALUE,
+    produces = MediaType.APPLICATION_OCTET_STREAM_VALUE
   )
   @ResponseStatus(HttpStatus.CREATED)
-  public ManagerCredentials enableManager(
+  public ServiceCredentials registerService(
       @RequestHeader(value = "project-id") String projectId,
-      @RequestBody @Valid JsonObject serviceRegisterBody)
-      throws IOException {
+      @RequestBody String serviceRegisterBody)
+      throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
 
-    return componentManager.enableManager(serviceRegisterBody);
+    return componentManager.registerService(serviceRegisterBody);
   }
+
+  //  /** Enable a new Manager. this generates a new Rabbit User that must be used in the Manager SDK */
+  //  @ApiOperation(
+  //    value = "Enable Manager",
+  //    notes =
+  //        "Enable a new Manager. this generates a Rabbit user that must be used in the Manager SDK"
+  //  )
+  //  @RequestMapping(
+  //    value = "/managers",
+  //    method = RequestMethod.POST,
+  //    consumes = MediaType.APPLICATION_JSON_VALUE,
+  //    produces = MediaType.APPLICATION_JSON_VALUE
+  //  )
+  //  @ResponseStatus(HttpStatus.CREATED)
+  //  public ManagerCredentials enableManager(
+  //      @RequestHeader(value = "project-id") String projectId,
+  //      @RequestBody @Valid JsonObject serviceRegisterBody)
+  //      throws IOException {
+  //
+  //    return componentManager.enableManager(serviceRegisterBody);
+  //  }
 }

@@ -48,7 +48,9 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "nfvo.rabbit")
 public class RabbitConfiguration {
   static final String queueName_vnfmRegister = "nfvo.vnfm.register";
-  static final String queueName_serviceRegister = "nfvo.service.register";
+
+  static final String queueName_managerRegister = "nfvo.manager.handling";
+
   static final String queueName_vnfmUnregister = "nfvo.vnfm.unregister";
   static final String queueName_vnfmCoreActions = "vnfm.nfvo.actions";
   static final String queueName_vnfmCoreActionsReply = "vnfm.nfvo.actions.reply";
@@ -133,8 +135,8 @@ public class RabbitConfiguration {
   }
 
   @Bean
-  Queue queue_serviceRegister() {
-    return new Queue(queueName_serviceRegister, true, exclusive, true);
+  Queue queue_managerRegister() {
+    return new Queue(queueName_managerRegister, true, exclusive, true);
   }
 
   @Bean
@@ -170,10 +172,10 @@ public class RabbitConfiguration {
    * <p>***************************
    */
   @Bean
-  Binding binding_serviceRegister(TopicExchange exchange) {
-    return BindingBuilder.bind(queue_serviceRegister())
+  Binding binding_managerRegister(TopicExchange exchange) {
+    return BindingBuilder.bind(queue_managerRegister())
         .to(exchange)
-        .with(queueName_serviceRegister);
+        .with(queueName_managerRegister);
   }
 
   @Bean
@@ -230,8 +232,8 @@ public class RabbitConfiguration {
   }
 
   @Bean
-  MessageListenerAdapter listenerAdapter_serviceRegister(ComponentManager componentManager) {
-    return new MessageListenerAdapter(componentManager, "registerService");
+  MessageListenerAdapter listenerAdapter_managerRegister(ComponentManager componentManager) {
+    return new MessageListenerAdapter(componentManager, "enableManager");
   }
 
   @Bean
@@ -266,11 +268,11 @@ public class RabbitConfiguration {
    * <p>***************************
    */
   @Bean
-  SimpleMessageListenerContainer container_serviceRegister(
+  SimpleMessageListenerContainer container_managerRegister(
       ConnectionFactory connectionFactory,
-      @Qualifier("listenerAdapter_serviceRegister") MessageListenerAdapter listenerAdapter) {
+      @Qualifier("listenerAdapter_managerRegister") MessageListenerAdapter listenerAdapter) {
     return getSimpleMessageListenerContainer(
-        connectionFactory, listenerAdapter, queueName_serviceRegister);
+        connectionFactory, listenerAdapter, queueName_managerRegister);
   }
 
   @Bean
