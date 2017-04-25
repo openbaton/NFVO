@@ -2,18 +2,7 @@ package org.openbaton.nfvo.security.components;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import java.io.IOException;
-import java.io.Serializable;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPut;
@@ -25,6 +14,7 @@ import org.apache.http.message.BasicHeader;
 import org.openbaton.catalogue.nfvo.ManagerCredentials;
 import org.openbaton.catalogue.nfvo.ServiceCredentials;
 import org.openbaton.catalogue.nfvo.ServiceMetadata;
+import org.openbaton.nfvo.repositories.ManaggerCredentialsRepository;
 import org.openbaton.nfvo.repositories.ServiceRepository;
 import org.openbaton.utils.key.KeyHelper;
 import org.slf4j.Logger;
@@ -45,6 +35,20 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
 //import java.util.Base64;
 
 /** Created by lto on 04/04/2017. */
@@ -56,11 +60,11 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
 
   @Autowired private TokenStore tokenStore;
   @Autowired private Gson gson;
+  @Autowired private ServiceRepository serviceRepository;
+  @Autowired private ManaggerCredentialsRepository managerCredentialsRepository;
 
   @Value("${nfvo.security.service.token.validity:31556952}")
   private int serviceTokenValidityDuration;
-
-  @Autowired private ServiceRepository serviceRepository;
 
   @Value("${nfvo.rabbit.brokerIp:localhost}")
   private String brokerIp;
@@ -229,89 +233,96 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
 
   @Override
   public ManagerCredentials enableManager(JsonObject body) throws IOException {
-    ManagerCredentials managerCredentials = new ManagerCredentials();
+    if (body.get("action").getAsString().toLowerCase().equals("register")) {
+      ManagerCredentials managerCredentials = new ManagerCredentials();
 
-    String username = body.get("type").getAsString();
-    String password = org.apache.commons.lang.RandomStringUtils.randomAlphanumeric(16);
-    String uri = "http://" + brokerIp + ":" + managementPort + "/api/users/" + username;
+      String username = body.get("type").getAsString();
+      String password = org.apache.commons.lang.RandomStringUtils.randomAlphanumeric(16);
+      String uri = "http://" + brokerIp + ":" + managementPort + "/api/users/" + username;
 
-    HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_JSON);
-    headers.setAccept(
-        new ArrayList<MediaType>() {
-          {
-            add(MediaType.APPLICATION_JSON);
-          }
-        });
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(MediaType.APPLICATION_JSON);
+      headers.setAccept(new ArrayList<MediaType>() {
+        {
+          add(MediaType.APPLICATION_JSON);
+        }
+      });
 
-    //    CredentialsProvider credsProvider = new BasicCredentialsProvider();
-    //    AuthScope authScope =
-    //        new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM);
-    //    credsProvider.setCredentials(
-    //        authScope, new UsernamePasswordCredentials(rabbitUsername, rabbitPassword));
-    CloseableHttpClient httpclient = HttpClients.createDefault();
+      CloseableHttpClient httpclient = HttpClients.createDefault();
 
-    //curl -u admin:openbaton -X PUT http://10.147.66.131:15672/api/users/name -d '{"password":"password", "tags":"administrator", "vhost":"openbaton"}' -H "Content-Type: application/json" -H "Accept:application/json"
-    HashMap<String, String> map = new HashMap<>();
+      //curl -u admin:openbaton -X PUT http://10.147.66.131:15672/api/users/name -d '{"password":"password", "tags":"administrator", "vhost":"openbaton"}' -H "Content-Type: application/json" -H "Accept:application/json"
 
-    map.put("password", password);
-    map.put("tags", "administrator");
-    map.put("vhost", vhost);
-    String pass = gson.toJson(map);
-    log.debug("Body is: " + pass);
-    org.apache.http.HttpEntity requestEntity = new StringEntity(pass, ContentType.APPLICATION_JSON);
+      HashMap<String, String> map = new HashMap<>();
 
-    HttpPut put = new HttpPut(uri);
-    String authStr = rabbitUsername + ":" + rabbitPassword;
-    String encoding = Base64.encodeBase64String(authStr.getBytes());
-    put.setHeader("Authorization", "Basic " + encoding);
-    put.setHeader(new BasicHeader("Accept", MediaType.APPLICATION_JSON_VALUE));
-    put.setHeader(new BasicHeader("Content-type", MediaType.APPLICATION_JSON_VALUE));
-    put.setEntity(requestEntity);
+      map.put("password", password);
+      map.put("tags", "administrator");
+      map.put("vhost", vhost);
+      String pass = gson.toJson(map);
+      log.debug("Body is: " + pass);
+      org.apache.http.HttpEntity requestEntity = new StringEntity(pass, ContentType.APPLICATION_JSON);
 
-    log.debug("Executing request: " + put.getMethod() + " on " + uri);
+      HttpPut put = new HttpPut(uri);
+      String authStr = rabbitUsername + ":" + rabbitPassword;
+      String encoding = Base64.encodeBase64String(authStr.getBytes());
+      put.setHeader("Authorization", "Basic " + encoding);
+      put.setHeader(new BasicHeader("Accept", MediaType.APPLICATION_JSON_VALUE));
+      put.setHeader(new BasicHeader("Content-type", MediaType.APPLICATION_JSON_VALUE));
+      put.setEntity(requestEntity);
 
-    CloseableHttpResponse response = httpclient.execute(put);
-    log.debug(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
-    if (response.getStatusLine().getStatusCode() != 204) {
-      log.error("Error creating user: " + response.getStatusLine());
+      log.debug("Executing request: " + put.getMethod() + " on " + uri);
+
+      CloseableHttpResponse response = httpclient.execute(put);
+      log.debug(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
+      if (response.getStatusLine().getStatusCode() != 204) {
+        log.error("Error creating user: " + response.getStatusLine());
+        return null;
+      }
+
+      //curl -u admin:openbaton -X PUT http://10.147.66.131:15672/api/permissions/openbaton/name -d '{"configure":"
+      // (^name)", "write":"(^openbaton)|(^name)", "read":"(^name)"}' -H "Content-Type: application/json" -H
+      // "Accept:application/json"
+
+      uri = "http://" + brokerIp + ":" + managementPort + "/api/permissions/" + vhost + "/" + username;
+      put = new HttpPut(uri);
+
+      String regexOpenbaton = "(^nfvo)";
+      String regexManager = "(^" + username + ")";
+      String regexBoth = regexOpenbaton + "|" + regexManager;
+      map = new HashMap<>();
+      map.put("configure", regexManager);
+      map.put("write", regexBoth);
+      map.put("read", regexManager);
+      String stringEntity = gson.toJson(map);
+
+      log.debug("Body is: " + stringEntity);
+      put.setHeader("Authorization", "Basic " + encoding);
+      put.setHeader(new BasicHeader("Accept", MediaType.APPLICATION_JSON_VALUE));
+      put.setHeader(new BasicHeader("Content-type", MediaType.APPLICATION_JSON_VALUE));
+      put.setEntity(new StringEntity(stringEntity, ContentType.APPLICATION_JSON));
+
+      log.debug("Executing request: " + put.getMethod() + " on " + uri);
+      httpclient.execute(put);
+      response = httpclient.execute(put);
+      log.debug(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
+      if (response.getStatusLine().getStatusCode() != 204) {
+        log.error("Error creating user: " + response.getStatusLine());
+        return null;
+      }
+
+      managerCredentials.setRabbitUsername(username);
+      managerCredentials.setRabbitPassword(password);
+      managerCredentialsRepository.save(managerCredentials);
+      return managerCredentials;
+    } else if (body.get("action").getAsString().toLowerCase().equals("unregister") ||
+               body.get("action").getAsString().toLowerCase().equals("deregister")) {
+
+      ManagerCredentials
+          managerCredentials =
+          managerCredentialsRepository.findFirstByRabbitUsername(body.get("username").getAsString());
+      if (body.get("password").getAsString().equals(managerCredentials.getRabbitPassword())) {
+        managerCredentialsRepository.delete(managerCredentials);
+      }
       return null;
-    }
-
-    //curl -u admin:openbaton -X PUT http://10.147.66.131:15672/api/permissions/openbaton/name -d '{"configure":"
-    // (^name)", "write":"(^openbaton)|(^name)", "read":"(^name)"}' -H "Content-Type: application/json" -H
-    // "Accept:application/json"
-
-    uri =
-        "http://" + brokerIp + ":" + managementPort + "/api/permissions/" + vhost + "/" + username;
-    put = new HttpPut(uri);
-
-    String regexOpenbaton = "(^nfvo)";
-    String regexManager = "(^" + username + ")";
-    String regexBoth = regexOpenbaton + "|" + regexManager;
-    map = new HashMap<>();
-    map.put("configure", regexManager);
-    map.put("write", regexBoth);
-    map.put("read", regexManager);
-    String stringEntity = gson.toJson(map);
-
-    log.debug("Body is: " + stringEntity);
-    put.setHeader("Authorization", "Basic " + encoding);
-    put.setHeader(new BasicHeader("Accept", MediaType.APPLICATION_JSON_VALUE));
-    put.setHeader(new BasicHeader("Content-type", MediaType.APPLICATION_JSON_VALUE));
-    put.setEntity(new StringEntity(stringEntity, ContentType.APPLICATION_JSON));
-
-    log.debug("Executing request: " + put.getMethod() + " on " + uri);
-    httpclient.execute(put);
-    response = httpclient.execute(put);
-    log.debug(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
-    if (response.getStatusLine().getStatusCode() != 204) {
-      log.error("Error creating user: " + response.getStatusLine());
-      return null;
-    }
-
-    managerCredentials.setRabbitUsername(username);
-    managerCredentials.setRabbitPassword(password);
-    return managerCredentials;
+    } else return null;
   }
 }
