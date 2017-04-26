@@ -180,7 +180,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
                 //console.log($scope.selectedVnfd);
                 filteredLaunchPops = params.sorting() ? $filter('orderBy')($scope.launchPops[$scope.selectedVnfd.name].pops, params.orderBy()) : $scope.launchPops[$scope.selectedVnfd.name].pops;
                 //filteredLaunchPops = params.filter() ? $filter('filter')(filteredLaunchPops, params.filter()) : filteredLaunchPops;
-                $scope.tableParamsFilteredPops.total(filteredLaunchPops.length);
+                $scope.tableParamsFilteredLaunchPops.total(filteredLaunchPops.length);
                 filteredLaunchPops = filteredLaunchPops.slice((params.page() - 1) * params.count(), params.page() * params.count());
                 for (i = filteredLaunchPops.length; i < params.count(); i++) {
                     filteredLaunchPops.push({ 'name': "" })
@@ -991,12 +991,12 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         for (j = 0; j < vnfd.vdu.length; j++) {
             //console.log($scope.nsdToSend.vnfd[i].vdu[j].id);
             vduName = vnfd.vdu[j].name;
-
             // $scope.launchPops[vnfd.name][vduName].push(pop);
         }
         remove($scope.launchPopsAvailable[vnfd.name].pops, pop);
         $scope.tableParamsFilteredLaunchPops.reload();
         $scope.tableParamsFilteredPops.reload();
+
         launchPopTable.expanded=true;
     }
 
