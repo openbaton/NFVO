@@ -44,6 +44,9 @@ public class VNFForwardingGraphDescriptor implements Serializable {
    * describing
    */
   private String version;
+  /* * Specify the symmetricity of the VNFFG */
+  private boolean symmetrical;
+
   /**
    * Count of the external endpoints (connection_point elements) included in this VNFFG, to form an
    * index
@@ -108,6 +111,14 @@ public class VNFForwardingGraphDescriptor implements Serializable {
 
   public void setVersion(String version) {
     this.version = version;
+  }
+
+  public boolean isSymmetrical() {
+    return symmetrical;
+  }
+
+  public void setSymmetricity(boolean sym) {
+    this.symmetrical = sym;
   }
 
   public int getNumber_of_endpoints() {

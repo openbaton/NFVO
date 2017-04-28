@@ -36,6 +36,8 @@ public class Policy implements Serializable {
 
   @Id private String id;
   @Version private int version = 0;
+  private ACL_Matching_Criteria acl_matching_criteria;
+  private String qos_level;
 
   public Policy() {}
 
@@ -50,5 +52,21 @@ public class Policy implements Serializable {
   @PrePersist
   public void ensureId() {
     id = IdGenerator.createUUID();
+  }
+
+  public ACL_Matching_Criteria getMatchingCriteria() {
+    return acl_matching_criteria;
+  }
+
+  public void setMatchingCriteria(ACL_Matching_Criteria matching_criteria) {
+    this.acl_matching_criteria = matching_criteria;
+  }
+
+  public String getQoSLevel() {
+    return qos_level;
+  }
+
+  public void setQoSLevel(String qos) {
+    this.qos_level = qos;
   }
 }
