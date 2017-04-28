@@ -232,7 +232,8 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
    */
 
   @Override
-  public ManagerCredentials enableManager(JsonObject body) throws IOException {
+  public ManagerCredentials enableManager(String message) throws IOException {
+    JsonObject body = gson.fromJson(message, JsonObject.class);
     if (body.get("action").getAsString().toLowerCase().equals("register")) {
       ManagerCredentials managerCredentials = new ManagerCredentials();
 

@@ -14,5 +14,5 @@ public interface ComponentManager {
   byte[] enableService(JsonObject jsonObject, String projectId)
       throws NoSuchAlgorithmException, IOException;
 
-  ManagerCredentials enableManager(JsonObject body) throws IOException;
+  ManagerCredentials enableManager(String message) throws IOException;
 }
