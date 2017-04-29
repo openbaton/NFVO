@@ -20,12 +20,14 @@ package org.openbaton.common.vnfm_sdk.amqp;
 import com.google.gson.Gson;
 import com.rabbitmq.client.*;
 import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.common.vnfm_sdk.AbstractVnfm;
 import org.openbaton.common.vnfm_sdk.VnfmHelper;
 import org.openbaton.common.vnfm_sdk.amqp.configuration.RabbitConfiguration;
 import org.openbaton.common.vnfm_sdk.exception.BadFormatException;
 import org.openbaton.common.vnfm_sdk.exception.NotFoundException;
+import org.openbaton.registration.Registration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -53,6 +55,7 @@ public abstract class AbstractVnfmSpringAmqp extends AbstractVnfm
 
   @Autowired private Gson gson;
   @Autowired private ConfigurableApplicationContext context;
+  @Autowired private Registration registration;
 
   public void onAction(String message) throws NotFoundException, BadFormatException {
 
@@ -72,6 +75,8 @@ public abstract class AbstractVnfmSpringAmqp extends AbstractVnfm
     try {
       ((VnfmSpringHelperRabbit) vnfmHelper)
           .sendMessageToQueue(RabbitConfiguration.queueName_vnfmUnregister, vnfmManagerEndpoint);
+      registration.deregisterVnfmFromNfvo(
+          ((VnfmSpringHelperRabbit) vnfmHelper).getRabbitTemplate());
     } catch (IllegalStateException e) {
       log.warn("Got exception while unregistering trying to do it manually");
       ConnectionFactory factory = new ConnectionFactory();
@@ -97,12 +102,15 @@ public abstract class AbstractVnfmSpringAmqp extends AbstractVnfm
         connection.close();
       } catch (IOException e1) {
         e1.printStackTrace();
+      } catch (TimeoutException e2) {
+        e2.printStackTrace();
       }
     }
   }
 
   @Override
   protected void register() {
+    registration.registerVnfmToNfvo(((VnfmSpringHelperRabbit) vnfmHelper).getRabbitTemplate());
     ((VnfmSpringHelperRabbit) vnfmHelper)
         .sendMessageToQueue(RabbitConfiguration.queueName_vnfmRegister, vnfmManagerEndpoint);
   }
