@@ -21,8 +21,8 @@ import com.google.gson.JsonObject;
 import io.swagger.annotations.ApiOperation;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FilenameFilter;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.SQLException;
@@ -31,12 +31,12 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.validation.Valid;
-import org.apache.commons.io.comparator.LastModifiedFileComparator;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.comparator.LastModifiedFileComparator;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
@@ -85,6 +85,7 @@ public class RestVNFPackage {
 
   @Value("${nfvo.start.tempimagedir:/tmp}")
   private String tempImageDir;
+
   @Value("${nfvo.start.targetimagedir:/tmp/openbaton}")
   private String targetImageDir;
 
@@ -111,8 +112,7 @@ public class RestVNFPackage {
       byte[] bytes = new byte[0];
       Random random = new Random();
       int ran = random.nextInt();
-      String directory = 
-          tempImageDir + File.separatorChar + "random" + ran + File.separatorChar;
+      String directory = tempImageDir + File.separatorChar + "random" + ran + File.separatorChar;
 
       // write the file to the filesystem
       File tempDirectory = new File(directory);
@@ -123,7 +123,6 @@ public class RestVNFPackage {
       String name = file.getOriginalFilename();
       File tarFile = new File(directory + name);
       file.transferTo(tarFile);
-
 
       try {
         // untar the file
@@ -136,7 +135,6 @@ public class RestVNFPackage {
         //TarArchiveEntry entry;
         //while (null != (entry = tarInput.getNextTarEntry())) {
         //  if (entry.getName().equals("Metadata.yaml")) {
-
 
         log.debug("tempDirectory = " + tempDirectory.getName());
 
@@ -189,7 +187,7 @@ public class RestVNFPackage {
               }
             }
 
-            // move the relevant file, 
+            // move the relevant file,
             // set the modified time to now so that we can sort when they were loaded
             File targetImageFile = new File(targetImageDir + randomFileName);
             imageFile.renameTo(targetImageFile);
@@ -198,23 +196,25 @@ public class RestVNFPackage {
 
           // also replace the name in the Metatdata.yaml file
           Pattern oldFileName = Pattern.compile(filename);
-          metadataStr = 
+          metadataStr =
               oldFileName.matcher(metadataStr).replaceAll(targetImageDir + randomFileName);
           FileUtils.write(metadata, metadataStr);
           log.debug("metadata is now " + metadataStr);
         }
 
         // create a list of excluded files and delete them
-        String[] rmFiles = tempDirectory.list(new FilenameFilter() {
-          public boolean accept(File dir, String name) {
-            return (name.toLowerCase().endsWith(".iso") || 
-                    name.toLowerCase().endsWith(".img") ||
-                    name.toLowerCase().endsWith(".qcow2") ||
-                    name.toLowerCase().endsWith(".zip") ||
-                    name.toLowerCase().endsWith(".gz") ||
-                    name.toLowerCase().endsWith(".raw"));
-          }
-        });
+        String[] rmFiles =
+            tempDirectory.list(
+                new FilenameFilter() {
+                  public boolean accept(File dir, String name) {
+                    return (name.toLowerCase().endsWith(".iso")
+                        || name.toLowerCase().endsWith(".img")
+                        || name.toLowerCase().endsWith(".qcow2")
+                        || name.toLowerCase().endsWith(".zip")
+                        || name.toLowerCase().endsWith(".gz")
+                        || name.toLowerCase().endsWith(".raw"));
+                  }
+                });
         for (String fileName : rmFiles) {
           File rmFile = new File(directory + fileName);
           rmFile.delete();
@@ -252,7 +252,7 @@ public class RestVNFPackage {
 
       try {
         // now delete the temporary file and directory
-        FileUtils.deleteDirectory(tempImageDir);
+        FileUtils.deleteDirectory(tempDirectory);
       } catch (Exception ex) {
         // oh well, not much we can do at this point
         log.error("Unable to delete the temporary directory: " + directory);
@@ -269,7 +269,7 @@ public class RestVNFPackage {
     log.debug("file is: " + file.getName());
 
     if (file != null) {
-      if (file.isDirectory()){
+      if (file.isDirectory()) {
         log.debug("directory is: " + file.getName());
         for (File file2 : file.listFiles()) {
           if (file2.isDirectory()) {
