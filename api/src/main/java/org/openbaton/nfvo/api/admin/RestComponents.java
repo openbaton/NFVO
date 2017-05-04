@@ -23,6 +23,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import javax.validation.Valid;
 import org.openbaton.catalogue.nfvo.ServiceCredentials;
+import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.nfvo.security.interfaces.ComponentManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,33 +45,67 @@ public class RestComponents {
 
   @Autowired private ComponentManager componentManager;
 
-  /** Enable a new Service. this generates a new AES Key that must be used in the Service SDK */
+  /**
+   * Create a new Service. This generates a new AES Key that can be used for registering the Service.
+   *
+   * @param projectId
+   * @param serviceCreateBody
+   * @return
+   * @throws IOException
+   * @throws NoSuchAlgorithmException
+   * @throws InvalidKeySpecException
+   */
   @ApiOperation(
-    value = "Enable Service",
+    value = "Create Service",
     notes =
-        "Enable a new Service. this generates a new AES Key that must be used in the Service SDK"
+        "Enable a new Service. This generates a new AES Key that must be used in the Service SDK"
   )
   @RequestMapping(
-    value = "/services",
+    value = "/services/create",
     method = RequestMethod.POST,
     consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = MediaType.APPLICATION_OCTET_STREAM_VALUE
   )
   @ResponseStatus(HttpStatus.CREATED)
-  public byte[] enableService(
+  public byte[] createService(
       @RequestHeader(value = "project-id") String projectId,
-      @RequestBody @Valid JsonObject serviceRegisterBody)
-      throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+      @RequestBody @Valid JsonObject serviceCreateBody)
+          throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, BadRequestException {
 
-    return componentManager.enableService(serviceRegisterBody, projectId);
+    if (!serviceCreateBody.has("name"))
+      throw new BadRequestException("The request's json body has to contain a name property.");
+
+    String serviceName = null;
+    try {
+      serviceName = serviceCreateBody.getAsJsonPrimitive("name").getAsString();
+    } catch (ClassCastException e1) {
+      throw new BadRequestException("The request's json body has to have this form: {'name':'examplename'}");
+    } catch (IllegalStateException e2) {
+      throw new BadRequestException("The request's json body has to have this form: {'name':'examplename'}");
+    }
+
+    return componentManager.createService(serviceName, projectId);
   }
 
-  @ApiOperation(value = "Register Service", notes = "Register a already enabled Service.")
+  /**
+   * Registers a Service. For this to work, the Service has to be already created.
+   * The request body is expected to be a String.
+   * This String has to be the word 'register' encrypted with the Key obtained while creating the Service.
+   * This method returns a token which can be used by the Service to issue requests to the NFVO API.
+   *
+   * @param projectId
+   * @param serviceRegisterBody
+   * @return
+   * @throws IOException
+   * @throws NoSuchAlgorithmException
+   * @throws InvalidKeySpecException
+   */
+  @ApiOperation(value = "Register Service", notes = "Register an already created Service.")
   @RequestMapping(
-    value = "/services",
+    value = "/services/register",
     method = RequestMethod.POST,
     consumes = MediaType.TEXT_PLAIN_VALUE,
-    produces = MediaType.APPLICATION_OCTET_STREAM_VALUE
+    produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.CREATED)
   public ServiceCredentials registerService(
