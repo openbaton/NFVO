@@ -11,7 +11,7 @@ public interface ComponentManager {
 
   ServiceCredentials registerService(String body);
 
-  byte[] enableService(JsonObject jsonObject, String projectId)
+  byte[] createService(String serviceName, String projectId)
       throws NoSuchAlgorithmException, IOException;
 
   ManagerCredentials enableManager(String message) throws IOException;

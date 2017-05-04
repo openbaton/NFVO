@@ -116,7 +116,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
     }
 
     if (service == null) {
-      log.error("Please register first your Service in order to get the super duper secret key");
+      log.error("Please enable first your Service in order to get the super duper secret key");
       return null;
     }
 
@@ -175,10 +175,16 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
   }
 
   @Override
-  public byte[] enableService(JsonObject jsonObject, String projectId)
+  public byte[] createService(String serviceName, String projectId)
       throws NoSuchAlgorithmException, IOException {
+    for (ServiceMetadata serviceMetadata : serviceRepository.findAll()) {
+        if (serviceMetadata.getName().equals(serviceName)) {
+            log.debug("Service " + serviceName + " already exists.");
+            return serviceMetadata.getKeyValue();
+        }
+    }
     ServiceMetadata serviceMetadata = new ServiceMetadata();
-    serviceMetadata.setName(jsonObject.get("name").getAsString());
+    serviceMetadata.setName(serviceName);
     serviceMetadata.setStatus("down");
     serviceMetadata.setKeyValue(KeyHelper.genKey().getEncoded());
     log.debug("Saving ServiceMetadata: " + serviceMetadata);
