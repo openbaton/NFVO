@@ -46,7 +46,8 @@ public class RestComponents {
   @Autowired private ComponentManager componentManager;
 
   /**
-   * Create a new Service. This generates a new AES Key that can be used for registering the Service.
+   * Create a new Service. This generates a new AES Key that can be used for registering the
+   * Service.
    *
    * @param projectId
    * @param serviceCreateBody
@@ -70,7 +71,7 @@ public class RestComponents {
   public byte[] createService(
       @RequestHeader(value = "project-id") String projectId,
       @RequestBody @Valid JsonObject serviceCreateBody)
-          throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, BadRequestException {
+      throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, BadRequestException {
 
     if (!serviceCreateBody.has("name"))
       throw new BadRequestException("The request's json body has to contain a name property.");
@@ -79,21 +80,22 @@ public class RestComponents {
     try {
       serviceName = serviceCreateBody.getAsJsonPrimitive("name").getAsString();
     } catch (ClassCastException e1) {
-      throw new BadRequestException("The request's json body has to have this form: {'name':'examplename'}");
+      throw new BadRequestException(
+          "The request's json body has to have this form: {'name':'examplename'}");
     } catch (IllegalStateException e2) {
-      throw new BadRequestException("The request's json body has to have this form: {'name':'examplename'}");
+      throw new BadRequestException(
+          "The request's json body has to have this form: {'name':'examplename'}");
     }
 
     return componentManager.createService(serviceName, projectId);
   }
 
   /**
-   * Registers a Service. For this to work, the Service has to be already created.
-   * The request body is expected to be a String.
-   * This String has to be the word 'register' encrypted with the Key obtained while creating the Service.
-   * This method returns a token which can be used by the Service to issue requests to the NFVO API.
+   * Registers a Service. For this to work, the Service has to be already created. The request body
+   * is expected to be a String. This String has to be the word 'register' encrypted with the Key
+   * obtained while creating the Service. This method returns a token which can be used by the
+   * Service to issue requests to the NFVO API.
    *
-   * @param projectId
    * @param serviceRegisterBody
    * @return
    * @throws IOException
@@ -104,13 +106,11 @@ public class RestComponents {
   @RequestMapping(
     value = "/services/register",
     method = RequestMethod.POST,
-    consumes = MediaType.TEXT_PLAIN_VALUE,
+    consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE,
     produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.CREATED)
-  public ServiceCredentials registerService(
-      @RequestHeader(value = "project-id") String projectId,
-      @RequestBody String serviceRegisterBody)
+  public ServiceCredentials registerService(@RequestBody byte[] serviceRegisterBody)
       throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
 
     return componentManager.registerService(serviceRegisterBody);

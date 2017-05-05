@@ -2,7 +2,18 @@ package org.openbaton.nfvo.security.components;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-
+import java.io.IOException;
+import java.io.Serializable;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPut;
@@ -14,7 +25,7 @@ import org.apache.http.message.BasicHeader;
 import org.openbaton.catalogue.nfvo.ManagerCredentials;
 import org.openbaton.catalogue.nfvo.ServiceCredentials;
 import org.openbaton.catalogue.nfvo.ServiceMetadata;
-import org.openbaton.nfvo.repositories.ManaggerCredentialsRepository;
+import org.openbaton.nfvo.repositories.ManagerCredentialsRepository;
 import org.openbaton.nfvo.repositories.ServiceRepository;
 import org.openbaton.utils.key.KeyHelper;
 import org.slf4j.Logger;
@@ -35,20 +46,6 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-
 //import java.util.Base64;
 
 /** Created by lto on 04/04/2017. */
@@ -61,7 +58,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
   @Autowired private TokenStore tokenStore;
   @Autowired private Gson gson;
   @Autowired private ServiceRepository serviceRepository;
-  @Autowired private ManaggerCredentialsRepository managerCredentialsRepository;
+  @Autowired private ManagerCredentialsRepository managerCredentialsRepository;
 
   @Value("${nfvo.security.service.token.validity:31556952}")
   private int serviceTokenValidityDuration;
@@ -86,7 +83,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
    */
 
   @Override
-  public ServiceCredentials registerService(String body) {
+  public ServiceCredentials registerService(byte[] body) {
 
     ServiceMetadata service = null;
     String unencryptedBody = null;
@@ -178,10 +175,10 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
   public byte[] createService(String serviceName, String projectId)
       throws NoSuchAlgorithmException, IOException {
     for (ServiceMetadata serviceMetadata : serviceRepository.findAll()) {
-        if (serviceMetadata.getName().equals(serviceName)) {
-            log.debug("Service " + serviceName + " already exists.");
-            return serviceMetadata.getKeyValue();
-        }
+      if (serviceMetadata.getName().equals(serviceName)) {
+        log.debug("Service " + serviceName + " already exists.");
+        return serviceMetadata.getKeyValue();
+      }
     }
     ServiceMetadata serviceMetadata = new ServiceMetadata();
     serviceMetadata.setName(serviceName);
@@ -249,11 +246,12 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
 
       HttpHeaders headers = new HttpHeaders();
       headers.setContentType(MediaType.APPLICATION_JSON);
-      headers.setAccept(new ArrayList<MediaType>() {
-        {
-          add(MediaType.APPLICATION_JSON);
-        }
-      });
+      headers.setAccept(
+          new ArrayList<MediaType>() {
+            {
+              add(MediaType.APPLICATION_JSON);
+            }
+          });
 
       CloseableHttpClient httpclient = HttpClients.createDefault();
 
@@ -266,7 +264,8 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
       map.put("vhost", vhost);
       String pass = gson.toJson(map);
       log.debug("Body is: " + pass);
-      org.apache.http.HttpEntity requestEntity = new StringEntity(pass, ContentType.APPLICATION_JSON);
+      org.apache.http.HttpEntity requestEntity =
+          new StringEntity(pass, ContentType.APPLICATION_JSON);
 
       HttpPut put = new HttpPut(uri);
       String authStr = rabbitUsername + ":" + rabbitPassword;
@@ -289,7 +288,15 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
       // (^name)", "write":"(^openbaton)|(^name)", "read":"(^name)"}' -H "Content-Type: application/json" -H
       // "Accept:application/json"
 
-      uri = "http://" + brokerIp + ":" + managementPort + "/api/permissions/" + vhost + "/" + username;
+      uri =
+          "http://"
+              + brokerIp
+              + ":"
+              + managementPort
+              + "/api/permissions/"
+              + vhost
+              + "/"
+              + username;
       put = new HttpPut(uri);
 
       String regexOpenbaton = "(^nfvo)";
@@ -320,12 +327,12 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
       managerCredentials.setRabbitPassword(password);
       managerCredentialsRepository.save(managerCredentials);
       return managerCredentials;
-    } else if (body.get("action").getAsString().toLowerCase().equals("unregister") ||
-               body.get("action").getAsString().toLowerCase().equals("deregister")) {
+    } else if (body.get("action").getAsString().toLowerCase().equals("unregister")
+        || body.get("action").getAsString().toLowerCase().equals("deregister")) {
 
-      ManagerCredentials
-          managerCredentials =
-          managerCredentialsRepository.findFirstByRabbitUsername(body.get("username").getAsString());
+      ManagerCredentials managerCredentials =
+          managerCredentialsRepository.findFirstByRabbitUsername(
+              body.get("username").getAsString());
       if (body.get("password").getAsString().equals(managerCredentials.getRabbitPassword())) {
         managerCredentialsRepository.delete(managerCredentials);
       }

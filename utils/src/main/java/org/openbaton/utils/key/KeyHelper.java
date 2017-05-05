@@ -65,7 +65,7 @@ public class KeyHelper {
     return encrypt(text.getBytes(StandardCharsets.UTF_8), key);
   }
 
-  private static String decrypt(byte[] bytes, Key key)
+  public static String decrypt(byte[] bytes, Key key)
       throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException,
           BadPaddingException, IllegalBlockSizeException {
     Cipher cipher = Cipher.getInstance(AES_ALGORITHM);
