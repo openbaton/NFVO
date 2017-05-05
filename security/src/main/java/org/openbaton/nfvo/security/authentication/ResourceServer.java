@@ -49,7 +49,11 @@ public class ResourceServer extends ResourceServerConfigurerAdapter {
         .sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.NEVER)
         .and()
-        .exceptionHandling();
+        .exceptionHandling()
+        .and()
+        .authorizeRequests()
+        .antMatchers("/api/v1/components/services/register")
+        .permitAll();
 
     http.authorizeRequests()
         .antMatchers("/api/**")
