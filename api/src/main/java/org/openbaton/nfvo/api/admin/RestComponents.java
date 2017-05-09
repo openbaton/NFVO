@@ -24,6 +24,7 @@ import java.security.spec.InvalidKeySpecException;
 import javax.validation.Valid;
 import org.openbaton.catalogue.nfvo.ServiceCredentials;
 import org.openbaton.exceptions.BadRequestException;
+import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.security.interfaces.ComponentManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,7 +112,7 @@ public class RestComponents {
   )
   @ResponseStatus(HttpStatus.CREATED)
   public ServiceCredentials registerService(@RequestBody byte[] serviceRegisterBody)
-      throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+      throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NotFoundException {
 
     return componentManager.registerService(serviceRegisterBody);
   }

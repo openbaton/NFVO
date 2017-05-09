@@ -25,6 +25,7 @@ import org.apache.http.message.BasicHeader;
 import org.openbaton.catalogue.nfvo.ManagerCredentials;
 import org.openbaton.catalogue.nfvo.ServiceCredentials;
 import org.openbaton.catalogue.nfvo.ServiceMetadata;
+import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.ManagerCredentialsRepository;
 import org.openbaton.nfvo.repositories.ServiceRepository;
 import org.openbaton.utils.key.KeyHelper;
@@ -83,7 +84,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
    */
 
   @Override
-  public ServiceCredentials registerService(byte[] body) {
+  public ServiceCredentials registerService(byte[] body) throws NotFoundException {
 
     ServiceMetadata service = null;
     String unencryptedBody = null;
@@ -113,8 +114,9 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
     }
 
     if (service == null) {
-      log.error("Please enable first your Service in order to get the super duper secret key");
-      return null;
+      log.error("Please create your Service first in order to get the super duper secret key");
+      throw new NotFoundException(
+          "No Service found. Please create your Service before registering it.");
     }
 
     JsonObject bodyJson = gson.fromJson(unencryptedBody, JsonObject.class);
@@ -123,15 +125,17 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
     String action = bodyJson.getAsJsonPrimitive("action").getAsString();
 
     if (!service.getName().equals(serviceName)) {
-      log.error("The Name does not match!");
-      return null;
+      log.error(
+          "The name of the found Service does not match to the requested name " + serviceName);
+      throw new NotFoundException(
+          "The name of the found Service does not match to the requested name " + serviceName);
     }
 
     if (action.toLowerCase().equals("register")) {
 
       if (service.getStatus().toLowerCase().equals("active")) {
-        log.error("Service is already ACTIVE!");
-        return null;
+        log.warn("Service is already ACTIVE!");
+        return null; // TODO the already existing service credentials shall be returned!
       }
 
       ServiceCredentials serviceCredentials = new ServiceCredentials();
@@ -167,7 +171,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
       return null;
     } else {
       log.error("Action " + action + " unknown!");
-      return null;
+      throw new RuntimeException("Action " + action + " unknown!");
     }
   }
 
@@ -227,6 +231,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
     tokenServices.setAccessTokenValiditySeconds(serviceTokenValidityDuration);
 
     OAuth2AccessToken token = tokenServices.createAccessToken(auth);
+    log.trace("New Service token: " + token);
     return token.getValue();
   }
 
