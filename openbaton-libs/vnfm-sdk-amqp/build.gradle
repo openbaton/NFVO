@@ -18,6 +18,7 @@
 
 dependencies {
         compile project(':vnfm-sdk')
+        compile project(':registration')
 
 
         compile 'org.springframework:spring-context:' + springVersion

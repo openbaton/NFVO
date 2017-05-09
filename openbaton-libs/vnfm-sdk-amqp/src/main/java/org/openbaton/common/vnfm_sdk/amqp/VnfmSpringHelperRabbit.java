@@ -95,6 +95,14 @@ public class VnfmSpringHelperRabbit extends VnfmHelper {
     this.timeout = timeout;
   }
 
+  public RabbitTemplate getRabbitTemplate() {
+    return rabbitTemplate;
+  }
+
+  public ConnectionFactory getConnectionFactory() {
+    return connectionFactory;
+  }
+
   @PostConstruct
   private void init() throws IOException {
     log.info("Initialization of VnfmSpringHelperRabbit");
