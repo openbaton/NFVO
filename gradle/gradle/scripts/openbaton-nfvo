@@ -44,7 +44,6 @@ DAEMON_USER=root
 OSTYPE=$(uname)
 
 
-
 ###################
 #### RabbitMQ #####
 ###################
