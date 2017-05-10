@@ -1,8 +1,6 @@
 package org.openbaton.catalogue.nfvo;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Lob;
+import javax.persistence.*;
 import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by lto on 04/04/2017. */
@@ -15,7 +13,10 @@ public class ServiceMetadata extends BaseEntity {
   @Column(unique = true)
   private String name;
 
-  private String status;
+  // The encrypted token
+  private String token;
+
+  private long tokenExpirationDate;
 
   public byte[] getKeyValue() {
     return keyValue;
@@ -33,23 +34,34 @@ public class ServiceMetadata extends BaseEntity {
     this.name = name;
   }
 
+  public void setToken(String token) {
+    this.token = token;
+  }
+
+  public String getToken() {
+    return token;
+  }
+
+  public long getTokenExpirationDate() {
+    return tokenExpirationDate;
+  }
+
+  public void setTokenExpirationDate(long tokenExpirationDate) {
+    this.tokenExpirationDate = tokenExpirationDate;
+  }
+
   @Override
   public String toString() {
     return "ServiceMetadata{"
         + "key="
         + keyValue
-        + ", name='"
+        + ", name="
         + name
-        + '\''
+        + ", token="
+        + token
+        + ", tokenExpirationDate="
+        + tokenExpirationDate
         + "} "
         + super.toString();
-  }
-
-  public void setStatus(String status) {
-    this.status = status;
-  }
-
-  public String getStatus() {
-    return status;
   }
 }
