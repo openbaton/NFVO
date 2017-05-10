@@ -19,8 +19,12 @@ package org.openbaton.nfvo.api.admin;
 import com.google.gson.JsonObject;
 import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.validation.Valid;
 import org.openbaton.catalogue.nfvo.ServiceCredentials;
 import org.openbaton.exceptions.BadRequestException;
@@ -31,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -108,11 +113,13 @@ public class RestComponents {
     value = "/services/register",
     method = RequestMethod.POST,
     consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
+    produces = MediaType.TEXT_PLAIN_VALUE
   )
   @ResponseStatus(HttpStatus.CREATED)
-  public ServiceCredentials registerService(@RequestBody byte[] serviceRegisterBody)
-      throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NotFoundException {
+  public String registerService(@RequestBody byte[] serviceRegisterBody)
+      throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NotFoundException,
+          InvalidKeyException, BadPaddingException, NoSuchPaddingException,
+          IllegalBlockSizeException {
 
     return componentManager.registerService(serviceRegisterBody);
   }

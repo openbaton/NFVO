@@ -3,14 +3,10 @@ package org.openbaton.nfvo.security.components;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import java.io.IOException;
-import java.io.Serializable;
 import java.security.InvalidKeyException;
+import java.security.Key;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -23,11 +19,11 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.openbaton.catalogue.nfvo.ManagerCredentials;
-import org.openbaton.catalogue.nfvo.ServiceCredentials;
 import org.openbaton.catalogue.nfvo.ServiceMetadata;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.ManagerCredentialsRepository;
 import org.openbaton.nfvo.repositories.ServiceRepository;
+import org.openbaton.nfvo.security.authentication.OAuth2AuthorizationServerConfig;
 import org.openbaton.utils.key.KeyHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,15 +32,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.OAuth2Request;
-import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
-import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.stereotype.Service;
 
 //import java.util.Base64;
@@ -56,7 +44,9 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
 
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
-  @Autowired private TokenStore tokenStore;
+  @Autowired private OAuth2AuthorizationServerConfig serverConfig;
+  //  @Autowired private TokenStore tokenStore;
+  //  @Autowired private DefaultTokenServices tokenServices;
   @Autowired private Gson gson;
   @Autowired private ServiceRepository serviceRepository;
   @Autowired private ManagerCredentialsRepository managerCredentialsRepository;
@@ -83,8 +73,21 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
    * Service related operations
    */
 
+    /**
+     *
+     * @param body
+     * @return an encrypted token
+     * @throws NotFoundException
+     * @throws IllegalBlockSizeException
+     * @throws InvalidKeyException
+     * @throws BadPaddingException
+     * @throws NoSuchAlgorithmException
+     * @throws NoSuchPaddingException
+     */
   @Override
-  public ServiceCredentials registerService(byte[] body) throws NotFoundException {
+  public String registerService(byte[] body)
+      throws NotFoundException, IllegalBlockSizeException, InvalidKeyException, BadPaddingException,
+          NoSuchAlgorithmException, NoSuchPaddingException {
 
     ServiceMetadata service = null;
     String unencryptedBody = null;
@@ -94,20 +97,23 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
             KeyHelper.decrypt(body, KeyHelper.restoreKey(serviceMetadata.getKeyValue()));
       } catch (NoSuchPaddingException e) {
         e.printStackTrace();
-        return null;
+        continue;
       } catch (NoSuchAlgorithmException e) {
         e.printStackTrace();
-        return null;
+        continue;
       } catch (InvalidKeyException e) {
         e.printStackTrace();
-        return null;
+        continue;
       } catch (BadPaddingException e) {
         e.printStackTrace();
-        return null;
+        continue;
       } catch (IllegalBlockSizeException e) {
         e.printStackTrace();
-        return null;
+        continue;
       }
+
+      if (unencryptedBody == null)
+        throw new NotFoundException("Could not decrypt the body, did you enabled the service?");
 
       service = serviceMetadata;
       break;
@@ -132,39 +138,18 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
     }
 
     if (action.toLowerCase().equals("register")) {
+        if (service.getToken() != null && !service.getToken().equals("")) {
+            if (service.getTokenExpirationDate() > (new Date()).getTime())
+                return service.getToken();
+        }
+          OAuth2AccessToken token = serverConfig.getNewServiceToken(serviceName);
+        service.setToken(
+              KeyHelper.encryptToString(
+                  token.getValue(), KeyHelper.restoreKey(service.getKeyValue())));
+        service.setTokenExpirationDate(token.getExpiration().getTime());
+        serviceRepository.save(service);
+        return service.getToken();
 
-      if (service.getStatus().toLowerCase().equals("active")) {
-        log.warn("Service is already ACTIVE!");
-        return null; // TODO the already existing service credentials shall be returned!
-      }
-
-      ServiceCredentials serviceCredentials = new ServiceCredentials();
-
-      String token = getNewToken(serviceName);
-
-      try {
-        serviceCredentials.setToken(
-            KeyHelper.encryptToString(token, KeyHelper.restoreKey(service.getKeyValue())));
-      } catch (NoSuchPaddingException e) {
-        e.printStackTrace();
-      } catch (NoSuchAlgorithmException e) {
-        e.printStackTrace();
-      } catch (InvalidKeyException e) {
-        e.printStackTrace();
-      } catch (BadPaddingException e) {
-        e.printStackTrace();
-      } catch (IllegalBlockSizeException e) {
-        e.printStackTrace();
-      }
-      service.setStatus("active");
-      serviceRepository.save(service);
-      return serviceCredentials;
-    } else if (action.toLowerCase().equals("unregister")
-        || action.toLowerCase().equals("deregister")) {
-      service.setStatus("down");
-      serviceRepository.save(service);
-      log.info("Set status of service " + serviceName + " to down");
-      return null;
     } else if (action.toLowerCase().equals("remove") || action.toLowerCase().equals("delete")) {
       serviceRepository.delete(service);
       log.info("Removed service " + serviceName);
@@ -186,53 +171,29 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
     }
     ServiceMetadata serviceMetadata = new ServiceMetadata();
     serviceMetadata.setName(serviceName);
-    serviceMetadata.setStatus("down");
     serviceMetadata.setKeyValue(KeyHelper.genKey().getEncoded());
     log.debug("Saving ServiceMetadata: " + serviceMetadata);
     serviceRepository.save(serviceMetadata);
     return serviceMetadata.getKeyValue();
   }
 
-  private String getNewToken(String serviceName) {
-    Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
-    authorities.add(new SimpleGrantedAuthority("ADMIN"));
-
-    Map<String, String> requestParameters = new HashMap<>();
-    boolean approved = true;
-    Set<String> scope = new HashSet<>();
-    scope.add("scope");
-    Set<String> resourceIds = new HashSet<>();
-    Set<String> responseTypes = new HashSet<>();
-    responseTypes.add("code");
-    Map<String, Serializable> extensionProperties = new HashMap<>();
-
-    OAuth2Request oAuth2Request =
-        new OAuth2Request(
-            requestParameters,
-            serviceName,
-            authorities,
-            true,
-            scope,
-            resourceIds,
-            null,
-            responseTypes,
-            extensionProperties);
-
-    User userPrincipal =
-        new User(serviceName, "" + Math.random() * 1000, true, true, true, true, authorities);
-
-    UsernamePasswordAuthenticationToken authenticationToken =
-        new UsernamePasswordAuthenticationToken(userPrincipal, null, authorities);
-    OAuth2Authentication auth = new OAuth2Authentication(oAuth2Request, authenticationToken);
-
-    DefaultTokenServices tokenServices = new DefaultTokenServices();
-    tokenServices.setSupportRefreshToken(true);
-    tokenServices.setTokenStore(this.tokenStore);
-    tokenServices.setAccessTokenValiditySeconds(serviceTokenValidityDuration);
-
-    OAuth2AccessToken token = tokenServices.createAccessToken(auth);
-    log.trace("New Service token: " + token);
-    return token.getValue();
+  @Override
+  public boolean isService(String tokenToCheck)
+      throws InvalidKeyException, BadPaddingException, NoSuchAlgorithmException,
+          IllegalBlockSizeException, NoSuchPaddingException {
+    for (ServiceMetadata serviceMetadata : serviceRepository.findAll()) {
+        if (serviceMetadata.getToken() != null && !serviceMetadata.getToken().equals("")) {
+            String encryptedServiceToken = serviceMetadata.getToken();
+            byte[] keyData = serviceMetadata.getKeyValue();
+            Key key = KeyHelper.restoreKey(keyData);
+            try {
+                if (KeyHelper.decrypt(encryptedServiceToken, key).equals(tokenToCheck)) return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    return false;
   }
 
   /*
