@@ -431,6 +431,16 @@ $('.modal-dialog').draggable();
                 return paginationVNF;
             }
         });
+<<<<<<< HEAD
+
+});
+
+
+app.filter('startFrom', function() {
+    return function(input, start) {
+        start = +start; //parse to int
+        return input.slice(start);
+=======
 // VNFD JSON modal Starts
     $scope.prettyJson = function (vnfdJson) {
         $scope.vnfdJson = vnfdJson;
@@ -443,6 +453,7 @@ $('.modal-dialog').draggable();
         jsonDiv.append(
             renderjson($scope.vnfdinfo)
         );
+>>>>>>> 28f07e0158c57d572f338cd3d002fd5847b1e606
     }
     $('#JsonCode').on('hidden.bs.modal', function () {
         var jsonDiv = document.querySelector("#jsonvnfd");
@@ -452,10 +463,6 @@ $('.modal-dialog').draggable();
 // VNFD JSON Starts
 });
 app.filter('clearText', function() {
-    return function(text) {
-        return  text ? String(text).replace(/"<[^>]+>/gm, '') : '';
-    }
-});app.filter('clearText', function() {
     return function(text) {
         return  text ? String(text).replace(/"<[^>]+>/gm, '') : '';
     }

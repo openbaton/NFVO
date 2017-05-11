@@ -1,3 +1,69 @@
+<<<<<<< HEAD
+ <!--
+  ~ Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  ~
+  -->
+<div class="row">
+    <div class="col-lg-12">
+        <h1>VDU
+            <small>Information</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li>
+                <a href="#main"><i class="fa fa-dashboard"></i>
+                    Overview</a>
+            </li>
+            <li class="">
+                <a href="#vnfdescriptors/"><i class="fa fa-file-text-o"></i>
+                    VNF Descriptors</a>
+            </li>
+            <li class="">
+                <a href="#vnfdescriptors/{{vnfdescriptorId}}"><i class="fa fa-file-text-o"></i>
+                    VNF Descriptor</a>
+            </li>
+            <li class="active"><i class="fa fa-pencil-square-o"></i>
+                VDU
+            </li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12 top-buffer" ng-show="vnfdinfo">
+        <div class="col-lg-12">
+            <div>
+
+                    <span ng-init="vnfdInfo=vnfdinfo"></span>
+                <div ng-repeat="vdu in vnfdinfo.vdu" ng-show="vdu.id==vduId">
+                    <h2>Virtual Deployment Unit</h2>
+                    <dl class="dl-horizontal">
+                        <spam ng-repeat="(k,v) in vdu" ng-if="k!='vimInstance'">
+                            <dt>{{k}}</dt>
+                            <dd>{{v}}</dd>
+
+                        </spam>
+                         <span ng-if="vdu.vimInstance">
+                                 <dt>vimInstance</dt>
+                                 <dd>{{vdu.vimInstance.name}}</dd>
+                         </span>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+=======
  <!--Copyright (c) 2016 Open Baton (http://www.openbaton.org)
  
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -269,3 +335,4 @@
          </div>
      </div>
  </div>
+>>>>>>> 28f07e0158c57d572f338cd3d002fd5847b1e606

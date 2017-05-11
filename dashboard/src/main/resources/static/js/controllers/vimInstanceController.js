@@ -71,7 +71,7 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
             })
             .error(function (data, status) {
                 console.error('STATUS: ' + status + ' DATA: ' + JSON.stringify(data));
-                showError(status, JSON.stringify(data));
+                showError(JSON.stringify(data), status);
             });
     }
 
@@ -123,9 +123,9 @@ function checkKey() {
                 })
                 .error(function (data, status) {
                     if (status === 400)
-                        showError(status, {message:"Something went wrong"});
+                        showError({message:"Something went wrong"}, status);
                     else
-                        showError(status, data);
+                        showError(data, status);
 
                 });
         } else if (fileInput) {
@@ -138,7 +138,7 @@ function checkKey() {
                         loadVIM();
                     })
                     .error(function (data, status) {
-                            showError(status, data);
+                            showError(data, status);
 
                     });
             } else if ($scope.textTopologyJson !== '') {
@@ -150,7 +150,7 @@ function checkKey() {
                         loadVIM();
                     })
                     .error(function (data, status) {
-                        showError(status, data);
+                        showError(data, status);
 
                     });
             }
@@ -201,7 +201,7 @@ function checkKey() {
                 $scope.vimInstanceJson = {};
             })
             .error(function (data, status) {
-                showError(status, data);
+                showError(data, status);
             });
 
     };
@@ -234,7 +234,7 @@ function checkKey() {
                 $scope.upDatacenter = data;
             })
             .error(function (data, status) {
-                showError(status, data);
+                showError(data, status);
             });
     };
     $scope.closeAlert = function (index) {
@@ -250,7 +250,7 @@ function checkKey() {
 
             })
             .error(function (data, status) {
-                showError(status, data);
+                showError(data, status);
             });
     };
 
@@ -263,7 +263,7 @@ function checkKey() {
                     $scope.vimInstanceJSON = JSON.stringify(response, undefined, 4);
 
                 }).error(function (data, status) {
-                    showError(status, data);
+                    showError(data, status);
                 });
         else {
             http.get(url)
@@ -271,7 +271,7 @@ function checkKey() {
                     $scope.vimInstances = response;
                 })
                 .error(function (data, status) {
-                    showError(status, data);
+                    showError(data, status);
                 });
         }
     }
@@ -290,13 +290,13 @@ function checkKey() {
 
         })
             .error(function (data, status) {
-                showError(status, data);
+                showError(data, status);
             });
 
     }
 
 
-    function showError(status, data) {
+    function showError(data, status) {
         if (status === 500) {
             $scope.alerts.push({
             type: 'danger',
@@ -328,5 +328,26 @@ function checkKey() {
         }, 5000);
         $('.modal').modal('hide');
     }
+
+    // vim JSON modal Starts
+    $scope.prettyJson = function (vimInstanceJSON) {
+        $scope.vimInstanceJSON = vimInstanceJSON;
+        $scope.jsonrendVIM()
+    }
+    $scope.jsonrendVIM = function () {
+        renderjson.set_icons('+', '-');
+        renderjson.set_show_to_level(1);
+        var jsonDiv = document.querySelector("#json");
+        jsonDiv.append(
+            renderjson($scope.vimInstance)
+        );
+    }
+    $('#jsonInfo').on('hidden.bs.modal', function () {
+        var jsonDiv = document.querySelector("#json");
+        jsonDiv.childNodes[0].remove();
+        jsonDiv.childNodes[0].remove();
+    });
+// vim JSON Starts
+
 
 });

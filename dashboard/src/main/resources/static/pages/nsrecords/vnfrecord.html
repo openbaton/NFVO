@@ -211,7 +211,7 @@
                                         </th>
                                         <th ng-click="predicate = 'vnfc.id'; reverse = !reverse">vnfc <i class="fa fa-sort"></i>
                                         </th>
-                                        <th ng-click="predicate = 'scale_in_out'; reverse = !reverse">scale<i class="fa fa-sort"></i></th>
+                                        <th ng-click="predicate = 'scale_in_out'; reverse = !reverse">scale <i class="fa fa-sort"></i></th>
                                         <th ng-click="predicate = 'instances'; reverse = !reverse">n. instances<i class="fa fa-sort"></i></th>
                                     </tr>
                                 </thead>
@@ -223,7 +223,7 @@
                                         </td>
                                         <td>{{vdu.version}}</td>
 
-                                        <td>{{vdu.vimInstanceName}}</td>
+                                        <td>{{vdu.vimInstanceName | clearText}}</td>
                                         <td class=" col-lg-3">
                                             <span ng-repeat="vnfci in vdu.vnfc_instance" class="">
 

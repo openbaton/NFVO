@@ -996,7 +996,10 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         remove($scope.launchPopsAvailable[vnfd.name].pops, pop);
         $scope.tableParamsFilteredLaunchPops.reload();
         $scope.tableParamsFilteredPops.reload();
+<<<<<<< HEAD
+=======
 
+>>>>>>> 28f07e0158c57d572f338cd3d002fd5847b1e606
         launchPopTable.expanded=true;
     }
 

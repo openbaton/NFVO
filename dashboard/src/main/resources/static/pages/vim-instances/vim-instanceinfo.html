@@ -40,7 +40,7 @@
       <h3>Refresh status <a href="" ng-click="refreshDc()"><i id="refreshIco"
                                                                                        class="fa fa-refresh"></i>
       </a></h3>
-        <a href="#" data-toggle="modal" data-target="#jsonInfo">Show JSON</a>
+        <a href="#" data-toggle="modal" ng-click="prettyJson(vimInstanceJSON)" data-target="#jsonInfo">Show JSON</a>
       <div class = "table-responsive">
          <table
                 class="table table-bordered table-hover tablesorter"
@@ -245,7 +245,7 @@
                 <h4 class="modal-title" id="myModalLabel">JSON of VIM instance: {{vimInstance.name}}</h4>
             </div>
             <div class="modal-body">
-                <pre id="json">{{vimInstanceJSON}}</pre>
+                <div id="json"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" id="closeModal" class="btn btn-default"

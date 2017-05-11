@@ -71,7 +71,7 @@ app.controller('UserCtrl', function ($scope, serviceAPI, $routeParams, http, $co
                 $scope.currentUser = response
             })
             .error(function (response, status) {
-                showError(status, response);
+                showError(response, status);
             });
     };
 

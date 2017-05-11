@@ -72,6 +72,10 @@ angular.module('app', ['ngTable','ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCoo
                 controller: 'VnfdCtrl'
             }).
             when('/vnfdescriptors/:vnfdescriptorId/vdus/:vduId', {
+            templateUrl: 'pages/nsdescriptors/vnfdescriptors/vdu.html',
+            controller: 'VnfdCtrl'
+            }).
+            when('/vnfdescriptors/:vnfdescriptorId/vdus/:vduId', {
                 templateUrl: 'pages/nsdescriptors/vnfdescriptors/vdu.html',
                 controller: 'VnfdCtrl'
             }).

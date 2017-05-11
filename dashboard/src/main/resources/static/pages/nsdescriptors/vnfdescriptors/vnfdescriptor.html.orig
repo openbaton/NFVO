@@ -111,7 +111,11 @@
 							</tr>
 						<tr>
 							<td>Deployment Flavour keys</td>
+<<<<<<< HEAD
+							<td><span ng-repeat="df in vnfdinfo.deployment_flavour">{{df.flavour_key}} {{$last ? '' : ', '}}</span>
+=======
 							<td><span ng-repeat="df in vnfdinfo.deployment_flavour">{{df.flavour_key}}{{$last ? '' : ', '}}</span>
+>>>>>>> 28f07e0158c57d572f338cd3d002fd5847b1e606
 							</td></tr>
 						<tr ng-show="vnfdinfo.vnffgd.length > 0">
 								<td>VNF Forwarding Graph</td>
@@ -338,9 +342,15 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal"><span
+<<<<<<< HEAD
+                        aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+				<dt class="modal-title" id="myModalLabel"><span class="cursordefault">JSON of NSD:</span> {{vnfdInfo.name}}</dt>
+=======
 						aria-hidden="true">&times;</span><span
 						class="sr-only">Close</span></button>
 					<dt class="modal-title" id="myModalLabel">JSON of NSD: {{vnfdInfo.name}}</dt>
+>>>>>>> 28f07e0158c57d572f338cd3d002fd5847b1e606
 			</div>
 			<div class="modal-body">
 				<div id="jsonS"></div>
