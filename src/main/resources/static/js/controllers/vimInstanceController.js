@@ -328,4 +328,25 @@ function checkKey() {
         $('.modal').modal('hide');
     }
 
+    // vim JSON modal Starts
+    $scope.prettyJson = function (vimInstanceJSON) {
+        $scope.vimInstanceJSON = vimInstanceJSON;
+        $scope.jsonrendVIM()
+    }
+    $scope.jsonrendVIM = function () {
+        renderjson.set_icons('+', '-');
+        renderjson.set_show_to_level(1);
+        var jsonDiv = document.querySelector("#json");
+        jsonDiv.append(
+            renderjson($scope.vimInstance)
+        );
+    }
+    $('#jsonInfo').on('hidden.bs.modal', function () {
+        var jsonDiv = document.querySelector("#json");
+        jsonDiv.childNodes[0].remove();
+        jsonDiv.childNodes[0].remove();
+    });
+// vim JSON Starts
+
+
 });
