@@ -94,7 +94,6 @@ public class Registration {
     factory.setUsername(username);
     factory.setPassword(password);
     Connection connection = factory.newConnection();
-    factory.setVirtualHost("openbaton");
     Channel channel = connection.createChannel();
 
     // TODO durable?
