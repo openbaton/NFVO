@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,8 +49,6 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 import org.springframework.security.provisioning.UserDetailsManager;
-
-import javax.annotation.PostConstruct;
 
 @Configuration
 @EnableAuthorizationServer
@@ -81,10 +80,10 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
 
   @PostConstruct
   private void init() {
-      this.serviceTokenServices = new DefaultTokenServices();
-      this.serviceTokenServices.setSupportRefreshToken(true);
-      this.serviceTokenServices.setTokenStore(this.tokenStore);
-      this.serviceTokenServices.setAccessTokenValiditySeconds(serviceTokenValidityDuration);
+    this.serviceTokenServices = new DefaultTokenServices();
+    this.serviceTokenServices.setSupportRefreshToken(true);
+    this.serviceTokenServices.setTokenStore(this.tokenStore);
+    this.serviceTokenServices.setAccessTokenValiditySeconds(serviceTokenValidityDuration);
   }
 
   @Autowired
