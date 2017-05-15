@@ -66,24 +66,23 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
   @Value("${spring.rabbitmq.username:admin}")
   private String rabbitUsername;
 
-  @Value("${spring.rabbitmq.vhost:openbaton}")
+  @Value("${spring.rabbitmq.virtual-host:/}")
   private String vhost;
 
   /*
    * Service related operations
    */
 
-    /**
-     *
-     * @param body
-     * @return an encrypted token
-     * @throws NotFoundException
-     * @throws IllegalBlockSizeException
-     * @throws InvalidKeyException
-     * @throws BadPaddingException
-     * @throws NoSuchAlgorithmException
-     * @throws NoSuchPaddingException
-     */
+  /**
+   * @param body
+   * @return an encrypted token
+   * @throws NotFoundException
+   * @throws IllegalBlockSizeException
+   * @throws InvalidKeyException
+   * @throws BadPaddingException
+   * @throws NoSuchAlgorithmException
+   * @throws NoSuchPaddingException
+   */
   @Override
   public String registerService(byte[] body)
       throws NotFoundException, IllegalBlockSizeException, InvalidKeyException, BadPaddingException,
@@ -138,17 +137,15 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
     }
 
     if (action.toLowerCase().equals("register")) {
-        if (service.getToken() != null && !service.getToken().equals("")) {
-            if (service.getTokenExpirationDate() > (new Date()).getTime())
-                return service.getToken();
-        }
-          OAuth2AccessToken token = serverConfig.getNewServiceToken(serviceName);
-        service.setToken(
-              KeyHelper.encryptToString(
-                  token.getValue(), KeyHelper.restoreKey(service.getKeyValue())));
-        service.setTokenExpirationDate(token.getExpiration().getTime());
-        serviceRepository.save(service);
-        return service.getToken();
+      if (service.getToken() != null && !service.getToken().equals("")) {
+        if (service.getTokenExpirationDate() > (new Date()).getTime()) return service.getToken();
+      }
+      OAuth2AccessToken token = serverConfig.getNewServiceToken(serviceName);
+      service.setToken(
+          KeyHelper.encryptToString(token.getValue(), KeyHelper.restoreKey(service.getKeyValue())));
+      service.setTokenExpirationDate(token.getExpiration().getTime());
+      serviceRepository.save(service);
+      return service.getToken();
 
     } else if (action.toLowerCase().equals("remove") || action.toLowerCase().equals("delete")) {
       serviceRepository.delete(service);
@@ -182,16 +179,16 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
       throws InvalidKeyException, BadPaddingException, NoSuchAlgorithmException,
           IllegalBlockSizeException, NoSuchPaddingException {
     for (ServiceMetadata serviceMetadata : serviceRepository.findAll()) {
-        if (serviceMetadata.getToken() != null && !serviceMetadata.getToken().equals("")) {
-            String encryptedServiceToken = serviceMetadata.getToken();
-            byte[] keyData = serviceMetadata.getKeyValue();
-            Key key = KeyHelper.restoreKey(keyData);
-            try {
-                if (KeyHelper.decrypt(encryptedServiceToken, key).equals(tokenToCheck)) return true;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+      if (serviceMetadata.getToken() != null && !serviceMetadata.getToken().equals("")) {
+        String encryptedServiceToken = serviceMetadata.getToken();
+        byte[] keyData = serviceMetadata.getKeyValue();
+        Key key = KeyHelper.restoreKey(keyData);
+        try {
+          if (KeyHelper.decrypt(encryptedServiceToken, key).equals(tokenToCheck)) return true;
+        } catch (Exception e) {
+          e.printStackTrace();
         }
+      }
     }
     return false;
   }
@@ -200,6 +197,26 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
    * Manager related operations
    */
 
+  /**
+   * Handles the registration requests of plugins (VIM drivers) and returns a ManagerCredential
+   * object from which the plugins can get the rabbitmq username and password.
+   *
+   * @param message
+   * @return
+   * @throws IOException
+   */
+  public ManagerCredentials enableManager(byte[] message) throws IOException {
+    return enableManager(new String(message));
+  }
+
+  /**
+   * Handles the registration requests of VNFMs and returns a ManagerCredential object from which
+   * the VNFMs can get the rabbitmq username and password.
+   *
+   * @param message
+   * @return
+   * @throws IOException
+   */
   @Override
   public ManagerCredentials enableManager(String message) throws IOException {
     JsonObject body = gson.fromJson(message, JsonObject.class);
@@ -260,13 +277,13 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
               + ":"
               + managementPort
               + "/api/permissions/"
-              + vhost
+              + vhost.replace("/", "%2f")
               + "/"
               + username;
       put = new HttpPut(uri);
 
       String regexOpenbaton = "(^nfvo)";
-      String regexManager = "(^" + username + ")";
+      String regexManager = "(^" + username + ")|(openbaton-exchange)";
       String regexBoth = regexOpenbaton + "|" + regexManager;
       map = new HashMap<>();
       map.put("configure", regexManager);
