@@ -7,6 +7,9 @@ import com.rabbitmq.client.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.UUID;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeoutException;
 import org.openbaton.catalogue.nfvo.ManagerCredentials;
 import org.slf4j.Logger;
@@ -87,7 +90,7 @@ public class Registration {
    */
   public ManagerCredentials registerPluginToNfvo(
       String brokerIp, int port, String username, String password, String pluginName)
-      throws IOException, TimeoutException {
+      throws IOException, TimeoutException, InterruptedException {
     ConnectionFactory factory = new ConnectionFactory();
     factory.setHost(brokerIp);
     factory.setPort(port);
@@ -108,44 +111,48 @@ public class Registration {
     channel.queueDeclare(pluginName, false, false, true, null);
     channel.queueBind(pluginName, "openbaton-exchange", pluginName);
 
-    AMQP.BasicProperties properties =
-        new AMQP.BasicProperties.Builder().replyTo(pluginName).build();
-
     String message = "{'type':'" + pluginName + "','action':'register'}";
-    log.debug("Sending message: " + message);
+
+    String replyQueueName = channel.queueDeclare().getQueue();
+    final String corrId = UUID.randomUUID().toString();
+
+    AMQP.BasicProperties props =
+        new AMQP.BasicProperties.Builder().correlationId(corrId).replyTo(replyQueueName).build();
+
     channel.basicPublish(
-        "openbaton-exchange", "nfvo.manager.handling", properties, message.getBytes());
+        "openbaton-exchange", "nfvo.manager.handling", props, message.getBytes("UTF-8"));
 
-    QueueingConsumer consumer = new QueueingConsumer(channel);
-    QueueingConsumer.Delivery delivery;
-    channel.basicConsume(pluginName, consumer);
-    ManagerCredentials managerCredentials = null;
-    boolean exit = false;
-    while (!exit) {
-      try {
-        delivery = consumer.nextDelivery();
+    final BlockingQueue<ManagerCredentials> response =
+        new ArrayBlockingQueue<ManagerCredentials>(1);
 
-        byte[] reply = delivery.getBody();
-        Object deserialized = deserialize(reply);
-        if (!(deserialized instanceof ManagerCredentials))
-          throw new RuntimeException(
-              "Could not obtain credentials while registering plugin to Nfvo since the reply is no ManagerCredentials object");
-        managerCredentials = (ManagerCredentials) deserialized;
-        exit = true;
-      } catch (Exception e) {
-        e.printStackTrace();
-        exit = true;
-      }
-    }
-    if (managerCredentials == null)
-      throw new RuntimeException("Could not obtain credentials while registering plugin to Nfvo");
+    channel.basicConsume(
+        replyQueueName,
+        true,
+        new DefaultConsumer(channel) {
+          @Override
+          public void handleDelivery(
+              String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
+              throws IOException {
+            if (properties.getCorrelationId().equals(corrId)) {
+              ManagerCredentials managerCredentials = null;
+              ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(body);
+              ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
+              Object replyObject = null;
+              try {
+                replyObject = objectInputStream.readObject();
+              } catch (ClassNotFoundException e) {
+                throw new RuntimeException(
+                    "Could not deserialize the registration request's reply.", e.getCause());
+              }
+              if (!(replyObject instanceof ManagerCredentials))
+                throw new RuntimeException(
+                    "Could not obtain credentials while registering plugin to Nfvo since the reply is no ManagerCredentials object");
+              managerCredentials = (ManagerCredentials) replyObject;
+              response.offer(managerCredentials);
+            }
+          }
+        });
 
-    return managerCredentials;
-  }
-
-  private static Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
-    ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
-    ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
-    return objectInputStream.readObject();
+    return response.take();
   }
 }
