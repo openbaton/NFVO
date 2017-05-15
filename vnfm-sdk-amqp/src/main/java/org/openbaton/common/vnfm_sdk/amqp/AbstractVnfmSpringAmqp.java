@@ -110,7 +110,8 @@ public abstract class AbstractVnfmSpringAmqp extends AbstractVnfm
 
   @Override
   protected void register() {
-    registration.registerVnfmToNfvo(((VnfmSpringHelperRabbit) vnfmHelper).getRabbitTemplate());
+    registration.registerVnfmToNfvo(
+        ((VnfmSpringHelperRabbit) vnfmHelper).getRabbitTemplate(), this.getType());
     ((VnfmSpringHelperRabbit) vnfmHelper)
         .sendMessageToQueue(RabbitConfiguration.queueName_vnfmRegister, vnfmManagerEndpoint);
   }

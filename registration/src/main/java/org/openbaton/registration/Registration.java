@@ -3,6 +3,11 @@ package org.openbaton.registration;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.rabbitmq.client.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.concurrent.TimeoutException;
 import org.openbaton.catalogue.nfvo.ManagerCredentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,10 +36,10 @@ public class Registration {
    *
    * @param rabbitTemplate
    */
-  public void registerVnfmToNfvo(RabbitTemplate rabbitTemplate) {
+  public void registerVnfmToNfvo(RabbitTemplate rabbitTemplate, String type) {
 
     JsonObject message = new JsonObject();
-    message.add("type", new JsonPrimitive("dummy"));
+    message.add("type", new JsonPrimitive(type));
     message.add("action", new JsonPrimitive("register"));
     log.debug("Registering the Vnfm to the Nfvo");
     Object res =
@@ -65,5 +70,83 @@ public class Registration {
     message.add("password", new JsonPrimitive(this.password));
     log.debug("Deregister the Vnfm from the Nfvo");
     rabbitTemplate.convertSendAndReceive("nfvo.manager.handling", gson.toJson(message));
+  }
+
+  /**
+   * Sends a registration message to the NFVO and returns a managerCredentials object from which the
+   * rabbitmq username and password can be obtained.
+   *
+   * @param brokerIp
+   * @param port
+   * @param username
+   * @param password
+   * @param pluginName
+   * @return
+   * @throws IOException
+   * @throws TimeoutException
+   */
+  public ManagerCredentials registerPluginToNfvo(
+      String brokerIp, int port, String username, String password, String pluginName)
+      throws IOException, TimeoutException {
+    ConnectionFactory factory = new ConnectionFactory();
+    factory.setHost(brokerIp);
+    factory.setPort(port);
+    factory.setUsername(username);
+    factory.setPassword(password);
+    Connection connection = factory.newConnection();
+    factory.setVirtualHost("openbaton");
+    Channel channel = connection.createChannel();
+
+    // TODO durable?
+    channel.exchangeDeclare("openbaton-exchange", "topic", true);
+
+    // TODO handle durable, autodelte and others...
+    channel.queueDeclare("nfvo.manager.handling", true, false, true, null);
+    channel.queueBind("nfvo.manager.handling", "openbaton-exchange", "");
+
+    channel.basicQos(1);
+
+    channel.queueDeclare(pluginName, false, false, true, null);
+    channel.queueBind(pluginName, "openbaton-exchange", pluginName);
+
+    AMQP.BasicProperties properties =
+        new AMQP.BasicProperties.Builder().replyTo(pluginName).build();
+
+    String message = "{'type':'" + pluginName + "','action':'register'}";
+    log.debug("Sending message: " + message);
+    channel.basicPublish(
+        "openbaton-exchange", "nfvo.manager.handling", properties, message.getBytes());
+
+    QueueingConsumer consumer = new QueueingConsumer(channel);
+    QueueingConsumer.Delivery delivery;
+    channel.basicConsume(pluginName, consumer);
+    ManagerCredentials managerCredentials = null;
+    boolean exit = false;
+    while (!exit) {
+      try {
+        delivery = consumer.nextDelivery();
+
+        byte[] reply = delivery.getBody();
+        Object deserialized = deserialize(reply);
+        if (!(deserialized instanceof ManagerCredentials))
+          throw new RuntimeException(
+              "Could not obtain credentials while registering plugin to Nfvo since the reply is no ManagerCredentials object");
+        managerCredentials = (ManagerCredentials) deserialized;
+        exit = true;
+      } catch (Exception e) {
+        e.printStackTrace();
+        exit = true;
+      }
+    }
+    if (managerCredentials == null)
+      throw new RuntimeException("Could not obtain credentials while registering plugin to Nfvo");
+
+    return managerCredentials;
+  }
+
+  private static Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
+    ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
+    ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
+    return objectInputStream.readObject();
   }
 }
