@@ -89,13 +89,19 @@ public class Registration {
    * @throws TimeoutException
    */
   public ManagerCredentials registerPluginToNfvo(
-      String brokerIp, int port, String username, String password, String pluginName)
+      String brokerIp,
+      int port,
+      String username,
+      String password,
+      String virtualHost,
+      String pluginName)
       throws IOException, TimeoutException, InterruptedException {
     ConnectionFactory factory = new ConnectionFactory();
     factory.setHost(brokerIp);
     factory.setPort(port);
     factory.setUsername(username);
     factory.setPassword(password);
+    factory.setVirtualHost(virtualHost);
     Connection connection = factory.newConnection();
     Channel channel = connection.createChannel();
 
