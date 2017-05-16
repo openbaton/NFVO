@@ -53,8 +53,6 @@ public class Registration {
       throw new IllegalArgumentException(
           "The NFVO's answer to the registration request should be of type ManagerCredentials, but it is "
               + res.getClass().getSimpleName());
-    this.username = ((ManagerCredentials) res).getRabbitUsername();
-    this.password = ((ManagerCredentials) res).getRabbitPassword();
     ((CachingConnectionFactory) rabbitTemplate.getConnectionFactory()).setUsername(username);
     ((CachingConnectionFactory) rabbitTemplate.getConnectionFactory()).setPassword(password);
   }
@@ -96,6 +94,7 @@ public class Registration {
       String virtualHost,
       String pluginName)
       throws IOException, TimeoutException, InterruptedException {
+    String message = "{'type':'" + pluginName + "','action':'register'}";
     ConnectionFactory factory = new ConnectionFactory();
     factory.setHost(brokerIp);
     factory.setPort(port);
@@ -113,11 +112,6 @@ public class Registration {
     channel.queueBind("nfvo.manager.handling", "openbaton-exchange", "");
 
     channel.basicQos(1);
-
-    channel.queueDeclare(pluginName, false, false, true, null);
-    channel.queueBind(pluginName, "openbaton-exchange", pluginName);
-
-    String message = "{'type':'" + pluginName + "','action':'register'}";
 
     String replyQueueName = channel.queueDeclare().getQueue();
     final String corrId = UUID.randomUUID().toString();
@@ -159,6 +153,49 @@ public class Registration {
           }
         });
 
-    return response.take();
+    ManagerCredentials managerCredentials = response.take();
+
+    channel.queueDelete(replyQueueName);
+    channel.close();
+    connection.close();
+    return managerCredentials;
+  }
+
+  public void deregisterPluginFromNfvo(
+      String brokerIp,
+      int port,
+      String username,
+      String password,
+      String virtualHost,
+      String managerCredentialUsername,
+      String managerCredentialPassword)
+      throws IOException, TimeoutException {
+    String message =
+        "{'username':'"
+            + managerCredentialUsername
+            + "','action':'deregister','password':'"
+            + managerCredentialPassword
+            + "'}";
+    ConnectionFactory factory = new ConnectionFactory();
+    factory.setHost(brokerIp);
+    factory.setPort(port);
+    factory.setUsername(username);
+    factory.setPassword(password);
+    factory.setVirtualHost(virtualHost);
+    Connection connection = factory.newConnection();
+    Channel channel = connection.createChannel();
+
+    // TODO durable?
+    channel.exchangeDeclare("openbaton-exchange", "topic", true);
+
+    // TODO handle durable, autodelte and others...
+    channel.queueDeclare("nfvo.manager.handling", true, false, true, null);
+    channel.queueBind("nfvo.manager.handling", "openbaton-exchange", "");
+
+    channel.basicQos(1);
+
+    channel.basicPublish("openbaton-exchange", "nfvo.manager.handling", null, message.getBytes());
+    channel.close();
+    connection.close();
   }
 }
