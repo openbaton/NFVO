@@ -53,6 +53,8 @@ public class Registration {
       throw new IllegalArgumentException(
           "The NFVO's answer to the registration request should be of type ManagerCredentials, but it is "
               + res.getClass().getSimpleName());
+    this.username = ((ManagerCredentials) res).getRabbitUsername();
+    this.password = ((ManagerCredentials) res).getRabbitPassword();
     ((CachingConnectionFactory) rabbitTemplate.getConnectionFactory()).setUsername(username);
     ((CachingConnectionFactory) rabbitTemplate.getConnectionFactory()).setPassword(password);
   }
@@ -185,10 +187,8 @@ public class Registration {
     Connection connection = factory.newConnection();
     Channel channel = connection.createChannel();
 
-    // TODO durable?
     channel.exchangeDeclare("openbaton-exchange", "topic", true);
 
-    // TODO handle durable, autodelte and others...
     channel.queueDeclare("nfvo.manager.handling", true, false, true, null);
     channel.queueBind("nfvo.manager.handling", "openbaton-exchange", "");
 
