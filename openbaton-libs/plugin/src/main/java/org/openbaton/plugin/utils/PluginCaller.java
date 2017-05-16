@@ -139,7 +139,7 @@ public class PluginCaller {
     }
     Channel channel = connection.createChannel();
     String replyQueueName = channel.queueDeclare().getQueue();
-    String exchange = "plugin-exchange";
+    String exchange = "openbaton-exchange";
     channel.queueBind(replyQueueName, exchange, replyQueueName);
     QueueingConsumer consumer = new QueueingConsumer(channel);
     String consumerTag = channel.basicConsume(replyQueueName, true, consumer);
