@@ -3,6 +3,14 @@ package org.openbaton.registration;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.rabbitmq.client.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.UUID;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeoutException;
 import org.openbaton.catalogue.nfvo.ManagerCredentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,10 +39,10 @@ public class Registration {
    *
    * @param rabbitTemplate
    */
-  public void registerVnfmToNfvo(RabbitTemplate rabbitTemplate) {
+  public void registerVnfmToNfvo(RabbitTemplate rabbitTemplate, String type) {
 
     JsonObject message = new JsonObject();
-    message.add("type", new JsonPrimitive("dummy"));
+    message.add("type", new JsonPrimitive(type));
     message.add("action", new JsonPrimitive("register"));
     log.debug("Registering the Vnfm to the Nfvo");
     Object res =
@@ -65,5 +73,129 @@ public class Registration {
     message.add("password", new JsonPrimitive(this.password));
     log.debug("Deregister the Vnfm from the Nfvo");
     rabbitTemplate.convertSendAndReceive("nfvo.manager.handling", gson.toJson(message));
+  }
+
+  /**
+   * Sends a registration message to the NFVO and returns a managerCredentials object from which the
+   * rabbitmq username and password can be obtained.
+   *
+   * @param brokerIp
+   * @param port
+   * @param username
+   * @param password
+   * @param pluginName
+   * @return
+   * @throws IOException
+   * @throws TimeoutException
+   */
+  public ManagerCredentials registerPluginToNfvo(
+      String brokerIp,
+      int port,
+      String username,
+      String password,
+      String virtualHost,
+      String pluginName)
+      throws IOException, TimeoutException, InterruptedException {
+    String message = "{'type':'" + pluginName + "','action':'register'}";
+    ConnectionFactory factory = new ConnectionFactory();
+    factory.setHost(brokerIp);
+    factory.setPort(port);
+    factory.setUsername(username);
+    factory.setPassword(password);
+    factory.setVirtualHost(virtualHost);
+    Connection connection = factory.newConnection();
+    Channel channel = connection.createChannel();
+
+    // TODO durable?
+    channel.exchangeDeclare("openbaton-exchange", "topic", true);
+
+    // TODO handle durable, autodelte and others...
+    channel.queueDeclare("nfvo.manager.handling", true, false, true, null);
+    channel.queueBind("nfvo.manager.handling", "openbaton-exchange", "");
+
+    channel.basicQos(1);
+
+    String replyQueueName = channel.queueDeclare().getQueue();
+    final String corrId = UUID.randomUUID().toString();
+
+    AMQP.BasicProperties props =
+        new AMQP.BasicProperties.Builder().correlationId(corrId).replyTo(replyQueueName).build();
+
+    channel.basicPublish(
+        "openbaton-exchange", "nfvo.manager.handling", props, message.getBytes("UTF-8"));
+
+    final BlockingQueue<ManagerCredentials> response =
+        new ArrayBlockingQueue<ManagerCredentials>(1);
+
+    channel.basicConsume(
+        replyQueueName,
+        true,
+        new DefaultConsumer(channel) {
+          @Override
+          public void handleDelivery(
+              String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
+              throws IOException {
+            if (properties.getCorrelationId().equals(corrId)) {
+              ManagerCredentials managerCredentials = null;
+              ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(body);
+              ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
+              Object replyObject = null;
+              try {
+                replyObject = objectInputStream.readObject();
+              } catch (ClassNotFoundException e) {
+                throw new RuntimeException(
+                    "Could not deserialize the registration request's reply.", e.getCause());
+              }
+              if (!(replyObject instanceof ManagerCredentials))
+                throw new RuntimeException(
+                    "Could not obtain credentials while registering plugin to Nfvo since the reply is no ManagerCredentials object");
+              managerCredentials = (ManagerCredentials) replyObject;
+              response.offer(managerCredentials);
+            }
+          }
+        });
+
+    ManagerCredentials managerCredentials = response.take();
+
+    channel.queueDelete(replyQueueName);
+    channel.close();
+    connection.close();
+    return managerCredentials;
+  }
+
+  public void deregisterPluginFromNfvo(
+      String brokerIp,
+      int port,
+      String username,
+      String password,
+      String virtualHost,
+      String managerCredentialUsername,
+      String managerCredentialPassword)
+      throws IOException, TimeoutException {
+    String message =
+        "{'username':'"
+            + managerCredentialUsername
+            + "','action':'deregister','password':'"
+            + managerCredentialPassword
+            + "'}";
+    ConnectionFactory factory = new ConnectionFactory();
+    factory.setHost(brokerIp);
+    factory.setPort(port);
+    factory.setUsername(username);
+    factory.setPassword(password);
+    factory.setVirtualHost(virtualHost);
+    Connection connection = factory.newConnection();
+    Channel channel = connection.createChannel();
+
+    channel.exchangeDeclare("openbaton-exchange", "topic", true);
+
+    channel.queueDeclare("nfvo.manager.handling", true, false, true, null);
+    channel.queueBind("nfvo.manager.handling", "openbaton-exchange", "");
+
+    channel.basicQos(1);
+
+    channel.basicPublish("openbaton-exchange", "nfvo.manager.handling", null, message.getBytes());
+    channel.close();
+    connection.close();
   }
 }
