@@ -46,10 +46,18 @@ public class RabbitManager {
   private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
   public static List<String> getQueues(
-      String brokerIp, String username, String password, int managementPort) throws IOException {
+      String brokerIp, String username, String password, String virtualHost, int managementPort)
+      throws IOException {
     List<String> result = new ArrayList<>();
     String encoding = Base64.encodeBase64String((username + ":" + password).getBytes());
-    HttpGet httpGet = new HttpGet("http://" + brokerIp + ":" + managementPort + "/api/queues/");
+    HttpGet httpGet =
+        new HttpGet(
+            "http://"
+                + brokerIp
+                + ":"
+                + managementPort
+                + "/api/queues/"
+                + virtualHost.replace("/", "%2f"));
     httpGet.setHeader("Authorization", "Basic " + encoding);
 
     log.trace("executing request " + httpGet.getRequestLine());
@@ -72,6 +80,6 @@ public class RabbitManager {
   }
 
   public static void main(String[] args) throws IOException {
-    System.out.println(getQueues("localhost", "admin", "openbaton", 5672));
+    System.out.println(getQueues("localhost", "admin", "openbaton", "/", 5672));
   }
 }
