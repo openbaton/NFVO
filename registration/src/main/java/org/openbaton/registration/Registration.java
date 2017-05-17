@@ -72,7 +72,7 @@ public class Registration {
     message.add("action", new JsonPrimitive("deregister"));
     message.add("password", new JsonPrimitive(this.password));
     log.debug("Deregister the Vnfm from the Nfvo");
-    rabbitTemplate.convertSendAndReceive("nfvo.manager.handling", gson.toJson(message));
+    rabbitTemplate.convertAndSend("nfvo.manager.handling", gson.toJson(message));
   }
 
   /**
