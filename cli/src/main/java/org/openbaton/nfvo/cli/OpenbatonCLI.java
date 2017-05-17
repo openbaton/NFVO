@@ -98,6 +98,9 @@ public class OpenbatonCLI implements CommandLineRunner {
   @Value("${spring.rabbitmq.password:openbaton}")
   private String password;
 
+  @Value("${spring.rabbitmq.virtual-host:/}")
+  private String virtualHost;
+
   @Value("${nfvo.rabbit.management.port:15672}")
   private int managementPort;
 
@@ -400,7 +403,8 @@ public class OpenbatonCLI implements CommandLineRunner {
     //      result += String.format("%40s", entry.getKey()) + "\n";
     //    }
 
-    for (String queue : RabbitManager.getQueues(brokerIp, username, password, managementPort)) {
+    for (String queue :
+        RabbitManager.getQueues(brokerIp, username, password, virtualHost, managementPort)) {
       if (queue.startsWith("vim-drivers") || queue.startsWith("monitoring")) {
         StringTokenizer stringTokenizer = new StringTokenizer(queue, ".");
 
@@ -472,6 +476,7 @@ public class OpenbatonCLI implements CommandLineRunner {
         consumers,
         username,
         password,
+        virtualHost,
         "" + managementPort,
         pluginLogPath,
         true);

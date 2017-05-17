@@ -64,6 +64,9 @@ class SystemStartup implements CommandLineRunner {
   @Value("${nfvo.rabbit.management.port:15672}")
   private String managementPort;
 
+  @Value("${spring.rabbit.virtual-host:/}")
+  private String virtualHost;
+
   @Value("${nfvo.plugin.installation-dir:./plugins}")
   private String pluginDir;
 
@@ -144,6 +147,7 @@ class SystemStartup implements CommandLineRunner {
         Integer.parseInt(numConsumers),
         username,
         password,
+        virtualHost,
         managementPort,
         pluginLogPath);
   }
