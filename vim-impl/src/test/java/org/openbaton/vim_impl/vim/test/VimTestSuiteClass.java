@@ -121,12 +121,14 @@ public class VimTestSuiteClass {
             String.class,
             String.class,
             String.class,
+            String.class,
             int.class)
         .withArguments(
             anyString(),
             anyString(),
             anyString(),
             anyInt(),
+            anyString(),
             anyString(),
             anyString(),
             anyString(),
