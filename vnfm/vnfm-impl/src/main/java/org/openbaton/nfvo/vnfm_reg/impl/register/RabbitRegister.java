@@ -49,6 +49,9 @@ public class RabbitRegister extends VnfmRegister {
   @Value("${nfvo.rabbit.brokerIp:localhost}")
   private String brokerIp;
 
+  @Value("${spring.rabbitmq.virtual-host:/}")
+  private String virtualHost;
+
   @Override
   public void addManagerEndpoint(String endpoint_json) {
 
@@ -84,7 +87,8 @@ public class RabbitRegister extends VnfmRegister {
       if (endpoint.getEndpointType().ordinal() == EndpointType.RABBIT.ordinal()) {
         if (endpoint.isEnabled()) {
           try {
-            if (!RabbitManager.getQueues(brokerIp.trim(), username, password, managementPort)
+            if (!RabbitManager.getQueues(
+                    brokerIp.trim(), username, password, virtualHost, managementPort)
                 .contains("nfvo." + endpoint.getType() + ".actions")) {
               if (endpoint.isActive()) {
                 log.info("Set endpoint " + endpoint.getType() + " to unactive");

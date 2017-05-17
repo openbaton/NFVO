@@ -48,6 +48,9 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
   @Value("${spring.rabbitmq.password:openbaton}")
   private String password;
 
+  @Value("${spring.rabbitmq.virtual-host:/}")
+  private String virtualHost;
+
   @Value("${nfvo.rabbit.management.port:15672}")
   private String managementPort;
 
@@ -135,6 +138,7 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
         Integer.parseInt(numConsumers),
         username,
         password,
+        virtualHost,
         "" + managementPort,
         pluginLogPath,
         waitForPlugin);
@@ -144,7 +148,8 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
   public Set<String> listInstalledVimDrivers() throws IOException {
     Set<String> result = new HashSet<>();
     for (String pluginId :
-        RabbitManager.getQueues(brokerIp, username, password, Integer.parseInt(managementPort))) {
+        RabbitManager.getQueues(
+            brokerIp, username, password, virtualHost, Integer.parseInt(managementPort))) {
       if (pluginId.startsWith("vim-driver")) result.add(pluginId);
     }
     return result;
