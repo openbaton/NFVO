@@ -44,6 +44,7 @@ public class PluginStartup {
       int consumers,
       String username,
       String password,
+      String virtualHost,
       String managementPort,
       String pluginLogPath,
       boolean waitForPlugin)
@@ -52,7 +53,8 @@ public class PluginStartup {
     List<String> queues = null;
     if (waitForPlugin) {
       queues =
-          RabbitManager.getQueues(brokerIp, username, password, Integer.parseInt(managementPort));
+          RabbitManager.getQueues(
+              brokerIp, username, password, virtualHost, Integer.parseInt(managementPort));
     }
 
     Process p =
@@ -68,7 +70,8 @@ public class PluginStartup {
 
     if (waitForPlugin) {
       List<String> queuesNew =
-          RabbitManager.getQueues(brokerIp, username, password, Integer.parseInt(managementPort));
+          RabbitManager.getQueues(
+              brokerIp, username, password, virtualHost, Integer.parseInt(managementPort));
       int waitTime = 30;
       while (queuesNew.size() != queues.size() + 1) {
         try {
@@ -78,7 +81,8 @@ public class PluginStartup {
           return;
         }
         queuesNew =
-            RabbitManager.getQueues(brokerIp, username, password, Integer.parseInt(managementPort));
+            RabbitManager.getQueues(
+                brokerIp, username, password, virtualHost, Integer.parseInt(managementPort));
         waitTime--;
         if (waitTime == 0) {
           log.error("After 15 seconds the plugin is not started.");
@@ -101,6 +105,7 @@ public class PluginStartup {
       int consumers,
       String username,
       String password,
+      String virtualHost,
       String managementPort,
       String pluginLogPath)
       throws IOException {
@@ -133,6 +138,7 @@ public class PluginStartup {
               consumers,
               username,
               password,
+              virtualHost,
               managementPort,
               pluginLogPath,
               waitForPlugin);
@@ -145,6 +151,7 @@ public class PluginStartup {
               consumers,
               username,
               password,
+              virtualHost,
               managementPort,
               pluginLogPath);
         } else log.warn(jar.getAbsolutePath() + " is not a jar file");
