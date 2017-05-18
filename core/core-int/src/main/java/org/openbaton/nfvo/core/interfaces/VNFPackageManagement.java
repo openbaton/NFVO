@@ -30,8 +30,8 @@ public interface VNFPackageManagement {
 
   /** This operation allows submitting and validating the VNF Package. */
   VirtualNetworkFunctionDescriptor onboard(byte[] pack, String projectId)
-      throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage,
-          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException;
+          throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage,
+          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException, VNFPackageFormatException;
 
   /** This operation allows submitting and validating the VNF Package from the marketplace. */
   /**
