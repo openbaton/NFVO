@@ -18,6 +18,7 @@
 package org.openbaton.nfvo.core.interfaces;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Map;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.NFVImage;
@@ -30,8 +31,8 @@ public interface VNFPackageManagement {
 
   /** This operation allows submitting and validating the VNF Package. */
   VirtualNetworkFunctionDescriptor onboard(byte[] pack, String projectId)
-          throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage,
-          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException, VNFPackageFormatException;
+      throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage,
+          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException;
 
   /** This operation allows submitting and validating the VNF Package from the marketplace. */
   /**
@@ -48,6 +49,13 @@ public interface VNFPackageManagement {
       Map<String, Object> imageDetails,
       NFVImage image)
       throws IncompatibleVNFPackage, NotFoundException;
+
+  VirtualNetworkFunctionDescriptor add(
+      byte[] pack, boolean isImageIncluded, String projectId, boolean fromMarketPlace)
+      throws IOException, VimException, NotFoundException, SQLException, PluginException,
+          ExistingVNFPackage, DescriptorWrongFormat, VNFPackageFormatException,
+          IncompatibleVNFPackage, BadRequestException, AlreadyExistingException,
+          NetworkServiceIntegrityException;
 
   /**
    * This operation handles the data about the image of the vnf package

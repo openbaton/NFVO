@@ -17,18 +17,15 @@
  *
  */
 
-package org.openbaton.nfvo.core.utils;
+package org.openbaton.catalogue.nfvo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openbaton.catalogue.util.IdGenerator;
-
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
+import javax.persistence.*;
+import org.openbaton.catalogue.util.IdGenerator;
 
-/**
- * Created by mpa on 22/05/16.
- */
+/** Created by mpa on 22/05/16. */
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"name", "version", "vendor"}))
 public class ImageMetadata implements Serializable {
@@ -41,9 +38,7 @@ public class ImageMetadata implements Serializable {
 
   private String version;
 
-  @JsonIgnore
-  @Version
-  private int hb_version = 0;
+  @JsonIgnore @Version private int hb_version = 0;
 
   private String upload;
 
@@ -57,9 +52,11 @@ public class ImageMetadata implements Serializable {
 
   @JsonIgnore private String username;
 
-  @ElementCollection(fetch = FetchType.EAGER) private Set<String> ids;
+  @ElementCollection(fetch = FetchType.EAGER)
+  private Set<String> ids;
 
-  @ElementCollection(fetch = FetchType.EAGER) private Set<String> names;
+  @ElementCollection(fetch = FetchType.EAGER)
+  private Set<String> names;
 
   private String link;
 
@@ -88,17 +85,32 @@ public class ImageMetadata implements Serializable {
 
   @Override
   public String toString() {
-    return "ImageMetadata{" +
-           "id='" + id + '\'' +
-           ", version=" + version +
-           ", upload='" + upload + '\'' +
-           ", ids=" + ids +
-           ", names=" + names +
-           ", link='" + link + '\'' +
-           ", imageRepoId='" + imageRepoId + '\'' +
-           ", name='" + name + '\'' +
-           ", vendor='" + vendor + '\'' +
-           '}';
+    return "ImageMetadata{"
+        + "id='"
+        + id
+        + '\''
+        + ", version="
+        + version
+        + ", upload='"
+        + upload
+        + '\''
+        + ", ids="
+        + ids
+        + ", names="
+        + names
+        + ", link='"
+        + link
+        + '\''
+        + ", imageRepoId='"
+        + imageRepoId
+        + '\''
+        + ", name='"
+        + name
+        + '\''
+        + ", vendor='"
+        + vendor
+        + '\''
+        + '}';
   }
 
   public void setHb_version(int hb_version) {

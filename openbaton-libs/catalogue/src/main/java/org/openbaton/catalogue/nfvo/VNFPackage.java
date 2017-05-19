@@ -71,6 +71,9 @@ public class VNFPackage implements Serializable {
   )
   private NFVImage image;
 
+  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  private VNFPackageMetadata vnfPackageMetadata;
+
   //Set of scripts to execute
   @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   private Set<Script> scripts;
@@ -162,6 +165,14 @@ public class VNFPackage implements Serializable {
 
   public void setVnfPackageVersion(String vnfPackageVersion) {
     this.vnfPackageVersion = vnfPackageVersion;
+  }
+
+  public VNFPackageMetadata getVnfPackageMetadata() {
+    return vnfPackageMetadata;
+  }
+
+  public void setVnfPackageMetadata(VNFPackageMetadata vnfPackageMetadata) {
+    this.vnfPackageMetadata = vnfPackageMetadata;
   }
 
   @Override

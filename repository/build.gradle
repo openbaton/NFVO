@@ -17,8 +17,6 @@
 
 dependencies {
     compile project(':catalogue')
-    //TODO to remove because everything should be in catalogue
-    compile project(':core-impl')
 
 
     compile 'commons-dbcp:commons-dbcp:1.4'
