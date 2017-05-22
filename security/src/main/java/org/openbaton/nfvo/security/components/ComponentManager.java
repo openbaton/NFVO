@@ -218,125 +218,131 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
    * @throws IOException
    */
   @Override
-  public ManagerCredentials enableManager(String message) throws IOException {
-    JsonObject body = gson.fromJson(message, JsonObject.class);
-    if (!body.has("action")) {
-      log.error("Could not process Json message. The 'action' property is missing.");
+  public ManagerCredentials enableManager(String message) {
+    try {
+      JsonObject body = gson.fromJson(message, JsonObject.class);
+      if (!body.has("action")) {
+        log.error("Could not process Json message. The 'action' property is missing.");
+        return null;
+      }
+      if (body.get("action").getAsString().toLowerCase().equals("register")) {
+        ManagerCredentials managerCredentials = new ManagerCredentials();
+
+        if (!body.has("type")) {
+          log.error("Could not process Json message. The 'type' property is missing.");
+          return null;
+        }
+        String username = body.get("type").getAsString();
+        String password = org.apache.commons.lang.RandomStringUtils.randomAlphanumeric(16);
+        String uri = "http://" + brokerIp + ":" + managementPort + "/api/users/" + username;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(
+            new ArrayList<MediaType>() {
+              {
+                add(MediaType.APPLICATION_JSON);
+              }
+            });
+
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+
+        //curl -u admin:openbaton -X PUT http://10.147.66.131:15672/api/users/name -d '{"password":"password", "tags":"administrator", "vhost":"openbaton"}' -H "Content-Type: application/json" -H "Accept:application/json"
+
+        HashMap<String, String> map = new HashMap<>();
+
+        map.put("password", password);
+        map.put("tags", "administrator");
+        map.put("vhost", vhost);
+        String pass = gson.toJson(map);
+        log.debug("Body is: " + pass);
+        org.apache.http.HttpEntity requestEntity =
+            new StringEntity(pass, ContentType.APPLICATION_JSON);
+
+        HttpPut put = new HttpPut(uri);
+        String authStr = rabbitUsername + ":" + rabbitPassword;
+        String encoding = Base64.encodeBase64String(authStr.getBytes());
+        put.setHeader("Authorization", "Basic " + encoding);
+        put.setHeader(new BasicHeader("Accept", MediaType.APPLICATION_JSON_VALUE));
+        put.setHeader(new BasicHeader("Content-type", MediaType.APPLICATION_JSON_VALUE));
+        put.setEntity(requestEntity);
+
+        log.debug("Executing request: " + put.getMethod() + " on " + uri);
+
+        CloseableHttpResponse response = httpclient.execute(put);
+        log.debug(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
+        if (response.getStatusLine().getStatusCode() != 204) {
+          log.error("Error creating user: " + response.getStatusLine());
+          return null;
+        }
+
+        //curl -u admin:openbaton -X PUT http://10.147.66.131:15672/api/permissions/openbaton/name -d '{"configure":"
+        // (^name)", "write":"(^openbaton)|(^name)", "read":"(^name)"}' -H "Content-Type: application/json" -H
+        // "Accept:application/json"
+
+        uri =
+            "http://"
+                + brokerIp
+                + ":"
+                + managementPort
+                + "/api/permissions/"
+                + vhost.replace("/", "%2f")
+                + "/"
+                + username;
+        put = new HttpPut(uri);
+
+        String regexOpenbaton = "(^nfvo)";
+        String regexManager = "(^" + username + ")|(openbaton-exchange)";
+        String regexBoth = regexOpenbaton + "|" + regexManager;
+        map = new HashMap<>();
+        map.put("configure", regexManager);
+        map.put("write", regexBoth);
+        map.put("read", regexManager);
+        String stringEntity = gson.toJson(map);
+
+        log.debug("Body is: " + stringEntity);
+        put.setHeader("Authorization", "Basic " + encoding);
+        put.setHeader(new BasicHeader("Accept", MediaType.APPLICATION_JSON_VALUE));
+        put.setHeader(new BasicHeader("Content-type", MediaType.APPLICATION_JSON_VALUE));
+        put.setEntity(new StringEntity(stringEntity, ContentType.APPLICATION_JSON));
+
+        log.debug("Executing request: " + put.getMethod() + " on " + uri);
+        httpclient.execute(put);
+        response = httpclient.execute(put);
+        log.debug(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
+        if (response.getStatusLine().getStatusCode() != 204) {
+          log.error("Error creating user: " + response.getStatusLine());
+          return null;
+        }
+
+        managerCredentials.setRabbitUsername(username);
+        managerCredentials.setRabbitPassword(password);
+        managerCredentialsRepository.save(managerCredentials);
+        return managerCredentials;
+      } else if (body.get("action").getAsString().toLowerCase().equals("unregister")
+          || body.get("action").getAsString().toLowerCase().equals("deregister")) {
+
+        if (!body.has("username")) {
+          log.error("Could not process Json message. The 'username' property is missing.");
+          return null;
+        }
+        if (!body.has("password")) {
+          log.error("Could not process Json message. The 'password' property is missing.");
+          return null;
+        }
+
+        ManagerCredentials managerCredentials =
+            managerCredentialsRepository.findFirstByRabbitUsername(
+                body.get("username").getAsString());
+        if (body.get("password").getAsString().equals(managerCredentials.getRabbitPassword())) {
+          managerCredentialsRepository.delete(managerCredentials);
+        }
+        return null;
+      } else return null;
+    } catch (Exception e) {
+      log.error("Exception while enabling manager or plugin.");
+      e.printStackTrace();
       return null;
     }
-    if (body.get("action").getAsString().toLowerCase().equals("register")) {
-      ManagerCredentials managerCredentials = new ManagerCredentials();
-
-      if (!body.has("type")) {
-        log.error("Could not process Json message. The 'type' property is missing.");
-        return null;
-      }
-      String username = body.get("type").getAsString();
-      String password = org.apache.commons.lang.RandomStringUtils.randomAlphanumeric(16);
-      String uri = "http://" + brokerIp + ":" + managementPort + "/api/users/" + username;
-
-      HttpHeaders headers = new HttpHeaders();
-      headers.setContentType(MediaType.APPLICATION_JSON);
-      headers.setAccept(
-          new ArrayList<MediaType>() {
-            {
-              add(MediaType.APPLICATION_JSON);
-            }
-          });
-
-      CloseableHttpClient httpclient = HttpClients.createDefault();
-
-      //curl -u admin:openbaton -X PUT http://10.147.66.131:15672/api/users/name -d '{"password":"password", "tags":"administrator", "vhost":"openbaton"}' -H "Content-Type: application/json" -H "Accept:application/json"
-
-      HashMap<String, String> map = new HashMap<>();
-
-      map.put("password", password);
-      map.put("tags", "administrator");
-      map.put("vhost", vhost);
-      String pass = gson.toJson(map);
-      log.debug("Body is: " + pass);
-      org.apache.http.HttpEntity requestEntity =
-          new StringEntity(pass, ContentType.APPLICATION_JSON);
-
-      HttpPut put = new HttpPut(uri);
-      String authStr = rabbitUsername + ":" + rabbitPassword;
-      String encoding = Base64.encodeBase64String(authStr.getBytes());
-      put.setHeader("Authorization", "Basic " + encoding);
-      put.setHeader(new BasicHeader("Accept", MediaType.APPLICATION_JSON_VALUE));
-      put.setHeader(new BasicHeader("Content-type", MediaType.APPLICATION_JSON_VALUE));
-      put.setEntity(requestEntity);
-
-      log.debug("Executing request: " + put.getMethod() + " on " + uri);
-
-      CloseableHttpResponse response = httpclient.execute(put);
-      log.debug(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
-      if (response.getStatusLine().getStatusCode() != 204) {
-        log.error("Error creating user: " + response.getStatusLine());
-        return null;
-      }
-
-      //curl -u admin:openbaton -X PUT http://10.147.66.131:15672/api/permissions/openbaton/name -d '{"configure":"
-      // (^name)", "write":"(^openbaton)|(^name)", "read":"(^name)"}' -H "Content-Type: application/json" -H
-      // "Accept:application/json"
-
-      uri =
-          "http://"
-              + brokerIp
-              + ":"
-              + managementPort
-              + "/api/permissions/"
-              + vhost.replace("/", "%2f")
-              + "/"
-              + username;
-      put = new HttpPut(uri);
-
-      String regexOpenbaton = "(^nfvo)";
-      String regexManager = "(^" + username + ")|(openbaton-exchange)";
-      String regexBoth = regexOpenbaton + "|" + regexManager;
-      map = new HashMap<>();
-      map.put("configure", regexManager);
-      map.put("write", regexBoth);
-      map.put("read", regexManager);
-      String stringEntity = gson.toJson(map);
-
-      log.debug("Body is: " + stringEntity);
-      put.setHeader("Authorization", "Basic " + encoding);
-      put.setHeader(new BasicHeader("Accept", MediaType.APPLICATION_JSON_VALUE));
-      put.setHeader(new BasicHeader("Content-type", MediaType.APPLICATION_JSON_VALUE));
-      put.setEntity(new StringEntity(stringEntity, ContentType.APPLICATION_JSON));
-
-      log.debug("Executing request: " + put.getMethod() + " on " + uri);
-      httpclient.execute(put);
-      response = httpclient.execute(put);
-      log.debug(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
-      if (response.getStatusLine().getStatusCode() != 204) {
-        log.error("Error creating user: " + response.getStatusLine());
-        return null;
-      }
-
-      managerCredentials.setRabbitUsername(username);
-      managerCredentials.setRabbitPassword(password);
-      managerCredentialsRepository.save(managerCredentials);
-      return managerCredentials;
-    } else if (body.get("action").getAsString().toLowerCase().equals("unregister")
-        || body.get("action").getAsString().toLowerCase().equals("deregister")) {
-
-      if (!body.has("username")) {
-        log.error("Could not process Json message. The 'username' property is missing.");
-        return null;
-      }
-      if (!body.has("password")) {
-        log.error("Could not process Json message. The 'password' property is missing.");
-        return null;
-      }
-
-      ManagerCredentials managerCredentials =
-          managerCredentialsRepository.findFirstByRabbitUsername(
-              body.get("username").getAsString());
-      if (body.get("password").getAsString().equals(managerCredentials.getRabbitPassword())) {
-        managerCredentialsRepository.delete(managerCredentials);
-      }
-      return null;
-    } else return null;
   }
 }
