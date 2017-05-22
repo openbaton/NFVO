@@ -220,9 +220,17 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
   @Override
   public ManagerCredentials enableManager(String message) throws IOException {
     JsonObject body = gson.fromJson(message, JsonObject.class);
+    if (!body.has("action")) {
+      log.error("Could not process Json message. The 'action' property is missing.");
+      return null;
+    }
     if (body.get("action").getAsString().toLowerCase().equals("register")) {
       ManagerCredentials managerCredentials = new ManagerCredentials();
 
+      if (!body.has("type")) {
+        log.error("Could not process Json message. The 'type' property is missing.");
+        return null;
+      }
       String username = body.get("type").getAsString();
       String password = org.apache.commons.lang.RandomStringUtils.randomAlphanumeric(16);
       String uri = "http://" + brokerIp + ":" + managementPort + "/api/users/" + username;
@@ -312,6 +320,15 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
       return managerCredentials;
     } else if (body.get("action").getAsString().toLowerCase().equals("unregister")
         || body.get("action").getAsString().toLowerCase().equals("deregister")) {
+
+      if (!body.has("username")) {
+        log.error("Could not process Json message. The 'username' property is missing.");
+        return null;
+      }
+      if (!body.has("password")) {
+        log.error("Could not process Json message. The 'password' property is missing.");
+        return null;
+      }
 
       ManagerCredentials managerCredentials =
           managerCredentialsRepository.findFirstByRabbitUsername(
