@@ -5,6 +5,7 @@ public class VNFPackageFormatException extends Exception {
 
   public VNFPackageFormatException() {}
 
+
   public VNFPackageFormatException(String message) {
     super(message);
   }
