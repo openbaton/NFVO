@@ -111,6 +111,23 @@ public class RestVNFPackage {
     return "{ \"id\": \"" + virtualNetworkFunctionDescriptor.getVnfPackageLocation() + "\"}";
   }
 
+  @ApiOperation(
+    value = "Adding a VNFPackage from the Package Repository",
+    notes =
+        "The JSON object in the request body contains a field named link, which holds the URL to the package on the Open Baton Marketplace"
+  )
+  @RequestMapping(
+    value = "/package-repository-download",
+    method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  public String packageRepositoryDownload(
+      @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
+      throws IOException, PluginException, VimException, NotFoundException, IncompatibleVNFPackage,
+          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException {
+    return marketDownload(link, projectId);
+  }
+
   /**
    * Removes the VNFPackage from the VNFPackages repository
    *
