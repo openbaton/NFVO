@@ -20,15 +20,7 @@ package org.openbaton.catalogue.nfvo;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
-import javax.persistence.CascadeType;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.PrePersist;
-import javax.persistence.Version;
+import javax.persistence.*;
 import org.openbaton.catalogue.util.IdGenerator;
 
 /** Created by lto on 22/07/15. */
