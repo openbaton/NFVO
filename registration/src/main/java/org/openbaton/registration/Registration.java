@@ -105,24 +105,16 @@ public class Registration {
     factory.setVirtualHost(virtualHost);
     Connection connection = factory.newConnection();
     Channel channel = connection.createChannel();
-
-    // TODO durable?
-    channel.exchangeDeclare("openbaton-exchange", "topic", true);
-
-    // TODO handle durable, autodelte and others...
-    channel.queueDeclare("nfvo.manager.handling", true, false, true, null);
-    channel.queueBind("nfvo.manager.handling", "openbaton-exchange", "");
-
+    // check if exchange and queue exist
+    channel.exchangeDeclarePassive("openbaton-exchange");
+    channel.queueDeclarePassive("nfvo.manager.handling");
     channel.basicQos(1);
 
-    String replyQueueName = channel.queueDeclare().getQueue();
+    String replyQueueName = "amq.rabbitmq.reply-to";
     final String corrId = UUID.randomUUID().toString();
 
     AMQP.BasicProperties props =
         new AMQP.BasicProperties.Builder().correlationId(corrId).replyTo(replyQueueName).build();
-
-    channel.basicPublish(
-        "openbaton-exchange", "nfvo.manager.handling", props, message.getBytes("UTF-8"));
 
     final BlockingQueue<ManagerCredentials> response =
         new ArrayBlockingQueue<ManagerCredentials>(1);
@@ -155,9 +147,11 @@ public class Registration {
           }
         });
 
+    channel.basicPublish(
+        "openbaton-exchange", "nfvo.manager.handling", props, message.getBytes("UTF-8"));
+
     ManagerCredentials managerCredentials = response.take();
 
-    channel.queueDelete(replyQueueName);
     channel.close();
     connection.close();
     return managerCredentials;
@@ -187,11 +181,9 @@ public class Registration {
     Connection connection = factory.newConnection();
     Channel channel = connection.createChannel();
 
-    channel.exchangeDeclare("openbaton-exchange", "topic", true);
-
-    channel.queueDeclare("nfvo.manager.handling", true, false, true, null);
-    channel.queueBind("nfvo.manager.handling", "openbaton-exchange", "");
-
+    // check if exchange and queue exist
+    channel.exchangeDeclarePassive("openbaton-exchange");
+    channel.queueDeclarePassive("nfvo.manager.handling");
     channel.basicQos(1);
 
     channel.basicPublish("openbaton-exchange", "nfvo.manager.handling", null, message.getBytes());
