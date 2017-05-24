@@ -22,7 +22,7 @@ import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.springframework.data.repository.CrudRepository;
 
 /** Created by lto on 30/04/15. */
-public interface VnfPackageRepository extends CrudRepository<VNFPackage, String> {
+public interface VnfPackageRepository extends CrudRepository<VNFPackage, String>{
 
   VNFPackage findFirstById(String id);
 

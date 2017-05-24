@@ -18,6 +18,7 @@
 package org.openbaton.nfvo.core.interfaces;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import javax.persistence.NoResultException;
 import org.openbaton.catalogue.mano.common.Security;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
@@ -165,4 +166,6 @@ public interface NetworkServiceDescriptorManagement {
   void deleteSecurty(String id, String idS, String projectId);
 
   Iterable<NetworkServiceDescriptor> queryByProjectId(String projectId);
+
+  NetworkServiceDescriptor onboardFromPackageRepository(String downloadlink, String projectId) throws IOException, BadFormatException, CyclicDependenciesException, NetworkServiceIntegrityException, EntityInUseException, NotFoundException, AlreadyExistingException, IncompatibleVNFPackage, BadRequestException, VimException, PluginException;
 }

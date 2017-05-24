@@ -439,6 +439,8 @@ public class VNFPackageManagement
       throw new ExistingVNFPackage("VNF package already exists.");
     }
 
+
+
     nsdUtils.checkIntegrity(virtualNetworkFunctionDescriptor);
     // check if it is the first and set to default
     //    if(!vnfPackageMetadataRepository.findAllByNameAndVendor(vnfPackageMetadata.getName(),vnfPackageMetadata.getVendor()).iterator().hasNext()){
@@ -447,7 +449,9 @@ public class VNFPackageManagement
     //    }
     //    else vnfPackageMetadata.setDefaultFlag(false);
     //vnfPackageMetadataRepository.save(vnfPackageMetadata);
-    vnfPackageRepository.save(vnfPackage);
+    vnfPackage = vnfPackageRepository.save(vnfPackage);
+    vnfPackageMetadataRepository.setVNFPackageId(vnfPackage.getId());
+
     virtualNetworkFunctionDescriptor.setVnfPackageLocation(vnfPackage.getId());
     virtualNetworkFunctionDescriptor = vnfdRepository.save(virtualNetworkFunctionDescriptor);
     log.trace("Persisted " + virtualNetworkFunctionDescriptor);
@@ -918,6 +922,22 @@ public class VNFPackageManagement
   @Override
   public Iterable<VNFPackage> query() {
     return vnfPackageRepository.findAll();
+  }
+
+  @Override
+  public Iterable<VNFPackageMetadata> query(String name, String vendor, String version, String nfvoVersion, String vnfmType, String osId, String osVersion, String osArchitecture, String tag, String projectId) {
+    return vnfPackageMetadataRepository
+            .findAllByNameAndVendorAndVersionAndNfvoVersionAndVnfmTypeAndOsIdAndOsVersionAndOsArchitectureAndTagAndProjectId(
+                    name,
+                    vendor,
+                    version,
+                    nfvoVersion,
+                    vnfmType,
+                    osId,
+                    osVersion,
+                    osArchitecture,
+                    tag,
+                    projectId);
   }
 
   @Override

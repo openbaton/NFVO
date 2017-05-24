@@ -17,21 +17,23 @@
 
 package org.openbaton.nfvo.core.interfaces;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Map;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
+import org.openbaton.catalogue.nfvo.VNFPackageMetadata;
 import org.openbaton.exceptions.*;
+
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Map;
 
 /** Created by mpa on 05/05/15. */
 public interface VNFPackageManagement {
 
   /** This operation allows submitting and validating the VNF Package. */
   VirtualNetworkFunctionDescriptor onboard(byte[] pack, String projectId)
-      throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage,
+          throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage,
           AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException;
 
   /** This operation allows submitting and validating the VNF Package from the marketplace. */
@@ -44,15 +46,15 @@ public interface VNFPackageManagement {
    * @param image
    */
   Map<String, Object> handleMetadata(
-      Map<String, Object> metadata,
-      VNFPackage vnfPackage,
-      Map<String, Object> imageDetails,
-      NFVImage image)
-      throws IncompatibleVNFPackage, NotFoundException;
+          Map<String, Object> metadata,
+          VNFPackage vnfPackage,
+          Map<String, Object> imageDetails,
+          NFVImage image)
+          throws IncompatibleVNFPackage, NotFoundException;
 
   VirtualNetworkFunctionDescriptor add(
-      byte[] pack, boolean isImageIncluded, String projectId, boolean fromMarketPlace)
-      throws IOException, VimException, NotFoundException, SQLException, PluginException,
+          byte[] pack, boolean isImageIncluded, String projectId, boolean fromMarketPlace)
+          throws IOException, VimException, NotFoundException, SQLException, PluginException,
           ExistingVNFPackage, DescriptorWrongFormat, VNFPackageFormatException,
           IncompatibleVNFPackage, BadRequestException, AlreadyExistingException,
           NetworkServiceIntegrityException;
@@ -69,14 +71,14 @@ public interface VNFPackageManagement {
    * @param projectId
    */
   void handleImage(
-      VNFPackage vnfPackage,
-      byte[] imageFile,
-      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
-      Map<String, Object> metadata,
-      NFVImage image,
-      Map<String, Object> imageDetails,
-      String projectId)
-      throws NotFoundException, PluginException, VimException, BadRequestException, IOException,
+          VNFPackage vnfPackage,
+          byte[] imageFile,
+          VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
+          Map<String, Object> metadata,
+          NFVImage image,
+          Map<String, Object> imageDetails,
+          String projectId)
+          throws NotFoundException, PluginException, VimException, BadRequestException, IOException,
           AlreadyExistingException;
 
   /**
@@ -86,7 +88,7 @@ public interface VNFPackageManagement {
    * @param projectId
    */
   VirtualNetworkFunctionDescriptor onboardFromMarket(String link, String projectId)
-      throws IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
+          throws IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
           NotFoundException, PluginException, NetworkServiceIntegrityException, BadRequestException;
 
   /**
@@ -105,6 +107,18 @@ public interface VNFPackageManagement {
 
   /** This operation is used to query information on VNF Packages. */
   Iterable<VNFPackage> query();
+
+  /** This operation is used to query information on VNF Packages. */
+  Iterable<VNFPackageMetadata> query(String name,
+                                     String vendor,
+                                     String version,
+                                     String nfvoVersion,
+                                     String vnfmType,
+                                     String osId,
+                                     String osVersion,
+                                     String osArchitecture,
+                                     String tag,
+                                     String projectId);
 
   /** This operation is used to remove a disabled VNF Package. */
   void delete(String id, String projectId) throws WrongAction;

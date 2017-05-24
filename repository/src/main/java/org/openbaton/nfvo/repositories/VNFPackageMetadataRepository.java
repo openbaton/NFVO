@@ -25,7 +25,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 /** Created by lto on 06/05/15. */
-public interface VNFPackageMetadataRepository extends CrudRepository<VNFPackageMetadata, String> {
+public interface VNFPackageMetadataRepository extends CrudRepository<VNFPackageMetadata, String>, VNFPackageMetadataRepositoryCustom {
 
   VNFPackageMetadata findFirstById(String id);
 
