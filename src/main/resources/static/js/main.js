@@ -58,6 +58,7 @@ require({
         vnfdController: "controllers/vnfdController",
         keyPairsController: "controllers/keyPairsController",
         marketCtrl:"controllers/marketCtrl",
+        prController:"controllers/prController",
         driverCtrl:"controllers/driverCtrl"
     },
     shim: {
@@ -178,6 +179,9 @@ require({
         marketCtrl: {
             deps: ['app', 'servicesServices', 'httpService', 'angular_cookies','authService']
         },
+        prController: {
+            deps: ['app', 'servicesServices', 'httpService', 'angular_cookies','authService']
+        },
         driverCtrl: {
             deps: ['app', 'servicesServices', 'httpService', 'angular_cookies','authService']
         }
@@ -207,6 +211,7 @@ require({
     'vimInstanceController',
     'keyPairsController',
     'marketCtrl',
+    'prController',
     'driverCtrl'
 ], function (require) {
     return require(['bootstrap']);

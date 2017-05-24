@@ -170,9 +170,22 @@ angular.module('app', ['ngTable','ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCoo
                 templateUrl: 'pages/vimdrivers/vimdrivers.html',
                 controller: 'driverCtrl'
             }).
+            when('/prController', {
+            templateUrl: 'pages/pagerepository/pr.html',
+            controller: 'prController'
+            }).
+
+            when('/prController/:name/:vendor', {
+            templateUrl: 'pages/pagerepository/protherversions.html',
+            controller: 'prController'
+            }).
+
+
             otherwise({
                         redirectTo: '/main'
             });
+
+
         $locationProvider.html5Mode(false);
     });
 
