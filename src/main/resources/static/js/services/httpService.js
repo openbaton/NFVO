@@ -72,11 +72,8 @@ angular.module('app')
                 headers: customHeadersMark
             })
         };
-
         http.getRC = function (url) {
             //console.log(customHeaders);
-
-
             customHeaders['Accept'] = 'application/octet-stream';
             customHeaders['Content-type'] = 'application/octet-stream';
 
@@ -91,9 +88,6 @@ angular.module('app')
                 headers: customHeaders
             })
         };
-
-
-
         http.getPlain = function (url) {
             //console.log(customHeaders);
 

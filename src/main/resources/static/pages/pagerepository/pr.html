@@ -13,8 +13,6 @@
 
   limitations under the License.-->
 <div class="row">
-
-
     <div class="col-lg-12">
         <h1>
             Package Repository
@@ -32,14 +30,6 @@
         <div ng-bind-html="alert.msg"></div>
     </alert>
 </div>
-
-<!--div class="row">
-  <label for="marketUrl" class="col-lg-2 control-label">Marketplace URL</label>
-  <div class="col-lg-6">
-    <input type="text" class="form-control" id="marketUrl" name="marketUrl" ng-model="marketUrl"/>
-  </div>
-  <button type="button" class="btn btn-primary" ng-click="loadTable()">Load Packages</button>
-</div-->
 <div class="row top-buffer">
     <tabset>
         <tab heading="VNF Packages">
@@ -90,15 +80,11 @@
                         <td class="col-sm-3">{{data.name}}</td>
                         <td>{{data.vendor}}</td>
                         <td>{{data.description}}</td>
-                        <td class="col-sm-1"> <button type="button" class="btn btn-primary pull right" ng-click="downloadNSD1(data)"> Download</button></td>
+                        <td class="col-sm-1"> <button type="button" class="btn btn-primary pull right" ng-click="downloadpacakgeNSD(data)"> Download</button></td>
                     </tr>
                     </tbody>
                 </table>
-                <div/>
-
+                </div>
         </tab>
     </tabset>
 </div>
-
-
-

@@ -22,31 +22,12 @@ var app = angular.module('app').controller('prController', function ($scope, ser
     var defaultUrl = "192.168.162.228:8082";
     $scope.defaultUrl = defaultUrl;
     $scope.alerts = [];
-
-
-    $scope.privatepackages = [];
-    $scope.publicpackages = [];
-    $scope.publicNSDs = [];
-    $scope.csarVNFs = [];
-    $scope.csarNSs = [];
-    $scope.NFVOversion = '';
-
-
-    //loadTablePublicNSD();
-
-    //getMarketURL();
-    getVersion();
-
-
-
-
-
-
     $scope.otherVersion = [];
     $scope.NSDs = [];
     $scope.VNFPackages = [];
     newloadTable();
     NSDTable();
+    getVersion();
 
     function newloadTable() {
         if (angular.isUndefined($routeParams.name) && angular.isUndefined($routeParams.vendor)) {
@@ -121,210 +102,10 @@ var app = angular.module('app').controller('prController', function ($scope, ser
                     });
             }
     };
-
-
-
-
-    $scope.downloadNSD1 = function (data) {
-
-         {
-             $scope.requestlink = {};
-             $scope.requestlink['link'] = "http://" + defaultUrl + "/api/v1/nsds/" + data.id + "/json/";
-             console.log($scope.requestlink);
-             http.post(url + '/api/v1/ns-descriptors/package-repository-download' +
-                 '', JSON.stringify($scope.requestlink)).success(function (response) {
-                 showOk("The NSD is being onboarded");
-             })
-                 .error(function (data, status) {
-                     showError(data, status);
-
-                });
-        }
-    };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    $scope.downloadVNF = function (data) {
-        $scope.requestlink = {};
-        $scope.requestlink['link'] = "http://" + $scope.marketUrl + "/api/v1/vnf-packages/" + data.id + "/tar/";
-        console.log($scope.requestlink);
-        http.post(url + "/api/v1/vnf-packages/package-repository-download", JSON.stringify($scope.requestlink)).success(function (response) {
-            showOk("The package is being downloaded");
-        })
-            .error(function (data, status) {
-                showError(data, status);
-
-            });
-    };
-
-    function loadCSARTableVNF() {
-        $http.get("http://" + defaultUrl + "/api/v1/csar-vnf")
-            .success(function (response) {
-                $scope.csarVNFs = response;
-
-                //console.log($scope.packages);
-            })
-            .error(function (data, status) {
-                showError(data, status);
-            });
-    }
-
-    function loadCSARTableNSD() {
-        $http.get("http://" + defaultUrl + "/api/v1/csar-ns")
-            .success(function (response) {
-                $scope.publicNSDs = $scope.publicNSDs.concat(response);
-                console.log($scope.publicNSDs);
-            })
-            .error(function (data, status) {
-                showError(data, status);
-            });
-    }
-
-
-    function getMarketURL() {
-        $http.get(url + "/configprops")
-            .success(function (response) {
-                if (response.restVNFPackage.properties.privateip) {
-                    $scope.marketUrl = response.restVNFPackage.properties.privateip;
-                    loadTable();
-                }
-                else {
-                    return;
-                }
-
-
-                //console.log($scope.marketUrl);
-            })
-            .error(function (data, status) {
-                showError(data, status);
-            });
-
-
-    }
-
-
-
-
-    function loadTablePublic() {
-        //console.log($routeParams.userId);
-        $http.get("http://" + defaultUrl + "/api/v1/vnf-packages")
-            .success(function (response) {
-                $scope.publicpackages = response;
-
-                //console.log($scope.packages);
-            })
-            .error(function (data, status) {
-                showError(data, status);
-            });
-
-
-    }
-
-    function loadTablePublicNSD() {
-        //console.log($routeParams.userId);
-        $http.get("http://" + defaultUrl + "/api/v1/nsds")
-            .success(function (response) {
-                console.log(response);
-                $scope.publicNSDs = response;
-                loadCSARTableNSD();
-
-            })
-            .error(function (data, status) {
-                showError(data, status);
-            });
-
-
-    }
-
-
-    $scope.loadTable = function () {
-        loadTable();
-    };
-
-    $scope.closeAlert = function (index) {
-        $scope.alerts.splice(index, 1);
-    };
-
-    $scope.downloadCSARVNF = function (data) {
-        $scope.requestlink = {};
-        $scope.requestlink['link'] = "http://" + defaultUrl + "/api/v1/csar-vnf/" + data.id + "/csar/";
-        console.log($scope.requestlink);
-        http.post(url + "/api/v1/csar-vnf/package-repository-download", JSON.stringify($scope.requestlink)).success(function (response) {
-            showOk("The package is being downloaded");
-        })
-            .error(function (data, status) {
-                showError(data, status);
-
-            });
-    };
-
-    $scope.download = function (data) {
-
-        if (data.type === "csar") {
+    $scope.downloadpacakgeNSD = function (data) {
+        if (data.type === "tar") {
             $scope.requestlink = {};
-            $scope.requestlink['link'] = "http://" + defaultUrl + "/api/v1/csar-vnf/" + data.id + "/csar/";
-            console.log($scope.requestlink);
-            http.post(url + "/api/v1/csar-vnf/package-repository-download", JSON.stringify($scope.requestlink)).success(function (response) {
-                showOk("The package is being downloaded");
-            })
-                .error(function (data, status) {
-                    showError(data, status);
-
-                });
-        }
-        else {
-            if (data.type === "tar") {
-                $scope.requestlink = {};
-                $scope.requestlink['link'] = "http://" + defaultUrl + "/api/v1/vnf-packages/" + data.id + "/tar/";
-                console.log($scope.requestlink);
-                http.post(url + "/api/v1/vnf-packages/package-repository-download", JSON.stringify($scope.requestlink)).success(function (response) {
-                    showOk("The package is being downloaded");
-                })
-                    .error(function (data, status) {
-                        showError(data, status);
-
-                    });
-            }
-        }
-    };
-
-    $scope.downloadPrivate = function (data) {
-        $scope.requestlink = {};
-        $scope.requestlink['link'] = "http://" + $scope.marketUrl + "/api/v1/vnf-packages/" + data.id + "/tar/";
-        console.log($scope.requestlink);
-        http.post(url + "/api/v1/vnf-packages/package-repository-download", JSON.stringify($scope.requestlink)).success(function (response) {
-            showOk("The package is being downloaded");
-        })
-            .error(function (data, status) {
-                showError(data, status);
-
-            });
-    };
-
-    $scope.downloadNSD = function (data) {
-        if (data.type === "csar") {
-            $scope.requestlink = {};
-            $scope.requestlink['link'] = "http://" + defaultUrl + "/api/v1/csar-ns/" + data.id + "/csar/";
+            $scope.requestlink['link'] = "http://" + defaultUrl + "/api/v1/ns-descriptors/package-repository-download" + data.id + "/csar/";
             console.log($scope.requestlink);
             http.post(url + '/api/v1/csar-ns/package-repository-download', JSON.stringify($scope.requestlink)).success(function (response) {
                 showOk("The NSD is being onboarded");
@@ -333,21 +114,12 @@ var app = angular.module('app').controller('prController', function ($scope, ser
                     showError(data, status);
 
                 });
-
-        } else {
-            $scope.requestlink = {};
-            $scope.requestlink['link'] = "http://" + defaultUrl + "/api/v1/nsds/" + data.id + "/json/";
-            console.log($scope.requestlink);
-            http.post(url + '/api/v1/ns-descriptors/package-repository-download', JSON.stringify($scope.requestlink)).success(function (response) {
-                showOk("The NSD is being onboarded");
-            })
-                .error(function (data, status) {
-                    showError(data, status);
-
-                });
         }
     };
 
+    $scope.closeAlert = function (index) {
+        $scope.alerts.splice(index, 1);
+    };
 
     function showOk(msg) {
         $scope.alerts.push({type: 'success', msg: msg});

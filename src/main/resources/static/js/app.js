@@ -179,14 +179,10 @@ angular.module('app', ['ngTable','ngRoute', 'ngSanitize', 'ui.bootstrap', 'ngCoo
             templateUrl: 'pages/pagerepository/protherversions.html',
             controller: 'prController'
             }).
-
-
             otherwise({
                         redirectTo: '/main'
             });
-
-
-        $locationProvider.html5Mode(false);
+            $locationProvider.html5Mode(false);
     });
 
 /**
