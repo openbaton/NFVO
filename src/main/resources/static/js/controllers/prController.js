@@ -103,12 +103,11 @@ var app = angular.module('app').controller('prController', function ($scope, ser
             }
     };
     $scope.downloadpacakgeNSD = function (data) {
-        if (data.type === "tar") {
-            $scope.requestlink = {};
-            $scope.requestlink['link'] = "http://" + defaultUrl + "/api/v1/ns-descriptors/package-repository-download" + data.id + "/csar/";
-            console.log($scope.requestlink);
-            http.post(url + '/api/v1/csar-ns/package-repository-download', JSON.stringify($scope.requestlink)).success(function (response) {
-                showOk("The NSD is being onboarded");
+        $scope.requestlink = {};
+        $scope.requestlink['link'] = "http://" + defaultUrl + "/api/v1/nsds/" + data.id + "/json/";
+        console.log($scope.requestlink);
+        http.post(url + '/api/v1/ns-descriptors/package-repository-download' +  '', JSON.stringify($scope.requestlink)).success(function (response) {
+            showOk("The NSD is being onboarded");
             })
                 .error(function (data, status) {
                     showError(data, status);
