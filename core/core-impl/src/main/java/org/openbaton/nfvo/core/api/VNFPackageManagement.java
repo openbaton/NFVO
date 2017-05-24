@@ -439,8 +439,6 @@ public class VNFPackageManagement
       throw new ExistingVNFPackage("VNF package already exists.");
     }
 
-
-
     nsdUtils.checkIntegrity(virtualNetworkFunctionDescriptor);
     // check if it is the first and set to default
     //    if(!vnfPackageMetadataRepository.findAllByNameAndVendor(vnfPackageMetadata.getName(),vnfPackageMetadata.getVendor()).iterator().hasNext()){
@@ -925,19 +923,29 @@ public class VNFPackageManagement
   }
 
   @Override
-  public Iterable<VNFPackageMetadata> query(String name, String vendor, String version, String nfvoVersion, String vnfmType, String osId, String osVersion, String osArchitecture, String tag, String projectId) {
+  public Iterable<VNFPackageMetadata> query(
+      String name,
+      String vendor,
+      String version,
+      String nfvoVersion,
+      String vnfmType,
+      String osId,
+      String osVersion,
+      String osArchitecture,
+      String tag,
+      String projectId) {
     return vnfPackageMetadataRepository
-            .findAllByNameAndVendorAndVersionAndNfvoVersionAndVnfmTypeAndOsIdAndOsVersionAndOsArchitectureAndTagAndProjectId(
-                    name,
-                    vendor,
-                    version,
-                    nfvoVersion,
-                    vnfmType,
-                    osId,
-                    osVersion,
-                    osArchitecture,
-                    tag,
-                    projectId);
+        .findAllByNameAndVendorAndVersionAndNfvoVersionAndVnfmTypeAndOsIdAndOsVersionAndOsArchitectureAndTagAndProjectId(
+            name,
+            vendor,
+            version,
+            nfvoVersion,
+            vnfmType,
+            osId,
+            osVersion,
+            osArchitecture,
+            tag,
+            projectId);
   }
 
   @Override

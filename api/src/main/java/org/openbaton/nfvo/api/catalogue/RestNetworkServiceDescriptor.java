@@ -127,18 +127,18 @@ public class RestNetworkServiceDescriptor {
    *     core
    */
   @ApiOperation(
-          value = " Adding a NSD from the marketplace",
-          notes = "POST request with the a JSON object in the request body containing a field named link"
+    value = " Adding a NSD from the marketplace",
+    notes = "POST request with the a JSON object in the request body containing a field named link"
   )
   @RequestMapping(
-          value = "/package-repository-download",
-          method = RequestMethod.POST,
-          consumes = MediaType.APPLICATION_JSON_VALUE
+    value = "/package-repository-download",
+    method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.CREATED)
   public NetworkServiceDescriptor packageRepositoryDownload(
-          @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
-          throws BadFormatException, CyclicDependenciesException, NetworkServiceIntegrityException,
+      @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
+      throws BadFormatException, CyclicDependenciesException, NetworkServiceIntegrityException,
           NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
           AlreadyExistingException, EntityInUseException, BadRequestException {
 
