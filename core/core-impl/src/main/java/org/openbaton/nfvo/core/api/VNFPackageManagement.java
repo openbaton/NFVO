@@ -448,6 +448,7 @@ public class VNFPackageManagement
     //    else vnfPackageMetadata.setDefaultFlag(false);
     //vnfPackageMetadataRepository.save(vnfPackageMetadata);
     vnfPackage = vnfPackageRepository.save(vnfPackage);
+    log.trace("Persisted " + vnfPackage);
     vnfPackageMetadataRepository.setVNFPackageId(vnfPackage.getId());
 
     virtualNetworkFunctionDescriptor.setVnfPackageLocation(vnfPackage.getId());
@@ -457,8 +458,6 @@ public class VNFPackageManagement
         "Onboarded VNFPackage ("
             + virtualNetworkFunctionDescriptor.getVnfPackageLocation()
             + ") successfully");
-
-    log.debug("Persisted " + vnfPackageMetadata);
     return virtualNetworkFunctionDescriptor;
   }
 
