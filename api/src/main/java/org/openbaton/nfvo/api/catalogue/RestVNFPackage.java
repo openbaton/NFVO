@@ -31,7 +31,6 @@ import org.openbaton.nfvo.core.interfaces.VNFPackageManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -73,21 +72,19 @@ public class RestVNFPackage {
           BadRequestException {
 
     log.debug("Onboarding");
-    if (!file.isEmpty()) {
-      byte[] bytes = file.getBytes();
-      //VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =vnfPackageManagement.onboard(bytes, projectId);
-      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = null;
-      try {
-        virtualNetworkFunctionDescriptor = vnfPackageManagement.add(bytes, false, projectId, false);
-      } catch (ExistingVNFPackage | DescriptorWrongFormat | VNFPackageFormatException e) {
-        if (log.isDebugEnabled()) log.error(e.getMessage(), e);
-        else log.error(e.getMessage());
-        throw new BadRequestException(e.getMessage());
-      }
-      if (virtualNetworkFunctionDescriptor != null)
-        return "{ \"id\": \"" + virtualNetworkFunctionDescriptor.getVnfPackageLocation() + "\"}";
-      return "{\"error\"}";
-    } else throw new IOException("File is empty!");
+    if (file == null || file.isEmpty()) throw new NullPointerException("File is null or empty!");
+    byte[] bytes = file.getBytes();
+    VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = null;
+    try {
+      virtualNetworkFunctionDescriptor = vnfPackageManagement.add(bytes, false, projectId, false);
+    } catch (ExistingVNFPackage | DescriptorWrongFormat | VNFPackageFormatException e) {
+      if (log.isDebugEnabled()) log.error(e.getMessage(), e);
+      else log.error(e.getMessage());
+      throw new BadRequestException(e.getMessage());
+    }
+    if (virtualNetworkFunctionDescriptor != null)
+      return "{ \"id\": \"" + virtualNetworkFunctionDescriptor.getVnfPackageLocation() + "\"}";
+    return "{\"error\"}";
   }
 
   @ApiOperation(

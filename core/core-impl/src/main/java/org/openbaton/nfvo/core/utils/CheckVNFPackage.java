@@ -84,6 +84,10 @@ public class CheckVNFPackage {
 
   public static void checkStructure(byte[] archive, boolean imageIncluded, boolean fromMarketPlace)
       throws VNFPackageFormatException {
+
+    if (archive == null || archive.length == 0)
+      throw new VNFPackageFormatException("VnfPackage null or empty");
+
     boolean vnfdFound = false;
     boolean metadataFound = false;
 

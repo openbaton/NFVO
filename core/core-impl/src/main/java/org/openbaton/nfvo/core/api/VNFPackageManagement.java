@@ -220,6 +220,7 @@ public class VNFPackageManagement
         new ArchiveStreamFactory()
             .createArchiveInputStream("tar", new ByteArrayInputStream(pack))) {
       TarArchiveEntry entry;
+      // Here there are almost no checks whether keys exists or not, since the check has been done in the CheckVNFPackage class
       while ((entry = (TarArchiveEntry) tarFile.getNextEntry()) != null) {
         if (entry.isFile() && !entry.getName().startsWith("./._")) {
           byte[] content = new byte[(int) entry.getSize()];
@@ -331,8 +332,7 @@ public class VNFPackageManagement
               image.setMinDiskSpace(Long.parseLong(imageConfig.get("minDisk").toString()));
               image.setMinRam(Long.parseLong(imageConfig.get("minRam").toString()));
 
-              image.setIsPublic(
-                  Boolean.parseBoolean(Integer.toString((Integer) imageConfig.get("minRam"))));
+              image.setIsPublic(Boolean.parseBoolean((String) imageConfig.get("minRam")));
             }
           } else if (!entry.getName().startsWith("scripts/") && entry.getName().endsWith(".json")) {
             //this must be the vnfd
@@ -858,7 +858,7 @@ public class VNFPackageManagement
     InputStream in = new BufferedInputStream(packageLink.openStream());
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     byte[] bytes = new byte[1024];
-    int n = 0;
+    int n;
     while (-1 != (n = in.read(bytes))) {
       out.write(bytes, 0, n);
     }
@@ -866,7 +866,7 @@ public class VNFPackageManagement
     in.close();
     byte[] packageOnboard = out.toByteArray();
     log.debug("Downloaded " + packageOnboard.length + " bytes");
-    VirtualNetworkFunctionDescriptor vnfd = null;
+    VirtualNetworkFunctionDescriptor vnfd;
     try {
       vnfd = add(packageOnboard, false, projectId, true);
     } catch (SQLException
