@@ -44,11 +44,12 @@ public class VnfmRegister implements org.openbaton.vnfm.interfaces.register.Vnfm
     return this.vnfmEndpointRepository.findAll();
   }
 
-  protected void register(String type, String endpoint, EndpointType endpointType) {
+  public void register(String type, String endpoint, EndpointType endpointType) {
     this.vnfmEndpointRepository.save(new VnfmManagerEndpoint(type, endpoint, endpointType));
   }
 
-  protected void register(VnfmManagerEndpoint endpoint) throws AlreadyExistingException {
+  @Override
+  public void register(VnfmManagerEndpoint endpoint) throws AlreadyExistingException {
     log.debug("Persisting: " + endpoint);
     for (VnfmManagerEndpoint endpointExisting : vnfmEndpointRepository.findAll()) {
       //TODO: decide whether the type or the endpoint (or both) is the unique identifier. strategy here is different than in unregister function
@@ -83,7 +84,8 @@ public class VnfmRegister implements org.openbaton.vnfm.interfaces.register.Vnfm
     throw new NotFoundException("VnfManager of endpoint " + endpoint + " is not registered");
   }
 
-  protected void unregister(VnfmManagerEndpoint endpoint) {
+  @Override
+  public void unregister(VnfmManagerEndpoint endpoint) {
     Iterable<VnfmManagerEndpoint> vnfmManagerEndpoints = vnfmEndpointRepository.findAll();
     for (VnfmManagerEndpoint vnfmManagerEndpoint : vnfmManagerEndpoints) {
       //TODO: decide whether the type or the endpoint (or both) is the unique identifier

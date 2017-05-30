@@ -17,12 +17,13 @@
 
 package org.openbaton.vnfm.interfaces.sender;
 
-import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import java.util.concurrent.Future;
+import org.openbaton.catalogue.nfvo.Endpoint;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.openbaton.exceptions.BadFormatException;
 
 /** Created by lto on 03/06/15. */
 public interface VnfmSender {
-  void sendCommand(final NFVMessage nfvMessage, VnfmManagerEndpoint endpoint);
-
-  void sendCommand(final NFVMessage nfvMessage, String tempDestination);
+  Future<NFVMessage> sendCommand(final NFVMessage nfvMessage, Endpoint endpoint)
+      throws BadFormatException;
 }

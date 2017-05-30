@@ -43,6 +43,7 @@ import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.AlreadyExistingException;
+import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.EntityUnreachableException;
 import org.openbaton.exceptions.IncompatibleVNFPackage;
@@ -739,7 +740,8 @@ public class VNFPackageManagement
   }
 
   @Override
-  public Script updateScript(Script script, String vnfPackageId) throws NotFoundException {
+  public Script updateScript(Script script, String vnfPackageId)
+      throws NotFoundException, BadFormatException {
 
     script = scriptRepository.save(script);
     vnfmManager.updateScript(script, vnfPackageId);

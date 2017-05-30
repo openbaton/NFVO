@@ -33,6 +33,7 @@ import org.openbaton.catalogue.nfvo.DependencyParameters;
 import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
+import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.nfvo.core.interfaces.DependencyManagement;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.VNFCInstanceRepository;
@@ -67,7 +68,7 @@ public class ScaledTask extends AbstractTask {
   }
 
   @Override
-  protected NFVMessage doWork() throws Exception {
+  protected NFVMessage doWork() throws Exception, BadFormatException {
 
     VnfmSender vnfmSender;
     vnfmSender =
