@@ -2,38 +2,37 @@ package org.openbaton.nfvo.security.components;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.util.*;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicHeader;
+
 import org.openbaton.catalogue.nfvo.ManagerCredentials;
 import org.openbaton.catalogue.nfvo.ServiceMetadata;
+import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.ManagerCredentialsRepository;
 import org.openbaton.nfvo.repositories.ServiceRepository;
 import org.openbaton.nfvo.security.authentication.OAuth2AuthorizationServerConfig;
 import org.openbaton.utils.key.KeyHelper;
+import org.openbaton.vnfm.interfaces.register.VnfmRegister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.util.Date;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
+import static org.openbaton.utils.rabbit.RabbitManager.createRabbitMqUser;
+import static org.openbaton.utils.rabbit.RabbitManager.removeRabbitMqUser;
+import static org.openbaton.utils.rabbit.RabbitManager.setRabbitMqUserPermissions;
 
 //import java.util.Base64;
 
@@ -50,6 +49,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
   @Autowired private Gson gson;
   @Autowired private ServiceRepository serviceRepository;
   @Autowired private ManagerCredentialsRepository managerCredentialsRepository;
+  @Autowired private VnfmRegister vnfmRegister;
 
   @Value("${nfvo.security.service.token.validity:31556952}")
   private int serviceTokenValidityDuration;
@@ -220,104 +220,84 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
   @Override
   public ManagerCredentials enableManager(String message) {
     try {
+      // deserialize message
       JsonObject body = gson.fromJson(message, JsonObject.class);
       if (!body.has("action")) {
         log.error("Could not process Json message. The 'action' property is missing.");
         return null;
       }
       if (body.get("action").getAsString().toLowerCase().equals("register")) {
-        ManagerCredentials managerCredentials = new ManagerCredentials();
-
+        // register plugin or vnfm
         if (!body.has("type")) {
           log.error("Could not process Json message. The 'type' property is missing.");
           return null;
         }
         String username = body.get("type").getAsString();
         String password = org.apache.commons.lang.RandomStringUtils.randomAlphanumeric(16);
-        String uri = "http://" + brokerIp + ":" + managementPort + "/api/users/" + username;
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(
-            new ArrayList<MediaType>() {
-              {
-                add(MediaType.APPLICATION_JSON);
-              }
-            });
-
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-
-        //curl -u admin:openbaton -X PUT http://10.147.66.131:15672/api/users/name -d '{"password":"password", "tags":"administrator", "vhost":"openbaton"}' -H "Content-Type: application/json" -H "Accept:application/json"
-
-        HashMap<String, String> map = new HashMap<>();
-
-        map.put("password", password);
-        map.put("tags", "administrator");
-        map.put("vhost", vhost);
-        String pass = gson.toJson(map);
-        log.debug("Body is: " + pass);
-        org.apache.http.HttpEntity requestEntity =
-            new StringEntity(pass, ContentType.APPLICATION_JSON);
-
-        HttpPut put = new HttpPut(uri);
-        String authStr = rabbitUsername + ":" + rabbitPassword;
-        String encoding = Base64.encodeBase64String(authStr.getBytes());
-        put.setHeader("Authorization", "Basic " + encoding);
-        put.setHeader(new BasicHeader("Accept", MediaType.APPLICATION_JSON_VALUE));
-        put.setHeader(new BasicHeader("Content-type", MediaType.APPLICATION_JSON_VALUE));
-        put.setEntity(requestEntity);
-
-        log.debug("Executing request: " + put.getMethod() + " on " + uri);
-
-        CloseableHttpResponse response = httpclient.execute(put);
-        log.debug(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
-        if (response.getStatusLine().getStatusCode() != 204) {
-          log.error("Error creating user: " + response.getStatusLine());
+        ManagerCredentials managerCredentials =
+            managerCredentialsRepository.findFirstByRabbitUsername(username);
+        if (managerCredentials != null) {
+          log.error("Manager already registered.");
           return null;
         }
 
-        //curl -u admin:openbaton -X PUT http://10.147.66.131:15672/api/permissions/openbaton/name -d '{"configure":"
-        // (^name)", "write":"(^openbaton)|(^name)", "read":"(^name)"}' -H "Content-Type: application/json" -H
-        // "Accept:application/json"
-
-        uri =
-            "http://"
-                + brokerIp
-                + ":"
-                + managementPort
-                + "/api/permissions/"
-                + vhost.replace("/", "%2f")
-                + "/"
-                + username;
-        put = new HttpPut(uri);
-
-        String regexOpenbaton = "(^nfvo)";
-        String regexManager = "(^" + username + ")|(openbaton-exchange)";
-        String regexBoth = regexOpenbaton + "|" + regexManager;
-        map = new HashMap<>();
-        map.put("configure", regexManager);
-        map.put("write", regexBoth);
-        map.put("read", regexManager);
-        String stringEntity = gson.toJson(map);
-
-        log.debug("Body is: " + stringEntity);
-        put.setHeader("Authorization", "Basic " + encoding);
-        put.setHeader(new BasicHeader("Accept", MediaType.APPLICATION_JSON_VALUE));
-        put.setHeader(new BasicHeader("Content-type", MediaType.APPLICATION_JSON_VALUE));
-        put.setEntity(new StringEntity(stringEntity, ContentType.APPLICATION_JSON));
-
-        log.debug("Executing request: " + put.getMethod() + " on " + uri);
-        httpclient.execute(put);
-        response = httpclient.execute(put);
-        log.debug(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
-        if (response.getStatusLine().getStatusCode() != 204) {
-          log.error("Error creating user: " + response.getStatusLine());
-          return null;
+        // add manager endpoint if message comes from vnfm
+        VnfmManagerEndpoint vnfmEndpoint = null;
+        if (body.has("vnfmManagerEndpoint")) {
+          vnfmEndpoint = gson.fromJson(body.get("vnfmManagerEndpoint"), VnfmManagerEndpoint.class);
+          try {
+            vnfmRegister.register(vnfmEndpoint);
+          } catch (Exception e) {
+            log.error("Could not register VNFM endpoint.");
+            e.printStackTrace();
+            return null;
+          }
         }
 
+        try {
+        String configurePermissions = "(" + username + ")|(nfvo." + username + ".actions)";
+        String writePermissions =
+            "(nfvo.vnfm.register)|(nfvo.vnfm.unregister)|("
+                + username
+                + ")|(vnfm.nfvo.actions)|(vnfm.nfvo.actions.reply)|(nfvo."
+                + username
+                + ".actions)|(openbaton-exchange)|(amq.default)";
+        String readPermissions =
+            "(nfvo." + username + ".actions)|(" + username + ")|(openbaton-exchange)";
+
+        createRabbitMqUser(
+            rabbitUsername, rabbitPassword, brokerIp, managementPort, username, password, vhost);
+          setRabbitMqUserPermissions(
+              rabbitUsername,
+              rabbitPassword,
+              brokerIp,
+              managementPort,
+              username,
+              vhost,
+              configurePermissions,
+              writePermissions,
+              readPermissions);
+        } catch (Exception e) {
+          if (vnfmEndpoint != null)
+            vnfmRegister.unregister(vnfmEndpoint);
+          try {
+            removeRabbitMqUser(rabbitUsername, rabbitPassword, brokerIp, managementPort, username);
+          } catch (Exception e2) {
+            log.error("Clean up failed. Could not remove RabbitMQ user " + username);
+            e2.printStackTrace();
+          }
+          throw e;
+        }
+
+        //          String queueName = username + ""
+        //          createQueue(brokerIp, managementPort, rabbitUsername, rabbitPassword, vhost, "", "openbaton-exchange");
+
+        managerCredentials = new ManagerCredentials();
         managerCredentials.setRabbitUsername(username);
         managerCredentials.setRabbitPassword(password);
         managerCredentialsRepository.save(managerCredentials);
+
         return managerCredentials;
       } else if (body.get("action").getAsString().toLowerCase().equals("unregister")
           || body.get("action").getAsString().toLowerCase().equals("deregister")) {
@@ -330,12 +310,21 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
           log.error("Could not process Json message. The 'password' property is missing.");
           return null;
         }
-
+        String username = body.get("username").getAsString();
         ManagerCredentials managerCredentials =
             managerCredentialsRepository.findFirstByRabbitUsername(
-                body.get("username").getAsString());
+                username);
+        if (managerCredentials == null) {
+          log.error("Did not find manager with name " + body.get("username"));
+          return null;
+        }
         if (body.get("password").getAsString().equals(managerCredentials.getRabbitPassword())) {
           managerCredentialsRepository.delete(managerCredentials);
+          // if message comes from a vnfm, remove the endpoint
+          if ( body.has("vnfmManagerEndpoint"))
+            vnfmRegister.unregister(gson.fromJson(body.get("vnfmManagerEndpoint"), VnfmManagerEndpoint.class));
+
+          removeRabbitMqUser(rabbitUsername, rabbitPassword, brokerIp, managementPort, username);
         }
         return null;
       } else return null;
@@ -345,4 +334,5 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
       return null;
     }
   }
+
 }

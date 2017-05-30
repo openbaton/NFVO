@@ -25,6 +25,7 @@ import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmStartStopMessage;
+import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
@@ -45,7 +46,7 @@ public class ModifyTask extends AbstractTask {
   private String ordered;
 
   @Override
-  protected NFVMessage doWork() throws Exception {
+  protected NFVMessage doWork() throws Exception, BadFormatException {
     description = "All the configuration scripts setting up dependencies were correctly executed";
     virtualNetworkFunctionRecord.setStatus(Status.INACTIVE);
     NetworkServiceRecord nsr =
@@ -97,7 +98,7 @@ public class ModifyTask extends AbstractTask {
   }
 
   private void sendStart(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
-      throws NotFoundException {
+      throws NotFoundException, BadFormatException {
     VnfmSender vnfmSender;
     log.info("Calling START to: " + virtualNetworkFunctionRecord.getName() + " after MODIFY");
     vnfmSender =

@@ -18,23 +18,7 @@
 package org.openbaton.nfvo.vnfm_reg;
 
 import com.google.gson.Gson;
-import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import javax.annotation.PostConstruct;
+
 import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
@@ -68,6 +52,7 @@ import org.openbaton.catalogue.nfvo.messages.VnfmOrScaledMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrScalingMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrStartStopMessage;
 import org.openbaton.catalogue.security.Key;
+import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.common.internal.model.EventFinishNFVO;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
@@ -106,6 +91,25 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
+
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
+import javax.annotation.PostConstruct;
 
 /** Created by lto on 08/07/15. */
 @Service
@@ -273,7 +277,7 @@ public class VnfmManager
       NetworkServiceRecord networkServiceRecord,
       DeployNSRBody body,
       Map<String, List<String>> vduVimInstances)
-      throws NotFoundException {
+      throws NotFoundException, BadFormatException {
 
     try {
 
@@ -290,6 +294,8 @@ public class VnfmManager
         log.debug("VNFRs ordered by dependencies: " + vnfrNames.get(networkServiceRecord.getId()));
       }
 
+      List<Future<NFVMessage>> instantiateFutures = new ArrayList<>();
+
       for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
         log.debug(
             "Processing VNFD ("
@@ -297,103 +303,37 @@ public class VnfmManager
                 + ") for NSD ("
                 + networkServiceDescriptor.getName()
                 + ")");
-        Map<String, Collection<VimInstance>> vimInstances = new HashMap<>();
-
-        for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
-          vimInstances.put(vdu.getId(), new ArrayList<VimInstance>());
-          List<String> vimInstanceNames = vduVimInstances.get(vdu.getId());
-          for (String vimInstanceName : vimInstanceNames) {
-            log.debug(
-                "deployment procedure for ("
-                    + vnfd.getName()
-                    + "). Looking for "
-                    + vimInstanceName);
-            VimInstance vimInstance = null;
-
-            for (VimInstance vi : vimInstanceRepository.findByProjectId(vdu.getProjectId())) {
-              if (vimInstanceName.equals(vi.getName())) {
-                vimInstance = vi;
-                break;
-              }
-            }
-
-            vimInstances.get(vdu.getId()).add(vimInstance);
-          }
-        }
-
-        //        for (Entry<String, Collection<VimInstance>> vimInstance : vimInstances.entrySet()) {
-        //
-        //          if (vimInstance.getValue().isEmpty()) {
-        //            for (VimInstance vimInstance1 :
-        //                vimInstanceRepository.findByProjectId(networkServiceDescriptor.getProjectId())) {
-        //              vimInstance.getValue().add(vimInstance1);
-        //            }
-        //          }
-        //          for (VimInstance vi : vimInstance.getValue()) {
-        //            log.debug("\t" + vi.getName());
-        //          }
-        //          log.debug("~~~~~~");
-        //        }
-
-        //Creating the extension
-        Map<String, String> extension = getExtension();
-
-        extension.put("nsr-id", networkServiceRecord.getId());
-
-        NFVMessage message;
-        HashSet<Key> keys;
-        if (body.getKeys() != null) {
-          keys = new HashSet<>(body.getKeys());
-        } else {
-          keys = new HashSet<>();
-        }
-        if (vnfd.getVnfPackageLocation() != null) {
-          VNFPackage vnfPackage = vnfPackageRepository.findFirstById(vnfd.getVnfPackageLocation());
-          message =
-              new OrVnfmInstantiateMessage(
-                  vnfd,
-                  getDeploymentFlavour(vnfd),
-                  vnfd.getName(),
-                  networkServiceRecord.getVlr(),
-                  extension,
-                  vimInstances,
-                  keys,
-                  vnfPackage);
-        } else {
-          message =
-              new OrVnfmInstantiateMessage(
-                  vnfd,
-                  getDeploymentFlavour(vnfd),
-                  vnfd.getName(),
-                  networkServiceRecord.getVlr(),
-                  extension,
-                  vimInstances,
-                  keys,
-                  null);
-        }
-        VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(vnfd.getEndpoint());
-        if (endpoint == null) {
-          throw new NotFoundException(
-              "VnfManager of type "
-                  + vnfd.getType()
-                  + " (endpoint = "
-                  + vnfd.getEndpoint()
-                  + ") is not registered");
-        }
-
-        VnfmSender vnfmSender;
-        try {
-          vnfmSender = this.getVnfmSender(endpoint.getEndpointType());
-        } catch (BeansException e) {
-          throw new NotFoundException(e);
-        }
-        vnfmSender.sendCommand(message, endpoint);
+        MessageGenerator generator = new MessageGenerator();
+        VnfmSender vnfmSender = generator.getVnfmSender(vnfd);
+        NFVMessage message =
+            generator.getInstantiateMessage(vnfd, vduVimInstances, networkServiceRecord, body);
+        VnfmManagerEndpoint endpoint = generator.getEndpoint(vnfd);
+        instantiateFutures.add(vnfmSender.sendCommand(message, endpoint));
         log.info("Sent " + message.getAction() + " to VNF: " + vnfd.getName());
       }
+
+      executeActionForFutures(instantiateFutures);
       return new AsyncResult<>(null);
-    } catch (Exception e) {
-      log.error("", e);
+    } catch (BadFormatException e) {
+      e.printStackTrace();
       throw e;
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    } catch (ExecutionException e) {
+      e.printStackTrace();
+    }
+    return new AsyncResult<>(null);
+  }
+
+  private void executeActionForFutures(List<Future<NFVMessage>> instantiateFutures)
+      throws ExecutionException, InterruptedException {
+    for (Future<NFVMessage> future : instantiateFutures) {
+      if (future.isDone()) {
+        instantiateFutures.remove(future);
+        executeAction(future.get());
+        executeActionForFutures(instantiateFutures);
+        break;
+      } else Thread.sleep(250);
     }
   }
 
@@ -441,27 +381,6 @@ public class VnfmManager
     return result;
   }
 
-  //As a default operation of the NFVO, it get always the first DeploymentFlavour!
-  private VNFDeploymentFlavour getDeploymentFlavour(VirtualNetworkFunctionDescriptor vnfd)
-      throws NotFoundException {
-    VNFDeploymentFlavour flavor = null;
-    if (!vnfd.getDeployment_flavour().iterator().hasNext()) {
-      for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
-        if (vdu.getComputation_requirement() == null
-            || vdu.getComputation_requirement().isEmpty()) {
-          throw new NotFoundException(
-              "There is no DeploymentFlavour in vnfd or in all VDUs: " + vnfd.getName());
-        } else {
-          flavor = new VNFDeploymentFlavour();
-          flavor.setFlavour_key(vdu.getComputation_requirement());
-        }
-      }
-    } else {
-      flavor = vnfd.getDeployment_flavour().iterator().next();
-    }
-    return flavor;
-  }
-
   @Override
   public VnfmSender getVnfmSender(EndpointType endpointType) throws BeansException {
     String senderName = endpointType.toString().toLowerCase() + "VnfmSender";
@@ -469,7 +388,8 @@ public class VnfmManager
   }
 
   @Override
-  public String executeAction(NFVMessage nfvMessage)
+  @Async
+  public Future<String> executeAction(NFVMessage nfvMessage)
       throws ExecutionException, InterruptedException {
 
     String actionName = nfvMessage.getAction().toString().replace("_", "").toLowerCase();
@@ -561,8 +481,9 @@ public class VnfmManager
               + virtualNetworkFunctionRecord.hasCyclicDependency());
     }
     log.trace("AsyncExecutor is: " + asyncExecutor);
+
     if (isaReturningTask(nfvMessage.getAction())) {
-      return gson.toJson(asyncExecutor.submit(task).get());
+      return new AsyncResult<>(gson.toJson(asyncExecutor.submit(task).get()));
     } else {
       asyncExecutor.submit(task);
       return null;
@@ -739,7 +660,7 @@ public class VnfmManager
   @Async
   public Future<Void> sendMessageToVNFR(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecordDest, NFVMessage nfvMessage)
-      throws NotFoundException {
+      throws NotFoundException, BadFormatException {
     VnfmManagerEndpoint endpoint =
         vnfmRegister.getVnfm(virtualNetworkFunctionRecordDest.getEndpoint());
     if (endpoint == null) {
@@ -769,7 +690,7 @@ public class VnfmManager
   @Override
   @Async
   public Future<Void> release(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
-      throws NotFoundException {
+      throws NotFoundException, BadFormatException {
     VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint());
     if (endpoint == null) {
       throw new NotFoundException(
@@ -801,7 +722,7 @@ public class VnfmManager
       VNFComponent component,
       VNFRecordDependency dependency,
       String mode)
-      throws NotFoundException {
+      throws NotFoundException, BadFormatException {
     VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint());
 
     if (endpoint == null) {
@@ -841,7 +762,7 @@ public class VnfmManager
   @Async
   public Future<Void> removeVnfcDependency(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFCInstance vnfcInstance)
-      throws NotFoundException {
+      throws NotFoundException, BadFormatException {
     VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint());
     if (endpoint == null) {
       throw new NotFoundException(
@@ -908,7 +829,8 @@ public class VnfmManager
   }
 
   @Override
-  public void updateScript(Script script, String vnfPackageId) throws NotFoundException {
+  public void updateScript(Script script, String vnfPackageId)
+      throws NotFoundException, BadFormatException {
 
     for (VirtualNetworkFunctionDescriptor vnfd : vnfdRepository.findAll()) {
       if (vnfd.getVnfPackageLocation() != null
@@ -922,6 +844,120 @@ public class VnfmManager
           }
         }
       }
+    }
+  }
+
+  private class MessageGenerator {
+
+    public VnfmSender getVnfmSender(VirtualNetworkFunctionDescriptor vnfd)
+        throws NotFoundException {
+      VnfmManagerEndpoint endpoint = this.getEndpoint(vnfd);
+      if (endpoint == null) {
+        throw new NotFoundException(
+            "VnfManager of type "
+                + vnfd.getType()
+                + " (endpoint = "
+                + vnfd.getEndpoint()
+                + ") is not registered");
+      }
+
+      try {
+        return VnfmManager.this.getVnfmSender(endpoint.getEndpointType());
+      } catch (BeansException e) {
+        throw new NotFoundException(e);
+      }
+    }
+
+    public MessageGenerator invoke() throws NotFoundException {
+
+      return this;
+    }
+
+    public OrVnfmInstantiateMessage getInstantiateMessage(
+        VirtualNetworkFunctionDescriptor vnfd,
+        Map<String, List<String>> vduVimInstances,
+        NetworkServiceRecord networkServiceRecord,
+        DeployNSRBody body)
+        throws NotFoundException {
+      Map<String, Collection<VimInstance>> vimInstances = new HashMap<>();
+
+      for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
+        vimInstances.put(vdu.getId(), new ArrayList<VimInstance>());
+        List<String> vimInstanceNames = vduVimInstances.get(vdu.getId());
+        for (String vimInstanceName : vimInstanceNames) {
+          log.debug(
+              "deployment procedure for (" + vnfd.getName() + "). Looking for " + vimInstanceName);
+          VimInstance vimInstance = null;
+
+          for (VimInstance vi : vimInstanceRepository.findByProjectId(vdu.getProjectId())) {
+            if (vimInstanceName.equals(vi.getName())) {
+              vimInstance = vi;
+              break;
+            }
+          }
+
+          vimInstances.get(vdu.getId()).add(vimInstance);
+        }
+      }
+
+      //Creating the extension
+      Map<String, String> extension = getExtension();
+
+      extension.put("nsr-id", networkServiceRecord.getId());
+
+      HashSet<Key> keys;
+      if (body.getKeys() != null) {
+        keys = new HashSet<>(body.getKeys());
+      } else {
+        keys = new HashSet<>();
+      }
+      if (vnfd.getVnfPackageLocation() != null) {
+        VNFPackage vnfPackage = vnfPackageRepository.findFirstById(vnfd.getVnfPackageLocation());
+        return new OrVnfmInstantiateMessage(
+            vnfd,
+            getDeploymentFlavour(vnfd),
+            vnfd.getName(),
+            networkServiceRecord.getVlr(),
+            extension,
+            vimInstances,
+            keys,
+            vnfPackage);
+      } else {
+        return new OrVnfmInstantiateMessage(
+            vnfd,
+            getDeploymentFlavour(vnfd),
+            vnfd.getName(),
+            networkServiceRecord.getVlr(),
+            extension,
+            vimInstances,
+            keys,
+            null);
+      }
+    }
+    //As a default operation of the NFVO, it get always the first DeploymentFlavour!
+    private VNFDeploymentFlavour getDeploymentFlavour(VirtualNetworkFunctionDescriptor vnfd)
+        throws NotFoundException {
+      VNFDeploymentFlavour flavor = null;
+      if (!vnfd.getDeployment_flavour().iterator().hasNext()) {
+        for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
+          if (vdu.getComputation_requirement() == null
+              || vdu.getComputation_requirement().isEmpty()) {
+            throw new NotFoundException(
+                "There is no DeploymentFlavour in vnfd or in all VDUs: " + vnfd.getName());
+          } else {
+            flavor = new VNFDeploymentFlavour();
+            flavor.setFlavour_key(vdu.getComputation_requirement());
+          }
+        }
+      } else {
+        flavor = vnfd.getDeployment_flavour().iterator().next();
+      }
+      return flavor;
+    }
+
+    public VnfmManagerEndpoint getEndpoint(VirtualNetworkFunctionDescriptor vnfd)
+        throws NotFoundException {
+      return vnfmRegister.getVnfm(vnfd.getEndpoint());
     }
   }
 }

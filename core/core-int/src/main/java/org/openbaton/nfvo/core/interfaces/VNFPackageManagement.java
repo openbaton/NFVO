@@ -101,7 +101,8 @@ public interface VNFPackageManagement {
   /** This operation is used to remove a disabled VNF Package. */
   void delete(String id, String projectId) throws WrongAction;
 
-  Script updateScript(Script script, String vnfPackageId) throws NotFoundException;
+  Script updateScript(Script script, String vnfPackageId)
+      throws NotFoundException, BadFormatException;
 
   Iterable<VNFPackage> queryByProjectId(String projectId);
 }

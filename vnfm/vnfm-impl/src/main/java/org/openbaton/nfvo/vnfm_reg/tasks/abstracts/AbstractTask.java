@@ -37,6 +37,7 @@ import org.openbaton.catalogue.nfvo.HistoryLifecycleEvent;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.openbaton.catalogue.util.EventFinishEvent;
+import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
@@ -169,6 +170,9 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
       }
     } catch (Exception e) {
       genericExceptionHandling(e);
+    } catch (BadFormatException e) {
+      e.printStackTrace();
+      //TODO fix this
     }
     /** Send event finish */
     if (result == null) {
@@ -226,6 +230,8 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
     } catch (NotFoundException e1) {
       e1.printStackTrace();
       throw new RuntimeException(e1);
+    } catch (BadFormatException e1) {
+      e1.printStackTrace();
     }
     if (log.isDebugEnabled()) {
       log.error(
@@ -251,7 +257,7 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
     this.publisher.publishEvent(event);
   }
 
-  protected abstract NFVMessage doWork() throws Exception;
+  protected abstract NFVMessage doWork() throws Exception, BadFormatException;
 
   public boolean isAsync() {
     return true;

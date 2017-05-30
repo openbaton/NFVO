@@ -17,10 +17,6 @@
 
 package org.openbaton.vnfm.interfaces.manager;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
@@ -31,9 +27,15 @@ import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.EndpointType;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.springframework.scheduling.annotation.Async;
+
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /** Created by lto on 26/05/15. */
 public interface VnfmManager {
@@ -46,19 +48,19 @@ public interface VnfmManager {
       NetworkServiceRecord networkServiceRecord,
       DeployNSRBody body,
       Map<String, List<String>> vduVimInstances)
-      throws NotFoundException;
+      throws NotFoundException, BadFormatException;
 
   VnfmSender getVnfmSender(EndpointType endpointType);
 
-  String executeAction(NFVMessage message) throws ExecutionException, InterruptedException;
+  Future<String> executeAction(NFVMessage message) throws ExecutionException, InterruptedException;
 
   @Async
   Future<Void> sendMessageToVNFR(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecordDest, NFVMessage nfvMessage)
-      throws NotFoundException;
+      throws NotFoundException, BadFormatException;
 
   Future<Void> release(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
-      throws NotFoundException;
+      throws NotFoundException, BadFormatException;
 
   @Async
   Future<Void> addVnfc(
@@ -66,11 +68,11 @@ public interface VnfmManager {
       VNFComponent component,
       VNFRecordDependency dependency,
       String mode)
-      throws NotFoundException;
+      throws NotFoundException, BadFormatException;
 
   Future<Void> removeVnfcDependency(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFCInstance vnfcInstance)
-      throws NotFoundException;
+      throws NotFoundException, BadFormatException;
 
   void findAndSetNSRStatus(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
@@ -78,5 +80,6 @@ public interface VnfmManager {
 
   void terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
-  void updateScript(Script script, String vnfPackageId) throws NotFoundException;
+  void updateScript(Script script, String vnfPackageId)
+      throws NotFoundException, BadFormatException;
 }

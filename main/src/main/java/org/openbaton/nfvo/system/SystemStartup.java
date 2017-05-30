@@ -17,6 +17,8 @@
 
 package org.openbaton.nfvo.system;
 
+import static org.openbaton.utils.rabbit.RabbitManager.setRabbitMqUserPermissions;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,6 +58,9 @@ class SystemStartup implements CommandLineRunner {
 
   @Value("${spring.rabbitmq.password:openbaton}")
   private String password;
+
+  @Value("${nfvo.rabbit.brokerIp:localhost}")
+  private String brokerIp;
 
   @Value("${nfvo.rabbit.management.port:15672}")
   private String managementPort;
@@ -125,6 +130,17 @@ class SystemStartup implements CommandLineRunner {
     }
 
     configurationRepository.save(c);
+
+    setRabbitMqUserPermissions(
+        username,
+        password,
+        brokerIp,
+        managementPort,
+        "guest",
+        virtualHost,
+        null,
+        "nfvo.manager.handling|openbaton-exchange",
+        "nfvo.manager.handling|openbaton-exchange");
 
     if (installPlugin) {
       startPlugins(pluginDir);

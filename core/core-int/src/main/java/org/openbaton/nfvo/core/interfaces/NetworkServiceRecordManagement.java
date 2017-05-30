@@ -44,7 +44,7 @@ public interface NetworkServiceRecordManagement {
   NetworkServiceRecord onboard(
       String nsd_id, String projectId, List keys, Map vduVimInstances, Map configurations)
       throws VimException, NotFoundException, PluginException, MissingParameterException,
-          BadRequestException;
+          BadRequestException, BadFormatException;
 
   /**
    * This operation allows submitting and validating a Network Service Descriptor (NSD), including
@@ -57,7 +57,7 @@ public interface NetworkServiceRecordManagement {
       Map vduVimInstances,
       Map configurations)
       throws VimException, PluginException, NotFoundException, MissingParameterException,
-          BadRequestException;
+          BadRequestException, BadFormatException;
 
   /**
    * This operation allows updating a Network Service Descriptor (NSD), including any related VNFFGD
@@ -79,15 +79,17 @@ public interface NetworkServiceRecordManagement {
       String idVdu,
       String idVNFCI,
       String projectId)
-      throws NotFoundException;
+      throws NotFoundException, BadFormatException;
 
   NetworkServiceRecord query(String id, String projectId);
 
   /** This operation is used to remove a Network Service Record. */
-  void delete(String id, String projectId) throws NotFoundException, WrongStatusException;
+  void delete(String id, String projectId)
+      throws NotFoundException, WrongStatusException, BadFormatException;
 
   /** This operation is used to resume a failed Network Service Record. */
-  void resume(String id, String projectId) throws NotFoundException, WrongStatusException;
+  void resume(String id, String projectId)
+      throws NotFoundException, WrongStatusException, BadFormatException;
 
   void deleteVNFRecord(String idNsr, String idVnf, String projectId) throws NotFoundException;
 
@@ -135,7 +137,7 @@ public interface NetworkServiceRecordManagement {
    */
   void deleteVNFCInstance(String id, String idVnf, String projectId)
       throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException,
-          VimException, PluginException;
+          VimException, PluginException, BadFormatException;
 
   /**
    * This method will remove a {@Link VNFCInstance} of a NetworkServiceRecord from a specific
@@ -143,21 +145,21 @@ public interface NetworkServiceRecordManagement {
    */
   void deleteVNFCInstance(String id, String idVnf, String idVdu, String idVNFCI, String projectId)
       throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException,
-          VimException, PluginException;
+          VimException, PluginException, BadFormatException;
 
   /**
    * This method will start a {@Link VNFCInstance} of a NetworkServiceRecord from a specific
    * VirtualDeploymentUnit of a specific VirtualNetworkFunctionRecord.
    */
   void startVNFCInstance(String id, String idVnf, String idVdu, String idVNFCI, String projectId)
-      throws NotFoundException, WrongStatusException;
+      throws NotFoundException, WrongStatusException, BadFormatException;
 
   /**
    * This method will stop a {@Link VNFCInstance} of a NetworkServiceRecord from a specific
    * VirtualDeploymentUnit of a specific VirtualNetworkFunctionRecord.
    */
   void stopVNFCInstance(String id, String idVnf, String idVdu, String idVNFCI, String projectId)
-      throws NotFoundException, WrongStatusException;
+      throws NotFoundException, WrongStatusException, BadFormatException;
 
   void switchToRedundantVNFCInstance(
       String id,
@@ -167,11 +169,11 @@ public interface NetworkServiceRecordManagement {
       String standby,
       VNFCInstance failedVnfcInstance,
       String projectId)
-      throws NotFoundException, WrongStatusException;
+      throws NotFoundException, WrongStatusException, BadFormatException;
 
   void deleteVNFCInstance(String id, String idVnf, String idVdu, String projectId)
       throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException,
-          VimException, PluginException;
+          VimException, PluginException, BadFormatException;
 
   List<NetworkServiceRecord> queryByProjectId(String projectId);
 

@@ -18,15 +18,21 @@
 package org.openbaton.nfvo.vnfm_reg.impl.sender;
 
 import com.google.gson.Gson;
+import java.util.concurrent.Future;
 import javax.annotation.PostConstruct;
-import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.catalogue.nfvo.Endpoint;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -40,6 +46,7 @@ public class RestVnfmSender implements VnfmSender {
   private HttpStatus status;
   @Autowired private Gson mapper;
   private Logger log = LoggerFactory.getLogger(this.getClass());
+  @Autowired private Gson gson;
 
   private String get(String path, String url) {
     HttpEntity<String> requestEntity = new HttpEntity<>("", headers);
@@ -88,22 +95,11 @@ public class RestVnfmSender implements VnfmSender {
   }
 
   @Override
-  public void sendCommand(final NFVMessage nfvMessage, VnfmManagerEndpoint endpoint) {
-    this.sendToVnfm(nfvMessage, endpoint.getEndpoint());
+  public Future<NFVMessage> sendCommand(final NFVMessage nfvMessage, Endpoint endpoint) {
+    return this.sendToVnfm(nfvMessage, endpoint.getEndpoint());
   }
 
-  @Override
-  public void sendCommand(NFVMessage nfvMessage, String tempDestination) {
-    String json = mapper.toJson(nfvMessage);
-    if (log.isTraceEnabled()) {
-      log.trace("Sending message: " + json + " to url " + tempDestination);
-    } else {
-      log.debug("Sending message: " + nfvMessage.getAction() + " to url " + tempDestination);
-    }
-    throw new UnsupportedOperationException("not implemented");
-  }
-
-  public void sendToVnfm(NFVMessage nfvMessage, String url) {
+  public Future<NFVMessage> sendToVnfm(NFVMessage nfvMessage, String url) {
     String json = mapper.toJson(nfvMessage);
     if (!url.endsWith("/")) {
       url += "/";
@@ -114,6 +110,6 @@ public class RestVnfmSender implements VnfmSender {
     } else {
       log.debug("Sending message: " + nfvMessage.getAction() + " to url " + url);
     }
-    this.post(json, url);
+    return new AsyncResult<>(gson.fromJson(this.post(json, url), NFVMessage.class));
   }
 }

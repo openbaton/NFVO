@@ -18,6 +18,7 @@
 package org.openbaton.vnfm.interfaces.register;
 
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.NotFoundException;
 
 /** Created by lto on 26/05/15. */
@@ -28,4 +29,8 @@ public interface VnfmRegister {
   void addManagerEndpoint(String endpoint);
 
   VnfmManagerEndpoint getVnfm(String type) throws NotFoundException;
+
+  void register(VnfmManagerEndpoint vnfmManagerEndpoint) throws AlreadyExistingException;
+
+  void unregister(VnfmManagerEndpoint endpoint);
 }

@@ -16,20 +16,11 @@
 
 package org.openbaton.nfvo.api.runtime;
 
+import io.swagger.annotations.ApiOperation;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import io.swagger.annotations.ApiOperation;
-import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import javax.validation.Valid;
+
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -68,6 +59,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/ns-records")
@@ -178,7 +181,8 @@ public class RestNetworkServiceRecord {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
-      throws VimException, InterruptedException, ExecutionException, NotFoundException {
+      throws VimException, InterruptedException, ExecutionException, NotFoundException,
+          BadFormatException {
     try {
       networkServiceRecordManagement.delete(id, projectId);
     } catch (WrongStatusException e) {
@@ -200,7 +204,8 @@ public class RestNetworkServiceRecord {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void resume(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
-      throws VimException, InterruptedException, ExecutionException, NotFoundException {
+      throws VimException, InterruptedException, ExecutionException, NotFoundException,
+          BadFormatException {
     try {
       networkServiceRecordManagement.resume(id, projectId);
     } catch (WrongStatusException e) {
@@ -233,7 +238,7 @@ public class RestNetworkServiceRecord {
   public void multipleDelete(
       @RequestBody @Valid List<String> ids, @RequestHeader(value = "project-id") String projectId)
       throws InterruptedException, ExecutionException, WrongStatusException, VimException,
-          NotFoundException {
+          NotFoundException, BadFormatException {
     for (String id : ids) {
       networkServiceRecordManagement.delete(id, projectId);
     }

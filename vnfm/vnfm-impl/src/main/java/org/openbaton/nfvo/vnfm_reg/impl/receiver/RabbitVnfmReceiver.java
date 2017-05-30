@@ -19,6 +19,7 @@ package org.openbaton.nfvo.vnfm_reg.impl.receiver;
 
 import com.google.gson.Gson;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.VimException;
@@ -46,9 +47,9 @@ public class RabbitVnfmReceiver implements VnfmReceiver {
     log.debug("NFVO - core module received (via MB): " + message.getAction());
 
     log.debug("----------Executing ACTION: " + message.getAction());
-    String res = vnfmManager.executeAction(message);
+    Future<String> res = vnfmManager.executeAction(message);
     log.debug("-----------Finished ACTION: " + message.getAction());
-    return res;
+    return res.get();
   }
 
   @Override

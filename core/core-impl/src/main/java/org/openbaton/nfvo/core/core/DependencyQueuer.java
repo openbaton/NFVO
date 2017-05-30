@@ -31,6 +31,7 @@ import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
+import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.VNFRDependencyRepository;
 import org.openbaton.nfvo.repositories.VNFRRepository;
@@ -80,7 +81,7 @@ public class DependencyQueuer implements org.openbaton.nfvo.core.interfaces.Depe
    */
   @Override
   public synchronized void releaseVNFR(String vnfrSourceName, NetworkServiceRecord nsrFather)
-      throws NotFoundException {
+      throws NotFoundException, BadFormatException {
     List<String> dependencyIdToBeRemoved = new ArrayList<>();
     log.debug("Doing release for VNFR id: " + vnfrSourceName);
     for (Entry<String, Set<String>> entry : queues.entrySet()) {

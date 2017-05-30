@@ -89,7 +89,7 @@ public class RabbitRegister extends VnfmRegister {
           try {
             if (!RabbitManager.getQueues(
                     brokerIp.trim(), username, password, virtualHost, managementPort)
-                .contains("nfvo." + endpoint.getType() + ".actions")) {
+                .contains(endpoint.getEndpoint())) {
               if (endpoint.isActive()) {
                 log.info("Set endpoint " + endpoint.getType() + " to unactive");
                 endpoint.setActive(false);

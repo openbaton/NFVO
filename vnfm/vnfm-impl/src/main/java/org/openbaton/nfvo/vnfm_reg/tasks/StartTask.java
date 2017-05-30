@@ -25,6 +25,7 @@ import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmStartStopMessage;
+import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.VNFCInstanceRepository;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
@@ -63,7 +64,7 @@ public class StartTask extends AbstractTask {
   }
 
   @Override
-  public NFVMessage doWork() throws Exception {
+  public NFVMessage doWork() throws Exception, BadFormatException {
     log.info("Started VNFR: " + virtualNetworkFunctionRecord.getName());
     VirtualNetworkFunctionRecord existing =
         vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
@@ -103,7 +104,7 @@ public class StartTask extends AbstractTask {
   }
 
   private void sendStart(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
-      throws NotFoundException {
+      throws NotFoundException, BadFormatException {
     VnfmSender vnfmSender;
     vnfmSender =
         this.getVnfmSender(

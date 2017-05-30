@@ -17,8 +17,12 @@
 
 package org.openbaton.nfvo.core.core;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 import javax.persistence.NoResultException;
 import org.hibernate.StaleObjectStateException;
 import org.openbaton.catalogue.mano.common.Ip;
@@ -33,6 +37,7 @@ import org.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.openbaton.catalogue.nfvo.DependencyParameters;
 import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
+import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.VNFRDependencyRepository;
@@ -71,7 +76,7 @@ public class DependencyManagement
    */
   @Override
   public int provisionDependencies(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
-      throws NoResultException, NotFoundException {
+      throws NoResultException, NotFoundException, BadFormatException {
     log.debug("Provision dependencies for " + virtualNetworkFunctionRecord.getName());
     NetworkServiceRecord nsr =
         nsrRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id());
