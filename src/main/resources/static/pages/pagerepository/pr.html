@@ -12,6 +12,7 @@
   See the License for the specific language governing permissions and
 
   limitations under the License.-->
+
 <div class="row">
     <div class="col-lg-12">
         <h1>
@@ -45,8 +46,8 @@
                     <th>OS version</th>
                     <th>Architecture</th>
                     <th>Tag</th>
-                    <th>Download <i class="fa"></i></th>
-                    <th>Other Versions</th>
+                    <th style="text-align: center;">Download <i class="fa"></i></th>
+                    <th style="text-align: center;">Other Versions</th>
                     </thead>
                     <tbody>
                     <tr ng-show="data.nfvoVersion.substring(0,3) === NFVOversion.substring(0,3)" ng-repeat="data in VNFPackages| filter:search|orderBy:predicate:reverse">
@@ -59,8 +60,8 @@
                         <td>{{data.osVersion}}</td>
                         <td>{{data.osArchitecture}}</td>
                         <td>{{data.tag}}</td>
-                        <td> <button type="button" class="btn btn-primary pull right" ng-click="downloadpacakge(data)"> Download</button></td>
-                        <td> <a href="#/prController/{{data.name}}/{{data.vendor}}">  <button  type="button" class="btn btn-info pull right"> Other Versions</button></a></td>
+                        <td style="text-align: center;"> <button type="button" class="btn btn-primary pull right" ng-click="downloadpacakge(data)"> Download</button></td>
+                        <td style="text-align: center;"> <a href="#/prController/{{data.name}}/{{data.vendor}}">  <button  type="button" class="btn btn-info pull right"> Other Versions</button></a></td>
                     </tr>
                     </tbody>
                 </table>
@@ -73,18 +74,37 @@
                     <th ng-click="predicate = 'name'; reverse = !reverse">Name <i class="fa fa-sort"></i></th>
                     <th ng-click="predicate = 'vendor'; reverse = !reverse">Vendor <i class="fa fa-sort"></i></th>
                     <th ng-click="predicate = 'description'; reverse = !reverse">Description <i class="fa fa-sort"></i></th>
-                    <th>Download <i class="fa"></i></th>
+                    <th style="text-align: center;" >Download <i class="fa"></i></th>
                     </thead>
                     <tbody>
                     <tr ng-repeat="data in NSDs| filter:search|orderBy:predicate:reverse">
                         <td class="col-sm-3">{{data.name}}</td>
                         <td>{{data.vendor}}</td>
                         <td>{{data.description}}</td>
-                        <td class="col-sm-1"> <button type="button" class="btn btn-primary pull right" ng-click="downloadpacakgeNSD(data)"> Download</button></td>
+                        <td style="text-align: center;" class="col-sm-1"> <button type="button" class="btn btn-primary pull right" ng-click="downloadpacakgeNSD(data)"> Download</button></td>
                     </tr>
                     </tbody>
                 </table>
                 </div>
         </tab>
     </tabset>
+
+
+
+
+
+    <br>
+    <br/>
+
+    <br>
+
+    {{defaultUrl}}
+
+
+
+
+
+
+
+
 </div>

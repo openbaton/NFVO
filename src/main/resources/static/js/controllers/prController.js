@@ -15,23 +15,36 @@
  */
 
 var app = angular.module('app').controller('prController', function ($scope, serviceAPI, $routeParams, $http, $cookieStore, AuthService, $window, $interval, http, $location) {
+    function env() {
+        http.get(url + '/env')
+            .success(function (response) {
+                //console.log(response);
+                //$scope.env1 = response;
+                defaultUrl = response['applicationConfig: [file:/etc/openbaton/openbaton.properties]']['nfvo.package-repository.ip'] + ":" +
+                    response['applicationConfig: [file:/etc/openbaton/openbaton.properties]']['nfvo.package-repository.port'];
+                $scope.defaultUrl = defaultUrl;
+                newloadTable();
+                NSDTable();
+                getVersion();
 
 
+            })
+            .error(function (response, status) {
+                showError(response, status);
+            });
+    }
     var url = $cookieStore.get('URL');
-    //var defaultUrl = "lore:8082"
-    var defaultUrl = "192.168.162.228:8082";
+    var defaultUrl = "";
     $scope.defaultUrl = defaultUrl;
     $scope.alerts = [];
     $scope.otherVersion = [];
     $scope.NSDs = [];
     $scope.VNFPackages = [];
-    newloadTable();
-    NSDTable();
-    getVersion();
+    env();
+    $scope.defaultUrl = defaultUrl;
 
     function newloadTable() {
         if (angular.isUndefined($routeParams.name) && angular.isUndefined($routeParams.vendor)) {
-            console.log(defaultUrl);
             $http.get("http://" + defaultUrl + "/api/v1/vnf-packages/defaults")
                 .success(function (response) {
                     $scope.VNFPackages = response;
@@ -114,9 +127,8 @@ var app = angular.module('app').controller('prController', function ($scope, ser
 
                 });
         }
-    };
 
-    $scope.closeAlert = function (index) {
+        $scope.closeAlert = function (index) {
         $scope.alerts.splice(index, 1);
     };
 
