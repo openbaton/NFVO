@@ -332,7 +332,7 @@ public class VNFPackageManagement
               image.setMinDiskSpace(Long.parseLong(imageConfig.get("minDisk").toString()));
               image.setMinRam(Long.parseLong(imageConfig.get("minRam").toString()));
 
-              image.setIsPublic((boolean) imageConfig.get("minRam"));
+              image.setIsPublic((boolean) imageConfig.get("isPublic"));
             }
           } else if (!entry.getName().startsWith("scripts/") && entry.getName().endsWith(".json")) {
             //this must be the vnfd
