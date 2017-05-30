@@ -524,27 +524,14 @@ public class NetworkServiceDescriptorManagement
           NetworkServiceIntegrityException, IncompatibleVNFPackage, NotFoundException,
           VimException {
     List<String> vnfdIds = new ArrayList<>();
-    //    for (String id : packageRepositoryIds) {
-    //      for (VirtualNetworkFunctionDescriptor vnfd : vnfdRepository.findByProjectId(projectId)) {
-    //        String localId = vnfd.getVendor() + "/" + vnfd.getName() + "/" + vnfd.getVersion();
-    //        String vnfdId = vnfd.getId();
-    //        log.debug(localId);
-    //        if (localId.toLowerCase().equals(id.toLowerCase())) {
-    //          log.info("The vnfd " + localId + " was found onboarded on the same project.");
-    //          vnfdIds.add(vnfdId);
-    //          not_found_ids.remove(id);
-    //        }
-    //      }
-    //    }
-    //log.debug("VNFDs found on the catalogue: " + vnfdIds);
-    for (String id : packageRepositoryIds) {
+    for (String packageRepositorySymbolicId : packageRepositoryIds) {
       String link =
           "http://"
               + packageRepositoryIp
               + ":"
               + packageRepositoryPort
               + "/api/v1/vnf-packages/"
-              + id
+              + packageRepositorySymbolicId
               + "/default";
 
       String vnfPackageMetadataJson = getStringFromRemoteLink(link);
@@ -565,12 +552,26 @@ public class NetworkServiceDescriptorManagement
               vnfPackageMetadata.getTag(),
               projectId);
       if (vnfPackageMetadataIterable != null && vnfPackageMetadataIterable.iterator().hasNext()) {
-        log.info("The vnfd " + id + " was found onboarded on the same project.");
+        log.info(
+            "The vnfd "
+                + packageRepositorySymbolicId
+                + " was found onboarded on the same project.");
         vnfdIds.add(vnfPackageMetadataIterable.iterator().next().getVnfPackageFatherId());
       } else {
-        log.info("The vnfd " + id + " not found, onboarding from Package Repository..");
+        log.info(
+            "The vnfd "
+                + packageRepositorySymbolicId
+                + " not found, onboarding from Package Repository..");
+        String linkToDownloadVNFPackage =
+            "http://"
+                + packageRepositoryIp
+                + ":"
+                + packageRepositoryPort
+                + "/api/v1/vnf-packages/"
+                + vnfPackageMetadata.getId()
+                + "/download";
         VirtualNetworkFunctionDescriptor vnfd =
-            vnfPackageManagement.onboardFromMarket(link, projectId);
+            vnfPackageManagement.onboardFromMarket(linkToDownloadVNFPackage, projectId);
         vnfdIds.add(vnfd.getId());
         log.info(
             "Onboarded from Package Repository VNFD "

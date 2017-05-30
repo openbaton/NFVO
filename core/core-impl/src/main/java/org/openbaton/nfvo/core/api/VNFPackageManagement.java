@@ -332,7 +332,7 @@ public class VNFPackageManagement
               image.setMinDiskSpace(Long.parseLong(imageConfig.get("minDisk").toString()));
               image.setMinRam(Long.parseLong(imageConfig.get("minRam").toString()));
 
-              image.setIsPublic(Boolean.parseBoolean((String) imageConfig.get("minRam")));
+              image.setIsPublic((boolean) imageConfig.get("minRam"));
             }
           } else if (!entry.getName().startsWith("scripts/") && entry.getName().endsWith(".json")) {
             //this must be the vnfd
@@ -852,7 +852,7 @@ public class VNFPackageManagement
       throws IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
           NotFoundException, PluginException, NetworkServiceIntegrityException,
           BadRequestException {
-    log.debug("This is download link" + link);
+    log.debug("This is download link: " + link);
     URL packageLink = new URL(link);
 
     InputStream in = new BufferedInputStream(packageLink.openStream());
