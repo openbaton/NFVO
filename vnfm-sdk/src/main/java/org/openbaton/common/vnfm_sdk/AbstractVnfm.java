@@ -186,7 +186,7 @@ public abstract class AbstractVnfm
     enabled = Boolean.parseBoolean(properties.getProperty("enabled", "true"));
   }
 
-  protected void onAction(NFVMessage message) throws NotFoundException, BadFormatException {
+  protected NFVMessage onAction(NFVMessage message) throws NotFoundException, BadFormatException {
 
     VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = null;
 
@@ -236,7 +236,7 @@ public abstract class AbstractVnfm
               log.trace("HB_VERSION == " + virtualNetworkFunctionRecord.getHb_version());
             } else if (message2 instanceof OrVnfmErrorMessage) {
               this.handleError(((OrVnfmErrorMessage) message2).getVnfr());
-              return;
+              return null;
             }
             vnfcInstance_new = getVnfcInstance(virtualNetworkFunctionRecord, component);
             if (vnfcInstance_new == null) {
@@ -321,7 +321,7 @@ public abstract class AbstractVnfm
           try {
             msg = result.get();
             if (msg == null) {
-              return;
+              return null;
             }
           } catch (ExecutionException e) {
             log.error("Got exception while allocating vms");
@@ -341,7 +341,7 @@ public abstract class AbstractVnfm
             try {
               virtualNetworkFunctionRecord = executor.submit(allocateResources).get();
               if (virtualNetworkFunctionRecord == null) {
-                return;
+                return null;
               }
             } catch (ExecutionException e) {
               log.error("Got exception while allocating vms");
@@ -470,8 +470,7 @@ public abstract class AbstractVnfm
       log.debug(
           "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
       if (nfvMessage != null) {
-        log.debug("send " + nfvMessage.getClass().getSimpleName() + " to NFVO");
-        vnfmHelper.sendToNfvo(nfvMessage);
+        return nfvMessage;
       }
     } catch (Throwable e) {
       log.error("ERROR: ", e);
@@ -479,21 +478,18 @@ public abstract class AbstractVnfm
         VnfmSdkException vnfmSdkException = (VnfmSdkException) e;
         if (vnfmSdkException.getVnfr() != null) {
           log.debug("sending VNFR with version: " + vnfmSdkException.getVnfr().getHb_version());
-          vnfmHelper.sendToNfvo(
-              VnfmUtils.getNfvErrorMessage(vnfmSdkException.getVnfr(), vnfmSdkException, nsrId));
-          return;
+          return VnfmUtils.getNfvErrorMessage(vnfmSdkException.getVnfr(), vnfmSdkException, nsrId);
         }
       } else if (e.getCause() instanceof VnfmSdkException) {
         VnfmSdkException vnfmSdkException = (VnfmSdkException) e.getCause();
         if (vnfmSdkException.getVnfr() != null) {
           log.debug("sending VNFR with version: " + vnfmSdkException.getVnfr().getHb_version());
-          vnfmHelper.sendToNfvo(
-              VnfmUtils.getNfvErrorMessage(vnfmSdkException.getVnfr(), vnfmSdkException, nsrId));
-          return;
+          return VnfmUtils.getNfvErrorMessage(vnfmSdkException.getVnfr(), vnfmSdkException, nsrId);
         }
       }
-      vnfmHelper.sendToNfvo(VnfmUtils.getNfvErrorMessage(virtualNetworkFunctionRecord, e, nsrId));
+      return VnfmUtils.getNfvErrorMessage(virtualNetworkFunctionRecord, e, nsrId);
     }
+    return null;
   }
 
   private VNFCInstance getVnfcInstance(

@@ -12,6 +12,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeoutException;
 import org.openbaton.catalogue.nfvo.ManagerCredentials;
+import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -39,11 +40,12 @@ public class Registration {
    *
    * @param rabbitTemplate
    */
-  public void registerVnfmToNfvo(RabbitTemplate rabbitTemplate, String type) {
+  public String[] registerVnfmToNfvo(RabbitTemplate rabbitTemplate, VnfmManagerEndpoint endpoint) {
 
     JsonObject message = new JsonObject();
-    message.add("type", new JsonPrimitive(type));
+    message.add("type", new JsonPrimitive(endpoint.getType()));
     message.add("action", new JsonPrimitive("register"));
+    message.add("vnfmManagerEndpoint", gson.toJsonTree(endpoint, VnfmManagerEndpoint.class));
     log.debug("Registering the Vnfm to the Nfvo");
     Object res =
         rabbitTemplate.convertSendAndReceive("nfvo.manager.handling", gson.toJson(message));
@@ -57,6 +59,10 @@ public class Registration {
     this.password = ((ManagerCredentials) res).getRabbitPassword();
     ((CachingConnectionFactory) rabbitTemplate.getConnectionFactory()).setUsername(username);
     ((CachingConnectionFactory) rabbitTemplate.getConnectionFactory()).setPassword(password);
+    String[] usernamePassword = new String[2];
+    usernamePassword[0] = username;
+    usernamePassword[1] = password;
+    return usernamePassword;
   }
 
   /**
@@ -66,11 +72,12 @@ public class Registration {
    *
    * @param rabbitTemplate
    */
-  public void deregisterVnfmFromNfvo(RabbitTemplate rabbitTemplate) {
+  public void deregisterVnfmFromNfvo(RabbitTemplate rabbitTemplate, VnfmManagerEndpoint endpoint) {
     JsonObject message = new JsonObject();
     message.add("username", new JsonPrimitive(this.username));
     message.add("action", new JsonPrimitive("deregister"));
     message.add("password", new JsonPrimitive(this.password));
+    message.add("vnfmManagerEndpoint", gson.toJsonTree(endpoint));
     log.debug("Deregister the Vnfm from the Nfvo");
     rabbitTemplate.convertAndSend("nfvo.manager.handling", gson.toJson(message));
   }
