@@ -23,10 +23,10 @@ var app = angular.module('app').controller('prController', function ($scope, ser
                 defaultUrl = response['applicationConfig: [file:/etc/openbaton/openbaton.properties]']['nfvo.package-repository.ip'] + ":" +
                     response['applicationConfig: [file:/etc/openbaton/openbaton.properties]']['nfvo.package-repository.port'];
                 $scope.defaultUrl = defaultUrl;
+                $scope.ipadd = response['applicationConfig: [file:/etc/openbaton/openbaton.properties]']['nfvo.package-repository.ip']
                 newloadTable();
                 NSDTable();
                 getVersion();
-
 
             })
             .error(function (response, status) {

@@ -13,7 +13,7 @@
 
   limitations under the License.-->
 
-<div class="row">
+<div ng-hide="ipadd == undefined || ''"  class="row">
     <div class="col-lg-12">
         <h1>
             Package Repository
@@ -31,20 +31,20 @@
         <div ng-bind-html="alert.msg"></div>
     </alert>
 </div>
-<div class="row top-buffer">
+<div ng-hide="ipadd == undefined || ''" class="row top-buffer">
     <tabset>
         <tab heading="VNF Packages">
             <div class="table-responsive">
                 <table class="table table-bordered table-striped table-hover tablesorter" ng-show="VNFPackages.length > 0">
                     <thead>
-                    <th ng-click="predicate = 'name'; reverse = !reverse">Name </th>
-                    <th ng-click="predicate = 'Vendor'; reverse = !reverse">Vendor </th>
-                    <th ng-click="predicate = 'description'; reverse = !reverse">Description </th>
+                    <th ng-click="predicate = 'name'; reverse = !reverse">Name <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'Vendor'; reverse = !reverse">Vendor <i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'description'; reverse = !reverse">Description <i class="fa fa-sort"></i></th>
                     <th>Version</th>
                     <th> VNFM Type </th>
-                    <th>OS ID</th>
+                    <th>OS id</th>
                     <th>OS version</th>
-                    <th>Architecture</th>
+                    <th>OS architecture</th>
                     <th>Tag</th>
                     <th style="text-align: center;">Download <i class="fa"></i></th>
                     <th style="text-align: center;">Other Versions</th>
