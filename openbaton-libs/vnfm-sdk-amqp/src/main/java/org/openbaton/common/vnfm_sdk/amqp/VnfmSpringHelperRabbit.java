@@ -96,7 +96,6 @@ public class VnfmSpringHelperRabbit extends VnfmHelper {
     return rabbitTemplate;
   }
 
-
   @PostConstruct
   private void init() {
     this.rabbitTemplate.setExchange("openbaton-exchange"); //TODO
@@ -173,7 +172,7 @@ public class VnfmSpringHelperRabbit extends VnfmHelper {
     Connection connection = factory.newConnection();
     Channel channel = connection.createChannel();
     //    channel.exchangeDeclare(exchange, "topic", true);
-    channel.queueDeclare(queue, false, false, false, null);
+    channel.queueDeclare(queue, false, false, true, null);
     channel.queueBind(queue, exchange, queue);
     channel.basicQos(1);
     channel.close();

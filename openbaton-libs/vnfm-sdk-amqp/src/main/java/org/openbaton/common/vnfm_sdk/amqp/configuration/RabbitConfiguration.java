@@ -17,12 +17,6 @@
 
 package org.openbaton.common.vnfm_sdk.amqp.configuration;
 
-import org.openbaton.common.vnfm_sdk.interfaces.LogDispatcher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 /** Created by lto on 09/11/15. */
 // TODO consider removing this class once the new vnfm registration and communication stuff is stable
 public class RabbitConfiguration {
@@ -30,6 +24,4 @@ public class RabbitConfiguration {
   public static final String queueName_vnfmCoreActions = "vnfm.nfvo.actions";
   public static final String queueName_vnfmCoreActionsReply = "vnfm.nfvo.actions.reply";
   private static final String queueName_logDispatch = "nfvo.vnfm.logs";
-
-
 }
