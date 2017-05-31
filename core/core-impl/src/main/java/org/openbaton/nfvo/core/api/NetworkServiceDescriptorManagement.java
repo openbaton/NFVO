@@ -556,7 +556,13 @@ public class NetworkServiceDescriptorManagement
             "The vnfd "
                 + packageRepositorySymbolicId
                 + " was found onboarded on the same project.");
-        vnfdIds.add(vnfPackageMetadataIterable.iterator().next().getVnfPackageFatherId());
+        String vnfPackageFatherId =
+            vnfPackageMetadataIterable.iterator().next().getVnfPackageFatherId();
+        String vnfId =
+            vnfdRepository
+                .findByVnfPackageLocationAndProjectId(vnfPackageFatherId, projectId)
+                .getId();
+        vnfdIds.add(vnfId);
       } else {
         log.info(
             "The vnfd "
