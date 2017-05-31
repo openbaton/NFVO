@@ -15,7 +15,7 @@
  *
  */
 
-include 'catalogue', 'vnfm-sdk', 'vnfm-sdk-amqp'
+include 'catalogue', 'vnfm-sdk', 'vnfm-sdk-amqp', 'registration', 'utils', 'exception'
 
 //project(':catalogue').projectDir = file('../../catalogue')
 //project(':vnfm-sdk').projectDir = file('../../vnfm-sdk')

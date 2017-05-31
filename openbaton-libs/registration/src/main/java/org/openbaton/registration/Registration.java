@@ -12,6 +12,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeoutException;
 import org.openbaton.catalogue.nfvo.ManagerCredentials;
+import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -39,11 +40,12 @@ public class Registration {
    *
    * @param rabbitTemplate
    */
-  public void registerVnfmToNfvo(RabbitTemplate rabbitTemplate, String type) {
+  public String[] registerVnfmToNfvo(RabbitTemplate rabbitTemplate, VnfmManagerEndpoint endpoint) {
 
     JsonObject message = new JsonObject();
-    message.add("type", new JsonPrimitive(type));
+    message.add("type", new JsonPrimitive(endpoint.getType()));
     message.add("action", new JsonPrimitive("register"));
+    message.add("vnfmManagerEndpoint", gson.toJsonTree(endpoint, VnfmManagerEndpoint.class));
     log.debug("Registering the Vnfm to the Nfvo");
     Object res =
         rabbitTemplate.convertSendAndReceive("nfvo.manager.handling", gson.toJson(message));
@@ -57,6 +59,10 @@ public class Registration {
     this.password = ((ManagerCredentials) res).getRabbitPassword();
     ((CachingConnectionFactory) rabbitTemplate.getConnectionFactory()).setUsername(username);
     ((CachingConnectionFactory) rabbitTemplate.getConnectionFactory()).setPassword(password);
+    String[] usernamePassword = new String[2];
+    usernamePassword[0] = username;
+    usernamePassword[1] = password;
+    return usernamePassword;
   }
 
   /**
@@ -66,13 +72,14 @@ public class Registration {
    *
    * @param rabbitTemplate
    */
-  public void deregisterVnfmFromNfvo(RabbitTemplate rabbitTemplate) {
+  public void deregisterVnfmFromNfvo(RabbitTemplate rabbitTemplate, VnfmManagerEndpoint endpoint) {
     JsonObject message = new JsonObject();
     message.add("username", new JsonPrimitive(this.username));
     message.add("action", new JsonPrimitive("deregister"));
     message.add("password", new JsonPrimitive(this.password));
+    message.add("vnfmManagerEndpoint", gson.toJsonTree(endpoint));
     log.debug("Deregister the Vnfm from the Nfvo");
-    rabbitTemplate.convertSendAndReceive("nfvo.manager.handling", gson.toJson(message));
+    rabbitTemplate.convertAndSend("nfvo.manager.handling", gson.toJson(message));
   }
 
   /**
@@ -105,24 +112,16 @@ public class Registration {
     factory.setVirtualHost(virtualHost);
     Connection connection = factory.newConnection();
     Channel channel = connection.createChannel();
-
-    // TODO durable?
-    channel.exchangeDeclare("openbaton-exchange", "topic", true);
-
-    // TODO handle durable, autodelte and others...
-    channel.queueDeclare("nfvo.manager.handling", true, false, true, null);
-    channel.queueBind("nfvo.manager.handling", "openbaton-exchange", "");
-
+    // check if exchange and queue exist
+    channel.exchangeDeclarePassive("openbaton-exchange");
+    channel.queueDeclarePassive("nfvo.manager.handling");
     channel.basicQos(1);
 
-    String replyQueueName = channel.queueDeclare().getQueue();
+    String replyQueueName = "amq.rabbitmq.reply-to";
     final String corrId = UUID.randomUUID().toString();
 
     AMQP.BasicProperties props =
         new AMQP.BasicProperties.Builder().correlationId(corrId).replyTo(replyQueueName).build();
-
-    channel.basicPublish(
-        "openbaton-exchange", "nfvo.manager.handling", props, message.getBytes("UTF-8"));
 
     final BlockingQueue<ManagerCredentials> response =
         new ArrayBlockingQueue<ManagerCredentials>(1);
@@ -155,9 +154,11 @@ public class Registration {
           }
         });
 
+    channel.basicPublish(
+        "openbaton-exchange", "nfvo.manager.handling", props, message.getBytes("UTF-8"));
+
     ManagerCredentials managerCredentials = response.take();
 
-    channel.queueDelete(replyQueueName);
     channel.close();
     connection.close();
     return managerCredentials;
@@ -187,11 +188,9 @@ public class Registration {
     Connection connection = factory.newConnection();
     Channel channel = connection.createChannel();
 
-    channel.exchangeDeclare("openbaton-exchange", "topic", true);
-
-    channel.queueDeclare("nfvo.manager.handling", true, false, true, null);
-    channel.queueBind("nfvo.manager.handling", "openbaton-exchange", "");
-
+    // check if exchange and queue exist
+    channel.exchangeDeclarePassive("openbaton-exchange");
+    channel.queueDeclarePassive("nfvo.manager.handling");
     channel.basicQos(1);
 
     channel.basicPublish("openbaton-exchange", "nfvo.manager.handling", null, message.getBytes());
