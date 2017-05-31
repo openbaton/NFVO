@@ -569,7 +569,7 @@ public class NetworkServiceDescriptorManagement
                 + packageRepositoryPort
                 + "/api/v1/vnf-packages/"
                 + vnfPackageMetadata.getId()
-                + "/download";
+                + "/tar";
         VirtualNetworkFunctionDescriptor vnfd =
             vnfPackageManagement.onboardFromMarket(linkToDownloadVNFPackage, projectId);
         vnfdIds.add(vnfd.getId());
