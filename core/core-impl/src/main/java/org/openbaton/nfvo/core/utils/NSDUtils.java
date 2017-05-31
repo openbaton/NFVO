@@ -442,7 +442,7 @@ public class NSDUtils {
     int i = 1;
     for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
       if (vdu.getVnfc() == null || vdu.getVnfc().size() == 0)
-        throw new NetworkServiceIntegrityException(
+        log.warn(
             "Not found any VNFC in VDU of VNFD " + virtualNetworkFunctionDescriptor.getName());
       if (vdu.getName() == null || vdu.getName().isEmpty()) {
         vdu.setName(virtualNetworkFunctionDescriptor.getName() + "-" + i);
