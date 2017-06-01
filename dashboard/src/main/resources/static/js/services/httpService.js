@@ -60,10 +60,21 @@ angular.module('app')
             })
         };
 
+        http.getMark = function (url) {
+            //console.log(customHeaders);
+            customHeadersMark = {};
+            customHeadersMark['Accept'] = 'application/json';
+            customHeadersMark['Content-type'] = 'application/json';
+            console.log(customHeaders);
+            //console.log($cookieStore.get('project'));
+            return $http({
+                url: url,
+                method: 'GET',
+                headers: customHeadersMark
+            })
+        };
         http.getRC = function (url) {
             //console.log(customHeaders);
-
-        
             customHeaders['Accept'] = 'application/octet-stream';
             customHeaders['Content-type'] = 'application/octet-stream';
 
@@ -78,9 +89,6 @@ angular.module('app')
                 headers: customHeaders
             })
         };
-
-
-
         http.getPlain = function (url) {
             //console.log(customHeaders);
 
