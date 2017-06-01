@@ -896,9 +896,9 @@ public class VNFPackageManagement
             "The NFVO version number is not available, seems you are running the NFVO from the IDE. Set nfvo.version property into the NFVO property file.");
       else version = nfvoVersion;
     }
-    if (version.lastIndexOf("-SNAPSHOT") != -1)
-      version = nfvoVersion.substring(0, version.lastIndexOf("-SNAPSHOT"));
-    return version;
+    return version.lastIndexOf("-SNAPSHOT") != -1
+        ? version.substring(0, version.lastIndexOf("-SNAPSHOT"))
+        : version;
   }
 
   @Override
