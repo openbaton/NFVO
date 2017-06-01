@@ -269,7 +269,6 @@ public class VNFPackageManagement
             vnfPackageMetadata.setRequirements((Map) metadata.get("requirements"));
 
             // Optional keys
-            vnfPackageMetadata.setNfvoVersion((String) metadata.get("nfvo-version"));
             vnfPackageMetadata.setTag((String) metadata.get("tag"));
             vnfPackage.setScriptsLink((String) metadata.get("scripts-link"));
             vnfPackageMetadata.setOsId((String) metadata.get("os-id"));
