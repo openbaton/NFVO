@@ -11,7 +11,6 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.openbaton.exceptions.IncompatibleVNFPackage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.VNFPackageFormatException;
-import org.openbaton.nfvo.core.api.VNFPackageManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -228,7 +227,7 @@ public class CheckVNFPackage {
       throw new VNFPackageFormatException("There is no Metadata.yaml in the VNF Package");
   }
 
-  private static boolean compareNFVOVersions(String nfvoVersion, String vnfPackageNFVOVersion)
+  private static boolean areNFVOVersionsCompatible(String nfvoVersion, String vnfPackageNFVOVersion)
       throws IncompatibleVNFPackage, NotFoundException {
 
     if (nfvoVersion == null) throw new NullPointerException("The nfvo version in null");
@@ -241,23 +240,14 @@ public class CheckVNFPackage {
     return compatible <= 0;
   }
 
-  public static void compareNFVOVersions(String vnfPackageNfvoVersion)
+  public static void compareNFVOVersions(String vnfPackageNfvoVersion, String actualNfvoVersion)
       throws IncompatibleVNFPackage, NotFoundException {
-    String actualNfvoVersion = getNfvoVersion();
-    if (!compareNFVOVersions(actualNfvoVersion, vnfPackageNfvoVersion))
+    if (!areNFVOVersionsCompatible(actualNfvoVersion, vnfPackageNfvoVersion))
       throw new IncompatibleVNFPackage(
           "The NFVO Version: "
               + vnfPackageNfvoVersion
               + " specified in the Metadata"
-              + " is not compatible with the this NFVOs version: "
+              + " is not compatible with this NFVO version: "
               + actualNfvoVersion);
-  }
-
-  private static String getNfvoVersion() throws NotFoundException {
-    String version = VNFPackageManagement.class.getPackage().getImplementationVersion();
-    if (version == null) throw new NotFoundException("The NFVO version number is not available");
-    if (version.lastIndexOf("-SNAPSHOT") != -1)
-      return version.substring(0, version.lastIndexOf("-SNAPSHOT"));
-    else return null;
   }
 }

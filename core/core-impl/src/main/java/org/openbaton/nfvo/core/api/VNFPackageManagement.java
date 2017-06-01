@@ -61,6 +61,9 @@ public class VNFPackageManagement
 
   @Value("${vnfd.vnfp.cascade.delete:false}")
   private boolean cascadeDelete;
+  // This is only in case you run the NFVO from IDE
+  @Value("${nfvo.version}")
+  private String nfvoVersion;
 
   private final Logger log = LoggerFactory.getLogger(this.getClass());
   private final Gson mapper = new GsonBuilder().create();
@@ -75,7 +78,6 @@ public class VNFPackageManagement
   @Autowired private VnfPlacementManagement vnfPlacementManagement;
   @Autowired private VNFPackageMetadataRepository vnfPackageMetadataRepository;
 
-  private String real_nfvo_version;
   @Autowired private org.openbaton.nfvo.core.interfaces.VimManagement vimManagement;
 
   public boolean isCascadeDelete() {
@@ -238,11 +240,13 @@ public class VNFPackageManagement
             String vnfPackageNFVOVersion = null;
             if (metadata.containsKey("nfvo-version")) {
               vnfPackageNFVOVersion = (String) metadata.get("nfvo-version");
-              CheckVNFPackage.compareNFVOVersions(vnfPackageNFVOVersion);
+              CheckVNFPackage.compareNFVOVersions(
+                  vnfPackageNFVOVersion, getNfvoVersionWithoutSNAPSHOT());
             }
             if (metadata.containsKey("nfvo_version")) {
               vnfPackageNFVOVersion = (String) metadata.get("nfvo_version");
-              CheckVNFPackage.compareNFVOVersions(vnfPackageNFVOVersion);
+              CheckVNFPackage.compareNFVOVersions(
+                  vnfPackageNFVOVersion, getNfvoVersionWithoutSNAPSHOT());
             }
             vnfPackage.setNfvo_version(vnfPackageNFVOVersion);
 
@@ -481,7 +485,7 @@ public class VNFPackageManagement
     }
     String[] actualNfvoVersion;
     try {
-      actualNfvoVersion = getNfvoVersion();
+      actualNfvoVersion = getNfvoVersionSplitted();
     } catch (NotFoundException ne) {
       log.warn(ne.getMessage());
       actualNfvoVersion = null;
@@ -879,12 +883,22 @@ public class VNFPackageManagement
     return vnfd;
   }
 
-  private String[] getNfvoVersion() throws NotFoundException {
+  private String[] getNfvoVersionSplitted() throws NotFoundException {
+    return getNfvoVersionWithoutSNAPSHOT().split(Pattern.quote("."));
+  }
+
+  private String getNfvoVersionWithoutSNAPSHOT() throws NotFoundException {
     String version = VNFPackageManagement.class.getPackage().getImplementationVersion();
-    if (version == null) throw new NotFoundException("The NFVO version number is not available");
+    //this is because you are running it into an IDE
+    if (version == null) {
+      if (nfvoVersion == null)
+        throw new NotFoundException(
+            "The NFVO version number is not available, seems you are running the NFVO from the IDE. Set nfvo.version property into the NFVO property file.");
+      else version = nfvoVersion;
+    }
     if (version.lastIndexOf("-SNAPSHOT") != -1)
-      version = version.substring(0, version.lastIndexOf("-SNAPSHOT"));
-    return version.split(Pattern.quote("."));
+      version = nfvoVersion.substring(0, version.lastIndexOf("-SNAPSHOT"));
+    return version;
   }
 
   @Override
