@@ -9,7 +9,10 @@ import org.openbaton.catalogue.util.IdGenerator;
 public class AdditionalRepoInfo {
   private PackageType packageType;
   private String keyUrl;
-  @ElementCollection private List<String> configuration;
+
+  @ElementCollection(fetch = FetchType.EAGER)
+  private List<String> configuration;
+
   @Id private String id;
   @Version private int hb_version = 0;
 
