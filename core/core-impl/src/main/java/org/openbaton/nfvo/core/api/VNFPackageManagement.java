@@ -469,21 +469,15 @@ public class VNFPackageManagement
     Set<ConfigurationParameter> configurationParameters = new HashSet<>();
     for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
       for (VNFComponent component : vdu.getVnfc()) {
-        int vnfcNumber = 1;
         for (VNFDConnectionPoint vnfdConnectionPoint : component.getConnection_point()) {
-          String configKey =
-              "vnfc" + vnfcNumber + "_" + vnfdConnectionPoint.getVirtual_link_reference() + "_ip";
+          String configKey = vnfdConnectionPoint.getVirtual_link_reference() + "_ip";
           String value = vnfdConnectionPoint.getFloatingIp();
           ConfigurationParameter configurationParameter = new ConfigurationParameter();
           configurationParameter.setConfKey(configKey);
           configurationParameter.setValue(value);
           configurationParameter.setDescription(
-              "IP of the connection point: "
-                  + vnfdConnectionPoint.getVirtual_link_reference()
-                  + ", of the vnfc"
-                  + vnfcNumber);
+              "IP of the connection point: " + vnfdConnectionPoint.getVirtual_link_reference());
           configurationParameters.add(configurationParameter);
-          vnfcNumber++;
         }
       }
     }

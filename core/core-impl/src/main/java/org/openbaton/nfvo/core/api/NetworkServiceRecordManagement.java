@@ -1263,6 +1263,18 @@ public class NetworkServiceRecordManagement
                     if (configurationParameter
                         .getConfKey()
                         .equals(passedConfigurationParameter.getConfKey())) {
+                      if (passedConfigurationParameter.getConfKey().endsWith("_ip")) {
+                        for (VNFComponent vnfComponent :
+                            virtualNetworkFunctionDescriptor.getVdu().iterator().next().getVnfc()) {
+                          for (VNFDConnectionPoint vnfdConnectionPoint :
+                              vnfComponent.getConnection_point())
+                            if (passedConfigurationParameter
+                                .getConfKey()
+                                .contains(vnfdConnectionPoint.getVirtual_link_reference()))
+                              vnfdConnectionPoint.setFloatingIp(
+                                  passedConfigurationParameter.getValue());
+                        }
+                      }
                       configurationParameter.setValue(passedConfigurationParameter.getValue());
                       if (passedConfigurationParameter.getDescription() != null
                           && !passedConfigurationParameter.getDescription().isEmpty()) {
