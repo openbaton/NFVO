@@ -487,10 +487,23 @@ public class VNFPackageManagement
         }
       }
     }
-    virtualNetworkFunctionDescriptor
-        .getConfigurations()
-        .getConfigurationParameters()
-        .addAll(configurationParameters);
+    if (virtualNetworkFunctionDescriptor.getConfigurations() == null
+        || virtualNetworkFunctionDescriptor.getConfigurations().getConfigurationParameters() == null
+        || virtualNetworkFunctionDescriptor
+            .getConfigurations()
+            .getConfigurationParameters()
+            .isEmpty()) {
+      Configuration ipConfiguration = new Configuration();
+      ipConfiguration.setName("ip-configuration");
+      ipConfiguration.setProjectId(virtualNetworkFunctionDescriptor.getProjectId());
+      ipConfiguration.setConfigurationParameters(configurationParameters);
+      virtualNetworkFunctionDescriptor.setConfigurations(ipConfiguration);
+    } else {
+      virtualNetworkFunctionDescriptor
+          .getConfigurations()
+          .getConfigurationParameters()
+          .addAll(configurationParameters);
+    }
     return virtualNetworkFunctionDescriptor;
   }
 
