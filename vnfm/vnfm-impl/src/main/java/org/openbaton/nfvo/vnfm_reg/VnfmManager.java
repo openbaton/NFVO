@@ -18,7 +18,23 @@
 package org.openbaton.nfvo.vnfm_reg;
 
 import com.google.gson.Gson;
-
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
@@ -38,19 +54,8 @@ import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.catalogue.nfvo.messages.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmInstantiateMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmScalingMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmUpdateMessage;
-import org.openbaton.catalogue.nfvo.messages.VnfmOrAllocateResourcesMessage;
-import org.openbaton.catalogue.nfvo.messages.VnfmOrErrorMessage;
-import org.openbaton.catalogue.nfvo.messages.VnfmOrGenericMessage;
-import org.openbaton.catalogue.nfvo.messages.VnfmOrHealedMessage;
-import org.openbaton.catalogue.nfvo.messages.VnfmOrInstantiateMessage;
-import org.openbaton.catalogue.nfvo.messages.VnfmOrScaledMessage;
-import org.openbaton.catalogue.nfvo.messages.VnfmOrScalingMessage;
-import org.openbaton.catalogue.nfvo.messages.VnfmOrStartStopMessage;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
@@ -91,25 +96,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
-
-import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
-import javax.annotation.PostConstruct;
 
 /** Created by lto on 08/07/15. */
 @Service
@@ -713,6 +699,32 @@ public class VnfmManager
 
     vnfmSender.sendCommand(orVnfmGenericMessage, endpoint);
     return new AsyncResult<>(null);
+  }
+
+  @Override
+  @Async
+  public Future<NFVMessage> requestLog(VirtualNetworkFunctionRecord vnfr, String hostname)
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
+    VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(vnfr.getEndpoint());
+    if (endpoint == null)
+      throw new NotFoundException(
+          "VnfManager of type "
+              + vnfr.getType()
+              + " (endpoint = "
+              + vnfr.getEndpoint()
+              + ") is not registered");
+
+    OrVnfmLogMessage orVnfmLogMessage = new OrVnfmLogMessage(vnfr.getName(), hostname);
+    VnfmSender vnfmSender;
+    try {
+      vnfmSender = this.getVnfmSender(endpoint.getEndpointType());
+    } catch (BeansException e) {
+      throw new NotFoundException(e);
+    }
+    Future<NFVMessage> answerFuture = vnfmSender.sendCommand(orVnfmLogMessage, endpoint);
+    answerFuture.get();
+    NFVMessage message = answerFuture.get();
+    return new AsyncResult<>(message);
   }
 
   @Override

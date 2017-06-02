@@ -17,6 +17,10 @@
 
 package org.openbaton.vnfm.interfaces.manager;
 
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
@@ -31,11 +35,6 @@ import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.springframework.scheduling.annotation.Async;
-
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 /** Created by lto on 26/05/15. */
 public interface VnfmManager {
@@ -82,4 +81,7 @@ public interface VnfmManager {
 
   void updateScript(Script script, String vnfPackageId)
       throws NotFoundException, BadFormatException;
+
+  Future<NFVMessage> requestLog(VirtualNetworkFunctionRecord vnfr, String hostname)
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 }

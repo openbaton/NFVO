@@ -19,7 +19,6 @@ package org.openbaton.nfvo.vnfm_reg.impl.sender;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Future;
 import org.openbaton.catalogue.nfvo.Endpoint;
@@ -28,7 +27,6 @@ import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -70,18 +68,18 @@ public class RabbitVnfmSender implements VnfmSender {
       e.printStackTrace();
     }
     log.trace("Json is: " + json);
-      NFVMessage result = null;
-      rabbitTemplate.setReplyTimeout(300000);
+    NFVMessage result = null;
+    rabbitTemplate.setReplyTimeout(300000);
     try {
-        Object receive = rabbitTemplate.convertSendAndReceive(destinationName, json);
-        String stringReceive = new String((byte[]) receive, StandardCharsets.UTF_8);
-        try {
-            result = gson.fromJson(stringReceive, NFVMessage.class);
-        } catch (JsonSyntaxException e) {
-            throw new BadFormatException(e);
-        }
+      Object receive = rabbitTemplate.convertSendAndReceive(destinationName, json);
+      String stringReceive = new String((byte[]) receive, StandardCharsets.UTF_8);
+      try {
+        result = gson.fromJson(stringReceive, NFVMessage.class);
+      } catch (JsonSyntaxException e) {
+        throw new BadFormatException(e);
+      }
     } catch (Exception e) {
-        e.printStackTrace();
+      e.printStackTrace();
     }
     return new AsyncResult<>(result);
   }
