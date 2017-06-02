@@ -28,9 +28,7 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.core.interfaces.VnfPlacementManagement;
@@ -455,12 +453,44 @@ public class VNFPackageManagement
     vnfPackageMetadataRepository.setVNFPackageId(vnfPackage.getId());
 
     virtualNetworkFunctionDescriptor.setVnfPackageLocation(vnfPackage.getId());
+    if (virtualNetworkFunctionDescriptor.getEndpoint().equalsIgnoreCase("fixed-host"))
+      virtualNetworkFunctionDescriptor = setIPConfigurations(virtualNetworkFunctionDescriptor);
     virtualNetworkFunctionDescriptor = vnfdRepository.save(virtualNetworkFunctionDescriptor);
     log.trace("Persisted " + virtualNetworkFunctionDescriptor);
     log.trace(
         "Onboarded VNFPackage ("
             + virtualNetworkFunctionDescriptor.getVnfPackageLocation()
             + ") successfully");
+    return virtualNetworkFunctionDescriptor;
+  }
+
+  private VirtualNetworkFunctionDescriptor setIPConfigurations(
+      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor) {
+    Set<ConfigurationParameter> configurationParameters = new HashSet<>();
+    for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
+      for (VNFComponent component : vdu.getVnfc()) {
+        int vnfcNumber = 1;
+        for (VNFDConnectionPoint vnfdConnectionPoint : component.getConnection_point()) {
+          String configKey =
+              "vnfc" + vnfcNumber + "_" + vnfdConnectionPoint.getVirtual_link_reference() + "_ip";
+          String value = vnfdConnectionPoint.getFloatingIp();
+          ConfigurationParameter configurationParameter = new ConfigurationParameter();
+          configurationParameter.setConfKey(configKey);
+          configurationParameter.setValue(value);
+          configurationParameter.setDescription(
+              "IP of the connection point: "
+                  + vnfdConnectionPoint.getVirtual_link_reference()
+                  + ", of the vnfc"
+                  + vnfcNumber);
+          configurationParameters.add(configurationParameter);
+          vnfcNumber++;
+        }
+      }
+    }
+    virtualNetworkFunctionDescriptor
+        .getConfigurations()
+        .getConfigurationParameters()
+        .addAll(configurationParameters);
     return virtualNetworkFunctionDescriptor;
   }
 
