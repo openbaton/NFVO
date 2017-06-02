@@ -1,8 +1,19 @@
 package org.openbaton.nfvo.security.components;
 
+import static org.openbaton.utils.rabbit.RabbitManager.createRabbitMqUser;
+import static org.openbaton.utils.rabbit.RabbitManager.removeRabbitMqUser;
+import static org.openbaton.utils.rabbit.RabbitManager.setRabbitMqUserPermissions;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.util.Date;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import org.openbaton.catalogue.nfvo.ManagerCredentials;
 import org.openbaton.catalogue.nfvo.ServiceMetadata;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
@@ -19,20 +30,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.util.Date;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-
-import static org.openbaton.utils.rabbit.RabbitManager.createRabbitMqUser;
-import static org.openbaton.utils.rabbit.RabbitManager.removeRabbitMqUser;
-import static org.openbaton.utils.rabbit.RabbitManager.setRabbitMqUserPermissions;
 
 //import java.util.Base64;
 
@@ -256,18 +253,18 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
         }
 
         try {
-        String configurePermissions = "(" + username + ")|(nfvo." + username + ".actions)";
-        String writePermissions =
-            "(nfvo.vnfm.register)|(nfvo.vnfm.unregister)|("
-                + username
-                + ")|(vnfm.nfvo.actions)|(vnfm.nfvo.actions.reply)|(nfvo."
-                + username
-                + ".actions)|(openbaton-exchange)|(amq.default)";
-        String readPermissions =
-            "(nfvo." + username + ".actions)|(" + username + ")|(openbaton-exchange)";
+          String configurePermissions = "(" + username + ")|(nfvo." + username + ".actions)";
+          String writePermissions =
+              "(nfvo.vnfm.register)|(nfvo.vnfm.unregister)|("
+                  + username
+                  + ")|(vnfm.nfvo.actions)|(vnfm.nfvo.actions.reply)|(nfvo."
+                  + username
+                  + ".actions)|(openbaton-exchange)|(amq.default)";
+          String readPermissions =
+              "(nfvo." + username + ".actions)|(" + username + ")|(openbaton-exchange)";
 
-        createRabbitMqUser(
-            rabbitUsername, rabbitPassword, brokerIp, managementPort, username, password, vhost);
+          createRabbitMqUser(
+              rabbitUsername, rabbitPassword, brokerIp, managementPort, username, password, vhost);
           setRabbitMqUserPermissions(
               rabbitUsername,
               rabbitPassword,
@@ -279,8 +276,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
               writePermissions,
               readPermissions);
         } catch (Exception e) {
-          if (vnfmEndpoint != null)
-            vnfmRegister.unregister(vnfmEndpoint);
+          if (vnfmEndpoint != null) vnfmRegister.unregister(vnfmEndpoint);
           try {
             removeRabbitMqUser(rabbitUsername, rabbitPassword, brokerIp, managementPort, username);
           } catch (Exception e2) {
@@ -312,8 +308,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
         }
         String username = body.get("username").getAsString();
         ManagerCredentials managerCredentials =
-            managerCredentialsRepository.findFirstByRabbitUsername(
-                username);
+            managerCredentialsRepository.findFirstByRabbitUsername(username);
         if (managerCredentials == null) {
           log.error("Did not find manager with name " + body.get("username"));
           return null;
@@ -321,8 +316,9 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
         if (body.get("password").getAsString().equals(managerCredentials.getRabbitPassword())) {
           managerCredentialsRepository.delete(managerCredentials);
           // if message comes from a vnfm, remove the endpoint
-          if ( body.has("vnfmManagerEndpoint"))
-            vnfmRegister.unregister(gson.fromJson(body.get("vnfmManagerEndpoint"), VnfmManagerEndpoint.class));
+          if (body.has("vnfmManagerEndpoint"))
+            vnfmRegister.unregister(
+                gson.fromJson(body.get("vnfmManagerEndpoint"), VnfmManagerEndpoint.class));
 
           removeRabbitMqUser(rabbitUsername, rabbitPassword, brokerIp, managementPort, username);
         }
@@ -334,5 +330,4 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
       return null;
     }
   }
-
 }
