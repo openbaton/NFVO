@@ -60,7 +60,7 @@ public class VNFPackageManagement
   @Value("${vnfd.vnfp.cascade.delete:false}")
   private boolean cascadeDelete;
   // This is only in case you run the NFVO from IDE
-  @Value("${nfvo.version}")
+  @Value("${nfvo.version:null}")
   private String nfvoVersion;
 
   private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -921,7 +921,7 @@ public class VNFPackageManagement
     String version = VNFPackageManagement.class.getPackage().getImplementationVersion();
     //this is because you are running it into an IDE
     if (version == null) {
-      if (nfvoVersion == null)
+      if (nfvoVersion.equals("null"))
         throw new NotFoundException(
             "The NFVO version number is not available, seems you are running the NFVO from the IDE. Set nfvo.version property into the NFVO property file.");
       else version = nfvoVersion;
