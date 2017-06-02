@@ -453,8 +453,8 @@ public class VNFPackageManagement
     vnfPackageMetadataRepository.setVNFPackageId(vnfPackage.getId());
 
     virtualNetworkFunctionDescriptor.setVnfPackageLocation(vnfPackage.getId());
-    if (virtualNetworkFunctionDescriptor.getEndpoint().equalsIgnoreCase("fixed-host"))
-      virtualNetworkFunctionDescriptor = setIPConfigurations(virtualNetworkFunctionDescriptor);
+    //if (virtualNetworkFunctionDescriptor.getEndpoint().equalsIgnoreCase("fixed-host"))
+    virtualNetworkFunctionDescriptor = setIPConfigurations(virtualNetworkFunctionDescriptor);
     virtualNetworkFunctionDescriptor = vnfdRepository.save(virtualNetworkFunctionDescriptor);
     log.trace("Persisted " + virtualNetworkFunctionDescriptor);
     log.trace(
