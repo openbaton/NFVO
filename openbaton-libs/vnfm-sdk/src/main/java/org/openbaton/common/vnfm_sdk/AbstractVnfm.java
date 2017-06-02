@@ -18,11 +18,7 @@
 package org.openbaton.common.vnfm_sdk;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -49,6 +45,7 @@ import org.openbaton.catalogue.security.Key;
 import org.openbaton.common.vnfm_sdk.exception.BadFormatException;
 import org.openbaton.common.vnfm_sdk.exception.NotFoundException;
 import org.openbaton.common.vnfm_sdk.exception.VnfmSdkException;
+import org.openbaton.common.vnfm_sdk.interfaces.LogDispatcher;
 import org.openbaton.common.vnfm_sdk.interfaces.VNFLifecycleChangeNotification;
 import org.openbaton.common.vnfm_sdk.interfaces.VNFLifecycleManagement;
 import org.openbaton.common.vnfm_sdk.utils.VNFRUtils;
@@ -96,6 +93,9 @@ public abstract class AbstractVnfm
   }
 
   private String description;
+
+  // If the VNFM supports the requesting of log files, it can instantiate this field (e.g. in the setup method), otherwise it will not be used.
+  protected LogDispatcher logDispatcher;
 
   @PreDestroy
   private void shutdown() {}
@@ -464,6 +464,17 @@ public abstract class AbstractVnfm
                     + resumedAction
                     + "'");
             break;
+          }
+        case LOG_REQUEST:
+          {
+            OrVnfmLogMessage orVnfmLogMessage = (OrVnfmLogMessage) message;
+            // if the VNFM does not support log requests (i.e. no LogDispatcher is implemented), it will return a default "error" OrVnfmLogMessage
+            if (logDispatcher != null) nfvMessage = logDispatcher.getLogs(orVnfmLogMessage);
+            else {
+              List<String> errorList = new LinkedList<>();
+              errorList.add("This VNFM does not support the requesting of log files.");
+              nfvMessage = new VnfmOrLogMessage(new LinkedList<String>(), errorList);
+            }
           }
       }
 

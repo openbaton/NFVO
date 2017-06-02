@@ -107,7 +107,7 @@ public abstract class AbstractVnfmSpringAmqp extends AbstractVnfm
                         .correlationId(properties.getCorrelationId())
                         .build();
                 try {
-                  String answer = gson.toJson(answerMessage, NFVMessage.class);
+                  String answer = gson.toJson(answerMessage);
                   channel.basicPublish(
                       "", properties.getReplyTo(), replyProps, answer.getBytes("UTF-8"));
                   channel.basicAck(envelope.getDeliveryTag(), false);
