@@ -63,6 +63,9 @@ public class GsonDeserializerNFVMessage implements JsonDeserializer<NFVMessage> 
       case "ERROR":
         result = gson.fromJson(json, OrVnfmErrorMessage.class);
         break;
+      case "LOG_REQUEST":
+        result = gson.fromJson(json, OrVnfmLogMessage.class);
+        break;
       default:
         result = gson.fromJson(json, OrVnfmGenericMessage.class);
         break;
