@@ -15,21 +15,21 @@
 <div ng-controller="IndexCtrl">
     <div id="wrapper">
         <!-- Navigation -->
-        <nav class="navbar navbar-default navbar-static-top"  style="margin-bottom: 0;padding-top: 3px;" >
+        <nav class="navbar navbar-default navbar-static-top"  style="margin-bottom: 0;padding-top: 2px;" >
             <div class="navbar-header" style="padding-top: 6px;padding-left: 10px;padding-right: 10px;">
                  <a href="#main"><img style="width: 140px" src="img/OpenBatonLogoTransp.png" class="img-responsive" alt="Responsive image"></a>
             </div>
             <!-- /.navbar-header -->
-            <ul style="width: 250px;" class="nav navbar-top-links navbar-right navbar-default" role="navigation">
+            <ul class="nav navbar-top-links navbar-right navbar-default" role="navigation">
                 <li class="dropdown">
-                    <a href="" class="dropdown-toggle" data-toggle="dropdown" ng-init="changeProject()"><i class="fa fa-folder-open"></i> {{projectSelected.name}} <b
+                    <a style="overflow-wrap: break-word;" href="" class="dropdown-toggle" data-toggle="dropdown" ng-init="changeProject()"><i class="fa fa-folder-open"></i> {{projectSelected.name}} <b
                             class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li>
                             <div style="padding-left:5px;">Projects:</div>
                         </li>
                         <li ng-repeat="project in projects | orderBy:'name'">
-                            <a href="" ng-click="changeProject(project)">{{project.name}}  <i ng-if="project.name === projectSelected.name" class="fa fa-check"></i></a>
+                            <a style="overflow-wrap: break-word;" href="" ng-click="changeProject(project)">{{project.name}}  <i ng-if="project.name === projectSelected.name" class="fa fa-check"></i></a>
                         </li>
                         <li class="divider"></li>
                         <li>
@@ -233,7 +233,7 @@
                         <label for="projectname" class="col-sm-4 control-label">Project Name</label>
 
                         <div class="col-sm-6">
-                            <input type="text" class="form-control" id="projectname" name="projectname"
+                            <input maxlength="256" placeholder="Enter project name within 256 characters" type="text" class="form-control" id="projectname" name="projectname"
                                    ng-model="projectObj.name"/>
                         </div>
                     </div>
