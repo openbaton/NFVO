@@ -1203,32 +1203,34 @@ public class NetworkServiceRecordManagement
       NetworkServiceDescriptor networkServiceDescriptor, DeployNSRBody body) {
     for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
         networkServiceDescriptor.getVnfd()) {
-      for (ConfigurationParameter passedConfigurationParameter :
-          body.getConfigurations()
-              .get(virtualNetworkFunctionDescriptor.getName())
-              .getConfigurationParameters()) {
-        if (passedConfigurationParameter.getConfKey().endsWith("_ip")) {
-          VNFComponent vnfComponent =
-              virtualNetworkFunctionDescriptor
-                  .getVdu()
-                  .iterator()
-                  .next()
-                  .getVnfc()
-                  .iterator()
-                  .next();
-          for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point())
-            if (passedConfigurationParameter
-                .getConfKey()
-                .contains(vnfdConnectionPoint.getVirtual_link_reference())) {
-              log.debug(
-                  "VNF: "
-                      + virtualNetworkFunctionDescriptor.getName()
-                      + ", setting ip: "
-                      + passedConfigurationParameter.getValue()
-                      + " to cp: "
-                      + vnfdConnectionPoint.getVirtual_link_reference());
-              vnfdConnectionPoint.setFloatingIp(passedConfigurationParameter.getValue());
-            }
+      if (body.getConfigurations().get(virtualNetworkFunctionDescriptor.getName()) != null) {
+        for (ConfigurationParameter passedConfigurationParameter :
+            body.getConfigurations()
+                .get(virtualNetworkFunctionDescriptor.getName())
+                .getConfigurationParameters()) {
+          if (passedConfigurationParameter.getConfKey().endsWith("_ip")) {
+            VNFComponent vnfComponent =
+                virtualNetworkFunctionDescriptor
+                    .getVdu()
+                    .iterator()
+                    .next()
+                    .getVnfc()
+                    .iterator()
+                    .next();
+            for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point())
+              if (passedConfigurationParameter
+                  .getConfKey()
+                  .contains(vnfdConnectionPoint.getVirtual_link_reference())) {
+                log.debug(
+                    "VNF: "
+                        + virtualNetworkFunctionDescriptor.getName()
+                        + ", setting ip: "
+                        + passedConfigurationParameter.getValue()
+                        + " to cp: "
+                        + vnfdConnectionPoint.getVirtual_link_reference());
+                vnfdConnectionPoint.setFloatingIp(passedConfigurationParameter.getValue());
+              }
+          }
         }
       }
     }
