@@ -6502,3 +6502,35 @@ ul li a:focus {
   }
 
 }
+@media only screen and (max-width: 479px) {
+    .mail-right-tool li{padding: 5px !important;}
+    .fc-right{display: none;}
+    .fc-left{margin-bottom: 20px;float: right !important;}
+    .search-v1 #tabs-demo6 li.active:after{
+        display: none !important;
+    }
+    .search-v1 .search-v1-result-wrapper{padding: 0px !important;}
+    #content{
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+    .user-nav{margin-right: 10px;}
+    .user-dropdown{background-color: #fff !important;}
+    .nav-wrapper .navbar-header,.nav-wrapper,.navbar-brand{
+        padding-left: 0px !important;
+    }
+    .user-nav .user-name,
+    .user-nav .opener-right-menu,
+    #left-menu,
+    .opener-left-menu,
+    #right-menu{
+        display: none !important;
+    }
+
+    #mimin-mobile,#mimin-mobile-menu-opener{display: block !important;}
+
+    .search-nav{
+        display: none;
+    }
+
+}
