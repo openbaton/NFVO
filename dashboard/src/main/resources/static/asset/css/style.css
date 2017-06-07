@@ -6348,6 +6348,20 @@ ul li a:focus {
   }
 }
 
+@media (max-width: 766px) {
+    .navbar-top-links li {
+        display: block !important;
+    }
+    ul {
+        width: 250px !important;
+    }
+
+    .navbar-top-links li:last-child{
+
+        margin-right:0px !important;
+    }
+}
+
 
 
 @media (min-width : 992px) {
@@ -6468,8 +6482,6 @@ ul li a:focus {
     left: 35%;
   }
 }
-
-
 @media only screen and (max-width: 479px) { 
   .mail-right-tool li{padding: 5px !important;}
   .fc-right{display: none;}
@@ -6501,4 +6513,18 @@ ul li a:focus {
     display: none;
   }
 
+}
+@media (max-width: 766px) {
+    .navbar-top-links li {
+        display: block !important;
+    }
+    ul {
+        width: 250px !important;
+    }
+
+    .navbar-top-links li:last-child{
+
+        margin-right:0px !important;
+
+    }
 }
