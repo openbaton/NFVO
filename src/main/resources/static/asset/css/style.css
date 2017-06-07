@@ -6465,8 +6465,6 @@ ul li a:focus {
     left: 35%;
   }
 }
-
-
 @media only screen and (max-width: 479px) { 
   .mail-right-tool li{padding: 5px !important;}
   .fc-right{display: none;}
