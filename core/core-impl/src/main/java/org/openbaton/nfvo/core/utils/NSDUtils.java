@@ -442,8 +442,7 @@ public class NSDUtils {
     int i = 1;
     for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
       if (vdu.getVnfc() == null || vdu.getVnfc().size() == 0)
-        log.warn(
-            "Not found any VNFC in VDU of VNFD " + virtualNetworkFunctionDescriptor.getName());
+        log.warn("Not found any VNFC in VDU of VNFD " + virtualNetworkFunctionDescriptor.getName());
       if (vdu.getName() == null || vdu.getName().isEmpty()) {
         vdu.setName(virtualNetworkFunctionDescriptor.getName() + "-" + i);
         i++;
@@ -568,9 +567,11 @@ public class NSDUtils {
                         + flavors);
               }
               if (virtualDeploymentUnit.getVm_image() != null) {
+                boolean found = false;
                 for (String image : virtualDeploymentUnit.getVm_image()) {
                   log.debug("Checking image: " + image);
-                  if (!imageNames.contains(image) && !imageIds.contains(image)) {
+                  if (imageNames.contains(image) || imageIds.contains(image)) found = true;
+                  if (!found) {
                     throw new NetworkServiceIntegrityException(
                         "Regarding the VirtualNetworkFunctionDescriptor "
                             + virtualNetworkFunctionDescriptor.getName()
