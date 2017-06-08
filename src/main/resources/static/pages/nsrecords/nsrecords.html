@@ -50,7 +50,7 @@
                     <th ng-click="predicate = 'name'; reverse = !reverse">NSR Name <i class="fa fa-sort"></i></th>
                     <th ng-click="predicate = 'state'; reverse = !reverse">State <i class="fa fa-sort"></i></th>
                     <th ng-click="predicate = 'createdAt'; reverse = !reverse">Created at <i class="fa fa-sort"></i></th>
-                    <th ng-click="predicate = 'updatedAt'; reverse = !reverse">Updated at<i class="fa fa-sort"></i></th>
+                    <th ng-click="predicate = 'updatedAt'; reverse = !reverse">Updated at <i class="fa fa-sort"></i></th>
                     <th>Actions <i class="fa"></i></th>
                 </tr>
                 </thead>
@@ -60,7 +60,7 @@
                     <td><a popover="Show Info for this NSR" popover-placement="right" popover-trigger="mouseenter"
                            ng-click="getLastHistoryLifecycleEvent(data.vnfr)" href="#nsrecords/{{data.id}}">{{data.id}}</a></td>
                     <td>{{data.name}}</td>
-                    <td>{{data.status}}</td>
+                    <td>{{data.status}} <span ng-show='ActiveNSrecords(data.status)'><span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span></span><span ng-show='PendingNSrecords(data.status)'><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span></span></td>
                     <td>{{data.createdAt}}</td>
                     <td>{{data.updatedAt}}</td>
 

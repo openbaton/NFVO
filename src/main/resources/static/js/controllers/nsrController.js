@@ -588,6 +588,51 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
 
 
     }
+
+
+    $scope.loadTable = function() {
+        if (angular.isUndefined($routeParams.nsrecordId))
+            http.get(url)
+                .success(function (response, status) {
+                    $scope.nsrecords = response;
+                    console.log(response);
+                })
+                .error(function (data, status) {
+                    showError(data, status);
+
+                });
+        else
+            http.get(url + $routeParams.nsrecordId)
+                .success(function (response, status) {
+                    $scope.nsrinfo = response;
+                    $scope.getLastHistoryLifecycleEvent($scope.nsrinfo.vnfr);
+                    $scope.nsrJSON = response;
+                    //console.log(response);
+                    //topologiesAPI.Jsplumb(response);
+                })
+                .error(function (data, status) {
+                    showError(data, status);
+                    //var destinationUrl = '#';
+                    //$window.location.href = destinationUrl;
+                });
+    }
+    var promise = $interval($scope.loadTable, 10000);
+    $scope.$on('$destroy',function(){
+        if(promise)
+            $interval.cancel(promise);
+    });
+    $scope.ActiveNSrecords = function(status) {
+        if(status === 'ACTIVE') {
+            return true;
+        }
+         return false;
+    };
+    $scope.PendingNSrecords = function(status) {
+        if(status != 'ACTIVE') {
+            return true;
+        }
+        return false;
+    };
     $scope.vnfrjsonname = "";
     $scope.vnfrJSON = "";
     $scope.copyJson = function(vnfr) {
