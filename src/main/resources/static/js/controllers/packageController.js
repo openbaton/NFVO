@@ -100,9 +100,20 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
         $scope.selection.ids = {};
 
     };
-    $scope.$watch('mainCheckbox', function (newValue, oldValue) {
-        //console.log(newValue);
-        //console.log($scope.selection.ids);
+    $scope.main = { checkbox: false };
+
+    $scope.selectAll = function() {
+        var newValue = $scope.main.checkbox;
+        angular.forEach($scope.selection.ids, function (value, k) {
+            /*     console.log(k);
+             console.log(value);*/
+
+            $scope.selection.ids[k] = newValue;
+        });
+    }
+    $scope.$watch('main', function (newValue, oldValue) {
+        console.log(newValue);
+        console.log($scope.selection.ids);
 
 
         angular.forEach($scope.selection.ids, function (value, k) {
