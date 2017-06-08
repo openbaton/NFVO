@@ -812,8 +812,8 @@
                                 </thead>
                                 <tbody>
                                     <tr ng-repeat="vnfd in tmpVnfd track by $index">
-                                        <td>{{vnfd.type}}</td>
                                         <td>{{vnfd.name}}</td>
+                                        <td>{{vnfd.type}}</td>
                                         <td>{{vnfd.endpoint}}</td>
                                         <td><a href="" ng-click="deleteVNFDfromNSD($index)"><span class="fa fa-trash"></span></a>
                                         </td>
