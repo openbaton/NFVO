@@ -20,16 +20,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import io.swagger.annotations.ApiOperation;
-import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import javax.validation.Valid;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -68,6 +58,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api/v1/ns-records")
@@ -155,14 +158,25 @@ public class RestNetworkServiceRecord {
           BadFormatException, VimDriverException, QuotaExceededException, PluginException,
           MissingParameterException, BadRequestException {
 
-    log.debug("Json Body is" + jsonObject);
-    Type mapType = new TypeToken<Map<String, Configuration>>() {}.getType();
+    List keys = new LinkedList();
+    Map vduVimInstances = new HashMap();
+    Map<String, Configuration> configurations = new HashMap<>();
+
+    log.debug("Json Body is " + jsonObject);
+    if (jsonObject != null) {
+      if (jsonObject.has("keys")) {
+        keys = gson.fromJson(jsonObject.getAsJsonArray("keys"), List.class);
+      }
+      if (jsonObject.has("vduVimInstances")) {
+        vduVimInstances = gson.fromJson(jsonObject.getAsJsonObject("vduVimInstances"), Map.class);
+      }
+      if (jsonObject.has("configurations")) {
+        Type mapType = new TypeToken<Map<String, Configuration>>() {}.getType();
+        configurations = gson.fromJson(jsonObject.get("configurations"), mapType);
+      }
+    }
     return networkServiceRecordManagement.onboard(
-        id,
-        projectId,
-        gson.fromJson(jsonObject.getAsJsonArray("keys"), List.class),
-        gson.fromJson(jsonObject.getAsJsonObject("vduVimInstances"), Map.class),
-        (Map) gson.fromJson(jsonObject.get("configurations"), mapType));
+        id, projectId, keys, vduVimInstances, configurations);
   }
 
   /**
@@ -196,7 +210,7 @@ public class RestNetworkServiceRecord {
     value = "Resume a failed Network Service Record",
     notes = "The id in the URL specifies the Network Service Record that will be resumed"
   )
-  @RequestMapping(value = "{id}", method = RequestMethod.POST)
+  @RequestMapping(value = "{id}/resume", method = RequestMethod.POST)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void resume(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
