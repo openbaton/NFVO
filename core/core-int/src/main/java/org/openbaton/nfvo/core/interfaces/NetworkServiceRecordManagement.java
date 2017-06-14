@@ -17,6 +17,7 @@
 
 package org.openbaton.nfvo.core.interfaces;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -26,6 +27,7 @@ import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.MissingParameterException;
@@ -44,7 +46,7 @@ public interface NetworkServiceRecordManagement {
   NetworkServiceRecord onboard(
       String nsd_id, String projectId, List keys, Map vduVimInstances, Map configurations)
       throws VimException, NotFoundException, PluginException, MissingParameterException,
-          BadRequestException;
+          BadRequestException, IOException, AlreadyExistingException;
 
   /**
    * This operation allows submitting and validating a Network Service Descriptor (NSD), including
@@ -57,7 +59,7 @@ public interface NetworkServiceRecordManagement {
       Map vduVimInstances,
       Map configurations)
       throws VimException, PluginException, NotFoundException, MissingParameterException,
-          BadRequestException;
+          BadRequestException, IOException, AlreadyExistingException;
 
   /**
    * This operation allows updating a Network Service Descriptor (NSD), including any related VNFFGD

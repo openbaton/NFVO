@@ -17,6 +17,18 @@
 
 package org.openbaton.nfvo.core.api;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
+import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.Ip;
@@ -35,6 +47,7 @@ import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
 import org.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.openbaton.catalogue.nfvo.HistoryLifecycleEvent;
+import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.Quota;
 import org.openbaton.catalogue.nfvo.Subnet;
@@ -48,6 +61,7 @@ import org.openbaton.catalogue.nfvo.messages.OrVnfmHealVNFRequestMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmStartStopMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrHealedMessage;
 import org.openbaton.catalogue.security.Key;
+import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.MissingParameterException;
@@ -85,19 +99,6 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
-
-import javax.annotation.PostConstruct;
 
 /** Created by lto on 11/05/15. */
 @Service
@@ -162,6 +163,8 @@ public class NetworkServiceRecordManagement
   @Autowired private KeyRepository keyRepository;
   @Autowired private VnfPackageRepository vnfPackageRepository;
 
+  @Autowired private org.openbaton.nfvo.core.interfaces.VimManagement vimManagement;
+
   @PostConstruct
   private void init() {
     if (removeAfterTimeout) {
@@ -179,7 +182,7 @@ public class NetworkServiceRecordManagement
   public NetworkServiceRecord onboard(
       String idNsd, String projectID, List keys, Map vduVimInstances, Map configurations)
       throws VimException, NotFoundException, PluginException, MissingParameterException,
-          BadRequestException {
+          BadRequestException, IOException, AlreadyExistingException {
     log.info("Looking for NetworkServiceDescriptor with id: " + idNsd);
     NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findFirstById(idNsd);
     if (networkServiceDescriptor == null) {
@@ -402,7 +405,7 @@ public class NetworkServiceRecordManagement
       Map vduVimInstances,
       Map configurations)
       throws VimException, NotFoundException, PluginException, MissingParameterException,
-          BadRequestException {
+          BadRequestException, IOException, AlreadyExistingException {
     networkServiceDescriptor.setProjectId(projectId);
     //    nsdUtils.fetchVimInstances(networkServiceDescriptor, projectId);
     DeployNSRBody body = new DeployNSRBody();
@@ -447,7 +450,7 @@ public class NetworkServiceRecordManagement
     if (!vnfr.getProjectId().equals(projectId))
       throw new UnauthorizedUserException("VNFR not contained in the chosen project.");
     nsrRepository.deleteVNFRecord(idNsr, idVnf);
-    for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : nsr.getVnfr()){
+    for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : nsr.getVnfr()) {
       if (nsr.getStatus().ordinal() > virtualNetworkFunctionRecord.getStatus().ordinal())
         nsr.setStatus(vnfr.getStatus());
     }
@@ -1110,7 +1113,8 @@ public class NetworkServiceRecordManagement
   private NetworkServiceRecord deployNSR(
       NetworkServiceDescriptor networkServiceDescriptor, String projectID, DeployNSRBody body)
       throws NotFoundException, VimException, PluginException, MissingParameterException,
-          BadRequestException {
+          BadRequestException, IOException, AlreadyExistingException {
+
     Map<String, List<String>> vduVimInstances = new HashMap<>();
     log.info("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor.getName());
     log.info("VNFD are: ");
@@ -1167,6 +1171,27 @@ public class NetworkServiceRecordManagement
             if (vimInstance == null) {
               throw new NotFoundException("Not found VIM instance: " + vimInstanceName);
             }
+
+            boolean found = false;
+            vimManagement.refresh(vimInstance);
+            for (String imageName : vdu.getVm_image()) {
+
+              for (NFVImage image : vimInstance.getImages()) {
+                if (image.getName().equals(imageName) || image.getExtId().equals(imageName)) {
+                  //if (image.getStatus().equals(NFVImage.ImageStatus.ACTIVE)) {
+                  //found = true;
+                  //} else log.debug("Image " + image.getName() + " is NOT ACTIVE!");
+                  log.debug("test");
+                  found = true;
+                }
+              }
+            }
+            if (!found)
+              throw new NotFoundException(
+                  "None of the selected images "
+                      + vdu.getVm_image()
+                      + "was found on vim: "
+                      + vimInstanceName);
 
             //check networks
             for (VNFComponent vnfc : vdu.getVnfc()) {

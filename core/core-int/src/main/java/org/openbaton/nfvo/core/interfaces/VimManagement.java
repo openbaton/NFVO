@@ -18,9 +18,15 @@
 package org.openbaton.nfvo.core.interfaces;
 
 import java.io.IOException;
+import java.util.Set;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.VimInstance;
-import org.openbaton.exceptions.*;
+import org.openbaton.exceptions.AlreadyExistingException;
+import org.openbaton.exceptions.BadRequestException;
+import org.openbaton.exceptions.EntityUnreachableException;
+import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.PluginException;
+import org.openbaton.exceptions.VimException;
 
 /** Created by lto on 13/05/15. */
 public interface VimManagement {
@@ -74,4 +80,6 @@ public interface VimManagement {
   Iterable<VimInstance> queryByProjectId(String projectId);
 
   void checkVimInstances() throws IOException;
+
+  Set<NFVImage> queryImagesDirectly(VimInstance vimInstance) throws PluginException, VimException;
 }

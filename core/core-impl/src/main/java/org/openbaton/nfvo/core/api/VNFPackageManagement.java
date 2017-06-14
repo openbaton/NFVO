@@ -44,6 +44,7 @@ import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadRequestException;
+import org.openbaton.exceptions.EntityUnreachableException;
 import org.openbaton.exceptions.IncompatibleVNFPackage;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.openbaton.exceptions.NotFoundException;
@@ -67,6 +68,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.json.YamlJsonParser;
 import org.springframework.context.annotation.Scope;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
@@ -74,6 +76,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Scope
 @ConfigurationProperties
+@EnableAsync
 public class VNFPackageManagement
     implements org.openbaton.nfvo.core.interfaces.VNFPackageManagement {
 
@@ -90,6 +93,7 @@ public class VNFPackageManagement
   @Autowired private VimRepository vimInstanceRepository;
   @Autowired private NetworkServiceDescriptorRepository nsdRepository;
   @Autowired private VnfmManager vnfmManager;
+  @Autowired private ImageChecker imageChecker;
   @Autowired private VnfPlacementManagement vnfPlacementManagement;
 
   private String real_nfvo_version;
@@ -104,9 +108,10 @@ public class VNFPackageManagement
   }
 
   @Override
-  public VirtualNetworkFunctionDescriptor onboard(byte[] pack, String projectId)
+  public synchronized VirtualNetworkFunctionDescriptor onboard(byte[] pack, String projectId)
       throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage,
-          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException {
+          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException,
+          InterruptedException, EntityUnreachableException {
     log.info("Onboarding VNF Package...");
     VNFPackage vnfPackage = new VNFPackage();
     vnfPackage.setScripts(new HashSet<Script>());
@@ -344,7 +349,7 @@ public class VNFPackageManagement
       Map<String, Object> imageDetails,
       String projectId)
       throws NotFoundException, PluginException, VimException, BadRequestException, IOException,
-          AlreadyExistingException {
+          AlreadyExistingException, InterruptedException, EntityUnreachableException {
     if (metadata == null) {
       throw new NotFoundException("VNFPackageManagement: Not found Metadata.yaml");
     }
@@ -422,6 +427,8 @@ public class VNFPackageManagement
                 vdu.getVm_image().add(image.getExtId());
                 vimInstances.add(vimInstance.getId());
                 vimManagement.refresh(vimInstance);
+
+                imageChecker.checkImageStatus(vimInstance);
               }
             }
           }
@@ -452,6 +459,8 @@ public class VNFPackageManagement
                 vdu.getVm_image().add(image.getExtId());
                 vimInstances.add(vimInstance.getId());
                 vimManagement.refresh(vimInstance);
+
+                imageChecker.checkImageStatus(vimInstance);
               }
             }
           }
@@ -485,6 +494,7 @@ public class VNFPackageManagement
           }
 
           boolean found = false;
+          vimManagement.refresh(vimInstance);
           //First, check for image ids
           if (imageDetails.containsKey("ids")) {
             for (NFVImage nfvImage : vimInstance.getImages()) {
@@ -549,6 +559,8 @@ public class VNFPackageManagement
                   vdu.getVm_image().add(image.getExtId());
                   vimInstances.add(vimInstance.getId());
                   vimManagement.refresh(vimInstance);
+
+                  imageChecker.checkImageStatus(vimInstance);
                 }
               } else if (imageFile != null) {
                 log.debug("VNFPackageManagement: Uploading a new Image by using the image file");
@@ -565,6 +577,8 @@ public class VNFPackageManagement
                   vimInstances.add(vimInstance.getId());
                   vdu.getVm_image().add(image.getExtId());
                   vimManagement.refresh(vimInstance);
+
+                  imageChecker.checkImageStatus(vimInstance);
                 }
               }
             } else {
@@ -601,8 +615,8 @@ public class VNFPackageManagement
 
   public VirtualNetworkFunctionDescriptor onboardFromMarket(String link, String projectId)
       throws IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
-          NotFoundException, PluginException, NetworkServiceIntegrityException,
-          BadRequestException {
+          NotFoundException, PluginException, NetworkServiceIntegrityException, BadRequestException,
+          InterruptedException, EntityUnreachableException {
     log.debug("This is download link" + link);
     URL packageLink = new URL(link);
 
