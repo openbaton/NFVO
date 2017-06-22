@@ -920,6 +920,40 @@ public class VNFPackageManagement
     return vnfd;
   }
 
+  @Override
+  public VirtualNetworkFunctionDescriptor onboardFromPackageRepository(
+      String link, String projectId)
+      throws IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
+          NotFoundException, PluginException, NetworkServiceIntegrityException,
+          BadRequestException {
+    log.debug("Onboard from Package Repository, this is the download link: " + link);
+    URL packageLink = new URL(link);
+
+    InputStream in = new BufferedInputStream(packageLink.openStream());
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    byte[] bytes = new byte[1024];
+    int n;
+    while (-1 != (n = in.read(bytes))) {
+      out.write(bytes, 0, n);
+    }
+    out.close();
+    in.close();
+    byte[] packageOnboard = out.toByteArray();
+    log.debug("Downloaded " + packageOnboard.length + " bytes");
+    VirtualNetworkFunctionDescriptor vnfd;
+    try {
+      vnfd = add(packageOnboard, false, projectId, false);
+    } catch (SQLException
+        | ExistingVNFPackage
+        | DescriptorWrongFormat
+        | VNFPackageFormatException e) {
+      if (log.isDebugEnabled()) log.error(e.getMessage(), e);
+      else log.error(e.getMessage());
+      throw new BadRequestException(e.getMessage());
+    }
+    return vnfd;
+  }
+
   private String[] getNfvoVersionSplitted() throws NotFoundException {
     return getNfvoVersionWithoutSNAPSHOT().split(Pattern.quote("."));
   }

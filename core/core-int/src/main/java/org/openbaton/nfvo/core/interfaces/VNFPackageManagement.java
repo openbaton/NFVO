@@ -91,6 +91,16 @@ public interface VNFPackageManagement {
           NotFoundException, PluginException, NetworkServiceIntegrityException, BadRequestException;
 
   /**
+   * This operation allows submitting and validating the VNF Package from the Package Repository.
+   *
+   * @param link
+   * @param projectId
+   */
+  VirtualNetworkFunctionDescriptor onboardFromPackageRepository(String link, String projectId)
+      throws IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
+          NotFoundException, PluginException, NetworkServiceIntegrityException, BadRequestException;
+
+  /**
    * This operation allows disabling the VNF Package, so that it is not possible to instantiate any
    * further.
    */
