@@ -132,7 +132,7 @@ class SystemStartup implements CommandLineRunner {
     PluginStartup.startPluginRecursive(
         folderPath,
         waitForPlugin,
-        "localhost",
+        brokerIp,
         "5672",
         Integer.parseInt(numConsumers),
         username,
