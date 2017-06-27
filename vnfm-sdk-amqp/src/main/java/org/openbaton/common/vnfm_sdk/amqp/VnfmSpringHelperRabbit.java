@@ -21,10 +21,7 @@ import com.google.gson.Gson;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.concurrent.TimeoutException;
-import javax.annotation.PostConstruct;
+
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.common.vnfm_sdk.VnfmHelper;
 import org.openbaton.common.vnfm_sdk.amqp.configuration.RabbitConfiguration;
@@ -34,6 +31,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.concurrent.TimeoutException;
+
+import javax.annotation.PostConstruct;
 
 /** Created by lto on 23/09/15. */
 @Service
