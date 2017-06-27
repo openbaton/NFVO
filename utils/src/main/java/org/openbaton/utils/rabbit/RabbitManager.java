@@ -228,6 +228,10 @@ public class RabbitManager {
       throw new WrongStatusException(
           "Error removing RabbitMQ user " + userToRemove + ": " + response.getStatusLine());
     }
+    if (response.getStatusLine().getStatusCode() == 404) {
+      log.warn("User not found... the database is not consistent...");
+      return;
+    }
   }
 
   public static void createQueue(
