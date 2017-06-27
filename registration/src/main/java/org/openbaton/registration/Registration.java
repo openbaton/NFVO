@@ -9,13 +9,7 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.util.UUID;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeoutException;
+
 import org.openbaton.catalogue.nfvo.ManagerCredentials;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.slf4j.Logger;
@@ -27,6 +21,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.UUID;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeoutException;
 
 /** This class handles the registration of Vnfms and plugins to the Nfvo. */
 @Service
@@ -63,7 +65,7 @@ public class Registration {
     Object res = null;
     if (maxTries < 0) maxTries = Integer.MAX_VALUE;
     while (tries < maxTries) {
-      res = rabbitTemplate.convertSendAndReceive("nfvo.manager.handling", gson.toJson(message));
+      res = rabbitTemplate.convertSendAndReceive("openbaton-exchange","nfvo.manager.handling", gson.toJson(message));
       if (res == null) {
         log.debug(
             "NFVO answer is null, i suppose it is not running yet, i will try again in 2,5 seconds.");

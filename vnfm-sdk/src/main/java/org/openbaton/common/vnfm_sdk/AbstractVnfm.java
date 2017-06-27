@@ -17,15 +17,6 @@
 
 package org.openbaton.common.vnfm_sdk;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -39,8 +30,17 @@ import org.openbaton.catalogue.nfvo.EndpointType;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
-import org.openbaton.catalogue.nfvo.messages.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmGrantLifecycleOperationMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmHealVNFRequestMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmInstantiateMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmLogMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmScalingMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmStartStopMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmUpdateMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrLogMessage;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.common.vnfm_sdk.exception.BadFormatException;
 import org.openbaton.common.vnfm_sdk.exception.NotFoundException;
@@ -52,6 +52,23 @@ import org.openbaton.common.vnfm_sdk.utils.VNFRUtils;
 import org.openbaton.common.vnfm_sdk.utils.VnfmUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 /** Created by lto on 08/07/15. */
 public abstract class AbstractVnfm
@@ -469,8 +486,12 @@ public abstract class AbstractVnfm
           {
             OrVnfmLogMessage orVnfmLogMessage = (OrVnfmLogMessage) message;
             // if the VNFM does not support log requests (i.e. no LogDispatcher is implemented), it will return a default "error" OrVnfmLogMessage
-            if (logDispatcher != null) nfvMessage = logDispatcher.getLogs(orVnfmLogMessage);
-            else {
+            if (logDispatcher != null) {
+              nfvMessage = new VnfmOrLogMessage();
+              Map<String, List<String>> logs = logDispatcher.getLogs(orVnfmLogMessage);
+              ((VnfmOrLogMessage) nfvMessage).setErrorLog(logs.get("error"));
+              ((VnfmOrLogMessage) nfvMessage).setOutputLog(logs.get("output"));
+            } else {
               List<String> errorList = new LinkedList<>();
               errorList.add("This VNFM does not support the requesting of log files.");
               nfvMessage = new VnfmOrLogMessage(new LinkedList<String>(), errorList);

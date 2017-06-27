@@ -10,6 +10,8 @@ public class VnfmOrLogMessage extends VnfmOrMessage {
   private List<String> outputLog;
   private List<String> errorLog;
 
+  public VnfmOrLogMessage() {}
+
   public VnfmOrLogMessage(List<String> outputLog, List<String> errorLog) {
     this.outputLog = outputLog;
     this.errorLog = errorLog;
