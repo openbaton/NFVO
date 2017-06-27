@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
+import java.util.concurrent.ExecutionException;
 import jline.console.ConsoleReader;
 import jline.console.completer.ArgumentCompleter;
 import jline.console.completer.Completer;
@@ -250,7 +251,8 @@ public class OpenbatonCLI implements CommandLineRunner {
   }
 
   private void deleteRecord(String line)
-      throws NotFoundException, WrongStatusException, BadFormatException {
+      throws NotFoundException, WrongStatusException, BadFormatException, ExecutionException,
+          InterruptedException {
     StringTokenizer stringTokenizer = new StringTokenizer(line, " ");
 
     if (stringTokenizer.countTokens() != 2) {
