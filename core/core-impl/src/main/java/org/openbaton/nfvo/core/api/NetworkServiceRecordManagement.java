@@ -86,6 +86,7 @@ import org.openbaton.nfvo.repositories.VnfPackageRepository;
 import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.openbaton.vnfm.interfaces.manager.VnfmManager;
+import org.openbaton.vnfm.interfaces.state.VnfStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,42 +106,28 @@ public class NetworkServiceRecordManagement
     implements org.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement {
 
   private final Logger log = LoggerFactory.getLogger(this.getClass());
+  private ThreadPoolTaskExecutor asyncExecutor;
 
   @Autowired private EventDispatcher publisher;
-
   @Autowired private NetworkServiceRecordRepository nsrRepository;
-
   @Autowired private NetworkServiceDescriptorRepository nsdRepository;
-
   @Autowired private VNFDRepository vnfdRepository;
-
   @Autowired private VNFRRepository vnfrRepository;
-
   @Autowired private VNFRecordDependencyRepository vnfRecordDependencyRepository;
-
-  @Autowired private ConfigurationManagement configurationManagement;
-
   @Autowired private NSDUtils nsdUtils;
-
   @Autowired private VnfmManager vnfmManager;
-
+  @Autowired private VnfStateHandler vnfStateHandler;
   @Autowired private ResourceManagement resourceManagement;
-
   @Autowired private NetworkManagement networkManagement;
-
   @Autowired private DependencyManagement dependencyManagement;
-
   @Autowired private VNFCRepository vnfcRepository;
-
   @Autowired private VduRepository vduRepository;
-
   @Autowired private VimRepository vimInstanceRepository;
-
   @Autowired private VnfmEndpointRepository vnfmManagerEndpointRepository;
-
   @Autowired private VimBroker vimBroker;
+  @Autowired private KeyRepository keyRepository;
 
-  private ThreadPoolTaskExecutor asyncExecutor;
+  @Autowired private VnfPackageRepository vnfPackageRepository;
 
   @Value("${nfvo.delete.vnfr.wait.timeout:60}")
   private int timeout;
@@ -156,9 +143,6 @@ public class NetworkServiceRecordManagement
 
   @Value("${nfvo.quota.check.failOnException:true}")
   private boolean failingQuotaCheckOnException;
-
-  @Autowired private KeyRepository keyRepository;
-  @Autowired private VnfPackageRepository vnfPackageRepository;
 
   @PostConstruct
   private void init() {
@@ -177,7 +161,7 @@ public class NetworkServiceRecordManagement
   public NetworkServiceRecord onboard(
       String idNsd, String projectID, List keys, Map vduVimInstances, Map configurations)
       throws VimException, NotFoundException, PluginException, MissingParameterException,
-          BadRequestException, BadFormatException {
+          BadRequestException, BadFormatException, ExecutionException, InterruptedException {
     log.info("Looking for NetworkServiceDescriptor with id: " + idNsd);
     NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findFirstById(idNsd);
     if (networkServiceDescriptor == null) {
@@ -400,7 +384,7 @@ public class NetworkServiceRecordManagement
       Map vduVimInstances,
       Map configurations)
       throws VimException, NotFoundException, PluginException, MissingParameterException,
-          BadRequestException, BadFormatException {
+          BadRequestException, BadFormatException, ExecutionException, InterruptedException {
     networkServiceDescriptor.setProjectId(projectId);
     //    nsdUtils.fetchVimInstances(networkServiceDescriptor, projectId);
     DeployNSRBody body = new DeployNSRBody();
@@ -495,7 +479,8 @@ public class NetworkServiceRecordManagement
 
   @Override
   public void addVNFCInstance(String id, String idVnf, VNFComponent component, String projectId)
-      throws NotFoundException, BadFormatException, WrongStatusException {
+      throws NotFoundException, BadFormatException, WrongStatusException, ExecutionException,
+          InterruptedException {
     log.info("Adding new VNFCInstance to VNFR with id: " + idVnf);
     NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id);
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
@@ -539,7 +524,8 @@ public class NetworkServiceRecordManagement
   @Override
   public void addVNFCInstance(
       String id, String idVnf, String idVdu, VNFComponent component, String mode, String projectId)
-      throws NotFoundException, BadFormatException, WrongStatusException {
+      throws NotFoundException, BadFormatException, WrongStatusException, ExecutionException,
+          InterruptedException {
     log.info("Adding new VNFCInstance to VNFR with id " + idVnf + " and VDU with id " + idVdu);
     NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id);
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
@@ -577,7 +563,7 @@ public class NetworkServiceRecordManagement
       VirtualDeploymentUnit virtualDeploymentUnit,
       VNFComponent component,
       String mode)
-      throws BadFormatException, NotFoundException {
+      throws BadFormatException, NotFoundException, ExecutionException, InterruptedException {
 
     networkServiceRecord.setTask("Scaling out");
     List<String> componentNetworks = new ArrayList<>();
@@ -775,20 +761,22 @@ public class NetworkServiceRecordManagement
   @Override
   public void startVNFCInstance(
       String id, String idVnf, String idVdu, String idVNFCI, String projectId)
-      throws NotFoundException, WrongStatusException, BadFormatException {
+      throws NotFoundException, WrongStatusException, BadFormatException, ExecutionException,
+          InterruptedException {
     startStopVNFCInstance(id, idVnf, idVdu, idVNFCI, projectId, Action.START);
   }
 
   @Override
   public void stopVNFCInstance(
       String id, String idVnf, String idVdu, String idVNFCI, String projectId)
-      throws NotFoundException, WrongStatusException, BadFormatException {
+      throws NotFoundException, WrongStatusException, BadFormatException, ExecutionException,
+          InterruptedException {
     startStopVNFCInstance(id, idVnf, idVdu, idVNFCI, projectId, Action.STOP);
   }
 
   private void startStopVNFCInstance(
       String id, String idVnf, String idVdu, String idVNFCI, String projectId, Action action)
-      throws NotFoundException, BadFormatException {
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
     NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInAnyState(id);
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
@@ -858,7 +846,7 @@ public class NetworkServiceRecordManagement
         break;
     }
 
-    vnfmManager.sendMessageToVNFR(virtualNetworkFunctionRecord, startStopMessage);
+    vnfStateHandler.sendMessageToVNFR(virtualNetworkFunctionRecord, startStopMessage);
   }
 
   @Override
@@ -870,7 +858,8 @@ public class NetworkServiceRecordManagement
       String mode,
       VNFCInstance failedVnfcInstance,
       String projectId)
-      throws NotFoundException, WrongStatusException, BadFormatException {
+      throws NotFoundException, WrongStatusException, BadFormatException, ExecutionException,
+          InterruptedException {
     NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id);
 
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
@@ -925,7 +914,7 @@ public class NetworkServiceRecordManagement
     healMessage.setVnfcInstance(standByVNFCInstance);
     healMessage.setCause("switchToStandby");
 
-    vnfmManager.sendMessageToVNFR(virtualNetworkFunctionRecord, healMessage);
+    vnfStateHandler.sendMessageToVNFR(virtualNetworkFunctionRecord, healMessage);
   }
 
   private VNFCInstance getVNFCI(VirtualDeploymentUnit virtualDeploymentUnit, String idVNFCI)
@@ -1103,7 +1092,7 @@ public class NetworkServiceRecordManagement
   private NetworkServiceRecord deployNSR(
       NetworkServiceDescriptor networkServiceDescriptor, String projectID, DeployNSRBody body)
       throws NotFoundException, VimException, PluginException, MissingParameterException,
-          BadRequestException, BadFormatException {
+          BadRequestException, BadFormatException, ExecutionException, InterruptedException {
     Map<String, List<String>> vduVimInstances = new HashMap<>();
     log.info("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor.getName());
     log.info("VNFD are: ");
@@ -1491,7 +1480,7 @@ public class NetworkServiceRecordManagement
       String idVdu,
       String idVNFCI,
       String projectId)
-      throws NotFoundException, BadFormatException {
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
 
     log.info("Executing action: " + nfvMessage.getAction() + " on VNF with id: " + idVnf);
 
@@ -1522,7 +1511,8 @@ public class NetworkServiceRecordManagement
         log.debug("Received Heal message: " + VnfmOrHealVNFRequestMessage);
         VnfmOrHealVNFRequestMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
         VnfmOrHealVNFRequestMessage.setVnfcInstance(vnfcInstance);
-        vnfmManager.sendMessageToVNFR(virtualNetworkFunctionRecord, VnfmOrHealVNFRequestMessage);
+        vnfStateHandler.sendMessageToVNFR(
+            virtualNetworkFunctionRecord, VnfmOrHealVNFRequestMessage);
         break;
     }
   }
@@ -1542,7 +1532,8 @@ public class NetworkServiceRecordManagement
 
   @Override
   public void delete(String id, String projectId)
-      throws NotFoundException, WrongStatusException, BadFormatException {
+      throws NotFoundException, WrongStatusException, BadFormatException, ExecutionException,
+          InterruptedException {
     log.info("Removing NSR with id: " + id);
     NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(id);
     if (networkServiceRecord == null) {
@@ -1609,7 +1600,8 @@ public class NetworkServiceRecordManagement
 
   @Override
   public void resume(String id, String projectId)
-      throws NotFoundException, WrongStatusException, BadFormatException {
+      throws NotFoundException, WrongStatusException, BadFormatException, ExecutionException,
+          InterruptedException {
     NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInAnyState(id);
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
@@ -1669,7 +1661,7 @@ public class NetworkServiceRecordManagement
               vnfRecordDependencyRepository.findFirstById(vnfrDependency.getId());
           log.debug("Resolvable VNFR Dependency is: " + resolvableVnfrDependency);
           orVnfmGenericMessage.setVnfrd(resolvableVnfrDependency);
-          vnfmManager.sendMessageToVNFR(vnfrTarget, orVnfmGenericMessage);
+          vnfStateHandler.sendMessageToVNFR(vnfrTarget, orVnfmGenericMessage);
 
         } else {
           log.info("Not sending MODIFY message to vnfr target: " + vnfrDependency.getTarget());
@@ -1700,7 +1692,7 @@ public class NetworkServiceRecordManagement
         }
         orVnfmGenericMessage.setAction(Action.RESUME);
         log.info("Sending resume message for VNFR: " + failedVnfr.getId());
-        vnfmManager.sendMessageToVNFR(failedVnfr, orVnfmGenericMessage);
+        vnfStateHandler.sendMessageToVNFR(failedVnfr, orVnfmGenericMessage);
       }
     }
   }
@@ -1736,7 +1728,7 @@ public class NetworkServiceRecordManagement
               vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
           log.debug(
               "Terminating the VNFR not yet removed: " + virtualNetworkFunctionRecord.getName());
-          vnfmManager.terminate(virtualNetworkFunctionRecord);
+          vnfStateHandler.terminate(virtualNetworkFunctionRecord);
         }
       } catch (InterruptedException e) {
         e.printStackTrace();

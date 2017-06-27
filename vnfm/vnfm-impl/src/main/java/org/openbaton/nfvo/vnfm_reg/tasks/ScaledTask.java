@@ -248,8 +248,9 @@ public class ScaledTask extends AbstractTask {
                   + " updated dependencies: "
                   + dependency);
 
-          vnfmSender.sendCommand(
-              message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
+          vnfStateHandler.executeAction(
+              vnfmSender.sendCommand(
+                  message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint())));
         }
       }
     }

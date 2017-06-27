@@ -24,8 +24,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Map.Entry;
+import java.util.Properties;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.openbaton.nfvo.repositories.ConfigurationRepository;
@@ -151,7 +155,7 @@ class SystemStartup implements CommandLineRunner {
     PluginStartup.startPluginRecursive(
         folderPath,
         waitForPlugin,
-        "localhost",
+        brokerIp,
         "5672",
         Integer.parseInt(numConsumers),
         username,

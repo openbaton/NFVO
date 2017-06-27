@@ -18,6 +18,7 @@
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
@@ -99,7 +100,8 @@ public class InstantiateTask extends AbstractTask {
 
     if (ordered != null && Boolean.parseBoolean(ordered)) {
       log.debug(
-          "Ordered deployments of VNF is enabled in the openbaton.properties file, in case you want to speed up the deployment, please disable it");
+          "Ordered deployments of VNF is enabled in the openbaton.properties file, in case you want to speed up the "
+              + "deployment, please disable it");
       if (dep == 0) {
         virtualNetworkFunctionRecord.setStatus(Status.INACTIVE);
         saveVirtualNetworkFunctionRecord();
@@ -138,7 +140,7 @@ public class InstantiateTask extends AbstractTask {
   }
 
   private void sendStart(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
-      throws NotFoundException, BadFormatException {
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
     VnfmSender vnfmSender;
     vnfmSender =
         this.getVnfmSender(
@@ -155,9 +157,10 @@ public class InstantiateTask extends AbstractTask {
     /*vnfmSender.sendCommand(
     new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.START),
     vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));*/
-    vnfmSender.sendCommand(
-        new OrVnfmStartStopMessage(virtualNetworkFunctionRecord, null, Action.START),
-        vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
+    vnfStateHandler.executeAction(
+        vnfmSender.sendCommand(
+            new OrVnfmStartStopMessage(virtualNetworkFunctionRecord, null, Action.START),
+            vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint())));
   }
 
   @Override

@@ -22,7 +22,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -51,13 +50,13 @@ import org.openbaton.nfvo.vnfm_reg.tasks.StartTask;
 import org.openbaton.nfvo.vnfm_reg.tasks.StopTask;
 import org.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
+import org.openbaton.vnfm.interfaces.state.VnfStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -68,7 +67,7 @@ import org.springframework.transaction.annotation.Transactional;
 /** Putting these annotations only here won't work. */
 @Service
 @Scope("prototype")
-public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationEventPublisherAware {
+public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.tasks.AbstractTask {
   protected Logger log = LoggerFactory.getLogger(AbstractTask.class);
   private Action action;
 
@@ -82,6 +81,8 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
   @Autowired
   @Qualifier("vnfmRegister")
   protected VnfmRegister vnfmRegister;
+
+  @Autowired protected VnfStateHandler vnfStateHandler;
 
   protected VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
 
@@ -110,18 +111,22 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
     }
   }
 
+  @Override
   public Action getAction() {
     return action;
   }
 
+  @Override
   public void setAction(Action action) {
     this.action = action;
   }
 
+  @Override
   public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
     return virtualNetworkFunctionRecord;
   }
 
+  @Override
   public void setVirtualNetworkFunctionRecord(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
     this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
@@ -225,13 +230,21 @@ public abstract class AbstractTask implements Callable<NFVMessage>, ApplicationE
     }
     NFVMessage message = new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
     try {
-      vnfmSender.sendCommand(
-          message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
+      vnfStateHandler.executeAction(
+          vnfmSender.sendCommand(
+              message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint())));
     } catch (NotFoundException e1) {
       e1.printStackTrace();
       throw new RuntimeException(e1);
     } catch (BadFormatException e1) {
       e1.printStackTrace();
+      throw new RuntimeException(e1);
+    } catch (ExecutionException e1) {
+      e1.printStackTrace();
+      throw new RuntimeException(e1);
+    } catch (InterruptedException e1) {
+      e1.printStackTrace();
+      throw new RuntimeException(e1);
     }
     if (log.isDebugEnabled()) {
       log.error(

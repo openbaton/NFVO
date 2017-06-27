@@ -18,6 +18,7 @@
 package org.openbaton.nfvo.core.interfaces;
 
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
@@ -27,5 +28,5 @@ public interface DependencyQueuer {
   void waitForVNFR(String targetDependencyId, Set<String> sourceNames);
 
   void releaseVNFR(String vnfrId, NetworkServiceRecord nsr)
-      throws NotFoundException, BadFormatException;
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 }

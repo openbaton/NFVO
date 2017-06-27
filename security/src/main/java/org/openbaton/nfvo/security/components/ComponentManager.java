@@ -20,6 +20,7 @@ import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.ManagerCredentialsRepository;
 import org.openbaton.nfvo.repositories.ServiceRepository;
+import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
 import org.openbaton.nfvo.security.authentication.OAuth2AuthorizationServerConfig;
 import org.openbaton.utils.key.KeyHelper;
 import org.openbaton.vnfm.interfaces.register.VnfmRegister;
@@ -65,6 +66,8 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
 
   @Value("${spring.rabbitmq.virtual-host:/}")
   private String vhost;
+
+  @Autowired private VnfmEndpointRepository vnfmManagerEndpointRepository;
 
   /*
    * Service related operations
@@ -194,15 +197,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
    * Manager related operations
    */
 
-  /**
-   * Handles the registration requests of plugins (VIM drivers) and returns a ManagerCredential
-   * object from which the plugins can get the rabbitmq username and password.
-   *
-   * @param message
-   * @return
-   * @throws IOException
-   */
-  public ManagerCredentials enableManager(byte[] message) throws IOException {
+  public ManagerCredentials enableManager(byte[] message) {
     return enableManager(new String(message));
   }
 
@@ -224,6 +219,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
         return null;
       }
       if (body.get("action").getAsString().toLowerCase().equals("register")) {
+
         // register plugin or vnfm
         if (!body.has("type")) {
           log.error("Could not process Json message. The 'type' property is missing.");
@@ -234,37 +230,32 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
 
         ManagerCredentials managerCredentials =
             managerCredentialsRepository.findFirstByRabbitUsername(username);
+        VnfmManagerEndpoint endpoint;
         if (managerCredentials != null) {
           log.error("Manager already registered.");
-          return null;
+          return managerCredentials;
+        } else {
+          managerCredentials = new ManagerCredentials();
+          endpoint = gson.fromJson(body.get("vnfmManagerEndpoint"), VnfmManagerEndpoint.class);
         }
 
-        // add manager endpoint if message comes from vnfm
-        VnfmManagerEndpoint vnfmEndpoint = null;
-        if (body.has("vnfmManagerEndpoint")) {
-          vnfmEndpoint = gson.fromJson(body.get("vnfmManagerEndpoint"), VnfmManagerEndpoint.class);
-          try {
-            vnfmRegister.register(vnfmEndpoint);
-          } catch (Exception e) {
-            log.error("Could not register VNFM endpoint.");
-            e.printStackTrace();
-            return null;
-          }
-        }
+        //          String regexOpenbaton = "(^nfvo)";
+        //          String regexManager = "(^" + username + ")|(openbaton-exchange)";
+        //          String regexBoth = regexOpenbaton + "|" + regexManager;
 
+        String configurePermissions = "(" + username + ")|(nfvo." + username + ".actions)";
+        String writePermissions =
+            "^amq\\.gen.*|amq\\.default$|(nfvo.vnfm.register)|(nfvo.vnfm.unregister)|("
+                + username
+                + ")|(vnfm.nfvo.actions)|(vnfm.nfvo.actions.reply)|(nfvo."
+                + username
+                + ".actions)|(openbaton-exchange)";
+        String readPermissions =
+            "(nfvo." + username + ".actions)|(" + username + ")|(openbaton-exchange)";
+
+        createRabbitMqUser(
+            rabbitUsername, rabbitPassword, brokerIp, managementPort, username, password, vhost);
         try {
-          String configurePermissions = "(" + username + ")|(nfvo." + username + ".actions)";
-          String writePermissions =
-              "(nfvo.vnfm.register)|(nfvo.vnfm.unregister)|("
-                  + username
-                  + ")|(vnfm.nfvo.actions)|(vnfm.nfvo.actions.reply)|(nfvo."
-                  + username
-                  + ".actions)|(openbaton-exchange)|(amq.default)";
-          String readPermissions =
-              "(nfvo." + username + ".actions)|(" + username + ")|(openbaton-exchange)";
-
-          createRabbitMqUser(
-              rabbitUsername, rabbitPassword, brokerIp, managementPort, username, password, vhost);
           setRabbitMqUserPermissions(
               rabbitUsername,
               rabbitPassword,
@@ -276,7 +267,6 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
               writePermissions,
               readPermissions);
         } catch (Exception e) {
-          if (vnfmEndpoint != null) vnfmRegister.unregister(vnfmEndpoint);
           try {
             removeRabbitMqUser(rabbitUsername, rabbitPassword, brokerIp, managementPort, username);
           } catch (Exception e2) {
@@ -286,14 +276,10 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
           throw e;
         }
 
-        //          String queueName = username + ""
-        //          createQueue(brokerIp, managementPort, rabbitUsername, rabbitPassword, vhost, "", "openbaton-exchange");
-
-        managerCredentials = new ManagerCredentials();
         managerCredentials.setRabbitUsername(username);
         managerCredentials.setRabbitPassword(password);
-        managerCredentialsRepository.save(managerCredentials);
-
+        managerCredentials = managerCredentialsRepository.save(managerCredentials);
+        if (endpoint != null) vnfmManagerEndpointRepository.save(endpoint);
         return managerCredentials;
       } else if (body.get("action").getAsString().toLowerCase().equals("unregister")
           || body.get("action").getAsString().toLowerCase().equals("deregister")) {

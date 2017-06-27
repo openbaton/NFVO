@@ -19,6 +19,7 @@ package org.openbaton.nfvo.core.interfaces;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Script;
@@ -102,7 +103,7 @@ public interface VNFPackageManagement {
   void delete(String id, String projectId) throws WrongAction;
 
   Script updateScript(Script script, String vnfPackageId)
-      throws NotFoundException, BadFormatException;
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 
   Iterable<VNFPackage> queryByProjectId(String projectId);
 }

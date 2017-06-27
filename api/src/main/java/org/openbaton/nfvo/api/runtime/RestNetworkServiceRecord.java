@@ -419,7 +419,8 @@ public class RestNetworkServiceRecord {
       @PathVariable("idVnf") String idVnf,
       @PathVariable("idVdu") String idVdu,
       @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException, BadFormatException, WrongStatusException {
+      throws NotFoundException, BadFormatException, WrongStatusException, ExecutionException,
+          InterruptedException {
     log.trace("Received: " + component);
     networkServiceRecordManagement.addVNFCInstance(id, idVnf, idVdu, component, "", projectId);
   }
@@ -439,7 +440,8 @@ public class RestNetworkServiceRecord {
       @PathVariable("id") String id,
       @PathVariable("idVnf") String idVnf,
       @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException, BadFormatException, WrongStatusException {
+      throws NotFoundException, BadFormatException, WrongStatusException, ExecutionException,
+          InterruptedException {
     log.trace("Received: " + component);
     networkServiceRecordManagement.addVNFCInstance(id, idVnf, component, projectId);
   }
@@ -460,7 +462,8 @@ public class RestNetworkServiceRecord {
       @PathVariable("idVdu") String idVdu,
       @PathVariable("idVNFCI") String idVNFCI,
       @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException, BadFormatException, WrongStatusException {
+      throws NotFoundException, BadFormatException, WrongStatusException, ExecutionException,
+          InterruptedException {
     log.debug("start a VNF component instance");
     networkServiceRecordManagement.startVNFCInstance(id, idVnf, idVdu, idVNFCI, projectId);
   }
@@ -478,7 +481,8 @@ public class RestNetworkServiceRecord {
       @PathVariable("idVdu") String idVdu,
       @PathVariable("idVNFCI") String idVNFCI,
       @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException, BadFormatException, WrongStatusException {
+      throws NotFoundException, BadFormatException, WrongStatusException, ExecutionException,
+          InterruptedException {
     log.debug("stop a VNF component instance");
     networkServiceRecordManagement.stopVNFCInstance(id, idVnf, idVdu, idVNFCI, projectId);
   }
@@ -497,7 +501,8 @@ public class RestNetworkServiceRecord {
       @PathVariable("idVnf") String idVnf,
       @PathVariable("idVdu") String idVdu,
       @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException, BadFormatException, WrongStatusException {
+      throws NotFoundException, BadFormatException, WrongStatusException, ExecutionException,
+          InterruptedException {
     log.debug("PostStandByVNFCInstance received the component: " + component);
     networkServiceRecordManagement.addVNFCInstance(
         id, idVnf, idVdu, component, "standby", projectId);
@@ -517,7 +522,8 @@ public class RestNetworkServiceRecord {
       @PathVariable("idVdu") String idVdu,
       @PathVariable("idVNFC") String idVNFC,
       @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException, BadFormatException, WrongStatusException {
+      throws NotFoundException, BadFormatException, WrongStatusException, ExecutionException,
+          InterruptedException {
     log.debug("switch to a standby component");
     networkServiceRecordManagement.switchToRedundantVNFCInstance(
         id, idVnf, idVdu, idVNFC, "standby", failedVnfcInstance, projectId);
@@ -595,7 +601,8 @@ public class RestNetworkServiceRecord {
       @PathVariable("idVdu") String idVdu,
       @PathVariable("idVNFCI") String idVNFCI,
       @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException, BadFormatException, WrongStatusException {
+      throws NotFoundException, BadFormatException, WrongStatusException, ExecutionException,
+          InterruptedException {
     log.debug("Received: " + nfvMessage);
     networkServiceRecordManagement.executeAction(nfvMessage, id, idVnf, idVdu, idVNFCI, projectId);
   }

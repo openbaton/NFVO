@@ -73,7 +73,8 @@ public class VnfmReceiverRest implements VnfmReceiver {
     log.debug("NFVO - core module received (via REST): " + nfvMessage);
     NFVMessage message = gson.fromJson(nfvMessage, NFVMessage.class);
 
-    return vnfmManager.executeAction(message).get();
+    return "{}";
+    //    return vnfmManager.executeAction(message).get();
   }
 
   @RequestMapping(
@@ -106,7 +107,7 @@ public class VnfmReceiverRest implements VnfmReceiver {
       throws NotFoundException, VimException, ExecutionException, InterruptedException {
     log.debug("NFVO - core module received (via REST): " + nfvMessage);
     NFVMessage message = gson.fromJson(nfvMessage, NFVMessage.class);
-    vnfmManager.executeAction(message);
+    //    vnfmManager.executeAction(message);
   }
 
   @RequestMapping(
@@ -122,8 +123,9 @@ public class VnfmReceiverRest implements VnfmReceiver {
     log.debug("NFVO - core module received (via REST):" + message);
 
     Gson gson = new GsonBuilder().create();
-    String executeReturned = vnfmManager.executeAction(message).get();
-    return this.gson.fromJson(executeReturned, OrVnfmGrantLifecycleOperationMessage.class);
+    //    String executeReturned = vnfmManager.executeAction(message).get();
+
+    return this.gson.fromJson("{}", OrVnfmGrantLifecycleOperationMessage.class);
   }
 
   @RequestMapping(
@@ -136,14 +138,15 @@ public class VnfmReceiverRest implements VnfmReceiver {
   public NFVMessage allocate(@RequestBody VnfmOrAllocateResourcesMessage message)
       throws VimException {
 
-    try {
-      return gson.fromJson(vnfmManager.executeAction(message).get(), OrVnfmGenericMessage.class);
-    } catch (ExecutionException e1) {
-      e1.printStackTrace();
-    } catch (InterruptedException e1) {
-      e1.printStackTrace();
-    }
-    return null;
+    //    try {
+    //      return gson.fromJson(vnfmManager.executeAction(message).get(), OrVnfmGenericMessage.class);
+    return gson.fromJson("{}", OrVnfmGenericMessage.class);
+    //    } catch (ExecutionException e1) {
+    //      e1.printStackTrace();
+    //    } catch (InterruptedException e1) {
+    //      e1.printStackTrace();
+    //    }
+    //    return null;
   }
 
   @RequestMapping(
@@ -155,7 +158,8 @@ public class VnfmReceiverRest implements VnfmReceiver {
   @ResponseStatus(HttpStatus.ACCEPTED)
   public NFVMessage scale(@RequestBody VnfmOrScalingMessage message)
       throws InterruptedException, ExecutionException, VimException, NotFoundException {
-    return gson.fromJson(vnfmManager.executeAction(message).get(), OrVnfmGenericMessage.class);
+    //    return gson.fromJson(vnfmManager.executeAction(message).get(), OrVnfmGenericMessage.class);
+    return gson.fromJson("{}", OrVnfmGenericMessage.class);
   }
 
   private VirtualNetworkFunctionRecord saveVirtualNetworkFunctionRecord(

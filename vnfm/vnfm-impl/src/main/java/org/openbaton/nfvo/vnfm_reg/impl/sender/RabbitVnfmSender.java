@@ -68,18 +68,21 @@ public class RabbitVnfmSender implements VnfmSender {
       e.printStackTrace();
     }
     log.trace("Json is: " + json);
-    NFVMessage result = null;
-    rabbitTemplate.setReplyTimeout(300000);
+    rabbitTemplate.setReplyTimeout(-1);
+    Object receive =
+        rabbitTemplate.convertSendAndReceive("openbaton-exchange", destinationName, json);
+    log.debug("Received: " + receive);
+    String str;
+    if (receive instanceof byte[]) {
+      str = new String((byte[]) receive, StandardCharsets.UTF_8);
+    } else {
+      str = (String) receive;
+    }
+    NFVMessage result;
     try {
-      Object receive = rabbitTemplate.convertSendAndReceive(destinationName, json);
-      String stringReceive = new String((byte[]) receive, StandardCharsets.UTF_8);
-      try {
-        result = gson.fromJson(stringReceive, NFVMessage.class);
-      } catch (JsonSyntaxException e) {
-        throw new BadFormatException(e);
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
+      result = gson.fromJson(str, NFVMessage.class);
+    } catch (JsonSyntaxException e) {
+      throw new BadFormatException(e);
     }
     return new AsyncResult<>(result);
   }
