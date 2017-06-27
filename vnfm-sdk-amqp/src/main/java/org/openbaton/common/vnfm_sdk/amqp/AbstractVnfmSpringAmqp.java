@@ -24,7 +24,13 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
-
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.concurrent.TimeoutException;
+import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.common.vnfm_sdk.AbstractVnfm;
 import org.openbaton.common.vnfm_sdk.VnfmHelper;
@@ -40,32 +46,27 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.event.ContextClosedEvent;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.concurrent.TimeoutException;
-
-import javax.annotation.PostConstruct;
-
-/**
- * Created by lto on 28/05/15.
- */
+/** Created by lto on 28/05/15. */
 @SpringBootApplication
 @ComponentScan(basePackages = "org.openbaton")
 @ConfigurationProperties
-public abstract class AbstractVnfmSpringAmqp extends AbstractVnfm implements ApplicationListener<ContextClosedEvent> {
+public abstract class AbstractVnfmSpringAmqp extends AbstractVnfm
+    implements ApplicationListener<ContextClosedEvent> {
 
-  @Value("${spring.rabbitmq.host}") private String rabbitHost;
+  @Value("${spring.rabbitmq.host}")
+  private String rabbitHost;
 
-  @Value("${spring.rabbitmq.port}") private int rabbitPort;
+  @Value("${spring.rabbitmq.port}")
+  private int rabbitPort;
 
-  @Value("${spring.rabbitmq.username}") private String rabbitUsername;
+  @Value("${spring.rabbitmq.username}")
+  private String rabbitUsername;
 
-  @Value("${spring.rabbitmq.password}") private String rabbitPassword;
+  @Value("${spring.rabbitmq.password}")
+  private String rabbitPassword;
 
-  @Value("${spring.rabbitmq.virtualHost:/}") private String virtualHost;
+  @Value("${spring.rabbitmq.virtualHost:/}")
+  private String virtualHost;
 
   @Autowired private Gson gson;
   @Autowired private ConfigurableApplicationContext context;
@@ -79,81 +80,83 @@ public abstract class AbstractVnfmSpringAmqp extends AbstractVnfm implements App
 
   @PostConstruct
   private void listenOnQueues() {
-    Thread thread = new Thread(new Runnable() {
-      @Override
-      public void run() {
-        ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setHost(rabbitHost);
-        connectionFactory.setPort(rabbitPort);
-        connectionFactory.setUsername(rabbitUsername);
-        connectionFactory.setPassword(rabbitPassword);
-        connectionFactory.setVirtualHost(virtualHost);
-        Connection connection = null;
-        try {
-          connection = connectionFactory.newConnection();
-          final Channel channel = connection.createChannel();
-          channel.basicQos(1);
-          DefaultConsumer consumer = new DefaultConsumer(channel) {
+    Thread thread =
+        new Thread(
+            new Runnable() {
+              @Override
+              public void run() {
+                ConnectionFactory connectionFactory = new ConnectionFactory();
+                connectionFactory.setHost(rabbitHost);
+                connectionFactory.setPort(rabbitPort);
+                connectionFactory.setUsername(rabbitUsername);
+                connectionFactory.setPassword(rabbitPassword);
+                connectionFactory.setVirtualHost(virtualHost);
+                Connection connection = null;
+                try {
+                  connection = connectionFactory.newConnection();
+                  final Channel channel = connection.createChannel();
+                  channel.basicQos(1);
+                  DefaultConsumer consumer =
+                      new DefaultConsumer(channel) {
 
-            @Override
-            public void handleDelivery(String consumerTag,
-                                       Envelope envelope,
-                                       AMQP.BasicProperties properties,
-                                       byte[] body) throws IOException {
-              AMQP.BasicProperties
-                  replyProps =
-                  new AMQP.BasicProperties
-                      .Builder()
-                      .correlationId(properties.getCorrelationId())
-                      .contentType("plain/text")
-                      .build();
+                        @Override
+                        public void handleDelivery(
+                            String consumerTag,
+                            Envelope envelope,
+                            AMQP.BasicProperties properties,
+                            byte[] body)
+                            throws IOException {
+                          AMQP.BasicProperties replyProps =
+                              new AMQP.BasicProperties.Builder()
+                                  .correlationId(properties.getCorrelationId())
+                                  .contentType("plain/text")
+                                  .build();
 
-              NFVMessage answerMessage = null;
-              try {
-                NFVMessage nfvMessage = gson.fromJson(
-                    getStringFromInputStream(new ByteArrayInputStream(body)),
-                    NFVMessage.class);
+                          NFVMessage answerMessage = null;
+                          try {
+                            NFVMessage nfvMessage =
+                                gson.fromJson(
+                                    getStringFromInputStream(new ByteArrayInputStream(body)),
+                                    NFVMessage.class);
 
-                answerMessage = onAction(nfvMessage);
-              } catch (NotFoundException e) {
-                log.error("Error while processing message from NFVO");
-                e.printStackTrace();
-              } catch (BadFormatException e) {
-                log.error("Error while processing message from NFVO");
-                e.printStackTrace();
-              } finally {
-                String answer = gson.toJson(answerMessage);
-                channel.basicPublish("",
-                                     properties.getReplyTo(),
-                                     replyProps,
-                                     answer.getBytes("UTF-8"));
-                channel.basicAck(envelope.getDeliveryTag(), false);
+                            answerMessage = onAction(nfvMessage);
+                          } catch (NotFoundException e) {
+                            log.error("Error while processing message from NFVO");
+                            e.printStackTrace();
+                          } catch (BadFormatException e) {
+                            log.error("Error while processing message from NFVO");
+                            e.printStackTrace();
+                          } finally {
+                            String answer = gson.toJson(answerMessage);
+                            channel.basicPublish(
+                                "", properties.getReplyTo(), replyProps, answer.getBytes("UTF-8"));
+                            channel.basicAck(envelope.getDeliveryTag(), false);
+                          }
+                        }
+                      };
+                  channel.basicConsume(getEndpoint(), false, consumer);
+
+                  //loop to prevent reaching finally block
+                  while (true) {
+                    try {
+                      Thread.sleep(500);
+                    } catch (InterruptedException _ignore) {
+                    }
+                  }
+                } catch (IOException e) {
+                  e.printStackTrace();
+                } catch (TimeoutException e) {
+                  e.printStackTrace();
+                } finally {
+                  if (connection != null) {
+                    try {
+                      connection.close();
+                    } catch (IOException _ignore) {
+                    }
+                  }
+                }
               }
-            }
-          };
-          channel.basicConsume(getEndpoint(), false, consumer);
-
-          //loop to prevent reaching finally block
-          while (true) {
-            try {
-              Thread.sleep(500);
-            } catch (InterruptedException _ignore) {
-            }
-          }
-        } catch (IOException e) {
-          e.printStackTrace();
-        } catch (TimeoutException e) {
-          e.printStackTrace();
-        } finally {
-          if (connection != null) {
-            try {
-              connection.close();
-            } catch (IOException _ignore) {
-            }
-          }
-        }
-      }
-    });
+            });
     thread.setDaemon(true);
     thread.start();
   }
@@ -163,13 +166,15 @@ public abstract class AbstractVnfmSpringAmqp extends AbstractVnfm implements App
     try {
       // ((VnfmSpringHelperRabbit) vnfmHelper)
       //     .sendMessageToQueue(RabbitConfiguration.queueName_vnfmUnregister, vnfmManagerEndpoint);
-      registration.deregisterVnfmFromNfvo(((VnfmSpringHelperRabbit) vnfmHelper).getRabbitTemplate(),
-                                          vnfmManagerEndpoint);
-      ((VnfmSpringHelperRabbit) vnfmHelper).deleteQueue(properties.getProperty("endpoint"),
-                                                        rabbitHost,
-                                                        rabbitPort,
-                                                        rabbitUsername,
-                                                        rabbitPassword);
+      registration.deregisterVnfmFromNfvo(
+          ((VnfmSpringHelperRabbit) vnfmHelper).getRabbitTemplate(), vnfmManagerEndpoint);
+      ((VnfmSpringHelperRabbit) vnfmHelper)
+          .deleteQueue(
+              properties.getProperty("endpoint"),
+              rabbitHost,
+              rabbitPort,
+              rabbitUsername,
+              rabbitPassword);
     } catch (IllegalStateException e) {
       log.error("Got exception while deregistering the VNFM from the NFVO");
     } catch (TimeoutException e) {
@@ -181,11 +186,11 @@ public abstract class AbstractVnfmSpringAmqp extends AbstractVnfm implements App
 
   @Override
   protected void register() {
-    String[]
-        usernamePassword = new String[0];
+    String[] usernamePassword = new String[0];
     try {
       usernamePassword =
-          registration.registerVnfmToNfvo(((VnfmSpringHelperRabbit) vnfmHelper).getRabbitTemplate(), vnfmManagerEndpoint);
+          registration.registerVnfmToNfvo(
+              ((VnfmSpringHelperRabbit) vnfmHelper).getRabbitTemplate(), vnfmManagerEndpoint);
     } catch (InterruptedException e) {
       e.printStackTrace();
       log.error("Not able to register..");
@@ -196,13 +201,15 @@ public abstract class AbstractVnfmSpringAmqp extends AbstractVnfm implements App
     this.rabbitPassword = usernamePassword[1];
 
     try {
-      ((VnfmSpringHelperRabbit) vnfmHelper).createQueue(rabbitHost,
-                                                        rabbitPort,
-                                                        rabbitUsername,
-                                                        rabbitPassword,
-                                                        virtualHost,
-                                                        properties.getProperty("endpoint"),
-                                                        "openbaton-exchange");
+      ((VnfmSpringHelperRabbit) vnfmHelper)
+          .createQueue(
+              rabbitHost,
+              rabbitPort,
+              rabbitUsername,
+              rabbitPassword,
+              virtualHost,
+              properties.getProperty("endpoint"),
+              "openbaton-exchange");
     } catch (IOException e) {
       e.printStackTrace();
     } catch (TimeoutException e) {

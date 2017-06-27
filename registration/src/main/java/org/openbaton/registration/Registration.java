@@ -9,7 +9,13 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
-
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.UUID;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeoutException;
 import org.openbaton.catalogue.nfvo.ManagerCredentials;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.slf4j.Logger;
@@ -22,14 +28,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.util.UUID;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeoutException;
-
 /** This class handles the registration of Vnfms and plugins to the Nfvo. */
 @Service
 @Scope("prototype")
@@ -41,6 +39,7 @@ public class Registration {
 
   private String username;
   private String password;
+
   @Value("${vnfm.connect.tries:20}")
   private int maxTries;
 
@@ -52,8 +51,8 @@ public class Registration {
    *
    * @param rabbitTemplate
    */
-  public String[] registerVnfmToNfvo(RabbitTemplate rabbitTemplate, VnfmManagerEndpoint endpoint) throws
-                                                                                                  InterruptedException {
+  public String[] registerVnfmToNfvo(RabbitTemplate rabbitTemplate, VnfmManagerEndpoint endpoint)
+      throws InterruptedException {
 
     JsonObject message = new JsonObject();
     message.add("type", new JsonPrimitive(endpoint.getType()));
@@ -62,12 +61,12 @@ public class Registration {
     log.debug("Registering the Vnfm to the Nfvo");
     int tries = 0;
     Object res = null;
-    if (maxTries < 0)
-      maxTries = Integer.MAX_VALUE;
+    if (maxTries < 0) maxTries = Integer.MAX_VALUE;
     while (tries < maxTries) {
       res = rabbitTemplate.convertSendAndReceive("nfvo.manager.handling", gson.toJson(message));
       if (res == null) {
-        log.debug("NFVO answer is null, i suppose it is not running yet, i will try again in 2,5 seconds.");
+        log.debug(
+            "NFVO answer is null, i suppose it is not running yet, i will try again in 2,5 seconds.");
         Thread.sleep(2500);
         tries++;
       } else {
@@ -79,8 +78,8 @@ public class Registration {
     }
     if (!(res instanceof ManagerCredentials)) {
       throw new IllegalArgumentException(
-          "The NFVO's answer to the registration request should be of type ManagerCredentials, but it is " +
-          res.getClass().getSimpleName());
+          "The NFVO's answer to the registration request should be of type ManagerCredentials, but it is "
+              + res.getClass().getSimpleName());
     }
     this.username = ((ManagerCredentials) res).getRabbitUsername();
     this.password = ((ManagerCredentials) res).getRabbitPassword();
