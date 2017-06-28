@@ -182,7 +182,6 @@ public class NetworkServiceRecordManagement
           BadRequestException {
     log.info("Looking for NetworkServiceDescriptor with id: " + idNsd);
     NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findFirstById(idNsd);
-    log.info(networkServiceDescriptor.getId());
 
     if (networkServiceDescriptor == null) {
       throw new NotFoundException("NSD with id " + idNsd + " was not found");
