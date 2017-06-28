@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
 import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.Ip;
@@ -159,6 +160,7 @@ public class NetworkServiceRecordManagement
 
   @Autowired private KeyRepository keyRepository;
   @Autowired private VnfPackageRepository vnfPackageRepository;
+  @Autowired private EntityManager entityManager;
 
   @PostConstruct
   private void init() {
@@ -180,6 +182,8 @@ public class NetworkServiceRecordManagement
           BadRequestException {
     log.info("Looking for NetworkServiceDescriptor with id: " + idNsd);
     NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findFirstById(idNsd);
+    log.info(networkServiceDescriptor.getId());
+
     if (networkServiceDescriptor == null) {
       throw new NotFoundException("NSD with id " + idNsd + " was not found");
     }
@@ -187,6 +191,11 @@ public class NetworkServiceRecordManagement
       throw new UnauthorizedUserException(
           "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
+    // Detach instance of NSD to stop persistance
+    if (networkServiceDescriptor.getId() != null) {
+      entityManager.detach(networkServiceDescriptor);
+    }
+
     DeployNSRBody body = new DeployNSRBody();
     body.setVduVimInstances(vduVimInstances);
     if (configurations == null) {
