@@ -158,9 +158,9 @@ public class RestNetworkServiceRecord {
           BadFormatException, VimDriverException, QuotaExceededException, PluginException,
           MissingParameterException, BadRequestException {
 
-    List keys = new LinkedList();
-    Map vduVimInstances = new HashMap();
-    Map<String, Configuration> configurations = new HashMap<>();
+    List keys = null;
+    Map vduVimInstances = null;
+    Map<String, Configuration> configurations = null;
 
     log.debug("Json Body is " + jsonObject);
     if (jsonObject != null) {
