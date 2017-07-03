@@ -247,6 +247,7 @@ public class VNFPackageManagement
                   vnfPackageNFVOVersion, getNfvoVersionWithoutSNAPSHOT());
             }
             vnfPackage.setNfvo_version(vnfPackageNFVOVersion);
+            vnfPackageMetadata.setNfvoVersion(vnfPackageNFVOVersion);
 
             if (metadata.containsKey("vendor")) {
               vnfPackageMetadata.setVendor((String) metadata.get("vendor"));
@@ -422,8 +423,7 @@ public class VNFPackageManagement
     // check if package already exists
 
     Iterable<VNFPackageMetadata> vnfPackageMetadataIterable =
-        vnfPackageMetadataRepository
-            .findAllByNameAndVendorAndVersionAndNfvoVersionAndVnfmTypeAndOsIdAndOsVersionAndOsArchitectureAndTagAndProjectId(
+        query(
                 vnfPackageMetadata.getName(),
                 vnfPackageMetadata.getVendor(),
                 vnfPackageMetadata.getVersion(),

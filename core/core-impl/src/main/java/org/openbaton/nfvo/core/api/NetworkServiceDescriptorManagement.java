@@ -577,7 +577,7 @@ public class NetworkServiceDescriptorManagement
                 + vnfPackageMetadata.getId()
                 + "/tar";
         VirtualNetworkFunctionDescriptor vnfd =
-            vnfPackageManagement.onboardFromMarket(linkToDownloadVNFPackage, projectId);
+            vnfPackageManagement.onboardFromPackageRepository(linkToDownloadVNFPackage, projectId);
         vnfdIds.add(vnfd.getId());
         log.info(
             "Onboarded from Package Repository VNFD "
