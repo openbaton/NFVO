@@ -55,6 +55,27 @@ public class CheckVNFDescriptor {
       throw new NetworkServiceIntegrityException("Not found endpoint in VNFD " + vnfd.getName());
     }
 
+    //Ensure each VDU has at least one VNFC
+    for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
+      if (vdu.getVnfc() == null || vdu.getVnfc().size() == 0)
+        throw new NetworkServiceIntegrityException(
+            "Not found any VNFC in a VDU of the VNFD " + vnfd.getName());
+    }
+
+    // If the VNFManager is fixed-host, then ensure the VNFD has only one VDU and one VNFC
+    if (vnfd.getEndpoint().equals("fixed-host")) {
+      if (vnfd.getVdu().size() > 1)
+        throw new NetworkServiceIntegrityException(
+            "The VNFD "
+                + vnfd.getName()
+                + " contains more then one VDU. The fixed-host VNFM supports only one");
+      if (vnfd.getVdu().iterator().next().getVnfc().size() > 1)
+        throw new NetworkServiceIntegrityException(
+            "The VNFD "
+                + vnfd.getName()
+                + " contains more then one VNF component. The fixed-host VNFM supports only one");
+    }
+
     if (vnfd.getDeployment_flavour() != null && !vnfd.getDeployment_flavour().isEmpty()) {
       for (DeploymentFlavour deploymentFlavour : vnfd.getDeployment_flavour()) {
         if (deploymentFlavour.getFlavour_key() == null
@@ -80,9 +101,6 @@ public class CheckVNFDescriptor {
 
     int i = 1;
     for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
-      if (vdu.getVnfc() == null || vdu.getVnfc().size() == 0)
-        throw new NetworkServiceIntegrityException(
-            "Not found any VNFC in VDU of VNFD " + vnfd.getName());
       if (vdu.getName() == null || vdu.getName().isEmpty()) {
         vdu.setName(vnfd.getName() + "-" + i);
         i++;

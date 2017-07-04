@@ -17,11 +17,6 @@
 
 package org.openbaton.nfvo.core.api;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
-import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.Ip;
@@ -56,12 +51,18 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
+
 /** Created by lto on 11/05/15. */
 @Service
 @Scope("prototype")
 @ConfigurationProperties
 public class NetworkServiceRecordManagement
-    implements org.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement {
+        implements org.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement {
 
   private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -134,8 +135,8 @@ public class NetworkServiceRecordManagement
 
   @Override
   public NetworkServiceRecord onboard(
-      String idNsd, String projectID, List keys, Map vduVimInstances, Map configurations)
-      throws VimException, NotFoundException, PluginException, MissingParameterException,
+          String idNsd, String projectID, List keys, Map vduVimInstances, Map configurations)
+          throws VimException, NotFoundException, PluginException, MissingParameterException,
           BadRequestException {
     log.info("Looking for NetworkServiceDescriptor with id: " + idNsd);
     NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findFirstById(idNsd);
@@ -144,7 +145,7 @@ public class NetworkServiceRecordManagement
     }
     if (!networkServiceDescriptor.getProjectId().equals(projectID)) {
       throw new UnauthorizedUserException(
-          "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+              "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
     DeployNSRBody body = new DeployNSRBody();
     body.setVduVimInstances(vduVimInstances);
@@ -173,13 +174,13 @@ public class NetworkServiceRecordManagement
 
   @Override
   public NetworkServiceRecord scaleOut(
-      String nsrId,
-      String vnfdId,
-      String projectId,
-      List keys,
-      Map vduVimInstances,
-      Map configurations)
-      throws NotFoundException, MissingParameterException, VimException, BadRequestException,
+          String nsrId,
+          String vnfdId,
+          String projectId,
+          List keys,
+          Map vduVimInstances,
+          Map configurations)
+          throws NotFoundException, MissingParameterException, VimException, BadRequestException,
           PluginException {
     log.info("Looking for NetworkServiceDescriptor with id: " + nsrId);
     NetworkServiceRecord nsr = nsrRepository.findFirstById(nsrId);
@@ -188,7 +189,7 @@ public class NetworkServiceRecordManagement
     }
     if (!nsr.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-          "NSD " + nsrId + " not under the project (" + projectId + ") chosen ...");
+              "NSD " + nsrId + " not under the project (" + projectId + ") chosen ...");
     }
 
     VirtualNetworkFunctionDescriptor vnfd = vnfdRepository.findFirstById(vnfdId);
@@ -197,7 +198,7 @@ public class NetworkServiceRecordManagement
     }
     if (!vnfd.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-          "VNFD " + vnfdId + " not under the project (" + projectId + ") chosen ...");
+              "VNFD " + vnfdId + " not under the project (" + projectId + ") chosen ...");
     }
 
     DeployNSRBody body = new DeployNSRBody();
@@ -226,11 +227,11 @@ public class NetworkServiceRecordManagement
   }
 
   private NetworkServiceRecord scaleOutNsr(
-      NetworkServiceRecord nsr,
-      VirtualNetworkFunctionDescriptor vnfd,
-      String projectId,
-      DeployNSRBody body)
-      throws NotFoundException, VimException, PluginException, MissingParameterException,
+          NetworkServiceRecord nsr,
+          VirtualNetworkFunctionDescriptor vnfd,
+          String projectId,
+          DeployNSRBody body)
+          throws NotFoundException, VimException, PluginException, MissingParameterException,
           BadRequestException {
     Map<String, List<String>> vduVimInstances = new HashMap<>();
     log.info("Fetched NetworkServiceDescriptor: " + nsr.getName());
@@ -353,12 +354,12 @@ public class NetworkServiceRecordManagement
 
   @Override
   public NetworkServiceRecord onboard(
-      NetworkServiceDescriptor networkServiceDescriptor,
-      String projectId,
-      List keys,
-      Map vduVimInstances,
-      Map configurations)
-      throws VimException, NotFoundException, PluginException, MissingParameterException,
+          NetworkServiceDescriptor networkServiceDescriptor,
+          String projectId,
+          List keys,
+          Map vduVimInstances,
+          Map configurations)
+          throws VimException, NotFoundException, PluginException, MissingParameterException,
           BadRequestException {
     networkServiceDescriptor.setProjectId(projectId);
     //    nsdUtils.fetchVimInstances(networkServiceDescriptor, projectId);
@@ -388,14 +389,14 @@ public class NetworkServiceRecordManagement
   }
 
   public void deleteVNFRecord(String idNsr, String idVnf, String projectId)
-      throws NotFoundException {
+          throws NotFoundException {
     //TODO the logic of this request for the moment deletes only the VNFR from the DB, need to be removed from the
     // running NetworkServiceRecord
     NetworkServiceRecord nsr = nsrRepository.findFirstById(idNsr);
     if (nsr == null) throw new NotFoundException("No NSR found with ID: " + idNsr);
     if (!nsr.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-          "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+              "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
     VirtualNetworkFunctionRecord vnfr = vnfrRepository.findOne(idVnf);
     if (vnfr == null) throw new NotFoundException("No VNFR found with ID: " + idVnf);
@@ -421,17 +422,17 @@ public class NetworkServiceRecordManagement
    */
   @Override
   public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord(
-      String idNsr, String idVnf, String projectId) throws NotFoundException {
+          String idNsr, String idVnf, String projectId) throws NotFoundException {
     NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(idNsr);
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-          "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+              "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
     if (networkServiceRecord == null) {
       throw new NotFoundException("NSR with id " + idNsr + " was not found");
     }
     for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord :
-        networkServiceRecord.getVnfr()) {
+            networkServiceRecord.getVnfr()) {
       if (virtualNetworkFunctionRecord.getId().equals(idVnf)) {
         return virtualNetworkFunctionRecord;
       }
@@ -452,25 +453,25 @@ public class NetworkServiceRecordManagement
     // running NetworkServiceRecord
     if (!nsrRepository.findFirstById(idNsr).getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-          "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+              "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
     nsrRepository.deleteVNFDependency(idNsr, idVnfd);
   }
 
   @Override
   public void addVNFCInstance(String id, String idVnf, VNFComponent component, String projectId)
-      throws NotFoundException, BadFormatException, WrongStatusException {
+          throws NotFoundException, BadFormatException, WrongStatusException {
     log.info("Adding new VNFCInstance to VNFR with id: " + idVnf);
     NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id);
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-          "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+              "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
     VirtualNetworkFunctionRecord virtualNetworkFunctionRecord =
-        getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
+            getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
     if (!virtualNetworkFunctionRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-          "VNFR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+              "VNFR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
 
     List<VirtualDeploymentUnit> vdusFound = new LinkedList<>();
@@ -489,59 +490,59 @@ public class NetworkServiceRecordManagement
     }
     if (virtualDeploymentUnit == null)
       throw new NotFoundException(
-          "All VirtualDeploymentUnits have reached their maximum number of VNFCInstances");
+              "All VirtualDeploymentUnits have reached their maximum number of VNFCInstances");
 
     log.debug(
-        "A new VNFCInstance will be added to the VDU with id " + virtualDeploymentUnit.getId());
+            "A new VNFCInstance will be added to the VDU with id " + virtualDeploymentUnit.getId());
 
     networkServiceRecord.setStatus(Status.SCALING);
     networkServiceRecord = nsrRepository.save(networkServiceRecord);
     scaleOUT(
-        networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, component, "");
+            networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, component, "");
   }
 
   @Override
   public void addVNFCInstance(
-      String id, String idVnf, String idVdu, VNFComponent component, String mode, String projectId)
-      throws NotFoundException, BadFormatException, WrongStatusException {
+          String id, String idVnf, String idVdu, VNFComponent component, String mode, String projectId)
+          throws NotFoundException, BadFormatException, WrongStatusException {
     log.info("Adding new VNFCInstance to VNFR with id " + idVnf + " and VDU with id " + idVdu);
     NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id);
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-          "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+              "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
     VirtualNetworkFunctionRecord virtualNetworkFunctionRecord =
-        getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
+            getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
     if (!virtualNetworkFunctionRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-          "VNFR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+              "VNFR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
     VirtualDeploymentUnit virtualDeploymentUnit =
-        getVirtualDeploymentUnit(idVdu, virtualNetworkFunctionRecord);
+            getVirtualDeploymentUnit(idVdu, virtualNetworkFunctionRecord);
     if (virtualDeploymentUnit.getProjectId() != null
-        && !virtualDeploymentUnit.getProjectId().equals(projectId)) {
+            && !virtualDeploymentUnit.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-          "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+              "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
     if (virtualDeploymentUnit.getScale_in_out()
-        == virtualDeploymentUnit.getVnfc_instance().size()) {
+            == virtualDeploymentUnit.getVnfc_instance().size()) {
       throw new WrongStatusException(
-          "The VirtualDeploymentUnit chosen has reached the maximum number of VNFCInstance");
+              "The VirtualDeploymentUnit chosen has reached the maximum number of VNFCInstance");
     }
 
     networkServiceRecord.setStatus(Status.SCALING);
     networkServiceRecord = nsrRepository.save(networkServiceRecord);
     scaleOUT(
-        networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, component, mode);
+            networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, component, mode);
   }
 
   private void scaleOUT(
-      NetworkServiceRecord networkServiceRecord,
-      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
-      VirtualDeploymentUnit virtualDeploymentUnit,
-      VNFComponent component,
-      String mode)
-      throws BadFormatException, NotFoundException {
+          NetworkServiceRecord networkServiceRecord,
+          VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
+          VirtualDeploymentUnit virtualDeploymentUnit,
+          VNFComponent component,
+          String mode)
+          throws BadFormatException, NotFoundException {
 
     networkServiceRecord.setTask("Scaling out");
     List<String> componentNetworks = new ArrayList<>();
@@ -558,13 +559,13 @@ public class NetworkServiceRecordManagement
 
     if (!vnfrNetworks.containsAll(componentNetworks)) {
       throw new BadFormatException(
-          "Not all the network exist in the InternalVirtualLinks. They need to be included in these names: "
-              + vnfrNetworks);
+              "Not all the network exist in the InternalVirtualLinks. They need to be included in these names: "
+                      + vnfrNetworks);
     }
 
     log.info(
-        "Adding VNFComponent to VirtualNetworkFunctionRecord "
-            + virtualNetworkFunctionRecord.getName());
+            "Adding VNFComponent to VirtualNetworkFunctionRecord "
+                    + virtualNetworkFunctionRecord.getName());
 
     for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
       if (vdu.getId().equals(virtualDeploymentUnit.getId())) {
@@ -578,7 +579,7 @@ public class NetworkServiceRecordManagement
     log.debug("new VNFComponent is " + component);
 
     VNFRecordDependency dependencyTarget =
-        dependencyManagement.getDependencyForAVNFRecordTarget(virtualNetworkFunctionRecord);
+            dependencyManagement.getDependencyForAVNFRecordTarget(virtualNetworkFunctionRecord);
 
     log.debug("Found Dependency: " + dependencyTarget);
 
@@ -587,19 +588,19 @@ public class NetworkServiceRecordManagement
 
   @Override
   public void deleteVNFCInstance(String id, String idVnf, String projectId)
-      throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException,
+          throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException,
           VimException, PluginException {
     log.info("Removing VNFCInstance from VNFR with id: " + idVnf);
     NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id);
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-          "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+              "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
     VirtualNetworkFunctionRecord virtualNetworkFunctionRecord =
-        getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
+            getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
     if (!virtualNetworkFunctionRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-          "VNFR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+              "VNFR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
 
     List<VirtualDeploymentUnit> vdusFound = new LinkedList<>();
@@ -622,47 +623,47 @@ public class NetworkServiceRecordManagement
 
     if (virtualDeploymentUnit == null)
       throw new NotFoundException(
-          "All VirtualDeploymentUnits have reached their minimum number of VNFCInstances");
+              "All VirtualDeploymentUnits have reached their minimum number of VNFCInstances");
 
     log.debug(
-        "A VNFCInstance will be deleted from the VDU with id " + virtualDeploymentUnit.getId());
+            "A VNFCInstance will be deleted from the VDU with id " + virtualDeploymentUnit.getId());
 
     VNFCInstance vnfcInstance = virtualDeploymentUnit.getVnfc_instance().iterator().next();
     if (vnfcInstance == null) {
       throw new NotFoundException(
-          "No VNFCInstance was found to delete in VirtualDeploymentUnit with id: "
-              + virtualDeploymentUnit.getId());
+              "No VNFCInstance was found to delete in VirtualDeploymentUnit with id: "
+                      + virtualDeploymentUnit.getId());
     }
 
     networkServiceRecord.setStatus(Status.SCALING);
     networkServiceRecord = nsrRepository.save(networkServiceRecord);
     scaleIn(
-        networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, vnfcInstance);
+            networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, vnfcInstance);
   }
 
   @Override
   public void deleteVNFCInstance(String id, String idVnf, String idVdu, String projectId)
-      throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException,
+          throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException,
           VimException, PluginException {
     log.info("Removing VNFCInstance from VNFR with id: " + idVnf + " in vdu: " + idVdu);
     NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id);
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-          "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+              "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
     VirtualNetworkFunctionRecord virtualNetworkFunctionRecord =
-        getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
+            getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
     if (!virtualNetworkFunctionRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-          "VNFR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+              "VNFR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
 
     VirtualDeploymentUnit virtualDeploymentUnit = null;
 
     for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
       if (vdu.getId().equals(idVdu)
-          && vdu.getProjectId() != null
-          && vdu.getProjectId().equals(projectId)) {
+              && vdu.getProjectId() != null
+              && vdu.getProjectId().equals(projectId)) {
         virtualDeploymentUnit = vdu;
       }
     }
@@ -673,7 +674,7 @@ public class NetworkServiceRecordManagement
 
     if (virtualDeploymentUnit.getVnfc_instance().size() == 1) {
       throw new WrongStatusException(
-          "The VirtualDeploymentUnit chosen has reached the minimum number of VNFCInstance");
+              "The VirtualDeploymentUnit chosen has reached the minimum number of VNFCInstance");
     }
 
     VNFCInstance vnfcInstance = virtualDeploymentUnit.getVnfc_instance().iterator().next();
@@ -684,7 +685,7 @@ public class NetworkServiceRecordManagement
     networkServiceRecord.setStatus(Status.SCALING);
     networkServiceRecord = nsrRepository.save(networkServiceRecord);
     scaleIn(
-        networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, vnfcInstance);
+            networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, vnfcInstance);
   }
 
   @Override
@@ -694,110 +695,110 @@ public class NetworkServiceRecordManagement
 
   @Override
   public void deleteVNFCInstance(
-      String id, String idVnf, String idVdu, String idVNFCI, String projectId)
-      throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException,
+          String id, String idVnf, String idVdu, String idVNFCI, String projectId)
+          throws NotFoundException, WrongStatusException, InterruptedException, ExecutionException,
           VimException, PluginException {
     log.info(
-        "Removing VNFCInstance with id: "
-            + idVNFCI
-            + " from VNFR with id: "
-            + idVnf
-            + " in vdu: "
-            + idVdu);
+            "Removing VNFCInstance with id: "
+                    + idVNFCI
+                    + " from VNFR with id: "
+                    + idVnf
+                    + " in vdu: "
+                    + idVdu);
     NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id);
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-          "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+              "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
     VirtualNetworkFunctionRecord virtualNetworkFunctionRecord =
-        getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
+            getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
     if (!virtualNetworkFunctionRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-          "VNFR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+              "VNFR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
     VirtualDeploymentUnit virtualDeploymentUnit =
-        getVirtualDeploymentUnit(idVdu, virtualNetworkFunctionRecord);
+            getVirtualDeploymentUnit(idVdu, virtualNetworkFunctionRecord);
     if (virtualDeploymentUnit.getProjectId() != null
-        && !virtualDeploymentUnit.getProjectId().equals(projectId)) {
+            && !virtualDeploymentUnit.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-          "VDU not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+              "VDU not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
     if (virtualDeploymentUnit.getVnfc_instance().size() == 1) {
       throw new WrongStatusException(
-          "The VirtualDeploymentUnit chosen has reached the minimum number of VNFCInstance");
+              "The VirtualDeploymentUnit chosen has reached the minimum number of VNFCInstance");
     }
 
     networkServiceRecord.setStatus(Status.SCALING);
     networkServiceRecord = nsrRepository.save(networkServiceRecord);
     scaleIn(
-        networkServiceRecord,
-        virtualNetworkFunctionRecord,
-        virtualDeploymentUnit,
-        getVNFCI(virtualDeploymentUnit, idVNFCI));
+            networkServiceRecord,
+            virtualNetworkFunctionRecord,
+            virtualDeploymentUnit,
+            getVNFCI(virtualDeploymentUnit, idVNFCI));
   }
 
   @Override
   public void startVNFCInstance(
-      String id, String idVnf, String idVdu, String idVNFCI, String projectId)
-      throws NotFoundException, WrongStatusException {
+          String id, String idVnf, String idVdu, String idVNFCI, String projectId)
+          throws NotFoundException, WrongStatusException {
     startStopVNFCInstance(id, idVnf, idVdu, idVNFCI, projectId, Action.START);
   }
 
   @Override
   public void stopVNFCInstance(
-      String id, String idVnf, String idVdu, String idVNFCI, String projectId)
-      throws NotFoundException, WrongStatusException {
+          String id, String idVnf, String idVdu, String idVNFCI, String projectId)
+          throws NotFoundException, WrongStatusException {
     startStopVNFCInstance(id, idVnf, idVdu, idVNFCI, projectId, Action.STOP);
   }
 
   private void startStopVNFCInstance(
-      String id, String idVnf, String idVdu, String idVNFCI, String projectId, Action action)
-      throws NotFoundException {
+          String id, String idVnf, String idVdu, String idVNFCI, String projectId, Action action)
+          throws NotFoundException {
     NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInAnyState(id);
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-          "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+              "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
     VirtualNetworkFunctionRecord virtualNetworkFunctionRecord =
-        getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
+            getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
     if (!virtualNetworkFunctionRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-          "VNFR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+              "VNFR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
     VirtualDeploymentUnit virtualDeploymentUnit =
-        getVirtualDeploymentUnit(idVdu, virtualNetworkFunctionRecord);
+            getVirtualDeploymentUnit(idVdu, virtualNetworkFunctionRecord);
     if (virtualDeploymentUnit.getProjectId() != null
-        && !virtualDeploymentUnit.getProjectId().equals(projectId)) {
+            && !virtualDeploymentUnit.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-          "VDU not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+              "VDU not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
 
     VNFCInstance vnfcInstanceToStartStop = null;
     for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
       log.debug(
-          "VNFCInstance: (ID: "
-              + vnfcInstance.getId()
-              + " - HOSTNAME: "
-              + vnfcInstance.getHostname()
-              + " - STATE: "
-              + vnfcInstance.getState()
-              + ")");
+              "VNFCInstance: (ID: "
+                      + vnfcInstance.getId()
+                      + " - HOSTNAME: "
+                      + vnfcInstance.getHostname()
+                      + " - STATE: "
+                      + vnfcInstance.getState()
+                      + ")");
       if (vnfcInstance.getId().equals(idVNFCI)) {
         vnfcInstanceToStartStop = vnfcInstance;
         switch (action) {
           case START:
             log.debug(
-                "VNFCInstance to be started: "
-                    + vnfcInstanceToStartStop.getId()
-                    + " - "
-                    + vnfcInstanceToStartStop.getHostname());
+                    "VNFCInstance to be started: "
+                            + vnfcInstanceToStartStop.getId()
+                            + " - "
+                            + vnfcInstanceToStartStop.getHostname());
             break;
           case STOP:
             log.debug(
-                "VNFCInstance to be stopped: "
-                    + vnfcInstanceToStartStop.getId()
-                    + " - "
-                    + vnfcInstanceToStartStop.getHostname());
+                    "VNFCInstance to be stopped: "
+                            + vnfcInstanceToStartStop.getId()
+                            + " - "
+                            + vnfcInstanceToStartStop.getHostname());
             break;
         }
       }
@@ -812,7 +813,7 @@ public class NetworkServiceRecordManagement
     }
 
     OrVnfmStartStopMessage startStopMessage =
-        new OrVnfmStartStopMessage(virtualNetworkFunctionRecord, vnfcInstanceToStartStop);
+            new OrVnfmStartStopMessage(virtualNetworkFunctionRecord, vnfcInstanceToStartStop);
     switch (action) {
       case START:
         startStopMessage.setAction(Action.START);
@@ -827,32 +828,32 @@ public class NetworkServiceRecordManagement
 
   @Override
   public void switchToRedundantVNFCInstance(
-      String id,
-      String idVnf,
-      String idVdu,
-      String idVNFC,
-      String mode,
-      VNFCInstance failedVnfcInstance,
-      String projectId)
-      throws NotFoundException, WrongStatusException {
+          String id,
+          String idVnf,
+          String idVdu,
+          String idVNFC,
+          String mode,
+          VNFCInstance failedVnfcInstance,
+          String projectId)
+          throws NotFoundException, WrongStatusException {
     NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id);
 
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-          "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+              "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
     VirtualNetworkFunctionRecord virtualNetworkFunctionRecord =
-        getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
+            getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
     if (!virtualNetworkFunctionRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-          "VNFR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+              "VNFR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
     VirtualDeploymentUnit virtualDeploymentUnit =
-        getVirtualDeploymentUnit(idVdu, virtualNetworkFunctionRecord);
+            getVirtualDeploymentUnit(idVdu, virtualNetworkFunctionRecord);
     if (virtualDeploymentUnit.getProjectId() != null
-        && !virtualDeploymentUnit.getProjectId().equals(projectId)) {
+            && !virtualDeploymentUnit.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-          "VDU not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+              "VDU not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
     networkServiceRecord.setTask("Healing");
     VNFCInstance standByVNFCInstance = null;
@@ -865,19 +866,19 @@ public class NetworkServiceRecordManagement
       if (vnfcInstance.getId().equals(failedVnfcInstance.getId())) {
         vnfcInstance.setState("FAILED");
         log.debug(
-            "The vnfcInstance: "
-                + vnfcInstance.getHostname()
-                + " is set to '"
-                + vnfcInstance.getState()
-                + "' state");
+                "The vnfcInstance: "
+                        + vnfcInstance.getHostname()
+                        + " is set to '"
+                        + vnfcInstance.getState()
+                        + "' state");
       }
     }
     if (standByVNFCInstance == null) {
       throw new NotFoundException(
-          "No VNFCInstance in "
-              + mode
-              + " mode found, so switch to redundant VNFC is not "
-              + "possibile");
+              "No VNFCInstance in "
+                      + mode
+                      + " mode found, so switch to redundant VNFC is not "
+                      + "possibile");
     }
 
     //save the new state of the failedVnfcInstance
@@ -893,7 +894,7 @@ public class NetworkServiceRecordManagement
   }
 
   private VNFCInstance getVNFCI(VirtualDeploymentUnit virtualDeploymentUnit, String idVNFCI)
-      throws NotFoundException {
+          throws NotFoundException {
 
     for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
       if (idVNFCI == null || idVNFCI.equals(vnfcInstance.getId())) {
@@ -905,14 +906,14 @@ public class NetworkServiceRecordManagement
   }
 
   private void scaleIn(
-      NetworkServiceRecord networkServiceRecord,
-      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
-      VirtualDeploymentUnit virtualDeploymentUnit,
-      VNFCInstance vnfcInstance)
-      throws NotFoundException, InterruptedException, ExecutionException, VimException,
+          NetworkServiceRecord networkServiceRecord,
+          VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
+          VirtualDeploymentUnit virtualDeploymentUnit,
+          VNFCInstance vnfcInstance)
+          throws NotFoundException, InterruptedException, ExecutionException, VimException,
           PluginException {
     List<VNFRecordDependency> dependencySource =
-        dependencyManagement.getDependencyForAVNFRecordSource(virtualNetworkFunctionRecord);
+            dependencyManagement.getDependencyForAVNFRecordSource(virtualNetworkFunctionRecord);
 
     networkServiceRecord.setTask("Scaling in");
 
@@ -920,11 +921,11 @@ public class NetworkServiceRecordManagement
       for (VNFRecordDependency dependency : dependencySource) {
         List<String> paramsToRemove = new ArrayList<>();
         for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord1 :
-            networkServiceRecord.getVnfr()) {
+                networkServiceRecord.getVnfr()) {
           if (virtualNetworkFunctionRecord1.getName().equals(dependency.getTarget())) {
             vnfmManager.removeVnfcDependency(virtualNetworkFunctionRecord1, vnfcInstance);
             for (Entry<String, VNFCDependencyParameters> parametersEntry :
-                dependency.getVnfcParameters().entrySet()) {
+                    dependency.getVnfcParameters().entrySet()) {
               log.debug("Parameter: " + parametersEntry);
               if (parametersEntry.getValue() != null) {
                 parametersEntry.getValue().getParameters().remove(vnfcInstance.getId());
@@ -960,7 +961,7 @@ public class NetworkServiceRecordManagement
           // if vnfciStarted is not null then the START message received refers to the VNFCInstance
           if (instanceInVNFR.getState() != null) {
             if ((instanceInVNFR.getState().equalsIgnoreCase("active"))
-                && (networkServiceRecord.getStatus().ordinal() != Status.ERROR.ordinal())) {
+                    && (networkServiceRecord.getStatus().ordinal() != Status.ERROR.ordinal())) {
               stopVNFR = false;
               break;
             }
@@ -981,7 +982,7 @@ public class NetworkServiceRecordManagement
     }
 
     ApplicationEventNFVO event =
-        new ApplicationEventNFVO(Action.SCALE_IN, virtualNetworkFunctionRecord);
+            new ApplicationEventNFVO(Action.SCALE_IN, virtualNetworkFunctionRecord);
     EventNFVO eventNFVO = new EventNFVO(this);
     eventNFVO.setEventNFVO(event);
     log.debug("Publishing event: " + event);
@@ -995,8 +996,8 @@ public class NetworkServiceRecordManagement
   }
 
   private VirtualDeploymentUnit getVirtualDeploymentUnit(
-      String idVdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
-      throws NotFoundException {
+          String idVdu, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
+          throws NotFoundException {
     VirtualDeploymentUnit virtualDeploymentUnit = null;
     for (VirtualDeploymentUnit virtualDeploymentUnit1 : virtualNetworkFunctionRecord.getVdu()) {
       if (virtualDeploymentUnit1.getId().equals(idVdu)) {
@@ -1010,7 +1011,7 @@ public class NetworkServiceRecordManagement
   }
 
   private VNFCInstance getVNFCInstance(String idVNFCInstance, VirtualDeploymentUnit vdu)
-      throws NotFoundException {
+          throws NotFoundException {
     VNFCInstance vnfcInstance = null;
     for (VNFCInstance currentVnfcInstance : vdu.getVnfc_instance()) {
       if (currentVnfcInstance.getId().equals(idVNFCInstance)) {
@@ -1025,10 +1026,10 @@ public class NetworkServiceRecordManagement
   }
 
   private VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord(
-      String idVnf, NetworkServiceRecord networkServiceRecord) throws NotFoundException {
+          String idVnf, NetworkServiceRecord networkServiceRecord) throws NotFoundException {
     VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = null;
     for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord1 :
-        networkServiceRecord.getVnfr()) {
+            networkServiceRecord.getVnfr()) {
       if (virtualNetworkFunctionRecord1.getId().equals(idVnf)) {
         virtualNetworkFunctionRecord = virtualNetworkFunctionRecord1;
         break;
@@ -1041,7 +1042,7 @@ public class NetworkServiceRecordManagement
   }
 
   private synchronized NetworkServiceRecord getNetworkServiceRecordInAnyState(String id)
-      throws NotFoundException {
+          throws NotFoundException {
     NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(id);
     if (networkServiceRecord == null) {
       throw new NotFoundException("No NetworkServiceRecord found with id " + id);
@@ -1051,7 +1052,7 @@ public class NetworkServiceRecordManagement
   }
 
   private synchronized NetworkServiceRecord getNetworkServiceRecordInActiveState(String id)
-      throws NotFoundException, WrongStatusException {
+          throws NotFoundException, WrongStatusException {
     NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(id);
     if (networkServiceRecord == null) {
       throw new NotFoundException("No NetworkServiceRecord found with id " + id);
@@ -1065,14 +1066,14 @@ public class NetworkServiceRecordManagement
   }
 
   private NetworkServiceRecord deployNSR(
-      NetworkServiceDescriptor networkServiceDescriptor, String projectID, DeployNSRBody body)
-      throws NotFoundException, VimException, PluginException, MissingParameterException,
+          NetworkServiceDescriptor networkServiceDescriptor, String projectID, DeployNSRBody body)
+          throws NotFoundException, VimException, PluginException, MissingParameterException,
           BadRequestException {
     Map<String, List<String>> vduVimInstances = new HashMap<>();
     log.info("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor.getName());
     log.info("VNFD are: ");
     for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
-        networkServiceDescriptor.getVnfd()) {
+            networkServiceDescriptor.getVnfd()) {
       log.debug("\t" + virtualNetworkFunctionDescriptor.getName());
     }
 
@@ -1132,11 +1133,11 @@ public class NetworkServiceRecordManagement
                 boolean networkExists = false;
                 if (vimInstance.getNetworks() == null)
                   throw new VimException(
-                      "VIM instance " + vimInstance.getName() + "does not have networks ");
+                          "VIM instance " + vimInstance.getName() + "does not have networks ");
                 for (Network network : vimInstance.getNetworks()) {
                   //                    if (network.getName().equals(vlr.getName()) || network.getExtId().equals(vlr.getName())) {
                   if (network.getName().equals(vnfdConnectionPoint.getVirtual_link_reference())
-                      || network
+                          || network
                           .getExtId()
                           .equals(vnfdConnectionPoint.getVirtual_link_reference())) {
                     networkExists = true;
@@ -1174,14 +1175,14 @@ public class NetworkServiceRecordManagement
         networkServiceRecord = nsrRepository.save(networkServiceRecord);
         savedNsrSuccessfully = true;
         log.debug(
-            "Persisted NSR "
-                + networkServiceRecord.getName()
-                + ". Got id: "
-                + networkServiceRecord.getId());
+                "Persisted NSR "
+                        + networkServiceRecord.getName()
+                        + ". Got id: "
+                        + networkServiceRecord.getId());
       } catch (OptimisticLockingFailureException e) {
         if (attempt >= 3) {
           log.error(
-              "After 4 attempts there is still an OptimisticLockingFailureException when creating the NSR. Stop trying.");
+                  "After 4 attempts there is still an OptimisticLockingFailureException when creating the NSR. Stop trying.");
           throw e;
         }
         log.warn("OptimisticLockingFailureException while creating the NSR. We will try it again.");
@@ -1192,7 +1193,7 @@ public class NetworkServiceRecordManagement
 
     checkConfigParameter(networkServiceDescriptor, body);
 
-    fillDeploymentTimeIPs(networkServiceDescriptor, body);
+    fillDeploymentTimeIPs(networkServiceDescriptor, body, vduVimInstances);
 
     vnfmManager.deploy(networkServiceDescriptor, networkServiceRecord, body, vduVimInstances);
     log.debug("Returning NSR " + networkServiceRecord.getName());
@@ -1200,72 +1201,87 @@ public class NetworkServiceRecordManagement
   }
 
   private void fillDeploymentTimeIPs(
-      NetworkServiceDescriptor networkServiceDescriptor, DeployNSRBody body) {
+          NetworkServiceDescriptor networkServiceDescriptor,
+          DeployNSRBody body,
+          Map<String, List<String>> vduVimInstances)
+          throws NotFoundException {
     for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
-        networkServiceDescriptor.getVnfd()) {
-      if (body.getConfigurations().get(virtualNetworkFunctionDescriptor.getName()) != null) {
-        for (ConfigurationParameter passedConfigurationParameter :
-            body.getConfigurations()
-                .get(virtualNetworkFunctionDescriptor.getName())
-                .getConfigurationParameters()) {
-          if (passedConfigurationParameter.getConfKey().endsWith("_ip")) {
-            VNFComponent vnfComponent =
-                virtualNetworkFunctionDescriptor
-                    .getVdu()
-                    .iterator()
-                    .next()
-                    .getVnfc()
-                    .iterator()
-                    .next();
-            for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point())
-              if (passedConfigurationParameter
-                  .getConfKey()
-                  .contains(vnfdConnectionPoint.getVirtual_link_reference())) {
-                log.debug(
-                    "VNF: "
-                        + virtualNetworkFunctionDescriptor.getName()
-                        + ", setting ip: "
-                        + passedConfigurationParameter.getValue()
-                        + " to cp: "
-                        + vnfdConnectionPoint.getVirtual_link_reference());
-                vnfdConnectionPoint.setFloatingIp(passedConfigurationParameter.getValue());
-              }
-          }
+            networkServiceDescriptor.getVnfd()) {
+
+      if (!virtualNetworkFunctionDescriptor.getEndpoint().equals("fixed-host")) continue;
+
+      // Here we assume the VNFD contains only one VDU and one VNF component.
+      VirtualDeploymentUnit vdu = virtualNetworkFunctionDescriptor.getVdu().iterator().next();
+      VNFComponent vnfComponent = vdu.getVnfc().iterator().next();
+
+      boolean isFixedHostVimUsed = false;
+      for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(virtualNetworkFunctionDescriptor.getProjectId())){
+        if(vduVimInstances.get(vdu.getId()).contains(vimInstance.getName()) && vimInstance.getType().equals("fixed-host"))
+          isFixedHostVimUsed=true;
+      }
+
+      for (ConfigurationParameter passedConfigurationParameter :
+              body.getConfigurations()
+                      .get(virtualNetworkFunctionDescriptor.getName())
+                      .getConfigurationParameters()) {
+        if (passedConfigurationParameter.getConfKey().startsWith("ssh_")
+                && passedConfigurationParameter.getConfKey().endsWith("_ip")) {
+          if ( passedConfigurationParameter.getValue().equals("random") && isFixedHostVimUsed)
+            throw new NotFoundException(
+                    "Specify the parameter "
+                            + passedConfigurationParameter.getConfKey()
+                            + " of the vnfd "
+                            + virtualNetworkFunctionDescriptor.getName()
+                            + " with a valid IP");
+          for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point())
+            if (passedConfigurationParameter
+                    .getConfKey()
+                    .contains(vnfdConnectionPoint.getVirtual_link_reference())) {
+              log.debug(
+                      "VNF: "
+                              + virtualNetworkFunctionDescriptor.getName()
+                              + ", setting ip: "
+                              + passedConfigurationParameter.getValue()
+                              + " to cp: "
+                              + vnfdConnectionPoint.getVirtual_link_reference());
+              vnfdConnectionPoint.setFloatingIp(passedConfigurationParameter.getValue());
+              break;
+            }
         }
       }
     }
   }
 
   private void checkConfigParameter(
-      NetworkServiceDescriptor networkServiceDescriptor, DeployNSRBody body) {
+          NetworkServiceDescriptor networkServiceDescriptor, DeployNSRBody body) {
     if (networkServiceDescriptor.getVnfd() != null) {
       for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
-          networkServiceDescriptor.getVnfd()) {
+              networkServiceDescriptor.getVnfd()) {
         for (String vnfrName : body.getConfigurations().keySet()) {
           if (virtualNetworkFunctionDescriptor.getName() != null) {
             if (virtualNetworkFunctionDescriptor.getName().equals(vnfrName)) {
               if (virtualNetworkFunctionDescriptor.getConfigurations() != null) {
                 if (body.getConfigurations().get(vnfrName).getName() != null
-                    && !body.getConfigurations().get(vnfrName).getName().isEmpty()) {
+                        && !body.getConfigurations().get(vnfrName).getName().isEmpty()) {
                   virtualNetworkFunctionDescriptor
-                      .getConfigurations()
-                      .setName(body.getConfigurations().get(vnfrName).getName());
+                          .getConfigurations()
+                          .setName(body.getConfigurations().get(vnfrName).getName());
                 }
                 for (ConfigurationParameter passedConfigurationParameter :
-                    body.getConfigurations().get(vnfrName).getConfigurationParameters()) {
+                        body.getConfigurations().get(vnfrName).getConfigurationParameters()) {
                   boolean isExisting = false;
                   for (ConfigurationParameter configurationParameter :
-                      virtualNetworkFunctionDescriptor
-                          .getConfigurations()
-                          .getConfigurationParameters()) {
+                          virtualNetworkFunctionDescriptor
+                                  .getConfigurations()
+                                  .getConfigurationParameters()) {
                     if (configurationParameter
-                        .getConfKey()
-                        .equals(passedConfigurationParameter.getConfKey())) {
+                            .getConfKey()
+                            .equals(passedConfigurationParameter.getConfKey())) {
                       configurationParameter.setValue(passedConfigurationParameter.getValue());
                       if (passedConfigurationParameter.getDescription() != null
-                          && !passedConfigurationParameter.getDescription().isEmpty()) {
+                              && !passedConfigurationParameter.getDescription().isEmpty()) {
                         configurationParameter.setDescription(
-                            passedConfigurationParameter.getDescription());
+                                passedConfigurationParameter.getDescription());
                       }
                       isExisting = true;
                       break;
@@ -1273,21 +1289,21 @@ public class NetworkServiceRecordManagement
                   }
                   if (!isExisting) {
                     virtualNetworkFunctionDescriptor
-                        .getConfigurations()
-                        .getConfigurationParameters()
-                        .add(passedConfigurationParameter);
+                            .getConfigurations()
+                            .getConfigurationParameters()
+                            .add(passedConfigurationParameter);
                   }
                 }
               } else {
                 virtualNetworkFunctionDescriptor.setConfigurations(
-                    body.getConfigurations().get(vnfrName));
+                        body.getConfigurations().get(vnfrName));
               }
             }
           } else {
             log.warn(
-                "Not found name for VNFD "
-                    + virtualNetworkFunctionDescriptor.getId()
-                    + ". Cannot set configuration parameters");
+                    "Not found name for VNFD "
+                            + virtualNetworkFunctionDescriptor.getId()
+                            + ". Cannot set configuration parameters");
           }
         }
       }
@@ -1295,7 +1311,7 @@ public class NetworkServiceRecordManagement
   }
 
   private void checkQuotaForNS(NetworkServiceDescriptor networkServiceDescriptor)
-      throws NotFoundException, VimException, PluginException {
+          throws NotFoundException, VimException, PluginException {
     try {
       if (isQuotaCheckEnabled) {
         Map<VimInstance, Quota> requirements = new HashMap<>();
@@ -1321,10 +1337,10 @@ public class NetworkServiceRecordManagement
                 }
                 if (df == null)
                   throw new NotFoundException(
-                      "Deployment Flavour key: "
-                          + df_key
-                          + " not supported in VIM Instance: "
-                          + vimInstance.getName());
+                          "Deployment Flavour key: "
+                                  + df_key
+                                  + " not supported in VIM Instance: "
+                                  + vimInstance.getName());
                 if (!requirements.keySet().contains(vimInstance)) {
                   Quota quota = new Quota();
                   quota.setCores(df.getVcpus());
@@ -1334,18 +1350,18 @@ public class NetworkServiceRecordManagement
                   requirements.put(vimInstance, quota);
                 } else {
                   requirements
-                      .get(vimInstance)
-                      .setCores(requirements.get(vimInstance).getCores() + df.getVcpus());
+                          .get(vimInstance)
+                          .setCores(requirements.get(vimInstance).getCores() + df.getVcpus());
                   requirements
-                      .get(vimInstance)
-                      .setInstances(requirements.get(vimInstance).getInstances() + 1);
+                          .get(vimInstance)
+                          .setInstances(requirements.get(vimInstance).getInstances() + 1);
                   requirements
-                      .get(vimInstance)
-                      .setRam(requirements.get(vimInstance).getRam() + df.getRam());
+                          .get(vimInstance)
+                          .setRam(requirements.get(vimInstance).getRam() + df.getRam());
                   requirements
-                      .get(vimInstance)
-                      .setFloatingIps(
-                          requirements.get(vimInstance).getFloatingIps() + floatingIpCount);
+                          .get(vimInstance)
+                          .setFloatingIps(
+                                  requirements.get(vimInstance).getFloatingIps() + floatingIpCount);
                 }
               }
             }
@@ -1356,20 +1372,20 @@ public class NetworkServiceRecordManagement
           Quota leftQuota = vimBroker.getLeftQuota(vimInstance);
           Quota neededQuota = requirements.get(vimInstance);
           log.info(
-              "Needed Quota for VIM Instance:" + vimInstance.getName() + " is: " + neededQuota);
+                  "Needed Quota for VIM Instance:" + vimInstance.getName() + " is: " + neededQuota);
           if (leftQuota.getRam() < neededQuota.getRam()
-              || leftQuota.getCores() < neededQuota.getCores()
-              || leftQuota.getInstances() < neededQuota.getInstances()
-              || leftQuota.getFloatingIps() < neededQuota.getFloatingIps())
+                  || leftQuota.getCores() < neededQuota.getCores()
+                  || leftQuota.getInstances() < neededQuota.getInstances()
+                  || leftQuota.getFloatingIps() < neededQuota.getFloatingIps())
             throw new VimException(
-                "The VIM "
-                    + vimInstance.getName()
-                    + " does not have the needed resources to deploy all the VNFCs with the specified Deployment Flavours."
-                    + "You should lower the Deployment Flavours or free up resources.");
+                    "The VIM "
+                            + vimInstance.getName()
+                            + " does not have the needed resources to deploy all the VNFCs with the specified Deployment Flavours."
+                            + "You should lower the Deployment Flavours or free up resources.");
           else
             log.info(
-                "Resource check done: ",
-                "Vim Instance has enough resources. Moving on with deployment.");
+                    "Resource check done: ",
+                    "Vim Instance has enough resources. Moving on with deployment.");
         }
       } else {
         log.warn("Quota check is disabled... Please enable for comprehensive grant operation");
@@ -1378,23 +1394,23 @@ public class NetworkServiceRecordManagement
       if (log.isDebugEnabled()) log.error(e.getMessage(), e);
       if (failingQuotaCheckOnException) {
         String errorMsg =
-            "Check Quota for NS threw an exception and operation will cancel deployment. For succeeding consider to set 'nfvo.quota.check.failOnException' to false";
+                "Check Quota for NS threw an exception and operation will cancel deployment. For succeeding consider to set 'nfvo.quota.check.failOnException' to false";
         log.error(errorMsg);
         throw new VimException(errorMsg, e);
       } else {
         log.warn(
-            "Check Quota for NS threw an exception but operation will proceed. For failing consider to set 'nfvo.quota.check.failOnException' to true");
+                "Check Quota for NS threw an exception but operation will proceed. For failing consider to set 'nfvo.quota.check.failOnException' to true");
       }
     }
   }
 
   private List<String> checkIfVimAreSupportedByPackage(
-      VirtualNetworkFunctionDescriptor vnfd, List<String> instanceNames)
-      throws BadRequestException {
+          VirtualNetworkFunctionDescriptor vnfd, List<String> instanceNames)
+          throws BadRequestException {
     VNFPackage vnfPackage = vnfPackageRepository.findFirstById(vnfd.getVnfPackageLocation());
     if (vnfPackage == null
-        || vnfPackage.getVimTypes() == null
-        || vnfPackage.getVimTypes().size() == 0) {
+            || vnfPackage.getVimTypes() == null
+            || vnfPackage.getVimTypes().size() == 0) {
       log.warn("VNFPackage does not provide supported VIM. I will skip the check!");
     } else {
       for (String vimInstanceName : instanceNames) {
@@ -1404,13 +1420,13 @@ public class NetworkServiceRecordManagement
             vimInstance = vi;
             log.debug("Found vim instance " + vimInstance.getName());
             log.debug(
-                "Checking if "
-                    + vimInstance.getType()
-                    + " is contained in "
-                    + vnfPackage.getVimTypes());
+                    "Checking if "
+                            + vimInstance.getType()
+                            + " is contained in "
+                            + vnfPackage.getVimTypes());
             if (!vnfPackage.getVimTypes().contains(vimInstance.getType())) {
               throw new org.openbaton.exceptions.BadRequestException(
-                  "The Vim Instance chosen does not support the VNFD " + vnfd.getName());
+                      "The Vim Instance chosen does not support the VNFD " + vnfd.getName());
             }
           }
         }
@@ -1419,8 +1435,8 @@ public class NetworkServiceRecordManagement
     if (instanceNames.size() == 0) {
       for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(vnfd.getProjectId())) {
         if (vnfPackage == null
-            || vnfPackage.getVimTypes() == null
-            || vnfPackage.getVimTypes().isEmpty()) {
+                || vnfPackage.getVimTypes() == null
+                || vnfPackage.getVimTypes().isEmpty()) {
           instanceNames.add(vimInstance.getName());
         } else {
           String type = vimInstance.getType();
@@ -1436,27 +1452,27 @@ public class NetworkServiceRecordManagement
 
     if (instanceNames.size() == 0) {
       throw new org.openbaton.exceptions.BadRequestException(
-          "No Vim Instance found for supporting the VNFD "
-              + vnfd.getName()
-              + " (looking for vim type: "
-              + vnfPackage.getVimTypes()
-              + ")");
+              "No Vim Instance found for supporting the VNFD "
+                      + vnfd.getName()
+                      + " (looking for vim type: "
+                      + vnfPackage.getVimTypes()
+                      + ")");
     }
     log.debug("Vim Instances chosen are: " + instanceNames);
     return instanceNames;
   }
 
   private List<String> getRuntimeDeploymentInfo(DeployNSRBody body, VirtualDeploymentUnit vdu)
-      throws MissingParameterException {
+          throws MissingParameterException {
     List<String> instanceNames;
 
     if (body == null
-        || body.getVduVimInstances() == null
-        || body.getVduVimInstances().get(vdu.getName()) == null
-        || body.getVduVimInstances().get(vdu.getName()).isEmpty()) {
+            || body.getVduVimInstances() == null
+            || body.getVduVimInstances().get(vdu.getName()) == null
+            || body.getVduVimInstances().get(vdu.getName()).isEmpty()) {
       if (vdu.getVimInstanceName() == null) {
         throw new MissingParameterException(
-            "No VimInstance specified for vdu with name: " + vdu.getName());
+                "No VimInstance specified for vdu with name: " + vdu.getName());
       }
       instanceNames = vdu.getVimInstanceName();
     } else {
@@ -1467,12 +1483,12 @@ public class NetworkServiceRecordManagement
 
   @Override
   public NetworkServiceRecord update(NetworkServiceRecord newRsr, String idNsr, String projectId)
-      throws NotFoundException {
+          throws NotFoundException {
     NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(idNsr);
     if (networkServiceRecord != null) {
       if (!networkServiceRecord.getProjectId().equals(projectId)) {
         throw new UnauthorizedUserException(
-            "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+                "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
       }
     } else {
       throw new NotFoundException("NetworkServiceRecord with id not found");
@@ -1488,33 +1504,33 @@ public class NetworkServiceRecordManagement
 
   @Override
   public void executeAction(
-      NFVMessage nfvMessage,
-      String nsrId,
-      String idVnf,
-      String idVdu,
-      String idVNFCI,
-      String projectId)
-      throws NotFoundException {
+          NFVMessage nfvMessage,
+          String nsrId,
+          String idVnf,
+          String idVdu,
+          String idVNFCI,
+          String projectId)
+          throws NotFoundException {
 
     log.info("Executing action: " + nfvMessage.getAction() + " on VNF with id: " + idVnf);
 
     NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(nsrId);
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-          "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+              "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
     VirtualNetworkFunctionRecord virtualNetworkFunctionRecord =
-        getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
+            getVirtualNetworkFunctionRecord(idVnf, networkServiceRecord);
     if (!virtualNetworkFunctionRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-          "VNFR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+              "VNFR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
     VirtualDeploymentUnit virtualDeploymentUnit =
-        getVirtualDeploymentUnit(idVdu, virtualNetworkFunctionRecord);
+            getVirtualDeploymentUnit(idVdu, virtualNetworkFunctionRecord);
     if (virtualDeploymentUnit.getProjectId() != null
-        && !virtualDeploymentUnit.getProjectId().equals(projectId)) {
+            && !virtualDeploymentUnit.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-          "VDU not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+              "VDU not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
     VNFCInstance vnfcInstance = getVNFCInstance(idVNFCI, virtualDeploymentUnit);
     switch (nfvMessage.getAction()) {
@@ -1538,7 +1554,7 @@ public class NetworkServiceRecordManagement
     log.debug(" project id is: " + projectId);
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-          "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+              "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
     return networkServiceRecord;
   }
@@ -1553,33 +1569,33 @@ public class NetworkServiceRecordManagement
 
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-          "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+              "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
 
     if (!deleteInAllStatus) {
       if (networkServiceRecord.getStatus().ordinal() == Status.NULL.ordinal()) {
         throw new WrongStatusException(
-            "The NetworkService "
-                + networkServiceRecord.getId()
-                + " is in the wrong state. ( Status= "
-                + networkServiceRecord.getStatus()
-                + " )");
+                "The NetworkService "
+                        + networkServiceRecord.getId()
+                        + " is in the wrong state. ( Status= "
+                        + networkServiceRecord.getStatus()
+                        + " )");
       }
       if (networkServiceRecord.getStatus().ordinal() != Status.ACTIVE.ordinal()
-          && networkServiceRecord.getStatus().ordinal() != Status.ERROR.ordinal()) {
+              && networkServiceRecord.getStatus().ordinal() != Status.ERROR.ordinal()) {
         throw new WrongStatusException(
-            "The NetworkService "
-                + networkServiceRecord.getId()
-                + " is in the wrong state. ( Status= "
-                + networkServiceRecord.getStatus()
-                + " )");
+                "The NetworkService "
+                        + networkServiceRecord.getId()
+                        + " is in the wrong state. ( Status= "
+                        + networkServiceRecord.getStatus()
+                        + " )");
       }
     }
 
     if (!networkServiceRecord.getVnfr().isEmpty()) {
       networkServiceRecord.setStatus(Status.TERMINATED); // TODO maybe terminating?
       for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord :
-          networkServiceRecord.getVnfr()) {
+              networkServiceRecord.getVnfr()) {
         if (removeAfterTimeout) {
           VNFRTerminator terminator = new VNFRTerminator();
           terminator.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
@@ -1597,14 +1613,14 @@ public class NetworkServiceRecordManagement
       if (vnfr.getName().equalsIgnoreCase(vnfrName)) return vnfr;
     }
     log.warn(
-        "No VNFR with name " + vnfrName + " in NSR " + nsr.getName() + " (" + nsr.getId() + ")");
+            "No VNFR with name " + vnfrName + " in NSR " + nsr.getName() + " (" + nsr.getId() + ")");
     return null;
   }
 
   private boolean isModifyHasBeenExecuted(VirtualNetworkFunctionRecord vnfr) {
     for (HistoryLifecycleEvent historyLifecycleEvent : vnfr.getLifecycle_event_history()) {
       if (historyLifecycleEvent.getEvent().equalsIgnoreCase("MODIFY")
-          || historyLifecycleEvent.getEvent().equalsIgnoreCase("CONFIGURE")) return true;
+              || historyLifecycleEvent.getEvent().equalsIgnoreCase("CONFIGURE")) return true;
     }
     return false;
   }
@@ -1614,7 +1630,7 @@ public class NetworkServiceRecordManagement
     NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInAnyState(id);
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
-          "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+              "NSR not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
     log.info("Resuming NSR with id: " + id);
 
@@ -1623,7 +1639,7 @@ public class NetworkServiceRecordManagement
     for (VNFRecordDependency vnfrDependency : networkServiceRecord.getVnf_dependency()) {
       // Check for sources and target ready to have their dependencies resolved
       VirtualNetworkFunctionRecord vnfrTarget =
-          getVNFR(networkServiceRecord, vnfrDependency.getTarget());
+              getVNFR(networkServiceRecord, vnfrDependency.getTarget());
       if (vnfrTarget.getStatus().ordinal() == (Status.INITIALIZED.ordinal())) {
 
         List<VirtualNetworkFunctionRecord> resolvableVnfrSources = new ArrayList<>();
@@ -1633,23 +1649,23 @@ public class NetworkServiceRecordManagement
 
           // Skipping dependency with a source in error
           if (vnfrSource.getStatus().ordinal() == (Status.ERROR.ordinal())
-              && !isModifyHasBeenExecuted(vnfrSource)
-              && vnfrTarget.getStatus().ordinal() < Status.INACTIVE.ordinal()) {
+                  && !isModifyHasBeenExecuted(vnfrSource)
+                  && vnfrTarget.getStatus().ordinal() < Status.INACTIVE.ordinal()) {
             log.info(
-                "Not resolving dependencies for target: "
-                    + vnfrTarget.getName()
-                    + " - Its source: "
-                    + vnfrSource.getName()
-                    + " it is not ready (ERROR state)");
+                    "Not resolving dependencies for target: "
+                            + vnfrTarget.getName()
+                            + " - Its source: "
+                            + vnfrSource.getName()
+                            + " it is not ready (ERROR state)");
             readyToResolve = false;
           }
           // Resolving ready dependencies
           else {
             log.info(
-                "Found resolvable dependency with source: "
-                    + vnfrSource.getName()
-                    + " and target: "
-                    + vnfrTarget.getName());
+                    "Found resolvable dependency with source: "
+                            + vnfrSource.getName()
+                            + " and target: "
+                            + vnfrTarget.getName());
             resolvableVnfrSources.add(vnfrSource);
           }
         }
@@ -1663,11 +1679,11 @@ public class NetworkServiceRecordManagement
           log.info("Sending MODIFY message to vnfr target: " + vnfrDependency.getTarget());
 
           OrVnfmGenericMessage orVnfmGenericMessage =
-              new OrVnfmGenericMessage(vnfrTarget, Action.MODIFY);
+                  new OrVnfmGenericMessage(vnfrTarget, Action.MODIFY);
 
           // Retrieve from VNFR Dependency Repository the dependency record for VNFR target with ready dependencies
           VNFRecordDependency resolvableVnfrDependency =
-              vnfRecordDependencyRepository.findFirstById(vnfrDependency.getId());
+                  vnfRecordDependencyRepository.findFirstById(vnfrDependency.getId());
           log.debug("Resolvable VNFR Dependency is: " + resolvableVnfrDependency);
           orVnfmGenericMessage.setVnfrd(resolvableVnfrDependency);
           vnfmManager.sendMessageToVNFR(vnfrTarget, orVnfmGenericMessage);
@@ -1692,10 +1708,10 @@ public class NetworkServiceRecordManagement
         for (VNFRecordDependency vnfRecordDependency : networkServiceRecord.getVnf_dependency()) {
           if (vnfRecordDependency.getTarget().equals(failedVnfr.getName())) {
             log.debug(
-                "Setting dependency to RESUMED VNFR: "
-                    + vnfRecordDependency.getTarget()
-                    + " == "
-                    + failedVnfr.getName());
+                    "Setting dependency to RESUMED VNFR: "
+                            + vnfRecordDependency.getTarget()
+                            + " == "
+                            + failedVnfr.getName());
             orVnfmGenericMessage.setVnfrd(vnfRecordDependency);
           }
         }
@@ -1724,7 +1740,7 @@ public class NetworkServiceRecordManagement
     }
 
     public void setVirtualNetworkFunctionRecord(
-        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+            VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
       this.virtualNetworkFunctionRecord = virtualNetworkFunctionRecord;
     }
 
@@ -1734,9 +1750,9 @@ public class NetworkServiceRecordManagement
         Thread.sleep(timeout * 1000);
         if (vnfrRepository.exists(virtualNetworkFunctionRecord.getId())) {
           virtualNetworkFunctionRecord =
-              vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
+                  vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
           log.debug(
-              "Terminating the VNFR not yet removed: " + virtualNetworkFunctionRecord.getName());
+                  "Terminating the VNFR not yet removed: " + virtualNetworkFunctionRecord.getName());
           vnfmManager.terminate(virtualNetworkFunctionRecord);
         }
       } catch (InterruptedException e) {

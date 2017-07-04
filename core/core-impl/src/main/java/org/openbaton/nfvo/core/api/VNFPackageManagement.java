@@ -424,16 +424,16 @@ public class VNFPackageManagement
 
     Iterable<VNFPackageMetadata> vnfPackageMetadataIterable =
         query(
-                vnfPackageMetadata.getName(),
-                vnfPackageMetadata.getVendor(),
-                vnfPackageMetadata.getVersion(),
-                vnfPackageMetadata.getNfvoVersion(),
-                vnfPackageMetadata.getVnfmType(),
-                vnfPackageMetadata.getOsId(),
-                vnfPackageMetadata.getOsVersion(),
-                vnfPackageMetadata.getOsArchitecture(),
-                vnfPackageMetadata.getTag(),
-                vnfPackageMetadata.getProjectId());
+            vnfPackageMetadata.getName(),
+            vnfPackageMetadata.getVendor(),
+            vnfPackageMetadata.getVersion(),
+            vnfPackageMetadata.getNfvoVersion(),
+            vnfPackageMetadata.getVnfmType(),
+            vnfPackageMetadata.getOsId(),
+            vnfPackageMetadata.getOsVersion(),
+            vnfPackageMetadata.getOsArchitecture(),
+            vnfPackageMetadata.getTag(),
+            vnfPackageMetadata.getProjectId());
     if (vnfPackageMetadataIterable != null && vnfPackageMetadataIterable.iterator().hasNext()) {
       for (VNFPackageMetadata vnfpm : vnfPackageMetadataIterable)
         log.trace("Already existing: " + vnfpm);
@@ -464,23 +464,73 @@ public class VNFPackageManagement
   }
 
   private VirtualNetworkFunctionDescriptor setIPConfigurations(
-      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor) {
-    Set<ConfigurationParameter> configurationParameters = new HashSet<>();
+      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor)
+      throws DescriptorWrongFormat {
+    // If the VNF manager is not the fixed-host then skip this part
+    if (!virtualNetworkFunctionDescriptor.getEndpoint().equalsIgnoreCase("fixed-host"))
+      return virtualNetworkFunctionDescriptor;
 
-    for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
-      for (VNFComponent component : vdu.getVnfc()) {
-        for (VNFDConnectionPoint vnfdConnectionPoint : component.getConnection_point()) {
-          String configKey = vnfdConnectionPoint.getVirtual_link_reference() + "_ip";
-          String value = vnfdConnectionPoint.getFloatingIp();
-          ConfigurationParameter configurationParameter = new ConfigurationParameter();
-          configurationParameter.setConfKey(configKey);
-          configurationParameter.setValue(value);
-          configurationParameter.setDescription(
-              "IP of the connection point: " + vnfdConnectionPoint.getVirtual_link_reference());
-          configurationParameters.add(configurationParameter);
-        }
+    log.info("Adding configuration parameters for the configuration of IP, username and password");
+
+    VNFComponent component =
+        virtualNetworkFunctionDescriptor.getVdu().iterator().next().getVnfc().iterator().next();
+
+    // Try to find smartly a floating IP to be used for the ssh_ip property. This IP will be used by the fixed-host VNFM for connecting to the VNF machine.
+    // For floating IP we mean an IP which the fixed-host VNFM can connect to.
+    // If the VNFC has multiple floating IPs, only one is needed for accessing it..
+    String floatingIp = "";
+    String virtualLinkName = "";
+    for (VNFDConnectionPoint vnfdConnectionPoint : component.getConnection_point()) {
+      if (vnfdConnectionPoint.getFloatingIp() != null
+          && !vnfdConnectionPoint.getFloatingIp().isEmpty()
+          && !vnfdConnectionPoint.getFloatingIp().equals("random")) {
+        floatingIp = vnfdConnectionPoint.getFloatingIp();
+        virtualLinkName = vnfdConnectionPoint.getVirtual_link_reference();
+        break;
       }
     }
+
+    // At this point the floating IP could be empty, find the virtual link with the random floating IP
+    if (floatingIp.equals(""))
+      for (VNFDConnectionPoint vnfdConnectionPoint : component.getConnection_point()) {
+        if (vnfdConnectionPoint.getFloatingIp() != null
+            && !vnfdConnectionPoint.getFloatingIp().isEmpty()) {
+          floatingIp = vnfdConnectionPoint.getFloatingIp();
+          virtualLinkName = vnfdConnectionPoint.getVirtual_link_reference();
+          break;
+        }
+      }
+
+    // Only one IP, username and password shall be set, because here we specify only the information for accessing the VNFC through the fixed-host VNFM.
+
+    Set<ConfigurationParameter> configurationParameters = new HashSet<>();
+
+    String ipConfigKey = "ssh_" + virtualLinkName + "_ip";
+    String ipConfigValue = floatingIp;
+    ConfigurationParameter ipConfigurationParameter = new ConfigurationParameter();
+    ipConfigurationParameter.setConfKey(ipConfigKey);
+    ipConfigurationParameter.setValue(ipConfigValue);
+    ipConfigurationParameter.setDescription("IP to be used for accessing the VNF machine");
+    configurationParameters.add(ipConfigurationParameter);
+
+    String usernameConfigKey = "ssh_username";
+    String usernameConfigValue = "";
+    ConfigurationParameter usernameConfigurationParameter = new ConfigurationParameter();
+    usernameConfigurationParameter.setConfKey(usernameConfigKey);
+    usernameConfigurationParameter.setValue(usernameConfigValue);
+    usernameConfigurationParameter.setDescription(
+        "SSH username for accessing the existing machine of the VNF");
+    configurationParameters.add(usernameConfigurationParameter);
+
+    String passwordConfigKey = "ssh_password";
+    String passwordConfigValue = "";
+    ConfigurationParameter passwordConfigurationParameter = new ConfigurationParameter();
+    passwordConfigurationParameter.setConfKey(passwordConfigKey);
+    passwordConfigurationParameter.setValue(passwordConfigValue);
+    passwordConfigurationParameter.setDescription(
+        "SSH password for accessing the existing machine of the VNF");
+    configurationParameters.add(passwordConfigurationParameter);
+
     if (virtualNetworkFunctionDescriptor.getConfigurations() == null
         || virtualNetworkFunctionDescriptor.getConfigurations().getConfigurationParameters() == null
         || virtualNetworkFunctionDescriptor
@@ -488,7 +538,7 @@ public class VNFPackageManagement
             .getConfigurationParameters()
             .isEmpty()) {
       Configuration ipConfiguration = new Configuration();
-      ipConfiguration.setName("ip-configuration");
+      ipConfiguration.setName("configuration");
       ipConfiguration.setProjectId(virtualNetworkFunctionDescriptor.getProjectId());
       ipConfiguration.setConfigurationParameters(configurationParameters);
       virtualNetworkFunctionDescriptor.setConfigurations(ipConfiguration);
