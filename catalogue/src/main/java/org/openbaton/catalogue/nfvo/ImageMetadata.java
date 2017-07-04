@@ -42,6 +42,8 @@ public class ImageMetadata implements Serializable {
 
   private String upload;
 
+  private String filePath;
+
   public String getUsername() {
     return username;
   }
@@ -79,38 +81,16 @@ public class ImageMetadata implements Serializable {
     this.id = id;
   }
 
-  public int getHb_version() {
-    return hb_version;
+  public String getFilePath() {
+    return filePath;
   }
 
-  @Override
-  public String toString() {
-    return "ImageMetadata{"
-        + "id='"
-        + id
-        + '\''
-        + ", version="
-        + version
-        + ", upload='"
-        + upload
-        + '\''
-        + ", ids="
-        + ids
-        + ", names="
-        + names
-        + ", link='"
-        + link
-        + '\''
-        + ", imageRepoId='"
-        + imageRepoId
-        + '\''
-        + ", name='"
-        + name
-        + '\''
-        + ", vendor='"
-        + vendor
-        + '\''
-        + '}';
+  public void setFilePath(String filePath) {
+    this.filePath = filePath;
+  }
+
+  public int getHb_version() {
+    return hb_version;
   }
 
   public void setHb_version(int hb_version) {
@@ -175,5 +155,44 @@ public class ImageMetadata implements Serializable {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  @Override
+  public String toString() {
+    return "ImageMetadata{"
+        + "id='"
+        + id
+        + '\''
+        + ", name='"
+        + name
+        + '\''
+        + ", vendor='"
+        + vendor
+        + '\''
+        + ", version='"
+        + version
+        + '\''
+        + ", hb_version="
+        + hb_version
+        + ", upload='"
+        + upload
+        + '\''
+        + ", filePath='"
+        + filePath
+        + '\''
+        + ", username='"
+        + username
+        + '\''
+        + ", ids="
+        + ids
+        + ", names="
+        + names
+        + ", link='"
+        + link
+        + '\''
+        + ", imageRepoId='"
+        + imageRepoId
+        + '\''
+        + '}';
   }
 }
