@@ -17,6 +17,7 @@
 
 package org.openbaton.nfvo.system;
 
+import static org.openbaton.utils.rabbit.RabbitManager.createRabbitMqUser;
 import static org.openbaton.utils.rabbit.RabbitManager.setRabbitMqUserPermissions;
 
 import java.io.FileInputStream;
@@ -87,8 +88,11 @@ class SystemStartup implements CommandLineRunner {
   @Value("${nfvo.plugin.log.path:./plugin-logs}")
   private String pluginLogPath;
 
-  @Value("${nfvo.rabbit.brokerIp:localhost}")
-  private String brokerIp;
+  @Value("${nfvo.rabbit.manager-registration-user.name:openbaton-manager-user}")
+  private String managerRegistrationUserName;
+
+  @Value("${nfvo.rabbit.manager-registration-user.password:openbaton}")
+  private String getManagerRegistrationUserPassword;
 
   @Override
   public void run(String... args) throws Exception {
@@ -138,12 +142,21 @@ class SystemStartup implements CommandLineRunner {
 
     configurationRepository.save(c);
 
+    createRabbitMqUser(
+        username,
+        password,
+        brokerIp,
+        managementPort,
+        managerRegistrationUserName,
+        getManagerRegistrationUserPassword,
+        virtualHost);
+
     setRabbitMqUserPermissions(
         username,
         password,
         brokerIp,
         managementPort,
-        "guest",
+        managerRegistrationUserName,
         virtualHost,
         null,
         "nfvo.manager.handling|openbaton-exchange",
