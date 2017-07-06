@@ -69,6 +69,7 @@ spring.datasource.testOnBorrow=true
 ```bash
 ./bin/openbaton-nfvo start
 ```
+**Note**: launch the openbaton-nfvo with ./bin/openbaton-nfvo (not with ./openbaton-nfvo). Otherwise it won't load the plugins.
 
 After few seconds you can access to the Open Baton GUI at http://localhost:8080
 
