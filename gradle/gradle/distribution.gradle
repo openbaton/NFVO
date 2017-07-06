@@ -17,6 +17,15 @@
 
 apply plugin: "application"
 
+distributions {
+    main {
+        contents {
+            from { 'etc/openbaton.properties' }
+        }
+    }
+}
+
+
 startScripts {
     doLast {
         def unixFile = file getUnixScript()
