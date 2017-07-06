@@ -45,7 +45,8 @@ public interface VnfmManager {
       NetworkServiceDescriptor networkServiceDescriptor,
       NetworkServiceRecord networkServiceRecord,
       DeployNSRBody body,
-      Map<String, List<String>> vduVimInstances)
+      Map<String, List<String>> vduVimInstances,
+      String monitoringIp)
       throws NotFoundException;
 
   VnfmSender getVnfmSender(EndpointType endpointType);

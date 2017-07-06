@@ -16,20 +16,11 @@
 
 package org.openbaton.nfvo.api.runtime;
 
+import io.swagger.annotations.ApiOperation;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import io.swagger.annotations.ApiOperation;
-import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import javax.validation.Valid;
+
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -69,6 +60,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/api/v1/ns-records")
 public class RestNetworkServiceRecord {
@@ -100,7 +103,7 @@ public class RestNetworkServiceRecord {
   public NetworkServiceRecord create(
       @RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor,
       @RequestHeader(value = "project-id") String projectId,
-      @RequestBody String bodyJson)
+      @RequestBody(required = false) String bodyJson)
       throws InterruptedException, ExecutionException, VimException, NotFoundException,
           BadFormatException, VimDriverException, QuotaExceededException, PluginException,
           MissingParameterException, BadRequestException {
@@ -111,20 +114,22 @@ public class RestNetworkServiceRecord {
         projectId,
         gson.fromJson(jsonObject.getAsJsonArray("keys"), List.class),
         gson.fromJson(jsonObject.getAsJsonObject("vduVimInstances"), Map.class),
-        gson.fromJson(jsonObject.getAsJsonObject("configurations"), Map.class));
+        gson.fromJson(jsonObject.getAsJsonObject("configurations"), Map.class),
+        jsonObject.get("monitoringIp").getAsString());
   }
 
   /**
    * @param id of the NSR
    * @param projectId if of the project
-   * @param jsonObject the body json is: { "vduVimInstances":{ "vduName1":["viminstancename"],
-   *     "vduName2":["viminstancename2"] }, "keys":["keyname1", "keyname2"], "configurations":{
-   *     "vnfrName1":{"name":"conf1", "configurationParameters":[{"confKey":"key1",
-   *     "value":"value1", "description":"description1"}, {"confKey":"key2", "value":"value2",
-   *     "description":"description2"}]}, "vnfrName2":{"name":"conf2",
-   *     "configurationParameters":[{"confKey":"key1", "value":"value1",
-   *     "description":"description1"}, {"confKey":"key2", "value":"value2",
-   *     "description":"description2"}]} } }
+   * @param body the body json is:
+   *     <p>{ "vduVimInstances":{ "vduName1":[ "viminstancename" ], "vduName2":[ "viminstancename2"
+   *     ] }, "keys":[ "keyname1", "keyname2" ], "configurations":{ "vnfrName1":{ "name":"conf1",
+   *     "configurationParameters":[ { "confKey":"key1", "value":"value1",
+   *     "description":"description1" }, { "confKey":"key2", "value":"value2",
+   *     "description":"description2" } ] }, "vnfrName2":{ "name":"conf1",
+   *     "configurationParameters":[ { "confKey":"key1", "value":"value1",
+   *     "description":"description1" }, { "confKey":"key2", "value":"value2",
+   *     "description":"description2" } ] } }, "monitoringIp" : "192.168.0.1" }
    * @return the created NSR
    * @throws InterruptedException
    * @throws ExecutionException
@@ -150,19 +155,20 @@ public class RestNetworkServiceRecord {
   public NetworkServiceRecord create(
       @PathVariable("id") String id,
       @RequestHeader(value = "project-id") String projectId,
-      @RequestBody(required = false) JsonObject jsonObject)
+      @RequestBody(required = false) JsonObject body)
       throws InterruptedException, ExecutionException, VimException, NotFoundException,
           BadFormatException, VimDriverException, QuotaExceededException, PluginException,
           MissingParameterException, BadRequestException {
 
-    log.debug("Json Body is" + jsonObject);
+    log.debug("Json Body is" + body);
     Type mapType = new TypeToken<Map<String, Configuration>>() {}.getType();
     return networkServiceRecordManagement.onboard(
         id,
         projectId,
-        gson.fromJson(jsonObject.getAsJsonArray("keys"), List.class),
-        gson.fromJson(jsonObject.getAsJsonObject("vduVimInstances"), Map.class),
-        (Map) gson.fromJson(jsonObject.get("configurations"), mapType));
+        gson.fromJson(body.getAsJsonArray("keys"), List.class),
+        gson.fromJson(body.getAsJsonObject("vduVimInstances"), Map.class),
+        (Map) gson.fromJson(body.get("configurations"), mapType),
+        body.get("monitoringIp").getAsString());
   }
 
   /**

@@ -42,7 +42,12 @@ public interface NetworkServiceRecordManagement {
    * any related VNFFGD and VLD.
    */
   NetworkServiceRecord onboard(
-      String nsd_id, String projectId, List keys, Map vduVimInstances, Map configurations)
+      String nsd_id,
+      String projectId,
+      List keys,
+      Map vduVimInstances,
+      Map configurations,
+      String monitoringIp)
       throws VimException, NotFoundException, PluginException, MissingParameterException,
           BadRequestException;
 
@@ -55,7 +60,8 @@ public interface NetworkServiceRecordManagement {
       String projectId,
       List keys,
       Map vduVimInstances,
-      Map configurations)
+      Map configurations,
+      String monitoringIp)
       throws VimException, PluginException, NotFoundException, MissingParameterException,
           BadRequestException;
 

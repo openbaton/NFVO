@@ -175,7 +175,12 @@ public class NetworkServiceRecordManagement
 
   @Override
   public NetworkServiceRecord onboard(
-      String idNsd, String projectID, List keys, Map vduVimInstances, Map configurations)
+      String idNsd,
+      String projectID,
+      List keys,
+      Map vduVimInstances,
+      Map configurations,
+      String monitoringIp)
       throws VimException, NotFoundException, PluginException, MissingParameterException,
           BadRequestException {
     log.info("Looking for NetworkServiceDescriptor with id: " + idNsd);
@@ -209,7 +214,7 @@ public class NetworkServiceRecordManagement
       body.setKeys(keys1);
       log.debug("Found keys: " + body.getKeys());
     }
-    return deployNSR(networkServiceDescriptor, projectID, body);
+    return deployNSR(networkServiceDescriptor, projectID, body, monitoringIp);
   }
 
   @Override
@@ -398,7 +403,8 @@ public class NetworkServiceRecordManagement
       String projectId,
       List keys,
       Map vduVimInstances,
-      Map configurations)
+      Map configurations,
+      String monitoringIp)
       throws VimException, NotFoundException, PluginException, MissingParameterException,
           BadRequestException {
     networkServiceDescriptor.setProjectId(projectId);
@@ -425,7 +431,7 @@ public class NetworkServiceRecordManagement
       body.setKeys(keys1);
       log.debug("Found keys: " + body.getKeys());
     }
-    return deployNSR(networkServiceDescriptor, projectId, body);
+    return deployNSR(networkServiceDescriptor, projectId, body, monitoringIp);
   }
 
   public void deleteVNFRecord(String idNsr, String idVnf, String projectId)
@@ -1106,7 +1112,10 @@ public class NetworkServiceRecordManagement
   }
 
   private NetworkServiceRecord deployNSR(
-      NetworkServiceDescriptor networkServiceDescriptor, String projectID, DeployNSRBody body)
+      NetworkServiceDescriptor networkServiceDescriptor,
+      String projectID,
+      DeployNSRBody body,
+      String monitoringIp)
       throws NotFoundException, VimException, PluginException, MissingParameterException,
           BadRequestException {
     Map<String, List<String>> vduVimInstances = new HashMap<>();
@@ -1233,7 +1242,8 @@ public class NetworkServiceRecordManagement
 
     checkConfigParameter(networkServiceDescriptor, body);
 
-    vnfmManager.deploy(networkServiceDescriptor, networkServiceRecord, body, vduVimInstances);
+    vnfmManager.deploy(
+        networkServiceDescriptor, networkServiceRecord, body, vduVimInstances, monitoringIp);
     log.debug("Returning NSR " + networkServiceRecord.getName());
     return networkServiceRecord;
   }
