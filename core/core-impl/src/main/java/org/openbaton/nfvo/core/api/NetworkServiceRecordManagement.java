@@ -1193,10 +1193,42 @@ public class NetworkServiceRecordManagement
     checkConfigParameter(networkServiceDescriptor, body);
 
     fillDeploymentTimeIPs(networkServiceDescriptor, body, vduVimInstances);
+    checkSshInfo(networkServiceDescriptor, body);
 
     vnfmManager.deploy(networkServiceDescriptor, networkServiceRecord, body, vduVimInstances);
     log.debug("Returning NSR " + networkServiceRecord.getName());
     return networkServiceRecord;
+  }
+
+  private void checkSshInfo(NetworkServiceDescriptor nsd, DeployNSRBody body)
+      throws NotFoundException {
+    for (VirtualNetworkFunctionDescriptor vnfd : nsd.getVnfd()) {
+      if (body.getConfigurations().get(vnfd.getName()) == null) continue;
+      boolean isSshUsernameProvided = false;
+      boolean isSshPasswordProvided = false;
+      for (ConfigurationParameter passedConfigurationParameter :
+          body.getConfigurations().get(vnfd.getName()).getConfigurationParameters()) {
+        if (passedConfigurationParameter.getConfKey().equalsIgnoreCase("ssh_username")
+            && passedConfigurationParameter.getValue() != null
+            && !passedConfigurationParameter.getValue().isEmpty()) {
+          isSshUsernameProvided = true;
+        }
+        if (passedConfigurationParameter.getConfKey().equals("ssh_password")
+            && passedConfigurationParameter.getValue() != null
+            && !passedConfigurationParameter.getValue().isEmpty()) {
+          isSshPasswordProvided = true;
+        }
+      }
+      // Throw an exception if only one of them is provided.
+      // - username without password is not allowed
+      // - password without username is not allowed
+      // - username and password is allowed
+      // - no username and no password is allowed because this configuration can be done in the configuration file of
+      //    the Fixed-host VNFM.
+      if (isSshPasswordProvided != isSshUsernameProvided)
+        throw new NotFoundException(
+            "Provide both ssh_username and ssh_password for the vnfd: " + vnfd.getName());
+    }
   }
 
   private void fillDeploymentTimeIPs(

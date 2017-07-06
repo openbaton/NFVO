@@ -397,8 +397,6 @@ public class VnfmManager
       Map<String, String> extension, VirtualNetworkFunctionDescriptor vnfd, DeployNSRBody body)
       throws NotFoundException {
     if (body.getConfigurations().get(vnfd.getName()) == null) return extension;
-    boolean isSshUsernameProvided = false;
-    boolean isSshPasswordProvided = false;
     for (ConfigurationParameter passedConfigurationParameter :
         body.getConfigurations().get(vnfd.getName()).getConfigurationParameters()) {
       if (passedConfigurationParameter.getConfKey().equalsIgnoreCase("ssh_username")
@@ -406,25 +404,14 @@ public class VnfmManager
           && !passedConfigurationParameter.getValue().isEmpty()) {
         extension.put(
             passedConfigurationParameter.getConfKey(), passedConfigurationParameter.getValue());
-        isSshUsernameProvided = true;
       }
       if (passedConfigurationParameter.getConfKey().equals("ssh_password")
           && passedConfigurationParameter.getValue() != null
           && !passedConfigurationParameter.getValue().isEmpty()) {
         extension.put(
             passedConfigurationParameter.getConfKey(), passedConfigurationParameter.getValue());
-        isSshPasswordProvided = true;
       }
     }
-    // Throw an exception if only one of them is provided.
-    // - username without password is not allowed
-    // - password without username is not allowed
-    // - username and password is allowed
-    // - no username and no password is allowed because this configuration can be done in the configuration file of
-    //    the Fixed-host VNFM.
-    if (isSshPasswordProvided != isSshUsernameProvided)
-      throw new NotFoundException(
-          "Provide both ssh_username and ssh_password for the vnfd: " + vnfd.getName());
     return extension;
   }
 
