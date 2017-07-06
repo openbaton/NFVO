@@ -22,7 +22,7 @@ var app = angular.module('app').controller('prController', function ($scope, ser
                 //$scope.env1 = response;
                  var appConfig = "";
                     for (var key in response) {
-                        if (key.startsWith("applicationConfig")) {
+                        if (key.startsWith("applicationConfig: [file:")) {
                             appConfig = key;
                         }
                     }
