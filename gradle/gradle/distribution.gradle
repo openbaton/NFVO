@@ -37,3 +37,5 @@ startScripts {
         unixFile.renameTo("${startScripts.outputDir}/openbaton-nfvo")
     }
 }
+
+applicationDefaultJvmArgs = ["-Djava.security.egd=file:/dev/./urandom"]
