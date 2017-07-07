@@ -17,19 +17,6 @@
 
 package org.openbaton.common.vnfm_sdk;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -43,8 +30,15 @@ import org.openbaton.catalogue.nfvo.EndpointType;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
-import org.openbaton.catalogue.nfvo.messages.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmGrantLifecycleOperationMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmHealVNFRequestMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmInstantiateMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmScalingMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmStartStopMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmUpdateMessage;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.common.vnfm_sdk.exception.BadFormatException;
 import org.openbaton.common.vnfm_sdk.exception.NotFoundException;
@@ -55,6 +49,21 @@ import org.openbaton.common.vnfm_sdk.utils.VNFRUtils;
 import org.openbaton.common.vnfm_sdk.utils.VnfmUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 /** Created by lto on 08/07/15. */
 public abstract class AbstractVnfm
@@ -229,7 +238,7 @@ public abstract class AbstractVnfm
           if (!properties.getProperty("allocate", "true").equalsIgnoreCase("true")) {
             NFVMessage message2 =
                 vnfmHelper.sendAndReceive(
-                    VnfmUtils.getNfvScalingMessage(getUserData(), virtualNetworkFunctionRecord));
+                    VnfmUtils.getNfvScalingMessage(getUserData(), virtualNetworkFunctionRecord, scalingMessage.getVimInstance()));
             if (message2 instanceof OrVnfmGenericMessage) {
               OrVnfmGenericMessage message1 = (OrVnfmGenericMessage) message2;
               virtualNetworkFunctionRecord = message1.getVnfr();
