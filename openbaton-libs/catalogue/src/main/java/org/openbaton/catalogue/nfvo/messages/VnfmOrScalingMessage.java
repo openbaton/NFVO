@@ -19,12 +19,14 @@ package org.openbaton.catalogue.nfvo.messages;
 
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
+import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.VnfmOrMessage;
 
 /** Created by lto on 13/04/16. */
 public class VnfmOrScalingMessage extends VnfmOrMessage {
   private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
   private String userData;
+  private VimInstance vimInstance;
 
   public VnfmOrScalingMessage(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, String userData) {
@@ -40,13 +42,13 @@ public class VnfmOrScalingMessage extends VnfmOrMessage {
   @Override
   public String toString() {
     return "VnfmOrScalingMessage{"
-        + "virtualNetworkFunctionRecord="
-        + virtualNetworkFunctionRecord
-        + ", userData='"
-        + userData
-        + '\''
-        + "} "
-        + super.toString();
+           + "virtualNetworkFunctionRecord="
+           + virtualNetworkFunctionRecord
+           + ", userData='"
+           + userData
+           + '\''
+           + "} "
+           + super.toString();
   }
 
   public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
@@ -64,5 +66,13 @@ public class VnfmOrScalingMessage extends VnfmOrMessage {
 
   public void setUserData(String userData) {
     this.userData = userData;
+  }
+
+  public void setVimInstance(VimInstance vimInstance) {
+    this.vimInstance = vimInstance;
+  }
+
+  public VimInstance getVimInstance() {
+    return vimInstance;
   }
 }

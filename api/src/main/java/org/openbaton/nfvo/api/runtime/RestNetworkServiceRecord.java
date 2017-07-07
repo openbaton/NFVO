@@ -16,10 +16,11 @@
 
 package org.openbaton.nfvo.api.runtime;
 
+import io.swagger.annotations.ApiOperation;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import io.swagger.annotations.ApiOperation;
+
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -59,18 +60,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/ns-records")
@@ -449,10 +449,11 @@ public class RestNetworkServiceRecord {
       @PathVariable("id") String id,
       @PathVariable("idVnf") String idVnf,
       @PathVariable("idVdu") String idVdu,
-      @RequestHeader(value = "project-id") String projectId)
+      @RequestHeader(value = "project-id") String projectId,
+      @RequestBody(required = false) List<String> vimInstanceNames)
       throws NotFoundException, BadFormatException, WrongStatusException {
     log.trace("Received: " + component);
-    networkServiceRecordManagement.addVNFCInstance(id, idVnf, idVdu, component, "", projectId);
+    networkServiceRecordManagement.addVNFCInstance(id, idVnf, idVdu, component, "", projectId, vimInstanceNames);
   }
 
   @ApiOperation(
@@ -469,10 +470,11 @@ public class RestNetworkServiceRecord {
       @RequestBody @Valid VNFComponent component,
       @PathVariable("id") String id,
       @PathVariable("idVnf") String idVnf,
-      @RequestHeader(value = "project-id") String projectId)
+      @RequestHeader(value = "project-id") String projectId,
+      @RequestBody(required = false) List<String> vimInstanceNames)
       throws NotFoundException, BadFormatException, WrongStatusException {
     log.trace("Received: " + component);
-    networkServiceRecordManagement.addVNFCInstance(id, idVnf, component, projectId);
+    networkServiceRecordManagement.addVNFCInstance(id, idVnf, component, projectId, vimInstanceNames);
   }
 
   @ApiOperation(
@@ -527,11 +529,12 @@ public class RestNetworkServiceRecord {
       @PathVariable("id") String id,
       @PathVariable("idVnf") String idVnf,
       @PathVariable("idVdu") String idVdu,
-      @RequestHeader(value = "project-id") String projectId)
+      @RequestHeader(value = "project-id") String projectId,
+      @RequestBody(required = false) List<String> vimInstanceNames)
       throws NotFoundException, BadFormatException, WrongStatusException {
     log.debug("PostStandByVNFCInstance received the component: " + component);
     networkServiceRecordManagement.addVNFCInstance(
-        id, idVnf, idVdu, component, "standby", projectId);
+        id, idVnf, idVdu, component, "standby", projectId, vimInstanceNames);
   }
 
   @ApiOperation(value = "", notes = "", hidden = true)
