@@ -109,13 +109,18 @@ public class RestNetworkServiceRecord {
           MissingParameterException, BadRequestException {
 
     JsonObject jsonObject = gson.fromJson(bodyJson, JsonObject.class);
-    return networkServiceRecordManagement.onboard(
-        networkServiceDescriptor,
-        projectId,
-        gson.fromJson(jsonObject.getAsJsonArray("keys"), List.class),
-        gson.fromJson(jsonObject.getAsJsonObject("vduVimInstances"), Map.class),
-        gson.fromJson(jsonObject.getAsJsonObject("configurations"), Map.class),
-        jsonObject.get("monitoringIp").getAsString());
+    String monitoringIp = null;
+    if (jsonObject.has("monitoringIp")) {
+      monitoringIp = jsonObject.get("monitoringIp").getAsString();
+    }
+
+    return networkServiceRecordManagement.onboard(networkServiceDescriptor,
+                                                  projectId,
+                                                  gson.fromJson(jsonObject.getAsJsonArray("keys"), List.class),
+                                                  gson.fromJson(jsonObject.getAsJsonObject("vduVimInstances"), Map
+                                                      .class),
+                                                  gson.fromJson(jsonObject.getAsJsonObject("configurations"), Map.class),
+                                                  monitoringIp);
   }
 
   /**
@@ -162,13 +167,17 @@ public class RestNetworkServiceRecord {
 
     log.debug("Json Body is" + body);
     Type mapType = new TypeToken<Map<String, Configuration>>() {}.getType();
+    String monitoringIp = null;
+    if (body.has("monitoringIp")) {
+      monitoringIp = body.get("monitoringIp").getAsString();
+    }
     return networkServiceRecordManagement.onboard(
         id,
         projectId,
         gson.fromJson(body.getAsJsonArray("keys"), List.class),
         gson.fromJson(body.getAsJsonObject("vduVimInstances"), Map.class),
         (Map) gson.fromJson(body.get("configurations"), mapType),
-        body.get("monitoringIp").getAsString());
+        monitoringIp);
   }
 
   /**
