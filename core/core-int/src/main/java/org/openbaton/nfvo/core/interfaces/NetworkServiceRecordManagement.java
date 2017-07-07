@@ -87,7 +87,7 @@ public interface NetworkServiceRecordManagement {
       String projectId)
       throws NotFoundException;
 
-  NetworkServiceRecord query(String id, String projectId);
+  NetworkServiceRecord query(String id, String projectId) throws NotFoundException;
 
   /** This operation is used to remove a Network Service Record. */
   void delete(String id, String projectId) throws NotFoundException, WrongStatusException;

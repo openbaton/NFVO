@@ -67,7 +67,8 @@ public class RestLogs {
     if (lines > 0) {
       logs.put(
           "output",
-          logs.get("output").subList(logs.get("output").size() - lines - 1, logs.get("output").size() - 1));
+          logs.get("output")
+              .subList(logs.get("output").size() - lines - 1, logs.get("output").size() - 1));
     }
     return logs.get("error").size() == 0 ? logs.get("output") : logs.get("error");
   }

@@ -17,17 +17,6 @@
 
 package org.openbaton.nfvo.core.api;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
-import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.Ip;
@@ -96,6 +85,19 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
+
+import javax.annotation.PostConstruct;
 
 /** Created by lto on 11/05/15. */
 @Service
@@ -1543,9 +1545,12 @@ public class NetworkServiceRecordManagement
   }
 
   @Override
-  public NetworkServiceRecord query(String id, String projectId) {
+  public NetworkServiceRecord query(String id, String projectId) throws NotFoundException {
     log.debug("Id is: " + id);
     NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(id);
+    if (networkServiceRecord == null) {
+      throw new NotFoundException(String.format("NetworkServiceRecord with id %s not found", id));
+    }
     log.trace("found nsr = " + networkServiceRecord);
     log.debug(" project id is: " + projectId);
     if (!networkServiceRecord.getProjectId().equals(projectId)) {

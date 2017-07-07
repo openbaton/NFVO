@@ -277,7 +277,8 @@ public class RestNetworkServiceRecord {
   )
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
   public NetworkServiceRecord findById(
-      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
+      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
     return networkServiceRecordManagement.query(id, projectId);
   }
 
@@ -326,7 +327,8 @@ public class RestNetworkServiceRecord {
   )
   @ResponseStatus(HttpStatus.OK)
   public Set<VirtualNetworkFunctionRecord> getVirtualNetworkFunctionRecords(
-      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
+      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
     NetworkServiceRecord nsr = networkServiceRecordManagement.query(id, projectId);
     log.trace("*****" + nsr.getVnfr().toString());
     return nsr.getVnfr();
@@ -669,7 +671,8 @@ public class RestNetworkServiceRecord {
   )
   @ResponseStatus(HttpStatus.OK)
   public Set<VNFRecordDependency> getVNFDependencies(
-      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
+      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
     NetworkServiceRecord nsd = networkServiceRecordManagement.query(id, projectId);
     return nsd.getVnf_dependency();
   }
@@ -685,7 +688,8 @@ public class RestNetworkServiceRecord {
   )
   @ResponseStatus(HttpStatus.OK)
   public Set<DependencyObject> getVNFDependenciesList(
-      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
+      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
     NetworkServiceRecord nsr = networkServiceRecordManagement.query(id, projectId);
     Set<DependencyObject> result = new HashSet<>();
     for (VNFRecordDependency vnfDependency : nsr.getVnf_dependency()) {
@@ -809,7 +813,8 @@ public class RestNetworkServiceRecord {
   )
   @ResponseStatus(HttpStatus.OK)
   public Set<PhysicalNetworkFunctionRecord> getPhysicalNetworkFunctionRecord(
-      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
+      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
     NetworkServiceRecord nsr = networkServiceRecordManagement.query(id, projectId);
     return nsr.getPnfr();
   }
