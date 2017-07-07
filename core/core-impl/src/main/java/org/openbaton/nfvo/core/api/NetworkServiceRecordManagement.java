@@ -17,6 +17,18 @@
 
 package org.openbaton.nfvo.core.api;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.Ip;
@@ -85,20 +97,6 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-
-import javax.annotation.PostConstruct;
 
 /** Created by lto on 11/05/15. */
 @Service
@@ -550,8 +548,8 @@ public class NetworkServiceRecordManagement
     for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId)) {
       names.add(vimInstance.getName());
     }
-    if (vimInstanceNames == null){
-      for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId)){
+    if (vimInstanceNames == null) {
+      for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId)) {
         vimInstanceNames.add(vimInstance.getName());
       }
     }
@@ -669,8 +667,10 @@ public class NetworkServiceRecordManagement
     log.debug("Found Dependency: " + dependencyTarget);
 
     try {
-      vnfmManager.addVnfc(
-          virtualNetworkFunctionRecord, component, dependencyTarget, mode, vimInstanceNames).get();
+      vnfmManager
+          .addVnfc(
+              virtualNetworkFunctionRecord, component, dependencyTarget, mode, vimInstanceNames)
+          .get();
     } catch (InterruptedException e) {
       e.printStackTrace();
     } catch (ExecutionException e) {
