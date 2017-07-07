@@ -55,7 +55,7 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
             console.log(response);
         })
         .error(function (data, status) {
-            showError(status, data);
+            showError(data, status);
 
         });
 
@@ -125,7 +125,7 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
                 loadTable();
             })
             .error(function (data, status) {
-                showError(status, data);
+                showError(data, status);
 
             });
         console.log($scope.vnfdCreate);
@@ -267,7 +267,7 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
                 loadTable();
             })
             .error(function (data, status) {
-                showError(status, data);
+                showError(data, status);
 
             });
     };
@@ -288,7 +288,7 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
                 loadTable();
             })
             .error(function (response, status) {
-                showError(status, response);
+                showError(response, status);
             });
              $scope.multipleDelete = false;
             $scope.selection = {};
@@ -339,25 +339,41 @@ var app = angular.module('app').controller('VnfdCtrl', function ($scope, $compil
                     //console.log(response);
                 })
                 .error(function (data, status) {
-                    showError(status, data);
+                    showError(data, status);
 
                 });
         else {
-            http.get(url + $routeParams.vnfdescriptorId)
-                .success(function (response, status) {
-                    $scope.vnfdinfo = response;
-                    $scope.vnfdJson = JSON.stringify(response, undefined, 4);
-                    //console.log($scope.vnfdJson);
-                })
-                .error(function (data, status) {
-                    showError(status, data);
+            if (angular.isUndefined($routeParams.vduId)) {
+               // console.log('in vnfd' + $routeParams);
+                http.get(url + $routeParams.vnfdescriptorId)
+                    .success(function (response, status) {
+                        $scope.vnfdinfo = response;
+                        $scope.vnfdJson = JSON.stringify(response, undefined, 4);
+                        //console.log($scope.vnfdJson);
+                    })
+                    .error(function (data, status) {
+                        showError(data, status);
 
-                });
-            $scope.vnfdescriptorId = $routeParams.vnfdescriptorId;
+                    });
+                $scope.vnfdescriptorId = $routeParams.vnfdescriptorId;
+            }
+            else {
+                //console.log('in vdu');
+                http.get(url + $routeParams.vnfdescriptorId + '/vdus/' + $routeParams.vduId)
+                    .success(function (response, status) {
+                        $scope.vdu = response;
+                        $scope.vduPageJson = JSON.stringify(response, undefined, 4);
+                        console.log($scope.vdu);
+                    })
+                    .error(function (data, status) {
+                        showError(data, status);
+
+                    });
+            }
         }
     }
 
-  function showError(status, data) {
+  function showError(data, status) {
         if (status === 500) {
             $scope.alerts.push({
             type: 'danger',
@@ -415,17 +431,31 @@ $('.modal-dialog').draggable();
                 return paginationVNF;
             }
         });
-
-});
-
-
-app.filter('startFrom', function() {
-    return function(input, start) {
-        start = +start; //parse to int
-        return input.slice(start);
+// VNFD JSON modal Starts
+    $scope.prettyJson = function (vnfdJson) {
+        $scope.vnfdJson = vnfdJson;
+        $scope.jsonrendVNFD()
     }
+    $scope.jsonrendVNFD = function () {
+        renderjson.set_icons('+', '-');
+        renderjson.set_show_to_level(1);
+        var jsonDiv = document.querySelector("#jsonvnfd");
+        jsonDiv.append(
+            renderjson($scope.vnfdinfo)
+        );
+    }
+    $('#JsonCode').on('hidden.bs.modal', function () {
+        var jsonDiv = document.querySelector("#jsonvnfd");
+        jsonDiv.childNodes[0].remove();
+        jsonDiv.childNodes[0].remove();
+    });
+// VNFD JSON Starts
 });
 app.filter('clearText', function() {
+    return function(text) {
+        return  text ? String(text).replace(/"<[^>]+>/gm, '') : '';
+    }
+});app.filter('clearText', function() {
     return function(text) {
         return  text ? String(text).replace(/"<[^>]+>/gm, '') : '';
     }

@@ -40,7 +40,7 @@ task logDebianPackageJavaDependency() {
 }
 
 task makeDeb(type: Deb, dependsOn: [jar, build, logDebianPackageJavaDependency]) {
-    packageName = (applicationRelease) ? "${fullName}-${versionName}" : "${fullName}-${versionName}-nightly"
+    packageName = (applicationRelease) ? "${fullName}" : "${fullName}-nightly"
     version = debianApplicationVersionFull
     //release = 1
     priority = 'optional'
@@ -84,21 +84,5 @@ task makeDeb(type: Deb, dependsOn: [jar, build, logDebianPackageJavaDependency])
     from("gradle/gradle/scripts/systemd/${fullName}.service") 	        { into "/usr/lib/systemd/system/"}                      // executable to run the Component as a service (Systemd)
     from("gradle/gradle/scripts/systemd/${fullName}.env") 	            { into "/usr/lib/openbaton/systemd/env/"}               // environment file to run the Component as a service (Systemd)
     from("gradle/gradle/scripts/systemd/${fullName}.preexecstart") 	    { into "/usr/lib/openbaton/systemd/preexecstart/"}      // preexecstart file to run the Component as a service (Systemd)
-}
-
-task makeMetaDeb(type: Deb) {
-    packageName = (applicationRelease) ? "${fullName}" : "${fullName}-nightly"
-    version = debianApplicationVersionFull
-    //release = 1
-    priority = 'optional'
-    arch = 'all'
-    maintainer = 'Open Baton Team <dev@openbaton.org>'
-    vendor = 'Open Source (Implemented by Fraunhofer FOKUS and TUB)'
-    license = 'Apache 2.0 License'
-    url = 'http://openbaton.github.io/index.html'
-    summary = 'Open Baton NFV Orchestrator (NFVO) (metapackage depending on the latest version)'
-    packageDescription = 'The Network Function Virtualization Orchestrator (NFVO) is a component of the Open Baton project which is an ETSI compliant implementation of a NFV Management and Orchestration (MANO) System'
-
-    requires("${fullName}-${version}")
 }
 

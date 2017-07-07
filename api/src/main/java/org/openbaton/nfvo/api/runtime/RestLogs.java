@@ -17,15 +17,21 @@
 package org.openbaton.nfvo.api.runtime;
 
 import com.google.gson.JsonObject;
-import java.util.HashMap;
-import java.util.List;
+
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.core.interfaces.LogManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.List;
 
 /** Created by lto on 17/05/16. */
 @RestController
@@ -61,7 +67,8 @@ public class RestLogs {
     if (lines > 0) {
       logs.put(
           "output",
-          logs.get("output").subList(logs.size() - lines - 1, logs.get("output").size() - 1));
+          logs.get("output")
+              .subList(logs.get("output").size() - lines - 1, logs.get("output").size() - 1));
     }
     return logs.get("error").size() == 0 ? logs.get("output") : logs.get("error");
   }

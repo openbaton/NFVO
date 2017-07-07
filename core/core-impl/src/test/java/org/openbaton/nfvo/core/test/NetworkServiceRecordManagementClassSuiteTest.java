@@ -198,7 +198,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
   }
 
   @Test
-  public void nsrManagementQueryTest() {
+  public void nsrManagementQueryTest() throws NotFoundException {
     when(nsrRepository.findAll()).thenReturn(new ArrayList<NetworkServiceRecord>());
     Iterable<NetworkServiceRecord> nsds = nsrManagement.query();
     Assert.assertEquals(nsds.iterator().hasNext(), false);
@@ -278,7 +278,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
                 add(vnfmManagerEndpoint);
               }
             });
-    nsrManagement.onboard(nsd_exp, projectId, null, null, null);
+    nsrManagement.onboard(nsd_exp, projectId, null, null, null, null);
   }
 
   @Test
@@ -335,7 +335,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
               }
             });
     /** Real Method */
-    nsrManagement.onboard(networkServiceDescriptor.getId(), projectId, null, null, null);
+    nsrManagement.onboard(networkServiceDescriptor.getId(), projectId, null, null, null, null);
   }
 
   @Test
@@ -391,7 +391,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
               }
             });
 
-    nsrManagement.onboard(networkServiceDescriptor.getId(), projectId, null, null, null);
+    nsrManagement.onboard(networkServiceDescriptor.getId(), projectId, null, null, null, null);
   }
 
   @Test
@@ -406,7 +406,8 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     assertEqualsNSR(new_nsr);
   }
 
-  private void assertEqualsNSR(NetworkServiceRecord nsr_exp) throws NoResultException {
+  private void assertEqualsNSR(NetworkServiceRecord nsr_exp)
+      throws NoResultException, NotFoundException {
     when(nsrRepository.findFirstById(nsr_exp.getId())).thenReturn(nsr_exp);
     NetworkServiceRecord networkServiceRecord = nsrManagement.query(nsr_exp.getId(), projectId);
     Assert.assertEquals(nsr_exp.getId(), networkServiceRecord.getId());

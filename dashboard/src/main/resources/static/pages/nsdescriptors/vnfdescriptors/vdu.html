@@ -1,64 +1,271 @@
- <!--
-  ~ Copyright (c) 2016 Open Baton (http://www.openbaton.org)
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~      http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  ~
-  -->
-<div class="row">
-    <div class="col-lg-12">
-        <h1>VDU
-            <small>Information</small>
-        </h1>
-        <ol class="breadcrumb">
-            <li>
-                <a href="#main"><i class="fa fa-dashboard"></i>
-                    Overview</a>
-            </li>
-            <li class="">
-                <a href="#vnfdescriptors/"><i class="fa fa-file-text-o"></i>
-                    VNF Descriptors</a>
-            </li>
-            <li class="">
-                <a href="#vnfdescriptors/{{vnfdescriptorId}}"><i class="fa fa-file-text-o"></i>
-                    VNF Descriptor</a>
-            </li>
-            <li class="active"><i class="fa fa-pencil-square-o"></i>
-                VDU
-            </li>
-        </ol>
-    </div>
-</div>
-<div class="row">
-    <div class="col-lg-12 top-buffer" ng-show="vnfdinfo">
-        <div class="col-lg-12">
-            <div>
+ <!--Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ 
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+ 
+  limitations under the License.-->
+ <div class="row">
+     <div class="col-lg-12">
+         <h1>VDU
+             <small>Information</small>
+         </h1>
+         <ol class="breadcrumb">
+             <li>
+                 <a href="#main"><i class="fa fa-dashboard"></i>
+                     Overview</a>
+             </li>
+             <li>
+                 <a href="#nsdescriptors"><i class="fa fa-pencil"></i>
+                     NS Descriptors</a>
+             </li>
+             <li class="">
+                 <a href="#nsdescriptors/{{nsdinfo.id}}"><i class="fa fa-pencil"></i>
+                     NSD: {{nsdinfo.name}}</a>
+             </li>
+             <li class="">
+                 <a href="#nsdescriptors/{{nsdinfo.id}}/vnfdescriptors/"><i class="fa fa-pencil-square-o"></i>
+                     VNF Descriptors</a>
+             </li>
+             <li class="">
+                 <a href="#nsdescriptors/{{nsdinfo.id}}/vnfdescriptors/{{vnfdescriptorId}}"><i
+                         class="fa fa-pencil-square-o"></i>
+                     VNF Descriptor</a>
+             </li>
+             <li class="active"><i class="fa fa-pencil-square-o"></i>
+                 VDU
+             </li>
+         </ol>
+     </div>
+ </div>
+ <div class="row">
+     <div class="col-lg-12 top-buffer">
+         <div class="col-lg-12">
 
-                    <span ng-init="vnfdInfo=vnfdinfo"></span>
-                <div ng-repeat="vdu in vnfdinfo.vdu" ng-show="vdu.id==vduId">
-                    <h2>Virtual Deployment Unit</h2>
-                    <dl class="dl-horizontal">
-                        <spam ng-repeat="(k,v) in vdu" ng-if="k!='vimInstance'">
-                            <dt>{{k}}</dt>
-                            <dd>{{v}}</dd>
 
-                        </spam>
-                         <span ng-if="vdu.vimInstance">
-                                 <dt>vimInstance</dt>
-                                 <dd>{{vdu.vimInstance.name}}</dd>
-                         </span>
-                    </dl>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+
+
+                         <div class="col-lg-6">
+                             <div class = "table-responsive">
+                                 <table
+                                         class="table table-bordered table-hover tablesorter"
+                                         id="vduTabletable">
+                                     <tbody>
+                                     <tr ng-show="vdu.name">
+                                         <td>Name</td>
+                                         <td>{{vdu.name}}</td>
+                                     </tr>
+                                     <tr>
+                                         <td>ID</td>
+                                         <td>{{vdu.id}}</td>
+                                     </tr>
+                                     <tr>
+                                         <td>Project ID</td>
+                                         <td>{{vdu.projectId}}</td>
+                                     </tr>
+                                     <tr>
+                                         <td>Scale In Out</td>
+                                         <td>{{vdu.scale_in_out}}</td>
+                                     </tr>
+                                     <tr>
+                                         <td>Version</td>
+                                         <td>{{vdu.version}}</td>
+                                     </tr>
+                                     </tbody>
+                                 </table>
+                             </div>
+                         </div>
+                         <div class="col-lg-12">
+                             <tabset>
+
+                                 <tab heading="Lifecycle Events"  ng-if="vdu.lifecycle_event  > 0">
+                                     <div class="table-responsive" >
+                                         <table
+                                                 class="table table-bordered table-striped table-hover tablesorter"
+                                                 id="fmpTable">
+                                             <thead>
+                                             <tr>
+                                                 <th>Event</th>
+                                             </tr>
+                                             </thead>
+                                             <tbody>
+                                             <tr ng-repeat="n in vdu.lifecycle_event track by $index">
+                                                 <td>{{n}}</td>
+                                             </tr>
+                                             </tbody>
+                                         </table>
+                                     </div>
+                                 </tab>
+                                 <tab heading="VIM Instance">
+                                     <div class="table-responsive" >
+                                         <table
+                                                 class="table table-bordered table-striped table-hover tablesorter"
+                                                 id="vimTable">
+                                             <thead>
+                                             <tr>
+                                                 <th>VIM Instance</th>
+                                             </tr>
+                                             </thead>
+                                             <tbody>
+                                             <tr ng-repeat="n in vdu.vimInstanceName track by $index">
+                                                 <td>{{n}}</td>
+                                             </tr>
+                                             </tbody>
+                                         </table>
+                                     </div>
+                                 </tab>
+                                 <tab heading="VM Images" title="Images that may be used for the deployment of this vdu">
+                                     <div class="table-responsive" >
+                                         <table
+                                                 class="table table-bordered table-striped table-hover tablesorter"
+                                                 id="vmITable">
+                                             <thead>
+                                             <tr>
+                                                 <th>VM Image</th>
+                                             </tr>
+                                             </thead>
+                                             <tbody>
+                                             <tr ng-repeat="n in vdu.vm_image track by $index">
+                                                 <td>{{n}}</td>
+                                             </tr>
+                                             </tbody>
+                                         </table>
+                                     </div>
+                                 </tab>
+                                 <tab heading="VNF Components">
+                                     <div class="table-responsive" >
+                                         <table
+                                                 class="table table-bordered table-striped table-hover tablesorter"
+                                                 id="vnfcTable">
+                                             <thead>
+                                             <tr>
+                                                 <th>ID</th>
+                                                 <th>Version</th>
+                                                 <!--th>Connection Point</th-->
+                                                 <th>Virtual Link Reference</th>
+                                                 <th>Floating IP</th>
+                                             </tr>
+                                             </thead>
+                                             <tbody>
+                                             <tr ng-repeat="n in vdu.vnfc track by $index">
+                                                 <td>{{n.id}}</td>
+                                                 <td>{{n.version}}</td>
+                                                 <!--td>{{n.connection_point}}</td-->
+                                                 <td>{{n.connection_point[0].virtual_link_reference}}</td>
+                                                 <td>{{n.connection_point[0].floatingIp}}</td>
+                                             </tr>
+                                             </tbody>
+                                         </table>
+                                     </div>
+                                 </tab>
+                                 <tab heading="Fault Management Policies" ng-show="vdu.fault_management_policy.length > 0">
+                                     <div class="table-responsive" >
+                                         <table
+                                                 class="table table-bordered table-striped table-hover tablesorter"
+                                                 id="fmpTable">
+                                             <thead>
+                                             <tr>
+                                                 <th>Name</th>
+                                                 <th>VNF Alarm</th>
+                                                 <th>Period</th>
+                                                 <th>Severity</th>
+                                                 <th>Parameter</th>
+                                                 <th>Comparison Operator</th>
+                                                 <th>Threshold</th>
+                                                 <th>Function</th>
+                                             </tr>
+                                             </thead>
+                                             <tbody>
+                                             <tr ng-repeat="policy in vdu.fault_management_policy">
+                                                 <td>{{policy.name}}</td>
+                                                 <td>{{policy.isVNFAlarm}}</td>
+                                                 <td>{{policy.period}}</td>
+                                                 <td>{{policy.severity}}</td>
+                                                 <td> {{policy.criteria[0].parameter_ref}}</td>
+                                                 <td>{{policy.criteria[0].comparison_operator}}</td>
+                                                 <td>{{policy.criteria[0].threshold}}</td>
+                                                 <td>{{policy.criteria[0].function}}</td>
+                                             </tr>
+                                             </tbody>
+                                         </table>
+                                     </div>
+                                 </tab>
+                                 <tab heading="Monitoring Parameters" ng-show="vdu.monitoring_parameter.length > 0">
+                                     <div class="table-responsive" >
+                                         <table
+                                                 class="table table-bordered table-striped table-hover tablesorter"
+                                                 id="fmpTable">
+                                             <tbody>
+                                             <tr ng-repeat="parameter in vdu.monitoring_parameter">
+                                                 <td>{{parameter}}</td>
+                                             </tr>
+
+                                             </tbody>
+                                         </table>
+                                     </div>
+                                 </tab>
+                             </tabset>
+                         </div>
+
+                         <tabset ng-if="vdu.vnfc_instance.length > 0">
+                             <tab heading="VNFC Instance">
+                                 <div class="table-responsive">
+                                     <h3>VNFC Instances</h3>
+                                     <table
+                                             class="table table-bordered table-striped table-hover tablesorter"
+                                             id="vnfrepTabletable">
+                                         <thead>
+                                         <tr>
+                                             <th ng-click="predicate = 'hostname'; reverse = !reverse">Hostname <i
+                                                     class="fa fa-sort"></i></th>
+                                             <th ng-click="predicate = 'version'; reverse = !reverse">version <i
+                                                     class="fa fa-sort"></i></th>
+                                             <th ng-click="predicate = 'connection_point'; reverse = !reverse">connection
+                                                 point
+                                                 <i class="fa fa-sort"></i></th>
+                                             <th ng-click="predicate = 'ips'; reverse = !reverse">ips <i
+                                                     class="fa fa-sort"></i>
+                                             </th>
+                                             <th ng-click="predicate = 'vnfComponent'; reverse = !reverse">vnfComponent
+                                                 <i
+                                                         class="fa fa-sort"></i></th>
+                                         </tr>
+                                         </thead>
+                                         <tbody>
+                                         <tr ng-repeat="vnfci in vdu.vnfc_instance | orderBy:predicate:reverse">
+                                             <!--<td><a href="#nsrecords/{{nsrinfo.id}}/vnfdependencies/{{df.id}}" ng-click="showData(nsd)">{{df.id}}</a></td>-->
+                                             <td>{{vnfci.hostname}}</td>
+                                             <td>{{vnfci.version}}</td>
+                                             <td>
+                                                 <p ng-repeat="cp in vnfci.connection_point"
+                                                    title="virtual link reference">
+                                                     <b>{{cp.virtual_link_reference}}</b>: {{cp.floatingIp}}
+                                                 </p>
+                                             </td>
+                                             <td><p ng-repeat="ip in vnfci.ips" title="netName"><b>{{ip.netName}}</b>:
+                                                 {{ip.ip}}
+                                             </p></td>
+                                             <td>
+                                                 <p ng-repeat="cp in vnfci.vnfComponent.connection_point"
+                                                    title="virtual link reference">
+                                                     <b>{{cp.virtual_link_reference}}</b>: {{cp.floatingIp}}
+                                                 </p>
+                                             </td>
+                                         </tr>
+                                         </tbody>
+                                     </table>
+                                 </div>
+                             </tab>
+                         </tabset>
+
+
+         </div>
+     </div>
+ </div>

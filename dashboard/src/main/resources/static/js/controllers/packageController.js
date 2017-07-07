@@ -16,7 +16,7 @@
  */
 
 var app = angular.module('app');
-app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, $cookieStore, AuthService, $interval) {
+app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, $cookieStore, AuthService, $interval, NgTableParams, $filter) {
 
     var url = $cookieStore.get('URL') + "/api/v1/vnf-packages/";
     var urlTosca = $cookieStore.get('URL') + "/api/v1/csar-vnfd/";
@@ -167,6 +167,8 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
             http.get(url)
                 .success(function (response) {
                     $scope.vnfpackages = response;
+                    vnfpackagetable();
+
                 })
                 .error(function (data, status) {
                     showError(data, status);
@@ -293,6 +295,22 @@ app.controller('PackageCtrl', function ($scope, serviceAPI, $routeParams, http, 
         }
 
     });
+    function vnfpackagetable()
+    {
+        var paginationpkg = []
+        $scope.tableParamspaginationpkg = new NgTableParams({
+                page: 1,
+                count: 10,
+                sorting: {
+                    name: 'asc'     // initial sorting
+                },
+                filter: { name: "" },
+            },
+            {
+                counts: [],
+                dataset: $scope.vnfpackages
+            });
 
+    }
 
 });

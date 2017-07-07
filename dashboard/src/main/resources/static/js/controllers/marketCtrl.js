@@ -46,7 +46,7 @@ var app = angular.module('app').controller('marketCtrl', function ($scope, servi
                 $scope.NFVOversion = response
             })
             .error(function (response, status) {
-                showError(status, response);
+                showError(response, status);
             });
     }
 

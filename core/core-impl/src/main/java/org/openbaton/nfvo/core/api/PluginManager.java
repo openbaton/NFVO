@@ -17,14 +17,6 @@
 
 package org.openbaton.nfvo.core.api;
 
-import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.plugin.mgmt.PluginStartup;
-import org.openbaton.utils.rabbit.RabbitManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -33,6 +25,13 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashSet;
 import java.util.Set;
+import org.openbaton.exceptions.AlreadyExistingException;
+import org.openbaton.plugin.mgmt.PluginStartup;
+import org.openbaton.utils.rabbit.RabbitManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 /** Created by rvl on 19.10.16. */
 @Service

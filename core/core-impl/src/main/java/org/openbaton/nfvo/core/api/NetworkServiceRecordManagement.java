@@ -177,7 +177,12 @@ public class NetworkServiceRecordManagement
 
   @Override
   public NetworkServiceRecord onboard(
-      String idNsd, String projectID, List keys, Map vduVimInstances, Map configurations)
+      String idNsd,
+      String projectID,
+      List keys,
+      Map vduVimInstances,
+      Map configurations,
+      String monitoringIp)
       throws VimException, NotFoundException, PluginException, MissingParameterException,
           BadRequestException {
     log.info("Looking for NetworkServiceDescriptor with id: " + idNsd);
@@ -211,7 +216,7 @@ public class NetworkServiceRecordManagement
       body.setKeys(keys1);
       log.debug("Found keys: " + body.getKeys());
     }
-    return deployNSR(networkServiceDescriptor, projectID, body);
+    return deployNSR(networkServiceDescriptor, projectID, body, monitoringIp);
   }
 
   @Override
@@ -400,7 +405,8 @@ public class NetworkServiceRecordManagement
       String projectId,
       List keys,
       Map vduVimInstances,
-      Map configurations)
+      Map configurations,
+      String monitoringIp)
       throws VimException, NotFoundException, PluginException, MissingParameterException,
           BadRequestException {
     networkServiceDescriptor.setProjectId(projectId);
@@ -427,7 +433,7 @@ public class NetworkServiceRecordManagement
       body.setKeys(keys1);
       log.debug("Found keys: " + body.getKeys());
     }
-    return deployNSR(networkServiceDescriptor, projectId, body);
+    return deployNSR(networkServiceDescriptor, projectId, body, monitoringIp);
   }
 
   public void deleteVNFRecord(String idNsr, String idVnf, String projectId)
@@ -447,7 +453,7 @@ public class NetworkServiceRecordManagement
     if (!vnfr.getProjectId().equals(projectId))
       throw new UnauthorizedUserException("VNFR not contained in the chosen project.");
     nsrRepository.deleteVNFRecord(idNsr, idVnf);
-    for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : nsr.getVnfr()){
+    for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : nsr.getVnfr()) {
       if (nsr.getStatus().ordinal() > virtualNetworkFunctionRecord.getStatus().ordinal())
         nsr.setStatus(vnfr.getStatus());
     }
@@ -1108,7 +1114,10 @@ public class NetworkServiceRecordManagement
   }
 
   private NetworkServiceRecord deployNSR(
-      NetworkServiceDescriptor networkServiceDescriptor, String projectID, DeployNSRBody body)
+      NetworkServiceDescriptor networkServiceDescriptor,
+      String projectID,
+      DeployNSRBody body,
+      String monitoringIp)
       throws NotFoundException, VimException, PluginException, MissingParameterException,
           BadRequestException {
     Map<String, List<String>> vduVimInstances = new HashMap<>();
@@ -1235,7 +1244,8 @@ public class NetworkServiceRecordManagement
 
     checkConfigParameter(networkServiceDescriptor, body);
 
-    vnfmManager.deploy(networkServiceDescriptor, networkServiceRecord, body, vduVimInstances);
+    vnfmManager.deploy(
+        networkServiceDescriptor, networkServiceRecord, body, vduVimInstances, monitoringIp);
     log.debug("Returning NSR " + networkServiceRecord.getName());
     return networkServiceRecord;
   }
@@ -1535,9 +1545,12 @@ public class NetworkServiceRecordManagement
   }
 
   @Override
-  public NetworkServiceRecord query(String id, String projectId) {
+  public NetworkServiceRecord query(String id, String projectId) throws NotFoundException {
     log.debug("Id is: " + id);
     NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(id);
+    if (networkServiceRecord == null) {
+      throw new NotFoundException(String.format("NetworkServiceRecord with id %s not found", id));
+    }
     log.trace("found nsr = " + networkServiceRecord);
     log.debug(" project id is: " + projectId);
     if (!networkServiceRecord.getProjectId().equals(projectId)) {

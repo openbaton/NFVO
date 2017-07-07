@@ -272,7 +272,8 @@ public class VnfmManager
       NetworkServiceDescriptor networkServiceDescriptor,
       NetworkServiceRecord networkServiceRecord,
       DeployNSRBody body,
-      Map<String, List<String>> vduVimInstances)
+      Map<String, List<String>> vduVimInstances,
+      String monitoringIp)
       throws NotFoundException {
 
     try {
@@ -339,6 +340,7 @@ public class VnfmManager
         Map<String, String> extension = getExtension();
 
         extension.put("nsr-id", networkServiceRecord.getId());
+        if (monitoringIp != null) extension.put("monitoringIp", monitoringIp.trim());
 
         NFVMessage message;
         HashSet<Key> keys;

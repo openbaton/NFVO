@@ -124,7 +124,7 @@
 								</tr>
 								<tr>
 									<td>Deployment Flavour keys</td>
-									<td  ng-repeat="df in vnfd.deployment_flavour | orderBy:predicate:reverse"><span ng-show='df.flavour_key'>{{df.flavour_key}} {{$last ? '' : ', '}}</span></td>
+									<td><span ng-repeat="df in vnfd.deployment_flavour | orderBy:predicate:reverse" ng-show='df.flavour_key'>{{df.flavour_key}}{{$last ? '' : ', '}}</span></td>
 								</tr>
 
 						</tbody>
