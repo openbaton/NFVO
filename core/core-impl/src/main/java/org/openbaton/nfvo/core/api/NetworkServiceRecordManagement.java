@@ -508,11 +508,12 @@ public class NetworkServiceRecordManagement
   }
 
   @Override
-  public void addVNFCInstance(String id,
-                              String idVnf,
-                              VNFComponent component,
-                              String projectId,
-                              List<String> vimInstanceNames)
+  public void addVNFCInstance(
+      String id,
+      String idVnf,
+      VNFComponent component,
+      String projectId,
+      List<String> vimInstanceNames)
       throws NotFoundException, BadFormatException, WrongStatusException {
     log.info("Adding new VNFCInstance to VNFR with id: " + idVnf);
     NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id);
@@ -546,11 +547,16 @@ public class NetworkServiceRecordManagement
           "All VirtualDeploymentUnits have reached their maximum number of VNFCInstances");
 
     Set<String> names = new HashSet<>();
-    for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId)){
+    for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId)) {
       names.add(vimInstance.getName());
     }
+    if (vimInstanceNames == null){
+      for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId)){
+        vimInstanceNames.add(vimInstance.getName());
+      }
+    }
     names.retainAll(vimInstanceNames);
-    if (names.size() == 0){
+    if (names.size() == 0) {
       log.error("VimInstance names passed not found");
       throw new NotFoundException("VimInstance names passed not found");
     }
@@ -560,17 +566,23 @@ public class NetworkServiceRecordManagement
     networkServiceRecord.setStatus(Status.SCALING);
     networkServiceRecord = nsrRepository.save(networkServiceRecord);
     scaleOUT(
-        networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, component, "", vimInstanceNames);
+        networkServiceRecord,
+        virtualNetworkFunctionRecord,
+        virtualDeploymentUnit,
+        component,
+        "",
+        vimInstanceNames);
   }
 
   @Override
-  public void addVNFCInstance(String id,
-                              String idVnf,
-                              String idVdu,
-                              VNFComponent component,
-                              String mode,
-                              String projectId,
-                              List<String> vimInstanceNames)
+  public void addVNFCInstance(
+      String id,
+      String idVnf,
+      String idVdu,
+      VNFComponent component,
+      String mode,
+      String projectId,
+      List<String> vimInstanceNames)
       throws NotFoundException, BadFormatException, WrongStatusException {
     log.info("Adding new VNFCInstance to VNFR with id " + idVnf + " and VDU with id " + idVdu);
     NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id);
@@ -600,15 +612,21 @@ public class NetworkServiceRecordManagement
     networkServiceRecord.setStatus(Status.SCALING);
     networkServiceRecord = nsrRepository.save(networkServiceRecord);
     scaleOUT(
-        networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, component, mode, vimInstanceNames);
+        networkServiceRecord,
+        virtualNetworkFunctionRecord,
+        virtualDeploymentUnit,
+        component,
+        mode,
+        vimInstanceNames);
   }
 
-  private void scaleOUT(NetworkServiceRecord networkServiceRecord,
-                        VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
-                        VirtualDeploymentUnit virtualDeploymentUnit,
-                        VNFComponent component,
-                        String mode,
-                        List<String> vimInstanceNames)
+  private void scaleOUT(
+      NetworkServiceRecord networkServiceRecord,
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
+      VirtualDeploymentUnit virtualDeploymentUnit,
+      VNFComponent component,
+      String mode,
+      List<String> vimInstanceNames)
       throws BadFormatException, NotFoundException {
 
     networkServiceRecord.setTask("Scaling out");
@@ -650,7 +668,14 @@ public class NetworkServiceRecordManagement
 
     log.debug("Found Dependency: " + dependencyTarget);
 
-    vnfmManager.addVnfc(virtualNetworkFunctionRecord, component, dependencyTarget, mode, vimInstanceNames);
+    try {
+      vnfmManager.addVnfc(
+          virtualNetworkFunctionRecord, component, dependencyTarget, mode, vimInstanceNames).get();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    } catch (ExecutionException e) {
+      e.printStackTrace();
+    }
   }
 
   @Override
@@ -1565,13 +1590,13 @@ public class NetworkServiceRecordManagement
 
   @Override
   public NetworkServiceRecord query(String id, String projectId) throws NotFoundException {
-    log.debug("Id is: " + id);
+    log.trace("Id is: " + id);
     NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(id);
     if (networkServiceRecord == null) {
       throw new NotFoundException(String.format("NetworkServiceRecord with id %s not found", id));
     }
     log.trace("found nsr = " + networkServiceRecord);
-    log.debug(" project id is: " + projectId);
+    log.trace(" project id is: " + projectId);
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
           "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");

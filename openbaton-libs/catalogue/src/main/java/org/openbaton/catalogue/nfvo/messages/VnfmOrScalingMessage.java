@@ -42,13 +42,13 @@ public class VnfmOrScalingMessage extends VnfmOrMessage {
   @Override
   public String toString() {
     return "VnfmOrScalingMessage{"
-           + "virtualNetworkFunctionRecord="
-           + virtualNetworkFunctionRecord
-           + ", userData='"
-           + userData
-           + '\''
-           + "} "
-           + super.toString();
+        + "virtualNetworkFunctionRecord="
+        + virtualNetworkFunctionRecord
+        + ", userData='"
+        + userData
+        + '\''
+        + "} "
+        + super.toString();
   }
 
   public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {

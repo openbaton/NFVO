@@ -17,6 +17,11 @@
 
 package org.openbaton.nfvo.core.core;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -34,12 +39,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /** Created by lto on 11/06/15. */
 @Service
@@ -164,11 +163,11 @@ public class VNFLifecycleOperationGranting
   }
 
   @Override
-  public VimInstance checkQuotaOnVimInstance(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
-                                              VimInstance vimInstance) throws VimException, PluginException {
+  public VimInstance checkQuotaOnVimInstance(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VimInstance vimInstance)
+      throws VimException, PluginException {
     Quota leftQuota = vimBroker.getLeftQuota(vimInstance);
-    log.debug(
-        "Left Quota on VimInstance " + vimInstance.getName() + " at start is " + leftQuota);
+    log.debug("Left Quota on VimInstance " + vimInstance.getName() + " at start is " + leftQuota);
 
     //Fetch the Flavor for getting allocated resources needed
     DeploymentFlavour flavor = null;
@@ -186,8 +185,7 @@ public class VNFLifecycleOperationGranting
     //Subtract needed resources from the left resources
     int nc = 0;
 
-    for (VirtualDeploymentUnit virtualDeploymentUnit :
-        virtualNetworkFunctionRecord.getVdu()) {
+    for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
       for (VNFComponent ignored : virtualDeploymentUnit.getVnfc()) {
         nc++;
       }
@@ -209,8 +207,9 @@ public class VNFLifecycleOperationGranting
       log.error(
           "Not enough resources are available to deploy VNFR "
               + virtualNetworkFunctionRecord.getName());
-      throw new VimException("Not enough resources are available to deploy VNFR "
-                             + virtualNetworkFunctionRecord.getName());
+      throw new VimException(
+          "Not enough resources are available to deploy VNFR "
+              + virtualNetworkFunctionRecord.getName());
     }
     return vimInstance;
   }

@@ -105,6 +105,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -802,11 +803,12 @@ public class VnfmManager
 
   @Override
   @Async
-  public Future<Void> addVnfc(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
-                              VNFComponent component,
-                              VNFRecordDependency dependency,
-                              String mode,
-                              List<String> vimInstanceNames)
+  public Future<Void> addVnfc(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
+      VNFComponent component,
+      VNFRecordDependency dependency,
+      String mode,
+      List<String> vimInstanceNames)
       throws NotFoundException {
     VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint());
 
@@ -829,7 +831,10 @@ public class VnfmManager
     message.setDependency(dependency);
     message.setMode(mode);
 
-    message.setVimInstance(vimInstanceRepository.findByProjectIdAndName(vimInstanceNames.get((int) ((Math.random() * 100) % vimInstanceNames.size()) - 1)));
+    message.setVimInstance(
+        vimInstanceRepository.findByProjectIdAndName(
+            virtualNetworkFunctionRecord.getProjectId(),
+            vimInstanceNames.get(new Random().nextInt(vimInstanceNames.size()))));
 
     log.debug("SCALE_OUT MESSAGE IS: \n" + message);
 

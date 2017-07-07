@@ -62,11 +62,12 @@ public interface VnfmManager {
       throws NotFoundException;
 
   @Async
-  Future<Void> addVnfc(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
-                       VNFComponent component,
-                       VNFRecordDependency dependency,
-                       String mode,
-                       List<String> vimInstanceNames)
+  Future<Void> addVnfc(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
+      VNFComponent component,
+      VNFRecordDependency dependency,
+      String mode,
+      List<String> vimInstanceNames)
       throws NotFoundException;
 
   Future<Void> removeVnfcDependency(

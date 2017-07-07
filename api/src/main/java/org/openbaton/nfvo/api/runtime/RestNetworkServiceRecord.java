@@ -188,12 +188,7 @@ public class RestNetworkServiceRecord {
       }
     }
     return networkServiceRecordManagement.onboard(
-        id,
-        projectId,
-        keys,
-        vduVimInstances,
-        configurations,
-        monitoringIp);
+        id, projectId, keys, vduVimInstances, configurations, monitoringIp);
   }
 
   /**
@@ -445,15 +440,19 @@ public class RestNetworkServiceRecord {
   )
   @ResponseStatus(HttpStatus.CREATED)
   public void postVNFCInstance(
-      @RequestBody @Valid VNFComponent component,
+      @RequestBody @Valid JsonObject body,
       @PathVariable("id") String id,
       @PathVariable("idVnf") String idVnf,
       @PathVariable("idVdu") String idVdu,
-      @RequestHeader(value = "project-id") String projectId,
-      @RequestBody(required = false) List<String> vimInstanceNames)
+      @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException, BadFormatException, WrongStatusException {
+    VNFComponent component =
+        gson.fromJson(body.getAsJsonObject("vnfComponent"), VNFComponent.class);
+    List<String> vimInstanceNames =
+        gson.fromJson(body.getAsJsonObject("vimInstanceNames"), List.class);
     log.trace("Received: " + component);
-    networkServiceRecordManagement.addVNFCInstance(id, idVnf, idVdu, component, "", projectId, vimInstanceNames);
+    networkServiceRecordManagement.addVNFCInstance(
+        id, idVnf, idVdu, component, "", projectId, vimInstanceNames);
   }
 
   @ApiOperation(
@@ -467,14 +466,18 @@ public class RestNetworkServiceRecord {
   )
   @ResponseStatus(HttpStatus.CREATED)
   public void postVNFCInstance(
-      @RequestBody @Valid VNFComponent component,
+      @RequestBody @Valid JsonObject body,
       @PathVariable("id") String id,
       @PathVariable("idVnf") String idVnf,
-      @RequestHeader(value = "project-id") String projectId,
-      @RequestBody(required = false) List<String> vimInstanceNames)
+      @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException, BadFormatException, WrongStatusException {
+    VNFComponent component =
+        gson.fromJson(body.getAsJsonObject("vnfComponent"), VNFComponent.class);
+    List<String> vimInstanceNames =
+        gson.fromJson(body.getAsJsonArray("vimInstanceNames"), List.class);
     log.trace("Received: " + component);
-    networkServiceRecordManagement.addVNFCInstance(id, idVnf, component, projectId, vimInstanceNames);
+    networkServiceRecordManagement.addVNFCInstance(
+        id, idVnf, component, projectId, vimInstanceNames);
   }
 
   @ApiOperation(
@@ -525,13 +528,16 @@ public class RestNetworkServiceRecord {
   )
   @ResponseStatus(HttpStatus.CREATED)
   public void postStandByVNFCInstance(
-      @RequestBody @Valid VNFComponent component,
+      @RequestBody @Valid JsonObject body,
       @PathVariable("id") String id,
       @PathVariable("idVnf") String idVnf,
       @PathVariable("idVdu") String idVdu,
-      @RequestHeader(value = "project-id") String projectId,
-      @RequestBody(required = false) List<String> vimInstanceNames)
+      @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException, BadFormatException, WrongStatusException {
+    VNFComponent component =
+        gson.fromJson(body.getAsJsonObject("vnfComponent"), VNFComponent.class);
+    List<String> vimInstanceNames =
+        gson.fromJson(body.getAsJsonObject("vimInstanceNames"), List.class);
     log.debug("PostStandByVNFCInstance received the component: " + component);
     networkServiceRecordManagement.addVNFCInstance(
         id, idVnf, idVdu, component, "standby", projectId, vimInstanceNames);

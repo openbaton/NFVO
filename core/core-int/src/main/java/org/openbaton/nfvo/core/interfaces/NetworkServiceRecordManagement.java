@@ -17,6 +17,9 @@
 
 package org.openbaton.nfvo.core.interfaces;
 
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
@@ -30,10 +33,6 @@ import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.exceptions.WrongStatusException;
-
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 /** Created by mpa on 30/04/15. */
 public interface NetworkServiceRecordManagement {
@@ -126,20 +125,26 @@ public interface NetworkServiceRecordManagement {
    * @param vimInstanceNames
    * @return the new VNFCInstance
    */
-  void addVNFCInstance(String id,
-                       String idVnf,
-                       String idVdu,
-                       VNFComponent component,
-                       String mode,
-                       String projectId,
-                       List<String> vimInstanceNames)
+  void addVNFCInstance(
+      String id,
+      String idVnf,
+      String idVdu,
+      VNFComponent component,
+      String mode,
+      String projectId,
+      List<String> vimInstanceNames)
       throws NotFoundException, BadFormatException, WrongStatusException;
 
   /**
    * This method will add a {@Link VNFCInstance} into a NetworkServiceRecord to a specific
    * VirtualNetworkFunctionRecord. The VirtualDeploymentUnit is randomly chosen
    */
-  void addVNFCInstance(String id, String idVnf, VNFComponent component, String projectId, List<String> vimInstanceNames)
+  void addVNFCInstance(
+      String id,
+      String idVnf,
+      VNFComponent component,
+      String projectId,
+      List<String> vimInstanceNames)
       throws NotFoundException, BadFormatException, WrongStatusException;
 
   /**

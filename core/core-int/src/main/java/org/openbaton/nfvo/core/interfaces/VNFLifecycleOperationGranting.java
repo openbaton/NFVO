@@ -17,12 +17,11 @@
 
 package org.openbaton.nfvo.core.interfaces;
 
+import java.util.Map;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
-
-import java.util.Map;
 
 /** Created by mpa on 05/05/15. */
 public interface VNFLifecycleOperationGranting {
@@ -35,6 +34,7 @@ public interface VNFLifecycleOperationGranting {
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
       throws VimException, PluginException;
 
-  VimInstance checkQuotaOnVimInstance(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
-                                      VimInstance vimInstance) throws VimException, PluginException;
+  VimInstance checkQuotaOnVimInstance(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VimInstance vimInstance)
+      throws VimException, PluginException;
 }
