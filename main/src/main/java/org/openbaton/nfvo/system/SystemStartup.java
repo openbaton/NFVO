@@ -75,6 +75,9 @@ class SystemStartup implements CommandLineRunner {
   @Value("${nfvo.plugin.log.path:./plugin-logs}")
   private String pluginLogPath;
 
+  @Value("${nfvo.rabbit.brokerIp:localhost}")
+  private String brokerIp;
+
   @Override
   public void run(String... args) throws Exception {
     log.info("Initializing OpenBaton");
@@ -132,7 +135,7 @@ class SystemStartup implements CommandLineRunner {
     PluginStartup.startPluginRecursive(
         folderPath,
         waitForPlugin,
-        "localhost",
+        brokerIp,
         "5672",
         Integer.parseInt(numConsumers),
         username,
