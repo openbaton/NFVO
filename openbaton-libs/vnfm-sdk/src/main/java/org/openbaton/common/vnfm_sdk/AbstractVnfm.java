@@ -43,8 +43,15 @@ import org.openbaton.catalogue.nfvo.EndpointType;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
-import org.openbaton.catalogue.nfvo.messages.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmGrantLifecycleOperationMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmHealVNFRequestMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmInstantiateMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmScalingMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmStartStopMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmUpdateMessage;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.common.vnfm_sdk.exception.BadFormatException;
 import org.openbaton.common.vnfm_sdk.exception.NotFoundException;
@@ -229,7 +236,10 @@ public abstract class AbstractVnfm
           if (!properties.getProperty("allocate", "true").equalsIgnoreCase("true")) {
             NFVMessage message2 =
                 vnfmHelper.sendAndReceive(
-                    VnfmUtils.getNfvScalingMessage(getUserData(), virtualNetworkFunctionRecord));
+                    VnfmUtils.getNfvScalingMessage(
+                        getUserData(),
+                        virtualNetworkFunctionRecord,
+                        scalingMessage.getVimInstance()));
             if (message2 instanceof OrVnfmGenericMessage) {
               OrVnfmGenericMessage message1 = (OrVnfmGenericMessage) message2;
               virtualNetworkFunctionRecord = message1.getVnfr();
