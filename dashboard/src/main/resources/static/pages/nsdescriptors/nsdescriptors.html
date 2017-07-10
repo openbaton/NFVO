@@ -1515,7 +1515,7 @@
                                         </thead>
                                         <tbody>
                                         <tr ng-repeat="conf in launchConfiguration.configurations[vnfdname].configurationParameters track by $index">
-                                            <td><input ng-disabled="conf.id.length > 0" type="text" class="form-control"
+                                            <td><input style="font-weight: bold;" ng-disabled="conf.id.length > 0" type="text" class="form-control"
                                                        id="Configuration Name" ng-model="conf.confKey"
                                             /></td>
                                             <td><input type="text" class="form-control" id="Configuration Name"
