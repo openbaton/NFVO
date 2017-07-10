@@ -847,3 +847,20 @@ td p {
 .glyphicon-refresh-animate { -animation: spin .7s infinite linear;  -webkit-animation: spin2 .7s infinite linear; }
 @-webkit-keyframes spin2 { from { -webkit-transform: rotate(0deg);} to { -webkit-transform: rotate(360deg);} }
 @keyframes spin { from { transform: scale(1) rotate(0deg);} to { transform: scale(1) rotate(360deg);} }
+#vduTabletable textarea.form-control {
+    height: 34px;
+    border-radius: 0px;
+}
+#vduTabletable td {
+    padding: 0px !important;
+    border: none !important;
+}
+
+#vduTabletable .form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control{
+    background-color: white;
+}
+.padding10{
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
