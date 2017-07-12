@@ -18,9 +18,8 @@ public class AsyncExecutorConfig extends AsyncConfigurerSupport {
   @Override
   public Executor getAsyncExecutor() {
     ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-    executor.setCorePoolSize(10);
-    executor.setMaxPoolSize(10);
-    executor.setQueueCapacity(10);
+    executor.setCorePoolSize(1);
+    executor.setQueueCapacity(0);
     executor.setThreadNamePrefix("OpenBatonAsyncTask-");
     executor.initialize();
     return executor;

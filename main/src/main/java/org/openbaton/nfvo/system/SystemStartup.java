@@ -142,7 +142,14 @@ class SystemStartup implements CommandLineRunner {
 
     configurationRepository.save(c);
 
-    createRabbitMqUser(username, password, brokerIp, managementPort, managerRegistrationUserName, getManagerRegistrationUserPassword, virtualHost);
+    createRabbitMqUser(
+        username,
+        password,
+        brokerIp,
+        managementPort,
+        managerRegistrationUserName,
+        getManagerRegistrationUserPassword,
+        virtualHost);
 
     setRabbitMqUserPermissions(
         username,
