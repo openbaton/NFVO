@@ -13,11 +13,7 @@ import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.Action;
-import org.openbaton.catalogue.nfvo.EndpointType;
-import org.openbaton.catalogue.nfvo.VNFPackage;
-import org.openbaton.catalogue.nfvo.VimInstance;
-import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmInstantiateMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrAllocateResourcesMessage;
@@ -30,6 +26,7 @@ import org.openbaton.catalogue.nfvo.messages.VnfmOrScalingMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrStartStopMessage;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.nfvo.repositories.ManagerCredentialsRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
 import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
@@ -60,6 +57,7 @@ public class MessageGenerator implements org.openbaton.vnfm.interfaces.manager.M
 
   @Autowired private VimRepository vimInstanceRepository;
   @Autowired private VnfPackageRepository vnfPackageRepository;
+  @Autowired private ManagerCredentialsRepository managerCredentialsRepository;
   @Autowired private ConfigurableApplicationContext context;
 
   @Autowired
@@ -78,11 +76,11 @@ public class MessageGenerator implements org.openbaton.vnfm.interfaces.manager.M
   @Value("${nfvo.ems.version:0.19}")
   private String emsVersion;
 
-  @Value("${spring.rabbitmq.username:admin}")
-  private String username;
+  @Value("${ems.rabbitmq.username:ems}")
+  private String emsUsername;
 
-  @Value("${spring.rabbitmq.password:openbaton}")
-  private String password;
+  @Value("${ems.rabbitmq.password:openbaton}")
+  private String emsPassword;
 
   @Value("${nfvo.ems.queue.heartbeat:60}")
   private String emsHeartbeat;
@@ -126,8 +124,8 @@ public class MessageGenerator implements org.openbaton.vnfm.interfaces.manager.M
     extension.put("monitoringIp", monitoringIp.trim());
     extension.put("timezone", timezone);
     extension.put("emsVersion", emsVersion);
-    extension.put("username", username);
-    extension.put("password", password);
+    extension.put("username", emsUsername);
+    extension.put("password", emsPassword);
     extension.put("exchangeName", "openbaton-exchange");
     extension.put("emsHeartbeat", emsHeartbeat);
     extension.put("emsAutodelete", emsAutodelete);
