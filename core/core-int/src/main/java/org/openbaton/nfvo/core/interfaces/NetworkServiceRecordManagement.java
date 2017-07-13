@@ -122,17 +122,29 @@ public interface NetworkServiceRecordManagement {
    * @param id of the NetworkServiceRecord
    * @param idVnf of the VirtualNetworkFunctionRecord
    * @param idVdu of the VirtualDeploymentUnit chosen
+   * @param vimInstanceNames
    * @return the new VNFCInstance
    */
   void addVNFCInstance(
-      String id, String idVnf, String idVdu, VNFComponent component, String mode, String projectId)
+      String id,
+      String idVnf,
+      String idVdu,
+      VNFComponent component,
+      String mode,
+      String projectId,
+      List<String> vimInstanceNames)
       throws NotFoundException, BadFormatException, WrongStatusException;
 
   /**
    * This method will add a {@Link VNFCInstance} into a NetworkServiceRecord to a specific
    * VirtualNetworkFunctionRecord. The VirtualDeploymentUnit is randomly chosen
    */
-  void addVNFCInstance(String id, String idVnf, VNFComponent component, String projectId)
+  void addVNFCInstance(
+      String id,
+      String idVnf,
+      VNFComponent component,
+      String projectId,
+      List<String> vimInstanceNames)
       throws NotFoundException, BadFormatException, WrongStatusException;
 
   /**

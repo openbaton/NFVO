@@ -66,7 +66,8 @@ public interface VnfmManager {
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
       VNFComponent component,
       VNFRecordDependency dependency,
-      String mode)
+      String mode,
+      List<String> vimInstanceNames)
       throws NotFoundException;
 
   Future<Void> removeVnfcDependency(

@@ -26,4 +26,6 @@ public interface VimRepository extends CrudRepository<VimInstance, String>, VimR
   VimInstance findFirstById(String id);
 
   List<VimInstance> findByProjectId(String projectId);
+
+  VimInstance findByProjectIdAndName(String projectId, String name);
 }
