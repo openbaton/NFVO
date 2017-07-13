@@ -30,7 +30,7 @@ task buildDocker(type: Docker) {
         rename {"${componentName}.jar"}
     }
     runCommand('apk add -u --no-cache wget &&' +
-            'mkdir -p /usr/lib/openbaton/plugins/vim-drivers&& mkdir -p /usr/lib/openbaton/nfvo&&' +
+            'mkdir -p /usr/lib/openbaton/plugins/vim-drivers &&' +
             'wget -qnH --cut-dirs 2 -r --no-parent  --reject "index.html*" "http://get.openbaton.org/plugins/stable/" -P "/usr/lib/openbaton/plugins/vim-drivers"&&' +
             'mkdir -p /var/log/openbaton')
     addFile("etc/openbaton.properties", "/etc/openbaton/${componentName}.properties")
