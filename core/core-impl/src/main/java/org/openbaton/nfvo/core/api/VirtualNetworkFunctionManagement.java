@@ -17,11 +17,15 @@
 
 package org.openbaton.nfvo.core.api;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.exceptions.EntityInUseException;
+import org.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.nfvo.core.utils.NSDUtils;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.VNFDRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
@@ -44,6 +48,7 @@ public class VirtualNetworkFunctionManagement
   @Autowired private VNFDRepository vnfdRepository;
   @Autowired private VnfPackageRepository vnfPackageRepository;
   private final Logger log = LoggerFactory.getLogger(this.getClass());
+  @Autowired private NSDUtils nsdUtils;
 
   @Value("${vnfd.vnfp.cascade.delete:false}")
   private boolean cascadeDelete;
@@ -61,8 +66,11 @@ public class VirtualNetworkFunctionManagement
   @Override
   public VirtualNetworkFunctionDescriptor add(
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor, String projectId)
-      throws NotFoundException {
-    // TODO check integrity of VNFD
+      throws NotFoundException, NetworkServiceIntegrityException {
+    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+    virtualNetworkFunctionDescriptor.setCreatedAt(format.format(new Date()));
+    virtualNetworkFunctionDescriptor.setUpdatedAt(format.format(new Date()));
+    virtualNetworkFunctionDescriptor.setProjectId(projectId);
     if (virtualNetworkFunctionDescriptor.getVdu() == null
         || virtualNetworkFunctionDescriptor.getVdu().size() == 0)
       throw new NotFoundException("You should specify at least one VDU in each VNFD!");
@@ -70,7 +78,7 @@ public class VirtualNetworkFunctionManagement
       if (vdu.getVnfc() == null || vdu.getVnfc().size() == 0)
         throw new NotFoundException("You should specify at least one VNFC in each VDU!");
     }
-    virtualNetworkFunctionDescriptor.setProjectId(projectId);
+    nsdUtils.checkIntegrity(virtualNetworkFunctionDescriptor);
     return vnfdRepository.save(virtualNetworkFunctionDescriptor);
   }
 
