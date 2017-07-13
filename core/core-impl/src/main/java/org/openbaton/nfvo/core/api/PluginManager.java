@@ -78,6 +78,7 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
   @Override
   public void downloadPlugin(String type, String name, String version)
       throws IOException, AlreadyExistingException {
+    String pluginName = name;
     String filename = name.toLowerCase() + ".jar";
     String id = type + "/" + name + "/" + version;
 
@@ -103,6 +104,14 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
     if (headerField != null && headerField.contains("filename=\"")) {
       filename =
           headerField.substring(headerField.indexOf("filename=\"") + 10, headerField.length() - 1);
+      String[] split = filename.split("-");
+      if (split.length > 4) {
+        pluginName = split[3];
+      } else if (split.length > 2) {
+        pluginName = split[split.length - 2];
+      } else {
+        if (pluginName.contains("-")) pluginName = pluginName.substring(0, pluginName.indexOf("-"));
+      }
     }
     path += filename;
     FileOutputStream out = new FileOutputStream(path);
@@ -121,7 +130,7 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
     } finally {
       out.flush();
     }
-    startPlugin(path, name);
+    startPlugin(path, pluginName);
   }
 
   @Override
