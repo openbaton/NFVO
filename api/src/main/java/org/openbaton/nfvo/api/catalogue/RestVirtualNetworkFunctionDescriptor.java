@@ -22,6 +22,7 @@ import javax.validation.Valid;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.exceptions.EntityInUseException;
+import org.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.core.interfaces.VirtualNetworkFunctionManagement;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +66,7 @@ public class RestVirtualNetworkFunctionDescriptor {
   public VirtualNetworkFunctionDescriptor create(
       @RequestBody @Valid VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
       @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException {
+      throws NotFoundException, NetworkServiceIntegrityException {
     return vnfdManagement.add(virtualNetworkFunctionDescriptor, projectId);
   }
 
