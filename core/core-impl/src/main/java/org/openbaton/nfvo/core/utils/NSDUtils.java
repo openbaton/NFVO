@@ -133,29 +133,29 @@ public class NSDUtils {
         if (!vnfd.getId().contains("/")) {
           // Looking for a vnfd with a real id
           log.debug("VNFD to fetch is: " + vnfd.getId());
-          VirtualNetworkFunctionDescriptor vnfd_new = vnfdRepository.findFirstById(vnfd.getId());
-          log.trace("VNFD fetched: " + vnfd_new);
-          if (vnfd_new == null) {
+          VirtualNetworkFunctionDescriptor vnfdNew = vnfdRepository.findFirstById(vnfd.getId());
+          log.trace("VNFD fetched: " + vnfdNew);
+          if (vnfdNew == null) {
             throw new NotFoundException(
                 "Not found VNFD with ID: "
                     + vnfd.getId()
                     + ". Did you try to create a new VNFD instead of using an already existing one? In this case you should not have specified the VNFD's ID at all");
           }
           if (!log.isTraceEnabled()) {
-            log.debug("Fetched VNFD: " + vnfd_new.getName());
+            log.debug("Fetched VNFD: " + vnfdNew.getName());
           }
-          vnfd_add.add(vnfd_new);
+          vnfd_add.add(vnfdNew);
           vnfd_remove.add(vnfd);
 
         } else {
           String[] id_split = vnfd.getId().split("/");
           if (id_split.length >= 3) {
             log.debug("VNFD to fetch is: " + vnfd.getId());
-            VirtualNetworkFunctionDescriptor vnfd_new =
+            VirtualNetworkFunctionDescriptor vnfdNew =
                 vnfdRepository.findFirstByProjectIdAndVendorAndNameAndVersion(
                     projectId, id_split[0], id_split[1], id_split[2]);
-            log.trace("VNFD fetched: " + vnfd_new);
-            if (vnfd_new == null) {
+            log.trace("VNFD fetched: " + vnfdNew);
+            if (vnfdNew == null) {
 
               int response = 404;
               // Check if package is available on the marketplace
@@ -185,10 +185,10 @@ public class NSDUtils {
                     "Not found VNFD with ID: "
                         + vnfd.getId()
                         + ". Did you try to create a new VNFD instead of using an already existing one? In this case you should not have specified the VNFD's ID at all");
-            } else vnfd_add.add(vnfd_new);
+            } else vnfd_add.add(vnfdNew);
             if (!log.isTraceEnabled()) {
-              if (vnfd_new != null) {
-                log.debug("Fetched VNFD: " + vnfd_new.getName());
+              if (vnfdNew != null) {
+                log.debug("Fetched VNFD: " + vnfdNew.getName());
               }
             }
             vnfd_remove.add(vnfd);
