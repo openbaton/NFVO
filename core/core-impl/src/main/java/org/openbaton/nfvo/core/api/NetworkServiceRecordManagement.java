@@ -17,6 +17,7 @@
 
 package org.openbaton.nfvo.core.api;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,6 +48,7 @@ import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
 import org.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.openbaton.catalogue.nfvo.HistoryLifecycleEvent;
+import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.Quota;
 import org.openbaton.catalogue.nfvo.Subnet;
@@ -60,6 +62,7 @@ import org.openbaton.catalogue.nfvo.messages.OrVnfmHealVNFRequestMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmStartStopMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrHealedMessage;
 import org.openbaton.catalogue.security.Key;
+import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.MissingParameterException;
@@ -161,6 +164,8 @@ public class NetworkServiceRecordManagement
   @Autowired private KeyRepository keyRepository;
   @Autowired private VnfPackageRepository vnfPackageRepository;
 
+  @Autowired private org.openbaton.nfvo.core.interfaces.VimManagement vimManagement;
+
   @PostConstruct
   private void init() {
     if (removeAfterTimeout) {
@@ -183,7 +188,7 @@ public class NetworkServiceRecordManagement
       Map configurations,
       String monitoringIp)
       throws VimException, NotFoundException, PluginException, MissingParameterException,
-          BadRequestException {
+          BadRequestException, IOException, AlreadyExistingException {
     log.info("Looking for NetworkServiceDescriptor with id: " + idNsd);
     NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findFirstById(idNsd);
     if (networkServiceDescriptor == null) {
@@ -407,7 +412,7 @@ public class NetworkServiceRecordManagement
       Map configurations,
       String monitoringIp)
       throws VimException, NotFoundException, PluginException, MissingParameterException,
-          BadRequestException {
+          BadRequestException, IOException, AlreadyExistingException {
     networkServiceDescriptor.setProjectId(projectId);
     //    nsdUtils.fetchVimInstances(networkServiceDescriptor, projectId);
     DeployNSRBody body = new DeployNSRBody();
@@ -1163,7 +1168,8 @@ public class NetworkServiceRecordManagement
       DeployNSRBody body,
       String monitoringIp)
       throws NotFoundException, VimException, PluginException, MissingParameterException,
-          BadRequestException {
+          BadRequestException, IOException, AlreadyExistingException {
+
     Map<String, List<String>> vduVimInstances = new HashMap<>();
     log.info("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor.getName());
     log.info("VNFD are: ");
@@ -1219,6 +1225,29 @@ public class NetworkServiceRecordManagement
 
             if (vimInstance == null) {
               throw new NotFoundException("Not found VIM instance: " + vimInstanceName);
+            }
+
+            if (!vimInstance.getType().equals("test")) {
+              boolean found = false;
+              vimManagement.refresh(vimInstance);
+
+              for (String imageName : vdu.getVm_image()) {
+
+                for (NFVImage image : vimInstance.getImages()) {
+                  if (image.getName().equals(imageName) || image.getExtId().equals(imageName)) {
+                    found = true;
+                    if (!image.getStatus().equals(NFVImage.ImageStatus.ACTIVE))
+                      //log.warn("Image " + image.getName() + " is NOT ACTIVE!");
+                      throw new NotFoundException("Image " + image.getName() + " is NOT ACTIVE!");
+                  }
+                }
+              }
+              if (!found)
+                throw new NotFoundException(
+                    "None of the selected images "
+                        + vdu.getVm_image()
+                        + "was found on vim: "
+                        + vimInstanceName);
             }
 
             //check networks

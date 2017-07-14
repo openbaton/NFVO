@@ -16,15 +16,19 @@
 
 package org.openbaton.nfvo.api.catalogue;
 
-import io.swagger.annotations.ApiOperation;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-
+import io.swagger.annotations.ApiOperation;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
+import javax.validation.Valid;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadRequestException;
+import org.openbaton.exceptions.EntityUnreachableException;
 import org.openbaton.exceptions.IncompatibleVNFPackage;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.openbaton.exceptions.NotFoundException;
@@ -48,12 +52,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.List;
-
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/vnf-packages")
@@ -86,14 +84,14 @@ public class RestVNFPackage {
       @RequestHeader(value = "project-id") String projectId)
       throws IOException, VimException, NotFoundException, SQLException, PluginException,
           IncompatibleVNFPackage, AlreadyExistingException, NetworkServiceIntegrityException,
-          BadRequestException {
+          BadRequestException, InterruptedException, EntityUnreachableException {
 
     log.debug("Onboarding");
     if (!file.isEmpty()) {
       byte[] bytes = file.getBytes();
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
           vnfPackageManagement.onboard(bytes, projectId);
-//      return "{ \"id\": \"" + virtualNetworkFunctionDescriptor.getVnfPackageLocation() + "\"}";
+      //      return "{ \"id\": \"" + virtualNetworkFunctionDescriptor.getVnfPackageLocation() + "\"}";
       return virtualNetworkFunctionDescriptor;
     } else throw new IOException("File is empty!");
   }
@@ -111,7 +109,8 @@ public class RestVNFPackage {
   public String marketDownload(
       @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
       throws IOException, PluginException, VimException, NotFoundException, IncompatibleVNFPackage,
-          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException {
+          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException,
+          InterruptedException, EntityUnreachableException {
     Gson gson = new Gson();
     JsonObject jsonObject = gson.fromJson(link, JsonObject.class);
     String downloadlink = jsonObject.getAsJsonPrimitive("link").getAsString();
