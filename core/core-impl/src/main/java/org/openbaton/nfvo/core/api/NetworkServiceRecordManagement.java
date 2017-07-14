@@ -44,18 +44,7 @@ import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.Action;
-import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
-import org.openbaton.catalogue.nfvo.ConfigurationParameter;
-import org.openbaton.catalogue.nfvo.HistoryLifecycleEvent;
-import org.openbaton.catalogue.nfvo.NFVImage;
-import org.openbaton.catalogue.nfvo.Network;
-import org.openbaton.catalogue.nfvo.Quota;
-import org.openbaton.catalogue.nfvo.Subnet;
-import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
-import org.openbaton.catalogue.nfvo.VNFPackage;
-import org.openbaton.catalogue.nfvo.VimInstance;
-import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmHealVNFRequestMessage;
@@ -1236,7 +1225,7 @@ public class NetworkServiceRecordManagement
                 for (NFVImage image : vimInstance.getImages()) {
                   if (image.getName().equals(imageName) || image.getExtId().equals(imageName)) {
                     found = true;
-                    if (!image.getStatus().equals(NFVImage.ImageStatus.ACTIVE))
+                    if (!image.getStatus().equals(ImageStatus.ACTIVE))
                       //log.warn("Image " + image.getName() + " is NOT ACTIVE!");
                       throw new NotFoundException("Image " + image.getName() + " is NOT ACTIVE!");
                   }

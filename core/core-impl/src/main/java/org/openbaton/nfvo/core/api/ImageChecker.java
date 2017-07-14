@@ -2,6 +2,7 @@ package org.openbaton.nfvo.core.api;
 
 import java.io.IOException;
 import java.util.Set;
+import org.openbaton.catalogue.nfvo.ImageStatus;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.AlreadyExistingException;
@@ -48,8 +49,8 @@ public class ImageChecker {
       Set<NFVImage> images = vimManagement.queryImagesDirectly(vimInstance);
 
       for (NFVImage image : images) {
-        if (image.getStatus().equals(NFVImage.ImageStatus.QUEUED)
-            || image.getStatus().equals(NFVImage.ImageStatus.SAVING)) {
+        if (image.getStatus().equals(ImageStatus.QUEUED)
+            || image.getStatus().equals(ImageStatus.SAVING)) {
 
           log.debug("Image " + image.getName() + " is still not active");
           allImagesActive = false;
