@@ -17,6 +17,7 @@
 
 package org.openbaton.nfvo.core.api;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,6 +60,7 @@ import org.openbaton.catalogue.nfvo.messages.OrVnfmHealVNFRequestMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmStartStopMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrHealedMessage;
 import org.openbaton.catalogue.security.Key;
+import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.MissingParameterException;
@@ -67,10 +69,8 @@ import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.exceptions.WrongStatusException;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
-import org.openbaton.nfvo.core.interfaces.DependencyManagement;
-import org.openbaton.nfvo.core.interfaces.EventDispatcher;
-import org.openbaton.nfvo.core.interfaces.NetworkManagement;
-import org.openbaton.nfvo.core.interfaces.ResourceManagement;
+import org.openbaton.nfvo.core.interfaces.*;
+import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.openbaton.nfvo.core.utils.NSDUtils;
 import org.openbaton.nfvo.core.utils.NSRUtils;
 import org.openbaton.nfvo.repositories.KeyRepository;
@@ -159,6 +159,7 @@ public class NetworkServiceRecordManagement
 
   @Autowired private KeyRepository keyRepository;
   @Autowired private VnfPackageRepository vnfPackageRepository;
+  @Autowired private VimManagement vimManagement;
 
   @PostConstruct
   private void init() {
@@ -182,7 +183,7 @@ public class NetworkServiceRecordManagement
       Map configurations,
       String monitoringIp)
       throws VimException, NotFoundException, PluginException, MissingParameterException,
-          BadRequestException {
+          BadRequestException, IOException, AlreadyExistingException {
     log.info("Looking for NetworkServiceDescriptor with id: " + idNsd);
     NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findFirstById(idNsd);
     if (networkServiceDescriptor == null) {
@@ -406,7 +407,7 @@ public class NetworkServiceRecordManagement
       Map configurations,
       String monitoringIp)
       throws VimException, NotFoundException, PluginException, MissingParameterException,
-          BadRequestException {
+          BadRequestException, IOException, AlreadyExistingException {
     networkServiceDescriptor.setProjectId(projectId);
     //    nsdUtils.fetchVimInstances(networkServiceDescriptor, projectId);
     DeployNSRBody body = new DeployNSRBody();
@@ -1117,7 +1118,9 @@ public class NetworkServiceRecordManagement
       DeployNSRBody body,
       String monitoringIp)
       throws NotFoundException, VimException, PluginException, MissingParameterException,
-          BadRequestException {
+          BadRequestException, IOException, AlreadyExistingException {
+    for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectID))
+      vimManagement.refresh(vimInstance);
     Map<String, List<String>> vduVimInstances = new HashMap<>();
     log.info("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor.getName());
     log.info("VNFD are: ");

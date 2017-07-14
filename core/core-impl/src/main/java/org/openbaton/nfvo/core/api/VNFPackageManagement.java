@@ -108,6 +108,8 @@ public class VNFPackageManagement
       throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage,
           AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException {
     log.info("Onboarding VNF Package...");
+    for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId))
+      vimManagement.refresh(vimInstance);
     VNFPackage vnfPackage = new VNFPackage();
     vnfPackage.setScripts(new HashSet<Script>());
     Map<String, Object> metadata = null;
