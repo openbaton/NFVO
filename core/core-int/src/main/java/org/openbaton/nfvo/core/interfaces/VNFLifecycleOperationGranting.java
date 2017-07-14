@@ -33,4 +33,8 @@ public interface VNFLifecycleOperationGranting {
   Map<String, VimInstance> grantLifecycleOperation(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
       throws VimException, PluginException;
+
+  VimInstance checkQuotaOnVimInstance(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VimInstance vimInstance)
+      throws VimException, PluginException;
 }
