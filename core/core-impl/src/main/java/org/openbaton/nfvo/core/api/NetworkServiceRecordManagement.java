@@ -1172,26 +1172,28 @@ public class NetworkServiceRecordManagement
               throw new NotFoundException("Not found VIM instance: " + vimInstanceName);
             }
 
-            boolean found = false;
-            vimManagement.refresh(vimInstance);
-            for (String imageName : vdu.getVm_image()) {
+            if (!vimInstance.getType().equals("test")) {
+              boolean found = false;
+              vimManagement.refresh(vimInstance);
 
-              for (NFVImage image : vimInstance.getImages()) {
-                if (image.getName().equals(imageName) || image.getExtId().equals(imageName)) {
-                  //if (image.getStatus().equals(NFVImage.ImageStatus.ACTIVE)) {
-                  //found = true;
-                  //} else log.debug("Image " + image.getName() + " is NOT ACTIVE!");
-                  log.debug("test");
-                  found = true;
+              for (String imageName : vdu.getVm_image()) {
+
+                for (NFVImage image : vimInstance.getImages()) {
+                  if (image.getName().equals(imageName) || image.getExtId().equals(imageName)) {
+                    found = true;
+                    if (!image.getStatus().equals(NFVImage.ImageStatus.ACTIVE))
+                      //log.warn("Image " + image.getName() + " is NOT ACTIVE!");
+                      throw new NotFoundException("Image " + image.getName() + " is NOT ACTIVE!");
+                  }
                 }
               }
+              if (!found)
+                throw new NotFoundException(
+                    "None of the selected images "
+                        + vdu.getVm_image()
+                        + "was found on vim: "
+                        + vimInstanceName);
             }
-            if (!found)
-              throw new NotFoundException(
-                  "None of the selected images "
-                      + vdu.getVm_image()
-                      + "was found on vim: "
-                      + vimInstanceName);
 
             //check networks
             for (VNFComponent vnfc : vdu.getVnfc()) {

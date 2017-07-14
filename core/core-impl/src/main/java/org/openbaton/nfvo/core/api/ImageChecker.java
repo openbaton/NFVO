@@ -44,7 +44,6 @@ public class ImageChecker {
 
       java.lang.Thread.sleep(imageStatusTimeoutDelay * 1000);
 
-      log.debug(String.valueOf(imageStatusTimeout));
       boolean allImagesActive = true;
       Set<NFVImage> images = vimManagement.queryImagesDirectly(vimInstance);
 
