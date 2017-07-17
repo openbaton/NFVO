@@ -42,6 +42,7 @@ import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.CyclicDependenciesException;
 import org.openbaton.exceptions.EntityInUseException;
+import org.openbaton.exceptions.EntityUnreachableException;
 import org.openbaton.exceptions.IncompatibleVNFPackage;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.openbaton.exceptions.NotFoundException;
@@ -166,7 +167,8 @@ public class NetworkServiceDescriptorManagement
   public NetworkServiceDescriptor onboardFromMarketplace(String link, String projectId)
       throws BadFormatException, CyclicDependenciesException, NetworkServiceIntegrityException,
           NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
-          AlreadyExistingException, EntityInUseException, BadRequestException {
+          AlreadyExistingException, EntityInUseException, BadRequestException, InterruptedException,
+          EntityUnreachableException {
 
     InputStream in = new BufferedInputStream(new URL(link).openStream());
     ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -197,7 +199,8 @@ public class NetworkServiceDescriptorManagement
 
   private List<String> getIds(List<String> market_ids, String project_id)
       throws NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
-          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException {
+          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException,
+          InterruptedException, EntityUnreachableException {
     List<String> not_found_ids = new ArrayList<>();
     not_found_ids.addAll(market_ids);
     List<String> vnfdIds = new ArrayList<>();

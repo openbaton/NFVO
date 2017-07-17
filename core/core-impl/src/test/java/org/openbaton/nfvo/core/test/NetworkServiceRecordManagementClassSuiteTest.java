@@ -23,6 +23,7 @@ import static org.mockito.Matchers.anySet;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -73,15 +74,7 @@ import org.openbaton.catalogue.nfvo.Quota;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
-import org.openbaton.exceptions.BadFormatException;
-import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.MissingParameterException;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.QuotaExceededException;
-import org.openbaton.exceptions.VimDriverException;
-import org.openbaton.exceptions.VimException;
-import org.openbaton.exceptions.WrongStatusException;
+import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.core.api.ConfigurationManagement;
 import org.openbaton.nfvo.core.api.NetworkServiceRecordManagement;
 import org.openbaton.nfvo.core.interfaces.EventDispatcher;
@@ -238,7 +231,8 @@ public class NetworkServiceRecordManagementClassSuiteTest {
   public void nsrManagementOnboardTest1()
       throws NotFoundException, InterruptedException, ExecutionException, NamingException,
           VimException, VimDriverException, JMSException, BadFormatException,
-          QuotaExceededException, PluginException, MissingParameterException, BadRequestException {
+          QuotaExceededException, PluginException, MissingParameterException, BadRequestException,
+          IOException, AlreadyExistingException {
     final NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
     when(nsrRepository.save(any(NetworkServiceRecord.class)))
         .thenAnswer(
@@ -285,7 +279,8 @@ public class NetworkServiceRecordManagementClassSuiteTest {
   public void nsrManagementOnboardTest2()
       throws NotFoundException, InterruptedException, ExecutionException, NamingException,
           VimException, VimDriverException, JMSException, BadFormatException,
-          QuotaExceededException, PluginException, MissingParameterException, BadRequestException {
+          QuotaExceededException, PluginException, MissingParameterException, BadRequestException,
+          IOException, AlreadyExistingException {
     /** Initial settings */
     NetworkServiceDescriptor networkServiceDescriptor = createNetworkServiceDescriptor();
 
@@ -342,7 +337,8 @@ public class NetworkServiceRecordManagementClassSuiteTest {
   public void nsrManagementOnboardTest3()
       throws NotFoundException, InterruptedException, ExecutionException, NamingException,
           VimException, VimDriverException, JMSException, BadFormatException,
-          QuotaExceededException, PluginException, MissingParameterException, BadRequestException {
+          QuotaExceededException, PluginException, MissingParameterException, BadRequestException,
+          IOException, AlreadyExistingException {
     /** Initial settings */
     when(nsrRepository.save(any(NetworkServiceRecord.class)))
         .thenAnswer(

@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import io.swagger.annotations.ApiOperation;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,6 +44,7 @@ import org.openbaton.catalogue.nfvo.DependencyParameters;
 import org.openbaton.catalogue.nfvo.HistoryLifecycleEvent;
 import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.MissingParameterException;
@@ -103,7 +105,7 @@ public class RestNetworkServiceRecord {
       @RequestBody(required = false) String bodyJson)
       throws InterruptedException, ExecutionException, VimException, NotFoundException,
           BadFormatException, VimDriverException, QuotaExceededException, PluginException,
-          MissingParameterException, BadRequestException {
+          MissingParameterException, BadRequestException, IOException, AlreadyExistingException {
 
     JsonObject jsonObject = gson.fromJson(bodyJson, JsonObject.class);
     String monitoringIp = null;
@@ -160,7 +162,7 @@ public class RestNetworkServiceRecord {
       @RequestBody(required = false) JsonObject body)
       throws InterruptedException, ExecutionException, VimException, NotFoundException,
           BadFormatException, VimDriverException, QuotaExceededException, PluginException,
-          MissingParameterException, BadRequestException {
+          MissingParameterException, BadRequestException, IOException, AlreadyExistingException {
 
     log.debug("Json Body is" + body);
     String monitoringIp = null;
