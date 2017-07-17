@@ -255,7 +255,7 @@ public class RestVimInstances {
       @PathVariable("idImage") String idImage,
       @RequestHeader(value = "project-id") String projectId)
       throws VimException, PluginException, EntityUnreachableException, IOException,
-          BadRequestException, AlreadyExistingException {
+          BadRequestException, AlreadyExistingException, NotFoundException {
     vimManagement.deleteImage(idVim, idImage, projectId);
   }
 
