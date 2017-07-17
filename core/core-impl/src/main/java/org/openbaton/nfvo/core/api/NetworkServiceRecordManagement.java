@@ -44,7 +44,19 @@ import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.*;
+import org.openbaton.catalogue.nfvo.Action;
+import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
+import org.openbaton.catalogue.nfvo.ConfigurationParameter;
+import org.openbaton.catalogue.nfvo.HistoryLifecycleEvent;
+import org.openbaton.catalogue.nfvo.ImageStatus;
+import org.openbaton.catalogue.nfvo.NFVImage;
+import org.openbaton.catalogue.nfvo.Network;
+import org.openbaton.catalogue.nfvo.Quota;
+import org.openbaton.catalogue.nfvo.Subnet;
+import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
+import org.openbaton.catalogue.nfvo.VNFPackage;
+import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmHealVNFRequestMessage;
@@ -64,6 +76,7 @@ import org.openbaton.nfvo.core.interfaces.DependencyManagement;
 import org.openbaton.nfvo.core.interfaces.EventDispatcher;
 import org.openbaton.nfvo.core.interfaces.NetworkManagement;
 import org.openbaton.nfvo.core.interfaces.ResourceManagement;
+import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.openbaton.nfvo.core.utils.NSDUtils;
 import org.openbaton.nfvo.core.utils.NSRUtils;
 import org.openbaton.nfvo.repositories.KeyRepository;
@@ -152,8 +165,7 @@ public class NetworkServiceRecordManagement
 
   @Autowired private KeyRepository keyRepository;
   @Autowired private VnfPackageRepository vnfPackageRepository;
-
-  @Autowired private org.openbaton.nfvo.core.interfaces.VimManagement vimManagement;
+  @Autowired private VimManagement vimManagement;
 
   @PostConstruct
   private void init() {
@@ -1159,6 +1171,8 @@ public class NetworkServiceRecordManagement
       throws NotFoundException, VimException, PluginException, MissingParameterException,
           BadRequestException, IOException, AlreadyExistingException {
 
+    for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectID))
+      vimManagement.refresh(vimInstance);
     Map<String, List<String>> vduVimInstances = new HashMap<>();
     log.info("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor.getName());
     log.info("VNFD are: ");

@@ -74,9 +74,19 @@ import org.openbaton.catalogue.nfvo.Quota;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
-import org.openbaton.exceptions.*;
+import org.openbaton.exceptions.AlreadyExistingException;
+import org.openbaton.exceptions.BadFormatException;
+import org.openbaton.exceptions.BadRequestException;
+import org.openbaton.exceptions.MissingParameterException;
+import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.PluginException;
+import org.openbaton.exceptions.QuotaExceededException;
+import org.openbaton.exceptions.VimDriverException;
+import org.openbaton.exceptions.VimException;
+import org.openbaton.exceptions.WrongStatusException;
 import org.openbaton.nfvo.core.api.ConfigurationManagement;
 import org.openbaton.nfvo.core.api.NetworkServiceRecordManagement;
+import org.openbaton.nfvo.core.api.VimManagement;
 import org.openbaton.nfvo.core.interfaces.EventDispatcher;
 import org.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
@@ -104,14 +114,14 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 
   private static final String projectId = "project-id";
 
-  @Mock private ConfigurationManagement configurationManagement;
-  @Mock private VnfPackageRepository vnfPackageRepository;
   @InjectMocks private NetworkServiceRecordManagement nsrManagement;
-
   @Rule public ExpectedException exception = ExpectedException.none();
 
   private final Logger log = LoggerFactory.getLogger(ApplicationTest.class);
 
+  @Mock private ConfigurationManagement configurationManagement;
+  @Mock private VnfPackageRepository vnfPackageRepository;
+  @Mock private VimManagement vimManagement;
   @Mock private VimBroker vimBroker;
   @Mock private VimRepository vimRepository;
   @Mock private NetworkServiceDescriptorRepository nsdRepository;
@@ -128,7 +138,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
   @Before
   public void init()
       throws ExecutionException, InterruptedException, VimDriverException, VimException,
-          PluginException {
+          PluginException, BadRequestException, IOException, AlreadyExistingException {
     MockitoAnnotations.initMocks(this);
     VimInstance vimInstance = createVimInstance();
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionRecord =
@@ -172,7 +182,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
                 add(vnfmManagerEndpoint);
               }
             });
-
+    when(vimManagement.refresh(any(VimInstance.class))).thenReturn(vimInstance);
     when(vnfPackageRepository.findFirstById(anyString())).thenReturn(createVNFPackage());
     log.info("Starting test");
   }
