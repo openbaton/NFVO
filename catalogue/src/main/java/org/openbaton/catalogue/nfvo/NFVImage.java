@@ -17,16 +17,15 @@
 
 package org.openbaton.catalogue.nfvo;
 
-import org.openbaton.catalogue.util.IdGenerator;
-
+import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
-import java.io.Serializable;
-import java.util.Date;
+import org.openbaton.catalogue.util.IdGenerator;
 
 /** Created by lto on 11/05/15. */
 @Entity
