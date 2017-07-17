@@ -6502,3 +6502,17 @@ ul li a:focus {
   }
 
 }
+@media (max-width: 766px) {
+    .navbar-top-links li {
+        display: block !important;
+    }
+    ul {
+        width: 250px !important;
+    }
+
+    .navbar-top-links li:last-child{
+
+        margin-right:0px !important;
+
+    }
+}

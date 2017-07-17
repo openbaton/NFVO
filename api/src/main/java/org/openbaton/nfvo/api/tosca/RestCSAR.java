@@ -31,6 +31,7 @@ import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.CyclicDependenciesException;
 import org.openbaton.exceptions.EntityInUseException;
+import org.openbaton.exceptions.EntityUnreachableException;
 import org.openbaton.exceptions.IncompatibleVNFPackage;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.openbaton.exceptions.NotFoundException;
@@ -112,7 +113,7 @@ public class RestCSAR {
       @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
       throws IOException, PluginException, VimException, NotFoundException, IncompatibleVNFPackage,
           org.openbaton.tosca.exceptions.NotFoundException, BadRequestException,
-          AlreadyExistingException {
+          AlreadyExistingException, InterruptedException, EntityUnreachableException {
     Gson gson = new Gson();
     JsonObject jsonObject = gson.fromJson(link, JsonObject.class);
     String downloadlink = jsonObject.getAsJsonPrimitive("link").getAsString();
@@ -153,7 +154,8 @@ public class RestCSAR {
       throws IOException, PluginException, VimException, NotFoundException, IncompatibleVNFPackage,
           NetworkServiceIntegrityException, BadFormatException, CyclicDependenciesException,
           EntityInUseException, org.openbaton.tosca.exceptions.NotFoundException,
-          BadRequestException, AlreadyExistingException {
+          BadRequestException, AlreadyExistingException, InterruptedException,
+          EntityUnreachableException {
     Gson gson = new Gson();
     JsonObject jsonObject = gson.fromJson(link, JsonObject.class);
     String downloadlink = jsonObject.getAsJsonPrimitive("link").getAsString();

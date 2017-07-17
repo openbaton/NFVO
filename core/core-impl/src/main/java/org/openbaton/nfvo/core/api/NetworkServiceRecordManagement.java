@@ -1165,6 +1165,7 @@ public class NetworkServiceRecordManagement
       String monitoringIp)
       throws NotFoundException, VimException, PluginException, MissingParameterException,
           BadRequestException, IOException, AlreadyExistingException {
+
     for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectID))
       vimManagement.refresh(vimInstance);
     Map<String, List<String>> vduVimInstances = new HashMap<>();
@@ -1222,6 +1223,29 @@ public class NetworkServiceRecordManagement
 
             if (vimInstance == null) {
               throw new NotFoundException("Not found VIM instance: " + vimInstanceName);
+            }
+
+            if (!vimInstance.getType().equals("test")) {
+              boolean found = false;
+              vimManagement.refresh(vimInstance);
+
+              for (String imageName : vdu.getVm_image()) {
+
+                for (NFVImage image : vimInstance.getImages()) {
+                  if (image.getName().equals(imageName) || image.getExtId().equals(imageName)) {
+                    found = true;
+                    if (!image.getStatus().equals(ImageStatus.ACTIVE))
+                      //log.warn("Image " + image.getName() + " is NOT ACTIVE!");
+                      throw new NotFoundException("Image " + image.getName() + " is NOT ACTIVE!");
+                  }
+                }
+              }
+              if (!found)
+                throw new NotFoundException(
+                    "None of the selected images "
+                        + vdu.getVm_image()
+                        + "was found on vim: "
+                        + vimInstanceName);
             }
 
             //check networks
