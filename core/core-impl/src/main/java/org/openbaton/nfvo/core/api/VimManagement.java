@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Future;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
@@ -31,12 +32,7 @@ import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.Subnet;
 import org.openbaton.catalogue.nfvo.VimInstance;
-import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.EntityUnreachableException;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimException;
+import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.repositories.ImageRepository;
 import org.openbaton.nfvo.repositories.NetworkRepository;
 import org.openbaton.nfvo.repositories.VNFDRepository;
@@ -91,6 +87,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   public VimInstance add(VimInstance vimInstance, String projectId)
       throws VimException, PluginException, IOException, BadRequestException,
           AlreadyExistingException {
+    validateVimInstance(vimInstance);
     vimInstance.setProjectId(projectId);
     log.trace("Persisting VimInstance: " + vimInstance);
     return this.refresh(vimInstance);
@@ -130,13 +127,16 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   @Override
   public VimInstance update(VimInstance vimInstance, String id, String projectId)
       throws VimException, PluginException, IOException, BadRequestException,
-          AlreadyExistingException {
+          AlreadyExistingException, NotFoundException {
+    validateVimInstance(vimInstance);
     if (!vimInstance.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
           "Vim not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     }
     //    vimInstance = vimRepository.save(vimInstance);
     VimInstance vimInstanceOld = vimRepository.findFirstById(vimInstance.getId());
+    if (vimInstanceOld == null)
+      throw new NotFoundException("VIM Instance with ID " + id + " not found.");
     if (!vimInstanceOld.getName().equals(vimInstance.getName())) {
       for (VirtualNetworkFunctionDescriptor vnfd : vnfdRepository.findByProjectId(projectId)) {
         for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
@@ -252,14 +252,35 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   }
 
   public NFVImage queryImage(String idVim, String idImage, String projectId)
-      throws EntityUnreachableException {
+      throws EntityUnreachableException, NotFoundException {
     VimInstance vimInstance = vimRepository.findFirstById(idVim);
+    if (vimInstance == null)
+      throw new NotFoundException("VIM Instance with ID " + idVim + " not found.");
     if (vimInstance.getProjectId().equals(projectId)) {
       if (!vimInstance.isActive()) {
         throw new EntityUnreachableException(
             "VimInstance " + vimInstance.getName() + " is not reachable");
       }
-      return imageRepository.findOne(idImage);
+      try {
+        refresh(vimInstance);
+      } catch (Exception e) {
+        log.error(
+            "Unable to refresh the VIM instance with ID "
+                + idVim
+                + " before querying the image with ID "
+                + idImage);
+        e.printStackTrace();
+      }
+      for (NFVImage image : vimInstance.getImages()) {
+        if (image.getId().equals(idImage)) return imageRepository.findOne(idImage);
+      }
+      throw new NotFoundException(
+          "Did not find image with ID "
+              + idImage
+              + " for the VIM instance "
+              + vimInstance.getName()
+              + " with ID "
+              + idVim);
     }
     throw new UnauthorizedUserException(
         "VimInstance not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
@@ -269,8 +290,10 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   @Override
   public void deleteImage(String idVim, String idImage, String projectId)
       throws VimException, PluginException, EntityUnreachableException, IOException,
-          BadRequestException, AlreadyExistingException {
+          BadRequestException, AlreadyExistingException, NotFoundException {
     VimInstance vimInstance = vimRepository.findFirstById(idVim);
+    if (vimInstance == null)
+      throw new NotFoundException("VIM Instance with ID " + idVim + " not found.");
     if (!vimInstance.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
           "VimInstance not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
@@ -530,5 +553,26 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
       vimInstance.getFlavours().removeAll(flavors_old);
       return new AsyncResult<>(flavors_new);
     }
+  }
+
+  /**
+   * Validate if the Vim instance has all the required fields filled with values.
+   *
+   * @param vimInstance
+   * @throws BadRequestException
+   */
+  private void validateVimInstance(VimInstance vimInstance) throws BadRequestException {
+    if (Objects.equals(vimInstance.getName(), "") || vimInstance.getName() == null)
+      throw new BadRequestException("The VIM's name must not be empty or null.");
+    if (Objects.equals(vimInstance.getTenant(), "") || vimInstance.getTenant() == null)
+      throw new BadRequestException("The VIM's tenant must not be empty or null.");
+    if (Objects.equals(vimInstance.getKeyPair(), ""))
+      throw new BadRequestException("The VIM's key pair must not be empty or null.");
+    if (Objects.equals(vimInstance.getUsername(), "") || vimInstance.getUsername() == null)
+      throw new BadRequestException("The VIM's username must not be empty or null.");
+    if (vimInstance.getPassword() == null)
+      throw new BadRequestException("The VIM's password must not be empty or null.");
+    if (Objects.equals(vimInstance.getType(), "") || vimInstance.getType() == null)
+      throw new BadRequestException("The VIM's type must not be empty or null.");
   }
 }

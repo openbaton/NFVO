@@ -18,7 +18,6 @@ package org.openbaton.nfvo.api.admin;
 
 import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
-import java.util.Objects;
 import java.util.Set;
 import javax.validation.Valid;
 import org.openbaton.catalogue.nfvo.NFVImage;
@@ -33,13 +32,7 @@ import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/datacenters")
@@ -71,19 +64,6 @@ public class RestVimInstances {
       @RequestHeader(value = "project-id") String projectId)
       throws VimException, PluginException, EntityUnreachableException, IOException,
           BadRequestException, AlreadyExistingException, NotFoundException {
-
-    if (Objects.equals(vimInstance.getName(), "") || vimInstance.getName() == null)
-      throw new NotFoundException("The VIM must have an non-empty/null name!");
-    if (Objects.equals(vimInstance.getTenant(), "") || vimInstance.getTenant() == null)
-      throw new NotFoundException("The VIM must have an non-empty/null tenant!");
-    if (Objects.equals(vimInstance.getKeyPair(), ""))
-      throw new NotFoundException("The VIM must have an non-empty key pair or null!");
-    if (Objects.equals(vimInstance.getUsername(), "") || vimInstance.getUsername() == null)
-      throw new NotFoundException("The VIM must have an non-empty/null username!");
-    if (vimInstance.getPassword() == null)
-      throw new NotFoundException("The VIM must have an non-null password!");
-    if (Objects.equals(vimInstance.getType(), "") || vimInstance.getType() == null)
-      throw new NotFoundException("The VIM must have an non-empty/null type!");
     return vimManagement.add(vimInstance, projectId);
   }
 
@@ -136,8 +116,11 @@ public class RestVimInstances {
   )
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
   public VimInstance findById(
-      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
+      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
     VimInstance vimInstance = vimManagement.query(id, projectId);
+    if (vimInstance == null)
+      throw new NotFoundException("VIM Instance with ID " + id + " not found.");
     vimInstance.setPassword("**********");
     return vimInstance;
   }
@@ -166,7 +149,7 @@ public class RestVimInstances {
       @PathVariable("id") String id,
       @RequestHeader(value = "project-id") String projectId)
       throws VimException, PluginException, EntityUnreachableException, IOException,
-          BadRequestException, AlreadyExistingException {
+          BadRequestException, AlreadyExistingException, NotFoundException {
     return vimManagement.update(new_vimInstance, id, projectId);
   }
 
@@ -182,8 +165,11 @@ public class RestVimInstances {
   )
   @RequestMapping(value = "{id}/images", method = RequestMethod.GET)
   public Set<NFVImage> getAllImages(
-      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
+      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
     VimInstance vimInstance = vimManagement.query(id, projectId);
+    if (vimInstance == null)
+      throw new NotFoundException("VIM Instance with ID " + id + " not found.");
     return vimInstance.getImages();
   }
 
@@ -204,7 +190,7 @@ public class RestVimInstances {
       @PathVariable("idVim") String idVim,
       @PathVariable("idImage") String idImage,
       @RequestHeader(value = "project-id") String projectId)
-      throws EntityUnreachableException {
+      throws EntityUnreachableException, NotFoundException {
     return vimManagement.queryImage(idVim, idImage, projectId);
   }
 

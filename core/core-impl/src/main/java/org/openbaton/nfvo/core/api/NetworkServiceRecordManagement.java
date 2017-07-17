@@ -642,7 +642,7 @@ public class NetworkServiceRecordManagement
 
     if (!vnfrNetworks.containsAll(componentNetworks)) {
       throw new BadFormatException(
-          "Not all the network exist in the InternalVirtualLinks. They need to be included in these names: "
+          "Not all the networks exist in the InternalVirtualLinks. They need to be included in these names: "
               + vnfrNetworks);
     }
 
