@@ -111,10 +111,14 @@ public class NetworkServiceDescriptorManagement
   public NetworkServiceDescriptor onboard(
       NetworkServiceDescriptor networkServiceDescriptor, String projectId)
       throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
-          CyclicDependenciesException, EntityInUseException {
+          CyclicDependenciesException, EntityInUseException, BadRequestException {
     SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
     networkServiceDescriptor.setProjectId(projectId);
     log.info("Starting onboarding process for NSD: " + networkServiceDescriptor.getName());
+
+    if (networkServiceDescriptor.getVnfd().size() == 0)
+      throw new BadRequestException(
+          "The Network Service Descriptor has to have at least one VNFD.");
 
     nsdUtils.fetchExistingVnfd(networkServiceDescriptor);
 

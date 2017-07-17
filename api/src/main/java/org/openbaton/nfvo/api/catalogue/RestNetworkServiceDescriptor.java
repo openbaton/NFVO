@@ -84,7 +84,7 @@ public class RestNetworkServiceDescriptor {
       @RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor,
       @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
-          CyclicDependenciesException, EntityInUseException {
+          CyclicDependenciesException, EntityInUseException, BadRequestException {
     NetworkServiceDescriptor nsd;
     log.trace("Just Received: " + networkServiceDescriptor);
     nsd = networkServiceDescriptorManagement.onboard(networkServiceDescriptor, projectId);

@@ -90,7 +90,8 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
   @Test
   public void nsdManagementEnableTest()
       throws NotFoundException, WrongStatusException, BadFormatException,
-          NetworkServiceIntegrityException, CyclicDependenciesException, EntityInUseException {
+          NetworkServiceIntegrityException, CyclicDependenciesException, EntityInUseException,
+          BadRequestException {
     NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
     when(vimRepository.findByProjectId(anyString()))
         .thenReturn(
@@ -113,7 +114,8 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
   @Test
   public void nsdManagementDisableTest()
       throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
-          CyclicDependenciesException, WrongStatusException, EntityInUseException {
+          CyclicDependenciesException, WrongStatusException, EntityInUseException,
+          BadRequestException {
     NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
     nsd_exp.setEnabled(true);
     when(vimRepository.findAll())
@@ -175,7 +177,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
   @Ignore
   public void nsdManagementOnboardExceptionTest()
       throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
-          CyclicDependenciesException, EntityInUseException {
+          CyclicDependenciesException, EntityInUseException, BadRequestException {
     NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
     when(vnfmManagerEndpointRepository.findAll()).thenReturn(new ArrayList<VnfmManagerEndpoint>());
     exception.expect(NotFoundException.class);
@@ -185,7 +187,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
   @Test
   public void nsdManagementOnboardTest()
       throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
-          CyclicDependenciesException, EntityInUseException {
+          CyclicDependenciesException, EntityInUseException, BadRequestException {
 
     NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
 

@@ -86,6 +86,10 @@ public class NSDUtils {
   public void checkEndpoint(
       NetworkServiceDescriptor networkServiceDescriptor, Iterable<VnfmManagerEndpoint> endpoints)
       throws NotFoundException {
+    // since the check for existence of VNFDs is done prior to this method call, we can assume that at least one VNFD exists
+    if (networkServiceDescriptor.getVnfd().size() == 0)
+      throw new RuntimeException(
+          "The NSD contains no VNFDs. This exception is not expected to be thrown at any time. If it is, you found a bug.");
     boolean found = false;
     for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
         networkServiceDescriptor.getVnfd()) {
@@ -102,11 +106,8 @@ public class NSDUtils {
         throw new NotFoundException(
             "VNFManager with endpoint: "
                 + virtualNetworkFunctionDescriptor.getEndpoint()
-                + " is not registered or not enable or not active.");
+                + " is not registered or not enabled or not active.");
       }
-    }
-    if (!found) {
-      throw new NotFoundException("No VNFManagers were found");
     }
   }
 
