@@ -22,7 +22,9 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -172,7 +174,22 @@ public class NetworkServiceDescriptorManagement
           NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
           AlreadyExistingException, EntityInUseException, BadRequestException {
 
-    InputStream in = new BufferedInputStream(new URL(link).openStream());
+    URL linkUrl = null;
+    try {
+      linkUrl = new URL(link);
+    } catch (MalformedURLException e) {
+      log.error("Malformed URL: " + link);
+      e.printStackTrace();
+      throw new BadRequestException("Malformed URL: " + link);
+    }
+    InputStream in = null;
+    try {
+      in = new BufferedInputStream(linkUrl.openStream());
+    } catch (UnknownHostException e) {
+      log.error("Link points to unknown host: " + link);
+      e.printStackTrace();
+      throw new BadRequestException("Link points to unknown host: " + link);
+    }
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     byte[] bytes = new byte[1024];
     int n = 0;
@@ -182,7 +199,20 @@ public class NetworkServiceDescriptorManagement
     out.close();
     in.close();
     String json = out.toString();
-    NetworkServiceDescriptor nsd = gson.fromJson(json, NetworkServiceDescriptor.class);
+    NetworkServiceDescriptor nsd = null;
+    try {
+      nsd = gson.fromJson(json, NetworkServiceDescriptor.class);
+    } catch (Exception e) {
+      log.error(
+          "Could not parse the content of the link ("
+              + link
+              + ") to a Network Service Descriptor.");
+      e.printStackTrace();
+      throw new BadRequestException(
+          "Could not parse the content of the link ("
+              + link
+              + ") to a Network Service Descriptor.");
+    }
 
     List<String> market_ids = new ArrayList<>();
     for (VirtualNetworkFunctionDescriptor vnfd : nsd.getVnfd()) {
@@ -520,9 +550,11 @@ public class NetworkServiceDescriptorManagement
   /** This operation is used to remove a disabled Network Service Descriptor. */
   @Override
   public void delete(String id, String projectId)
-      throws WrongStatusException, EntityInUseException {
+      throws WrongStatusException, EntityInUseException, BadRequestException {
     log.info("Removing NetworkServiceDescriptor with id " + id);
     NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findFirstById(id);
+    if (networkServiceDescriptor == null)
+      throw new BadRequestException("Did not find a Network Service Descriptor with ID " + id);
     if (!networkServiceDescriptor.getProjectId().equals(projectId))
       throw new UnauthorizedUserException(
           "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");

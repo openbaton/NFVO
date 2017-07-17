@@ -36,6 +36,7 @@ import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.security.User;
+import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.EntityInUseException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.WrongStatusException;
@@ -230,7 +231,8 @@ public class OpenbatonCLI implements CommandLineRunner {
     }
   }
 
-  private void deleteDescriptor(String line) throws WrongStatusException, EntityInUseException {
+  private void deleteDescriptor(String line)
+      throws WrongStatusException, EntityInUseException, BadRequestException {
     StringTokenizer stringTokenizer = new StringTokenizer(line, " ");
 
     if (stringTokenizer.countTokens() != 2) {

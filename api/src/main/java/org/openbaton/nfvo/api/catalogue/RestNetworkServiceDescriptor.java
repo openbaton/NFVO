@@ -115,7 +115,16 @@ public class RestNetworkServiceDescriptor {
           AlreadyExistingException, EntityInUseException, BadRequestException {
 
     log.debug("LINK: " + link);
-    String downloadlink = link.get("link").getAsString();
+    if (!link.has("link"))
+      throw new BadRequestException(
+          "The request body has to look like this: {\"link\": \"http://replace-with-link-to-nsd\"}");
+    String downloadlink = null;
+    try {
+      downloadlink = link.get("link").getAsString();
+    } catch (Exception e) {
+      throw new BadRequestException(
+          "The provided link value is not a string. The request body has to look like this: {\"link\": \"http://replace-with-link-to-nsd\"}");
+    }
     return networkServiceDescriptorManagement.onboardFromMarketplace(downloadlink, projectId);
   }
 
@@ -132,7 +141,7 @@ public class RestNetworkServiceDescriptor {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
-      throws WrongStatusException, EntityInUseException {
+      throws WrongStatusException, EntityInUseException, BadRequestException {
     networkServiceDescriptorManagement.delete(id, projectId);
   }
 
@@ -159,7 +168,7 @@ public class RestNetworkServiceDescriptor {
   public void multipleDelete(
       @RequestBody @Valid List<String> ids, @RequestHeader(value = "project-id") String projectId)
       throws InterruptedException, ExecutionException, WrongStatusException, VimException,
-          NotFoundException, EntityInUseException {
+          NotFoundException, EntityInUseException, BadRequestException {
     for (String id : ids) networkServiceDescriptorManagement.delete(id, projectId);
   }
 
