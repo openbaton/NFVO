@@ -72,7 +72,7 @@ public class ApiRestVimInstancesTest {
   }
 
   @Test
-  public void findByIdVimInstance() {
+  public void findByIdVimInstance() throws NotFoundException {
     VimInstance datacenter = new VimInstance();
     datacenter.setId("123");
     datacenter.setName("DC-1");
@@ -85,7 +85,7 @@ public class ApiRestVimInstancesTest {
   @Test
   public void updateVimInstance()
       throws VimException, PluginException, IOException, EntityUnreachableException,
-          BadRequestException, AlreadyExistingException {
+          BadRequestException, AlreadyExistingException, NotFoundException {
     VimInstance datacenter = new VimInstance();
     datacenter.setId("123");
     datacenter.setName("DC-1");

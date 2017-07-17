@@ -102,7 +102,7 @@ public class VimManagementClassSuiteTest {
   @Test
   public void vimManagementUpdateTest()
       throws VimException, PluginException, IOException, EntityUnreachableException,
-          BadRequestException, AlreadyExistingException {
+          BadRequestException, AlreadyExistingException, NotFoundException {
     initMocks();
     VimInstance vimInstance_exp = createVimInstance();
     when(vimRepository.findFirstById(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
@@ -143,6 +143,7 @@ public class VimManagementClassSuiteTest {
           BadRequestException, AlreadyExistingException {
     initMocks();
     VimInstance vimInstance_exp = createVimInstance();
+    System.out.println(vimInstance_exp);
     when(vimRepository.save(any(VimInstance.class))).thenReturn(vimInstance_exp);
     VimInstance vimInstance_new = vimManagement.add(vimInstance_exp, projectId);
 
@@ -224,6 +225,8 @@ public class VimManagementClassSuiteTest {
     vimInstance.setProjectId(projectId);
     vimInstance.setName("vim_instance");
     vimInstance.setPassword("password");
+    vimInstance.setTenant("test");
+    vimInstance.setUsername("admin");
     Location location = new Location();
     location.setName("LocationName");
     location.setLatitude("Latitude");
