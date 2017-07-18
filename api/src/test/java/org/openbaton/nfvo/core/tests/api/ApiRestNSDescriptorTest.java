@@ -91,7 +91,7 @@ public class ApiRestNSDescriptorTest {
   }
 
   @Test
-  public void NSDFindBy() {
+  public void NSDFindBy() throws NotFoundException {
     when(nsdManagement.query(anyString(), anyString())).thenReturn(networkServiceDescriptor);
     assertEquals(
         networkServiceDescriptor,
@@ -139,7 +139,7 @@ public class ApiRestNSDescriptorTest {
   }
 
   @Test
-  public void getVNFDs() {
+  public void getVNFDs() throws NotFoundException {
     when(nsdManagement.query(anyString(), anyString())).thenReturn(networkServiceDescriptor);
     Set<VirtualNetworkFunctionDescriptor> vnfds = networkServiceDescriptor.getVnfd();
     assertEquals(
@@ -207,7 +207,7 @@ public class ApiRestNSDescriptorTest {
   }
 
   @Test
-  public void getVNFDependencies() {
+  public void getVNFDependencies() throws NotFoundException {
     when(nsdManagement.query(anyString(), anyString())).thenReturn(networkServiceDescriptor);
     Set<VNFDependency> vnfds = networkServiceDescriptor.getVnf_dependency();
     assertEquals(
@@ -287,7 +287,7 @@ public class ApiRestNSDescriptorTest {
   }
 
   @Test
-  public void getPNFDs() {
+  public void getPNFDs() throws NotFoundException {
     when(nsdManagement.query(anyString(), anyString())).thenReturn(networkServiceDescriptor);
     Set<PhysicalNetworkFunctionDescriptor> pnfds = networkServiceDescriptor.getPnfd();
     assertEquals(
@@ -345,7 +345,7 @@ public class ApiRestNSDescriptorTest {
   }
 
   @Test
-  public void getSecurities() {
+  public void getSecurities() throws NotFoundException {
     when(nsdManagement.query(anyString(), anyString())).thenReturn(networkServiceDescriptor);
     Security security = networkServiceDescriptor.getNsd_security();
     assertEquals(security, restNetworkService.getSecurity(networkServiceDescriptor.getId(), "pi"));
