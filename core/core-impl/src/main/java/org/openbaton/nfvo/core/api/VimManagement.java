@@ -27,6 +27,7 @@ import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.nfvo.ImageStatus;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.Subnet;
@@ -375,7 +376,12 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
             nfvImage_nfvo.setContainerFormat(image_new.getContainerFormat());
             nfvImage_nfvo.setCreated(image_new.getCreated());
             nfvImage_nfvo.setUpdated(image_new.getUpdated());
-            nfvImage_nfvo.setStatus(image_new.getStatus().toString());
+            ImageStatus imageStatus = image_new.getStatus();
+            if (imageStatus != null) {
+              nfvImage_nfvo.setStatus(imageStatus.toString());
+            } else {
+              nfvImage_nfvo.setStatus(ImageStatus.ACTIVE.toString());
+            }
             found = true;
             break;
           }
