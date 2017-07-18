@@ -30,7 +30,7 @@ public class RequiresParameters {
   @Version private int version;
 
   @Column
-  @ElementCollection(targetClass = String.class)
+  @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
   private Set<String> parameters;
 
   @PrePersist
