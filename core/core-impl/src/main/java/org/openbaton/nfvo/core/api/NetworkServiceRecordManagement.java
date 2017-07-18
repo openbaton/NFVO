@@ -554,7 +554,8 @@ public class NetworkServiceRecordManagement
     for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId)) {
       names.add(vimInstance.getName());
     }
-    if (vimInstanceNames == null) {
+    if (vimInstanceNames == null || vimInstanceNames.isEmpty()) {
+      vimInstanceNames = new ArrayList<>();
       for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId)) {
         vimInstanceNames.add(vimInstance.getName());
       }
@@ -612,6 +613,24 @@ public class NetworkServiceRecordManagement
       throw new WrongStatusException(
           "The VirtualDeploymentUnit chosen has reached the maximum number of VNFCInstance");
     }
+
+    Set<String> names = new HashSet<>();
+    for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId)) {
+      names.add(vimInstance.getName());
+    }
+    if (vimInstanceNames == null || vimInstanceNames.isEmpty()) {
+      vimInstanceNames = new ArrayList<>();
+      for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId)) {
+        vimInstanceNames.add(vimInstance.getName());
+      }
+    }
+    names.retainAll(vimInstanceNames);
+    if (names.size() == 0) {
+      log.error("VimInstance names passed not found");
+      throw new NotFoundException("VimInstance names passed not found");
+    }
+    log.debug(
+        "A new VNFCInstance will be added to the VDU with id " + virtualDeploymentUnit.getId());
 
     networkServiceRecord.setStatus(Status.SCALING);
     networkServiceRecord = nsrRepository.save(networkServiceRecord);
