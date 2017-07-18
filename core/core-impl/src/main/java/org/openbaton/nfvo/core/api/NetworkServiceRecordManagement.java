@@ -554,7 +554,8 @@ public class NetworkServiceRecordManagement
     for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId)) {
       names.add(vimInstance.getName());
     }
-    if (vimInstanceNames == null) {
+    if (vimInstanceNames == null || vimInstanceNames.isEmpty()) {
+      vimInstanceNames = new ArrayList<>();
       for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId)) {
         vimInstanceNames.add(vimInstance.getName());
       }
