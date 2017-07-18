@@ -273,8 +273,10 @@ public class RestVimInstances {
   public VimInstance refresh(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
       throws VimException, PluginException, EntityUnreachableException, IOException,
-          BadRequestException, AlreadyExistingException {
+          BadRequestException, AlreadyExistingException, NotFoundException {
     VimInstance vimInstance = vimManagement.query(id, projectId);
+    if (vimInstance == null)
+      throw new NotFoundException("VIM Instance with ID " + id + " not found.");
     vimManagement.refresh(vimInstance);
     return vimInstance;
   }
