@@ -42,6 +42,7 @@ import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.CyclicDependenciesException;
 import org.openbaton.exceptions.EntityInUseException;
+import org.openbaton.exceptions.EntityUnreachableException;
 import org.openbaton.exceptions.IncompatibleVNFPackage;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.openbaton.exceptions.NotFoundException;
@@ -94,7 +95,8 @@ public class ApiRestNSDescriptorTest {
   public void NSDCreate()
       throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
           CyclicDependenciesException, EntityInUseException, BadRequestException, IOException,
-          AlreadyExistingException, PluginException, IncompatibleVNFPackage, VimException {
+          AlreadyExistingException, PluginException, IncompatibleVNFPackage, VimException,
+          InterruptedException, EntityUnreachableException {
     when(nsdManagement.onboard(any(networkServiceDescriptor.getClass()), anyString()))
         .thenReturn(networkServiceDescriptor);
     NetworkServiceDescriptor networkServiceDescriptor2 =

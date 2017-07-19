@@ -56,6 +56,7 @@ import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.CyclicDependenciesException;
 import org.openbaton.exceptions.EntityInUseException;
+import org.openbaton.exceptions.EntityUnreachableException;
 import org.openbaton.exceptions.IncompatibleVNFPackage;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.openbaton.exceptions.NotFoundException;
@@ -120,7 +121,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
       throws NotFoundException, WrongStatusException, BadFormatException,
           NetworkServiceIntegrityException, CyclicDependenciesException, EntityInUseException,
           BadRequestException, IOException, AlreadyExistingException, PluginException,
-          IncompatibleVNFPackage, VimException {
+          IncompatibleVNFPackage, VimException, InterruptedException, EntityUnreachableException {
     NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
     when(vimRepository.findByProjectId(anyString()))
         .thenReturn(
@@ -145,7 +146,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
       throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
           CyclicDependenciesException, WrongStatusException, EntityInUseException,
           BadRequestException, IOException, AlreadyExistingException, PluginException,
-          IncompatibleVNFPackage, VimException {
+          IncompatibleVNFPackage, VimException, InterruptedException, EntityUnreachableException {
     NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
     nsd_exp.setEnabled(true);
     when(vimRepository.findAll())
@@ -208,7 +209,8 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
   public void nsdManagementOnboardExceptionTest()
       throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
           CyclicDependenciesException, EntityInUseException, BadRequestException, IOException,
-          AlreadyExistingException, PluginException, IncompatibleVNFPackage, VimException {
+          AlreadyExistingException, PluginException, IncompatibleVNFPackage, VimException,
+          InterruptedException, EntityUnreachableException {
     NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
     when(vnfmManagerEndpointRepository.findAll()).thenReturn(new ArrayList<VnfmManagerEndpoint>());
     exception.expect(NotFoundException.class);
@@ -219,7 +221,8 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
   public void nsdManagementOnboardTest()
       throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
           CyclicDependenciesException, EntityInUseException, BadRequestException, IOException,
-          AlreadyExistingException, PluginException, IncompatibleVNFPackage, VimException {
+          AlreadyExistingException, PluginException, IncompatibleVNFPackage, VimException,
+          InterruptedException, EntityUnreachableException {
 
     NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
 
@@ -247,7 +250,8 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
       throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
           CyclicDependenciesException, WrongStatusException, EntityInUseException,
           BadRequestException, AlreadyExistingException, IOException, VimException,
-          IncompatibleVNFPackage, PluginException {
+          IncompatibleVNFPackage, PluginException, InterruptedException,
+          EntityUnreachableException {
     when(nsdRepository.findAll()).thenReturn(new ArrayList<NetworkServiceDescriptor>());
     when(nsdRepository.findByProjectId(anyString()))
         .thenReturn(new ArrayList<NetworkServiceDescriptor>());

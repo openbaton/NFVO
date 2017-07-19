@@ -86,7 +86,8 @@ public class RestNetworkServiceDescriptor {
       @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
           CyclicDependenciesException, EntityInUseException, BadRequestException, IOException,
-          AlreadyExistingException, PluginException, IncompatibleVNFPackage, VimException {
+          AlreadyExistingException, PluginException, IncompatibleVNFPackage, VimException,
+          InterruptedException, EntityUnreachableException {
     NetworkServiceDescriptor nsd;
     log.trace("Just Received: " + networkServiceDescriptor);
     nsd = networkServiceDescriptorManagement.onboard(networkServiceDescriptor, projectId);

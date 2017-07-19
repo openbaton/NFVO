@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.NoResultException;
@@ -112,7 +113,8 @@ public class NetworkServiceDescriptorManagement
       NetworkServiceDescriptor networkServiceDescriptor, String projectId)
       throws NotFoundException, NetworkServiceIntegrityException, CyclicDependenciesException,
           BadFormatException, EntityInUseException, BadRequestException, PluginException,
-          IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException {
+          IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
+          EntityUnreachableException, InterruptedException {
     SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
     networkServiceDescriptor.setProjectId(projectId);
     log.info("Starting onboarding process for NSD: " + networkServiceDescriptor.getName());
