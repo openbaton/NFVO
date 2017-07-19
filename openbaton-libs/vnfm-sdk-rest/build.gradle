@@ -29,7 +29,6 @@ dependencies {
         compile 'org.springframework.boot:spring-boot-starter-web:' + springBootVersion
 
         compile 'org.springframework:spring-jms:' + springVersion
-        compile 'javax.jms:javax.jms-api:2.0.1'
 
         compile 'commons-codec:commons-codec:1.10'
 
