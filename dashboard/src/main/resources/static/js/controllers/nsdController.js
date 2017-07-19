@@ -77,7 +77,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         filter: { name: "" },
     },
         {
-            counts: [5, 10, 20],
+            counts: [],
             total: filteredLaunchKeys.length,
             getData: function (params) {
                 filteredLaunchKeys = params.sorting() ? $filter('orderBy')($scope.launchKeys, params.orderBy()) : $scope.launchKeys;
@@ -101,7 +101,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         filter: { name: "" },
     },
         {
-            counts: [5, 10, 20],
+            counts: [],
             total: filteredKeys.length,
             getData: function (params) {
                 // console.log($scope.keys);
@@ -116,6 +116,29 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
             }
         });
 
+    var paginationNSD = []
+    $scope.tableParamspaginationNSD = new NgTableParams({
+            page: 1,
+            count: 10,
+            sorting: {
+                name: 'asc'     // initial sorting
+            },
+            filter: { name: "" },
+        },
+        {
+            counts: [],
+            total: paginationNSD.length,
+            getData: function (params) {
+             paginationNSD = params.sorting() ? $filter('orderBy')($scope.nsdescriptors, params.orderBy()) : $scope.nsdescriptors;
+                paginationNSD = params.filter() ? $filter('filter')(paginationNSD, params.filter()) : paginationNSD;
+                $scope.tableParamspaginationNSD.total(paginationNSD.length);
+                paginationNSD = paginationNSD.slice((params.page() - 1) * params.count(), params.page() * params.count());
+                for (i = paginationNSD.length; i < params.count(); i++) {
+                }
+                return paginationNSD;
+            }
+        });
+
     var filteredPops = []
     $scope.tableParamsFilteredPops = new NgTableParams({
         page: 1,
@@ -126,7 +149,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         filter: { name: "" },
     },
         {
-            counts: [5, 10, 20],
+            counts: [],
             total: filteredPops.length,
             getData: function (params) {
                 filteredPops = params.sorting() ? $filter('orderBy')($scope.launchPopsAvailable[$scope.selectedVnfd.name].pops, params.orderBy()) : $scope.launchPopsAvailable[$scope.selectedVnfd.name].pops;
@@ -151,13 +174,13 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         filter: { name: "" },
     },
         {
-            counts: [5, 10, 20],
+            counts: [],
             total: filteredLaunchPops.length,
             getData: function (params) {
                 //console.log($scope.selectedVnfd);
                 filteredLaunchPops = params.sorting() ? $filter('orderBy')($scope.launchPops[$scope.selectedVnfd.name].pops, params.orderBy()) : $scope.launchPops[$scope.selectedVnfd.name].pops;
                 //filteredLaunchPops = params.filter() ? $filter('filter')(filteredLaunchPops, params.filter()) : filteredLaunchPops;
-                $scope.tableParamsFilteredPops.total(filteredLaunchPops.length);
+                $scope.tableParamsFilteredLaunchPops.total(filteredLaunchPops.length);
                 filteredLaunchPops = filteredLaunchPops.slice((params.page() - 1) * params.count(), params.page() * params.count());
                 for (i = filteredLaunchPops.length; i < params.count(); i++) {
                     filteredLaunchPops.push({ 'name': "" })
@@ -436,7 +459,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
             })
             .error(function (data, status) {
                 console.error('STATUS: ' + status + ' DATA: ' + data);
-                showError(status, JSON.stringify(data));
+                showError(JSON.stringify(data), status);
             });
 
     };
@@ -450,7 +473,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
             })
             .error(function (data, status) {
                 console.error('STATUS: ' + status + ' DATA: ' + data);
-                showError(status, JSON.stringify(data));
+                showError(JSON.stringify(data), status);
             });
     };
 
@@ -962,18 +985,19 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
                 });
     }
 
-    $scope.addPopToVnfd = function (vnfd, pop) {
+    $scope.addPopToVnfd = function (vnfd, pop, launchPopTable) {
         $scope.launchPops[vnfd.name].pops.push(pop);
         console.log($scope.launchPops);
         for (j = 0; j < vnfd.vdu.length; j++) {
             //console.log($scope.nsdToSend.vnfd[i].vdu[j].id);
             vduName = vnfd.vdu[j].name;
-
             // $scope.launchPops[vnfd.name][vduName].push(pop);
         }
         remove($scope.launchPopsAvailable[vnfd.name].pops, pop);
         $scope.tableParamsFilteredLaunchPops.reload();
         $scope.tableParamsFilteredPops.reload();
+
+        launchPopTable.expanded=true;
     }
 
     $scope.removePopToVnfd = function (vnfd, pop) {
@@ -995,7 +1019,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         $scope.jsonrendVNFD()
     }
 
-    $scope.addPopToNsd = function (pop) {
+    $scope.addPopToNsd = function (pop, launchPopTable) {
         console.log($scope.launchPops)
         for (var vnfdname in $scope.launchPops) {
             console.log("Name is: " + vnfdname);
@@ -1022,6 +1046,7 @@ app.controller('NsdCtrl', function ($scope, $compile, $cookieStore, $routeParams
         ;
         $scope.tableParamsFilteredLaunchPops.reload();
         $scope.tableParamsFilteredPops.reload();
+        launchPopTable.expanded=true;
     }
 
     $scope.loadVnfdTabs = function () {

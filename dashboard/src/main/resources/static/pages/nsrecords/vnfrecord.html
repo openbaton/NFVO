@@ -211,7 +211,7 @@
                                         </th>
                                         <th ng-click="predicate = 'vnfc.id'; reverse = !reverse">vnfc <i class="fa fa-sort"></i>
                                         </th>
-                                        <th ng-click="predicate = 'scale_in_out'; reverse = !reverse">scale<i class="fa fa-sort"></i></th>
+                                        <th ng-click="predicate = 'scale_in_out'; reverse = !reverse">scale <i class="fa fa-sort"></i></th>
                                         <th ng-click="predicate = 'instances'; reverse = !reverse">n. instances<i class="fa fa-sort"></i></th>
                                     </tr>
                                 </thead>
@@ -223,7 +223,7 @@
                                         </td>
                                         <td>{{vdu.version}}</td>
 
-                                        <td>{{vdu.vimInstanceName}}</td>
+                                        <td>{{vdu.vimInstanceName | clearText}}</td>
                                         <td class=" col-lg-3">
                                             <span ng-repeat="vnfci in vdu.vnfc_instance" class="">
 
@@ -303,8 +303,8 @@
                                     <tr ng-repeat="le in vnfr.lifecycle_event | orderBy:predicate:reverse">
                                         <td>{{le.id}}</td>
                                         <td>{{le.event}}</td>
-                                        <td><span ng-repeat="ev in le.lifecycle_events">{{ev}}<span ng-if="!$last">, </span></span>
-                                        </td>
+                                        <td><span ng-repeat="ev in le.lifecycle_events">{{ev}}<span ng-if="!$last">, </span></span></td>
+
                                     </tr>
                                 </tbody>
                             </table>
@@ -320,15 +320,12 @@
                                         </th>
                                         <th ng-click="predicate = 'event'; reverse = !reverse">event <i class="fa fa-sort"></i>
                                         </th>
-
-
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="le in vnfr.lifecycle_event_history | orderBy:predicate:reverse">
+                                    <tr ng-repeat="le in vnfr.lifecycle_event_history | orderBy:'executedAt'">
                                         <td>{{le.id}}</td>
                                         <td>{{le.event}}</td>
-
                                     </tr>
                                 </tbody>
                             </table>

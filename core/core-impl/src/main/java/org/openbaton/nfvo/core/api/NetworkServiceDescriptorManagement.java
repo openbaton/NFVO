@@ -41,6 +41,7 @@ import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.CyclicDependenciesException;
 import org.openbaton.exceptions.EntityInUseException;
+import org.openbaton.exceptions.EntityUnreachableException;
 import org.openbaton.exceptions.IncompatibleVNFPackage;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.openbaton.exceptions.NotFoundException;
@@ -173,7 +174,8 @@ public class NetworkServiceDescriptorManagement
   public NetworkServiceDescriptor onboardFromMarketplace(String link, String projectId)
       throws BadFormatException, CyclicDependenciesException, NetworkServiceIntegrityException,
           NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
-          AlreadyExistingException, EntityInUseException, BadRequestException {
+          AlreadyExistingException, EntityInUseException, BadRequestException, InterruptedException,
+          EntityUnreachableException {
 
     InputStream in = new BufferedInputStream(new URL(link).openStream());
     ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -187,6 +189,37 @@ public class NetworkServiceDescriptorManagement
     String json = out.toString();
     NetworkServiceDescriptor nsd = gson.fromJson(json, NetworkServiceDescriptor.class);
     return onboard(nsd, projectId);
+  }
+
+  private List<String> getIds(List<String> market_ids, String project_id)
+      throws NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
+          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException,
+          InterruptedException, EntityUnreachableException {
+    List<String> not_found_ids = new ArrayList<>();
+    not_found_ids.addAll(market_ids);
+    List<String> vnfdIds = new ArrayList<>();
+    for (String id : market_ids) {
+      for (VirtualNetworkFunctionDescriptor vnfd : vnfdRepository.findByProjectId(project_id)) {
+        String localId = vnfd.getVendor() + "/" + vnfd.getName() + "/" + vnfd.getVersion();
+        String vnfdId = vnfd.getId();
+        log.debug(localId);
+        if (localId.toLowerCase().equals(id.toLowerCase())) {
+          log.info("The vnfd " + localId + " was found onboarded on the same project.");
+          vnfdIds.add(vnfdId);
+          not_found_ids.remove(id);
+        }
+      }
+    }
+    log.debug("VNFDs found on the catalogue: " + vnfdIds);
+    for (String id : not_found_ids) {
+      String link = "http://" + marketIp + ":" + marketPort + "/api/v1/vnf-packages/" + id + "/tar";
+      VirtualNetworkFunctionDescriptor vnfd =
+          vnfPackageManagement.onboardFromMarket(link, project_id);
+      log.info(
+          "Onboarded from marketplace VNFD " + vnfd.getName() + " local id is: " + vnfd.getId());
+      vnfdIds.add(vnfd.getId());
+    }
+    return vnfdIds;
   }
 
   /**

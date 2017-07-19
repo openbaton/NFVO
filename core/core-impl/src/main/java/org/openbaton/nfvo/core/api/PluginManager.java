@@ -17,8 +17,12 @@
 
 package org.openbaton.nfvo.core.api;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashSet;
 import java.util.Set;
 import org.openbaton.exceptions.AlreadyExistingException;
@@ -74,7 +78,8 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
   @Override
   public void downloadPlugin(String type, String name, String version)
       throws IOException, AlreadyExistingException {
-
+    String pluginName = name;
+    String filename = name.toLowerCase() + ".jar";
     String id = type + "/" + name + "/" + version;
 
     for (String pluginId : listInstalledVimDrivers()) {
@@ -84,7 +89,7 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
     }
 
     String url = "http://" + marketIp + ":" + marketPort + "/api/v1/vim-drivers/" + id + "/jar";
-    String path = pluginDir + "/install-plugin/" + name + ".jar";
+    String path = pluginDir + "/install-plugin/";
     log.info("Download URL: " + url);
 
     File installDir = new File(pluginDir + "/install-plugin");
@@ -94,9 +99,24 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
     }
 
     URL pluginURL = new URL(url);
+    URLConnection conn = pluginURL.openConnection();
+    String headerField = conn.getHeaderField("Content-Disposition");
+    if (headerField != null && headerField.contains("filename=\"")) {
+      filename =
+          headerField.substring(headerField.indexOf("filename=\"") + 10, headerField.length() - 1);
+      String[] split = filename.split("-");
+      if (split.length > 4) {
+        pluginName = split[3];
+      } else if (split.length > 2) {
+        pluginName = split[split.length - 2];
+      } else {
+        if (pluginName.contains("-")) pluginName = pluginName.substring(0, pluginName.indexOf("-"));
+      }
+    }
+    path += filename;
     FileOutputStream out = new FileOutputStream(path);
     try {
-      BufferedInputStream fileInputStream = new BufferedInputStream(pluginURL.openStream());
+      BufferedInputStream fileInputStream = new BufferedInputStream(conn.getInputStream());
       byte[] buf = new byte[8192];
       int bytesread = 0, bytesBuffered = 0;
       while ((bytesread = fileInputStream.read(buf)) > -1) {
@@ -110,8 +130,7 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
     } finally {
       out.flush();
     }
-
-    startPlugin(path, name);
+    startPlugin(path, pluginName);
   }
 
   @Override

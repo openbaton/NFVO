@@ -26,8 +26,15 @@ import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.VimInstance;
-import org.openbaton.catalogue.nfvo.messages.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrAllocateResourcesMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrErrorMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrGenericMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrHealedMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrInstantiateMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrScaledMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrScalingMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrStartStopMessage;
 import org.openbaton.catalogue.security.Key;
 
 /** Created by lto on 23/09/15. */
@@ -91,11 +98,14 @@ public class VnfmUtils {
   }
 
   public static NFVMessage getNfvScalingMessage(
-      String userData, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
+      String userData,
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
+      VimInstance vimInstance) {
     VnfmOrScalingMessage vnfmOrScalingMessage = new VnfmOrScalingMessage();
     vnfmOrScalingMessage.setUserData(userData);
     vnfmOrScalingMessage.setAction(Action.SCALING);
     vnfmOrScalingMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
+    vnfmOrScalingMessage.setVimInstance(vimInstance);
     return vnfmOrScalingMessage;
   }
 

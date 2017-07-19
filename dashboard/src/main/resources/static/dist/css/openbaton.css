@@ -741,14 +741,6 @@ h4 > a, h4 > a:hover {
     width: 1px;
     height: 498px;
 }
-
-@media (min-height: 750px) {
-    #page-wrapper {
-
-        height: 100%;
-    }
-}
-
 .modal-backdrop {
     bottom: 0;
 }
@@ -789,13 +781,6 @@ h4 > a, h4 > a:hover {
     overflow: scroll;
     -webkit-overflow-scrolling: touch;
     outline: 0;
-}
-
-.tab-content {
-    border-left: 1px solid #ddd;
-    border-right: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
-    padding: 10px;
 }
 
 /* layout.css Style */
@@ -861,6 +846,38 @@ td p {
    -webkit-box-shadow:  0 5px 5px rgba(0, 0, 0, .4) !important;
    border: none !important;
 }
-.sidebarmargin{
-   margin-top: 57px !important;
+.sidebarmargin{margin-top: 57px !important;}
+.dailougebox li.active > a,  .dailougebox > li.active > a:focus, .dailougebox > {background-color: #337ab7 !important;  color: white !important;  border: none !important;  font-weight: normal !important  }
+.dailougebox{border: none !important; padding: 20px !important;}
+.dailougebox > li > a {border-radius: 4px !important; font-weight: normal;}
+.radiusnone{border-radius: 0px !important;  margin-left: 8px !important;}
+.nav > li > a{ cursor: default !important;}
+.cursordefault{ cursor: default;}
+.leftalign{text-align: left !important;}
+.input-margintop{margin-top: 8px;}
+.paddinbottom{padding-bottom: 3px !important;}
+.verticalresize{resize: vertical;}
+.ng-table-pagination{float: right;}
+@media(min-width:1px) {#page-wrapper {position: inherit; margin: 0 0 0 250px; padding: 0 30px; border-left: 1px solid #e7e7e7;}}
+.navbar{position: unset !important;}
+#page-wrapper {min-height: 100vh !important;}
+.glyphicon-refresh-animate { -animation: spin .7s infinite linear;  -webkit-animation: spin2 .7s infinite linear; }
+@-webkit-keyframes spin2 { from { -webkit-transform: rotate(0deg);} to { -webkit-transform: rotate(360deg);} }
+@keyframes spin { from { transform: scale(1) rotate(0deg);} to { transform: scale(1) rotate(360deg);} }
+#vduTabletable textarea.form-control {
+    height: 34px;
+    border-radius: 0px;
+}
+#vduTabletable td {
+    padding: 0px !important;
+    border: none !important;
+}
+
+#vduTabletable .form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control{
+    background-color: white;
+}
+.padding10{
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
 }

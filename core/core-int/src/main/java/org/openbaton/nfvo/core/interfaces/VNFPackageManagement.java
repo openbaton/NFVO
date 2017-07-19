@@ -23,7 +23,15 @@ import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
-import org.openbaton.exceptions.*;
+import org.openbaton.exceptions.AlreadyExistingException;
+import org.openbaton.exceptions.BadRequestException;
+import org.openbaton.exceptions.EntityUnreachableException;
+import org.openbaton.exceptions.IncompatibleVNFPackage;
+import org.openbaton.exceptions.NetworkServiceIntegrityException;
+import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.PluginException;
+import org.openbaton.exceptions.VimException;
+import org.openbaton.exceptions.WrongAction;
 
 /** Created by mpa on 05/05/15. */
 public interface VNFPackageManagement {
@@ -31,7 +39,8 @@ public interface VNFPackageManagement {
   /** This operation allows submitting and validating the VNF Package. */
   VirtualNetworkFunctionDescriptor onboard(byte[] pack, String projectId)
       throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage,
-          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException;
+          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException,
+          InterruptedException, EntityUnreachableException;
 
   /** This operation allows submitting and validating the VNF Package from the marketplace. */
   /**
@@ -69,7 +78,7 @@ public interface VNFPackageManagement {
       Map<String, Object> imageDetails,
       String projectId)
       throws NotFoundException, PluginException, VimException, BadRequestException, IOException,
-          AlreadyExistingException;
+          AlreadyExistingException, InterruptedException, EntityUnreachableException;
 
   /**
    * This operation allows submitting and validating the VNF Package from the marketplace.
@@ -79,7 +88,8 @@ public interface VNFPackageManagement {
    */
   VirtualNetworkFunctionDescriptor onboardFromMarket(String link, String projectId)
       throws IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
-          NotFoundException, PluginException, NetworkServiceIntegrityException, BadRequestException;
+          NotFoundException, PluginException, NetworkServiceIntegrityException, BadRequestException,
+          InterruptedException, EntityUnreachableException;
 
   /**
    * This operation allows disabling the VNF Package, so that it is not possible to instantiate any

@@ -45,7 +45,8 @@ public interface VnfmManager {
       NetworkServiceDescriptor networkServiceDescriptor,
       NetworkServiceRecord networkServiceRecord,
       DeployNSRBody body,
-      Map<String, List<String>> vduVimInstances)
+      Map<String, List<String>> vduVimInstances,
+      String monitoringIp)
       throws NotFoundException;
 
   VnfmSender getVnfmSender(EndpointType endpointType);
@@ -65,7 +66,8 @@ public interface VnfmManager {
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
       VNFComponent component,
       VNFRecordDependency dependency,
-      String mode)
+      String mode,
+      List<String> vimInstanceNames)
       throws NotFoundException;
 
   Future<Void> removeVnfcDependency(

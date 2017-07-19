@@ -17,17 +17,24 @@
 
 package org.openbaton.nfvo.system;
 
+import com.google.gson.JsonSyntaxException;
 import org.openbaton.nfvo.core.interfaces.EventDispatcher;
 import org.openbaton.vnfm.interfaces.manager.VnfmReceiver;
 import org.openbaton.vnfm.interfaces.register.VnfmRegister;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.listener.ConditionalRejectingErrorHandler;
+import org.springframework.amqp.rabbit.listener.FatalExceptionStrategy;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
+import org.springframework.amqp.rabbit.listener.exception.ListenerExecutionFailedException;
+import org.springframework.amqp.support.converter.MessageConversionException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -227,6 +234,8 @@ public class RabbitConfiguration {
     container.setConnectionFactory(connectionFactory);
     container.setQueueNames(queueName_eventRegister);
     container.setMessageListener(listenerAdapter);
+    container.setErrorHandler(
+        new ConditionalRejectingErrorHandler(new HandleJsonSyntaxExceptionStrategy()));
     return container;
   }
 
@@ -289,6 +298,8 @@ public class RabbitConfiguration {
       container.setMaxConcurrentConsumers(maxConcurrency);
     }
     container.setMessageListener(listenerAdapter);
+    container.setErrorHandler(
+        new ConditionalRejectingErrorHandler(new HandleJsonSyntaxExceptionStrategy()));
     return container;
   }
 
@@ -304,5 +315,31 @@ public class RabbitConfiguration {
             minConcurrency,
             maxConcurrency);
     return container;
+  }
+
+  /**
+   * Extension of Spring-AMQP's {@link ConditionalRejectingErrorHandler.DefaultExceptionStrategy}.
+   * It regards a {@link JsonSyntaxException}, which may appear while demarshalling a message from a
+   * queue, as fatal and drops it. Otherwise the message would be sent back to the queue resulting
+   * in an infinite loop.
+   */
+  private class HandleJsonSyntaxExceptionStrategy implements FatalExceptionStrategy {
+
+    private Logger log = LoggerFactory.getLogger(this.getClass());
+
+    @Override
+    public boolean isFatal(Throwable t) {
+      if (t instanceof ListenerExecutionFailedException
+          && (t.getCause() instanceof MessageConversionException
+              || t.getCause() instanceof JsonSyntaxException)) {
+        log.error(
+            "Fatal message conversion error; message rejected; "
+                + "it will be dropped or routed to a dead letter exchange, if so configured: "
+                + ((ListenerExecutionFailedException) t).getFailedMessage(),
+            t);
+        return true;
+      }
+      return false;
+    }
   }
 }

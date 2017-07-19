@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import io.swagger.annotations.ApiOperation;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,6 +44,7 @@ import org.openbaton.catalogue.nfvo.DependencyParameters;
 import org.openbaton.catalogue.nfvo.HistoryLifecycleEvent;
 import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.MissingParameterException;
@@ -100,31 +102,38 @@ public class RestNetworkServiceRecord {
   public NetworkServiceRecord create(
       @RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor,
       @RequestHeader(value = "project-id") String projectId,
-      @RequestBody String bodyJson)
+      @RequestBody(required = false) String bodyJson)
       throws InterruptedException, ExecutionException, VimException, NotFoundException,
           BadFormatException, VimDriverException, QuotaExceededException, PluginException,
-          MissingParameterException, BadRequestException {
+          MissingParameterException, BadRequestException, IOException, AlreadyExistingException {
 
     JsonObject jsonObject = gson.fromJson(bodyJson, JsonObject.class);
+    String monitoringIp = null;
+    if (jsonObject.has("monitoringIp")) {
+      monitoringIp = jsonObject.get("monitoringIp").getAsString();
+    }
+
     return networkServiceRecordManagement.onboard(
         networkServiceDescriptor,
         projectId,
         gson.fromJson(jsonObject.getAsJsonArray("keys"), List.class),
         gson.fromJson(jsonObject.getAsJsonObject("vduVimInstances"), Map.class),
-        gson.fromJson(jsonObject.getAsJsonObject("configurations"), Map.class));
+        gson.fromJson(jsonObject.getAsJsonObject("configurations"), Map.class),
+        monitoringIp);
   }
 
   /**
    * @param id of the NSR
    * @param projectId if of the project
-   * @param jsonObject the body json is: { "vduVimInstances":{ "vduName1":["viminstancename"],
-   *     "vduName2":["viminstancename2"] }, "keys":["keyname1", "keyname2"], "configurations":{
-   *     "vnfrName1":{"name":"conf1", "configurationParameters":[{"confKey":"key1",
-   *     "value":"value1", "description":"description1"}, {"confKey":"key2", "value":"value2",
-   *     "description":"description2"}]}, "vnfrName2":{"name":"conf2",
-   *     "configurationParameters":[{"confKey":"key1", "value":"value1",
-   *     "description":"description1"}, {"confKey":"key2", "value":"value2",
-   *     "description":"description2"}]} } }
+   * @param body the body json is:
+   *     <p>{ "vduVimInstances":{ "vduName1":[ "viminstancename" ], "vduName2":[ "viminstancename2"
+   *     ] }, "keys":[ "keyname1", "keyname2" ], "configurations":{ "vnfrName1":{ "name":"conf1",
+   *     "configurationParameters":[ { "confKey":"key1", "value":"value1",
+   *     "description":"description1" }, { "confKey":"key2", "value":"value2",
+   *     "description":"description2" } ] }, "vnfrName2":{ "name":"conf1",
+   *     "configurationParameters":[ { "confKey":"key1", "value":"value1",
+   *     "description":"description1" }, { "confKey":"key2", "value":"value2",
+   *     "description":"description2" } ] } }, "monitoringIp" : "192.168.0.1" }
    * @return the created NSR
    * @throws InterruptedException
    * @throws ExecutionException
@@ -150,19 +159,35 @@ public class RestNetworkServiceRecord {
   public NetworkServiceRecord create(
       @PathVariable("id") String id,
       @RequestHeader(value = "project-id") String projectId,
-      @RequestBody(required = false) JsonObject jsonObject)
+      @RequestBody(required = false) JsonObject body)
       throws InterruptedException, ExecutionException, VimException, NotFoundException,
           BadFormatException, VimDriverException, QuotaExceededException, PluginException,
-          MissingParameterException, BadRequestException {
+          MissingParameterException, BadRequestException, IOException, AlreadyExistingException {
 
-    log.debug("Json Body is" + jsonObject);
-    Type mapType = new TypeToken<Map<String, Configuration>>() {}.getType();
+    log.debug("Json Body is" + body);
+    String monitoringIp = null;
+    if (body.has("monitoringIp")) {
+      monitoringIp = body.get("monitoringIp").getAsString();
+    }
+    List keys = null;
+    Map vduVimInstances = null;
+    Map<String, Configuration> configurations = null;
+
+    log.debug("Json Body is " + body);
+    if (body != null) {
+      if (body.has("keys")) {
+        keys = gson.fromJson(body.getAsJsonArray("keys"), List.class);
+      }
+      if (body.has("vduVimInstances")) {
+        vduVimInstances = gson.fromJson(body.getAsJsonObject("vduVimInstances"), Map.class);
+      }
+      if (body.has("configurations")) {
+        Type mapType = new TypeToken<Map<String, Configuration>>() {}.getType();
+        configurations = gson.fromJson(body.get("configurations"), mapType);
+      }
+    }
     return networkServiceRecordManagement.onboard(
-        id,
-        projectId,
-        gson.fromJson(jsonObject.getAsJsonArray("keys"), List.class),
-        gson.fromJson(jsonObject.getAsJsonObject("vduVimInstances"), Map.class),
-        (Map) gson.fromJson(jsonObject.get("configurations"), mapType));
+        id, projectId, keys, vduVimInstances, configurations, monitoringIp);
   }
 
   /**
@@ -196,7 +221,7 @@ public class RestNetworkServiceRecord {
     value = "Resume a failed Network Service Record",
     notes = "The id in the URL specifies the Network Service Record that will be resumed"
   )
-  @RequestMapping(value = "{id}", method = RequestMethod.POST)
+  @RequestMapping(value = "{id}/resume", method = RequestMethod.POST)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void resume(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
@@ -265,7 +290,8 @@ public class RestNetworkServiceRecord {
   )
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
   public NetworkServiceRecord findById(
-      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
+      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
     return networkServiceRecordManagement.query(id, projectId);
   }
 
@@ -314,7 +340,8 @@ public class RestNetworkServiceRecord {
   )
   @ResponseStatus(HttpStatus.OK)
   public Set<VirtualNetworkFunctionRecord> getVirtualNetworkFunctionRecords(
-      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
+      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
     NetworkServiceRecord nsr = networkServiceRecordManagement.query(id, projectId);
     log.trace("*****" + nsr.getVnfr().toString());
     return nsr.getVnfr();
@@ -412,14 +439,19 @@ public class RestNetworkServiceRecord {
   )
   @ResponseStatus(HttpStatus.CREATED)
   public void postVNFCInstance(
-      @RequestBody @Valid VNFComponent component,
+      @RequestBody @Valid JsonObject body,
       @PathVariable("id") String id,
       @PathVariable("idVnf") String idVnf,
       @PathVariable("idVdu") String idVdu,
       @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException, BadFormatException, WrongStatusException {
+    VNFComponent component =
+        gson.fromJson(body.getAsJsonObject("vnfComponent"), VNFComponent.class);
+    List<String> vimInstanceNames =
+        gson.fromJson(body.getAsJsonObject("vimInstanceNames"), List.class);
     log.trace("Received: " + component);
-    networkServiceRecordManagement.addVNFCInstance(id, idVnf, idVdu, component, "", projectId);
+    networkServiceRecordManagement.addVNFCInstance(
+        id, idVnf, idVdu, component, "", projectId, vimInstanceNames);
   }
 
   @ApiOperation(
@@ -433,13 +465,18 @@ public class RestNetworkServiceRecord {
   )
   @ResponseStatus(HttpStatus.CREATED)
   public void postVNFCInstance(
-      @RequestBody @Valid VNFComponent component,
+      @RequestBody @Valid JsonObject body,
       @PathVariable("id") String id,
       @PathVariable("idVnf") String idVnf,
       @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException, BadFormatException, WrongStatusException {
+    VNFComponent component =
+        gson.fromJson(body.getAsJsonObject("vnfComponent"), VNFComponent.class);
+    List<String> vimInstanceNames =
+        gson.fromJson(body.getAsJsonArray("vimInstanceNames"), List.class);
     log.trace("Received: " + component);
-    networkServiceRecordManagement.addVNFCInstance(id, idVnf, component, projectId);
+    networkServiceRecordManagement.addVNFCInstance(
+        id, idVnf, component, projectId, vimInstanceNames);
   }
 
   @ApiOperation(
@@ -490,15 +527,19 @@ public class RestNetworkServiceRecord {
   )
   @ResponseStatus(HttpStatus.CREATED)
   public void postStandByVNFCInstance(
-      @RequestBody @Valid VNFComponent component,
+      @RequestBody @Valid JsonObject body,
       @PathVariable("id") String id,
       @PathVariable("idVnf") String idVnf,
       @PathVariable("idVdu") String idVdu,
       @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException, BadFormatException, WrongStatusException {
+    VNFComponent component =
+        gson.fromJson(body.getAsJsonObject("vnfComponent"), VNFComponent.class);
+    List<String> vimInstanceNames =
+        gson.fromJson(body.getAsJsonObject("vimInstanceNames"), List.class);
     log.debug("PostStandByVNFCInstance received the component: " + component);
     networkServiceRecordManagement.addVNFCInstance(
-        id, idVnf, idVdu, component, "standby", projectId);
+        id, idVnf, idVdu, component, "standby", projectId, vimInstanceNames);
   }
 
   @ApiOperation(value = "", notes = "", hidden = true)
@@ -657,7 +698,8 @@ public class RestNetworkServiceRecord {
   )
   @ResponseStatus(HttpStatus.OK)
   public Set<VNFRecordDependency> getVNFDependencies(
-      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
+      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
     NetworkServiceRecord nsd = networkServiceRecordManagement.query(id, projectId);
     return nsd.getVnf_dependency();
   }
@@ -673,7 +715,8 @@ public class RestNetworkServiceRecord {
   )
   @ResponseStatus(HttpStatus.OK)
   public Set<DependencyObject> getVNFDependenciesList(
-      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
+      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
     NetworkServiceRecord nsr = networkServiceRecordManagement.query(id, projectId);
     Set<DependencyObject> result = new HashSet<>();
     for (VNFRecordDependency vnfDependency : nsr.getVnf_dependency()) {
@@ -797,7 +840,8 @@ public class RestNetworkServiceRecord {
   )
   @ResponseStatus(HttpStatus.OK)
   public Set<PhysicalNetworkFunctionRecord> getPhysicalNetworkFunctionRecord(
-      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
+      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
     NetworkServiceRecord nsr = networkServiceRecordManagement.query(id, projectId);
     return nsr.getPnfr();
   }

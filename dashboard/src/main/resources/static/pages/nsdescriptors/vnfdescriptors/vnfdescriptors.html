@@ -45,7 +45,7 @@
 		</alert>
 		<div class="table-responsive" ng-if="vnfdescriptors.length > 0">
 
-			<table class="table table-bordered table-striped table-hover tablesorter" id="nsdTabletable">
+			<table ng-table="tableParamspaginationVNF" class="table table-bordered table-striped table-hover tablesorter" id="nsdTabletable">
 				<thead>
 					<tr>
 						<td><input type="checkbox" ng-model="main.checkbox"></td>
@@ -55,24 +55,24 @@
 						<th ng-click="predicate = 'type'; reverse = !reverse">VNFD type <i class="fa fa-sort"></i></th>
 						<th ng-click="predicate = 'vendor'; reverse = !reverse">Vendor <i class="fa fa-sort"></i></th>
 						<th ng-click="predicate = 'verision'; reverse = !reverse">Version <i class="fa fa-sort"></i></th>
-						 <th ng-click="predicate = 'createdAt'; reverse = !reverse">Created at<i class="fa fa-sort"></i></th>
-                        <th ng-click="predicate = 'updatedAt'; reverse = !reverse">Updated at<i class="fa fa-sort"></i></th>
+						<th ng-click="predicate = 'createdAt'; reverse = !reverse">Created at <i class="fa fa-sort"></i></th>
+						<th ng-click="predicate = 'updatedAt'; reverse = !reverse">Updated at <i class="fa fa-sort"></i></th>
 						<th>Actions <i class="fa"></i></th>
 					</tr>
 				</thead>
 				<tbody>
-					<tr ng-repeat="vnfd in vnfdescriptors| orderBy:predicate:reverse">
+					<tr ng-repeat="vnfd in $data| orderBy:predicate:reverse">
 						<td><input type="checkbox" ng-init="selection.ids[vnfd.id] = false" ng-model="selection.ids[vnfd.id]" name="group" id="{{vnfd.id}}"
 							/></td>
 						<td><a href="#vnfdescriptors/{{vnfd.id}}" ng-click="showData(vnfd)">{{vnfd.id}}</a>
 						</td>
-						<td>{{vnfd.name}}</td>
-						<td>{{vnfd.type}}</td>
-						<td>{{vnfd.vendor}}</td>
-						<td>{{vnfd.version}}</td>
-						<td>{{vnfd.createdAt}}</td>
-                        <td>{{vnfd.updatedAt}}</td>
-						<td>
+						<td class="text-center">{{vnfd.name}}</td>
+						<td class="text-center">{{vnfd.type}}</td>
+						<td class="text-center">{{vnfd.vendor}}</td>
+						<td class="text-center">{{vnfd.version}}</td>
+						<td class="text-center">{{vnfd.createdAt}}</td>
+                        <td class="text-center">{{vnfd.updatedAt}}</td>
+						<td class="text-center">
 							<div class="btn-group">
 								<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Action
                                 <span class="caret"></span></button>

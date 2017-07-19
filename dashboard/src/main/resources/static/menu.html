@@ -17,33 +17,21 @@
 <div ng-controller="IndexCtrl">
     <div id="wrapper">
         <!-- Navigation -->
-        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0" >
-            
-                               
-                        
-            <div class="navbar-header" style="width:140px; height:15px; margin-top: 8px;" >
-                 <a href="#main"><img style="margin-left: 40%;" src="img/OpenBatonLogoTransp.png" class="img-responsive"
-                                     alt="Responsive image"></a>
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-
+        <nav class="navbar navbar-default navbar-static-top"  style="margin-bottom: 0;padding-top: 2px;" >
+            <div class="navbar-header" style="padding-top: 6px;padding-left: 10px;padding-right: 10px;">
+                 <a href="#main"><img style="width: 140px" src="img/OpenBatonLogoTransp.png" class="img-responsive" alt="Responsive image"></a>
             </div>
             <!-- /.navbar-header -->
-               
-            <ul class="nav navbar-top-links navbar-right">
-            <li class="dropdown">
-                    <a href="" class="dropdown-toggle" data-toggle="dropdown" ng-init="changeProject()"><i class="fa fa-folder-open"></i> {{projectSelected.name}} <b
+            <ul class="nav navbar-top-links navbar-right navbar-default" role="navigation">
+                <li class="dropdown">
+                    <a style="overflow-wrap: break-word;" href="" class="dropdown-toggle" data-toggle="dropdown" ng-init="changeProject()"><i class="fa fa-folder-open"></i> {{projectSelected.name}} <b
                             class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li>
                             <div style="padding-left:5px;">Projects:</div>
                         </li>
                         <li ng-repeat="project in projects | orderBy:'name'">
-                            <a href="" ng-click="changeProject(project)">{{project.name}}  <i ng-if="project.name === projectSelected.name" class="fa fa-check"></i></a>
+                            <a style="overflow-wrap: break-word;" href="" ng-click="changeProject(project)">{{project.name}}  <i ng-if="project.name === projectSelected.name" class="fa fa-check"></i></a>
                         </li>
                         <li class="divider"></li>
                         <li>
@@ -54,18 +42,17 @@
                         </li>
                     </ul>
                 </li>
-
                 <li class="dropdown">
                     <a href="" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> {{username}} <b
                             class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li>
-                          <a ng-click="refreshQuota()" href=""><i class="fa fa-refresh"></i> Refresh Quota</a>
+                            <a ng-click="refreshQuota()" href=""><i class="fa fa-refresh"></i> Refresh Quota</a>
                         <li>
                         <li>
-                          <a ng-click="changePassword()" href=""><i class="fa fa-wrench"></i> Change Password</a>
+                            <a ng-click="changePassword()" href=""><i class="fa fa-wrench"></i> Change Password</a>
                         <li>
-                          <a href="http://openbaton.github.io/documentation/"><i class="fa fa-fw fa-question-circle"></i> Help</a>
+                            <a href="http://openbaton.github.io/documentation/"><i class="fa fa-fw fa-question-circle"></i> Help</a>
                         </li>
                         <li>
                             <a ng-click="rcdownload()" href=""><i class="fa fa-fw fa-cogs"></i> Get RC-file</a>
@@ -79,10 +66,9 @@
                 </li>
             </ul>
             <!-- /.navbar-top-links -->
-            <div class="navbar-default sidebarmargin sidebar" role="navigation">
-                <div class="sidebar-nav navbar-collapse">
+            <div style="width: 250px;border-top:1px solid #e7e7e7;" class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav">
                     <ul class="nav" id="side-menu">
-                        
                         <li>
                             <a href="#main" ><i class="fa fa-dashboard fa-fw"></i> Overview</a>
                         </li>
@@ -148,7 +134,6 @@
                                 <li>
                                     <a href="#vimdrivers"><i class="fa fa-arrows-h"></i> Vim drivers</a>
                                 </li>
-                               
                             </ul>
                             <!-- /.nav-second-level -->
                         </li>
@@ -247,7 +232,7 @@
                         <label for="projectname" class="col-sm-4 control-label">Project Name</label>
 
                         <div class="col-sm-6">
-                            <input type="text" class="form-control" id="projectname" name="projectname"
+                            <input maxlength="256" placeholder="Enter project name within 256 characters" type="text" class="form-control" id="projectname" name="projectname"
                                    ng-model="projectObj.name"/>
                         </div>
                     </div>
@@ -268,47 +253,59 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
     <div class="modal" id="modalChangePassword" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-      <div class="modal-dialog">
+      <div class="modal-dialog" style="width: 700px;">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"
                       aria-hidden="true">&times;</button>
                 <h4 class="modal-title" id="serviceFormLabel">Change Password</h4>
             </div>
-            <div style="padding-left:10px; padding-top:10px; padding-bottom: 10px;">Password must be at least 8 characters long and contain one lower case letter, one upper case letter and one digit</div>
-            <form class="form-horizontal" role="form" id="formChangePassword">
+            <div class="col-sm-12">
+                <br/>
+                Password must be at least 8 characters long and contain one lower case letter, one upper case letter and one digit.
+               <hr>
+            </div>
+            <form class="form-horizontal col-sm-8" role="form" id="formChangePassword" style="border-right: solid 1px #e5e5e5;">
               <div class="form-group">
-                <label for="name" class="col-sm-4 control-label">Old Password</label>
-
-                <div class="col-sm-6">
+                <label style="text-align: left;" for="name" class="col-sm-4 control-label">Old Password</label>
+                  <div class="col-sm-8">
                     <input type="password" class="form-control" id="oldPassword" name="oldPassword"
                           ng-model="oldPassword"/>
                 </div>
               </div>
-              <div class="form-group">
-                <label for="name"  class="col-sm-4 control-label">New Password</label>
-
-                <div class="col-sm-6">
-                    <input type="password" ng-style="newPasswordStyle" class="form-control" id="newPassword" name="newPassword"
-                          ng-model="newPassword"/>
-                </div>
-              </div>
                 <div class="form-group">
-                  <label class="col-sm-4 control-label">New Password</label>
-
-                  <div class="col-sm-6">
-                      <input type="password" ng-style="newPasswordRepeat"  class="form-control" id="newPassword1" name="newPassword1"
-                            ng-model="newPassword1"/>
+                <label style="text-align: left;" for="name"  class="col-sm-4 control-label">New Password</label>
+                    <div class="col-sm-8">
+                    <input type="password"  class="form-control" name="newPassword" id="newPassword" autocomplete="off"  ng-model="newPassword">
+                </div>
+                </div>
+                <div class="form-group">
+                  <label style="text-align: left;" class="col-sm-4 control-label">Repeat Password</label>
+                    <div class="col-sm-8">
+                        <input type="password" class="form-control" name="newPassword1" id="newPassword1" autocomplete="off" ng-model="newPassword1">
                   </div>
               </div>
             </form>
-            <div class="modal-footer">
+            <div class="col-sm-4">
+                <br/>
+                <span id="num" class="glyphicon glyphicon-remove" style="color:#FF0004;"></span> One Number<br/>
+                <span id="8char" class="glyphicon glyphicon-remove" style="color:#FF0004;"></span> 8 Characters Long<br>
+                <span id="ucase" class="glyphicon glyphicon-remove" style="color:#FF0004;"></span> One Uppercase Letter<br>
+                <span id="lcase" class="glyphicon glyphicon-remove" style="color:#FF0004;"></span> One Lowercase Letter<br>
+                <span id="pwmatch" class="glyphicon glyphicon-remove" style="color:#FF0004;"></span> Passwords Match
+            </div>
+            <div class="row">
+                &nbsp;
+            </div>
+            <div class="modal-footer" style="clear: both;margin-top: 20px;">
               <button type="button" id="closeModal" class="btn btn-default"
                       data-dismiss="modal">Close
               </button>
               <button type="button" id="changePassword"
                      class="btn btn-primary" ng-disabled="!newPasswordStrong || !newPasswordSame" ng-click="postNew()">Change Password
              </button>
+            </div>
+                </div>
             </div><!--footer-->
          </div>
       </div>

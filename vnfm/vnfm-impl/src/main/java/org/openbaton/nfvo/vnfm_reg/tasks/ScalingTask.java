@@ -18,6 +18,7 @@
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -54,6 +55,7 @@ public class ScalingTask extends AbstractTask {
   private boolean checkQuota;
 
   @Autowired private VnfPlacementManagement vnfPlacementManagement;
+  private VimInstance vimInstance;
 
   public void setUserdata(String userdata) {
     this.userdata = userdata;
@@ -106,12 +108,21 @@ public class ScalingTask extends AbstractTask {
             + virtualNetworkFunctionRecord.getId()
             + ") is: "
             + componentToAdd);
+    Map<String, VimInstance> vimInstanceMap = new HashMap<>();
     if (checkQuota) {
-      Map<String, VimInstance> vimInstanceMap =
-          lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord);
-      if (vimInstanceMap.size()
-          == virtualNetworkFunctionRecord.getVdu().size()) { //TODO needs to be one?
-        try {
+      if (vimInstance == null) {
+        vimInstanceMap =
+            lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord);
+      } else {
+        vimInstance =
+            lifecycleOperationGranting.checkQuotaOnVimInstance(
+                virtualNetworkFunctionRecord, vimInstance);
+      }
+      try {
+        if (vimInstance == null
+            && vimInstanceMap.size()
+                == virtualNetworkFunctionRecord.getVdu().size()) { //TODO needs to be one?
+
           Future<VNFCInstance> future =
               resourceManagement.allocate(
                   vdu,
@@ -124,71 +135,94 @@ public class ScalingTask extends AbstractTask {
                   + future.get()
                   + " to VNFR "
                   + virtualNetworkFunctionRecord.getId());
-        } catch (ExecutionException exe) {
-          try {
-            Throwable realException = exe.getCause();
-            if (realException instanceof VimException) throw (VimException) realException;
-            if (realException instanceof VimDriverException)
-              throw (VimDriverException) realException;
-            throw exe;
-          } catch (VimException e) {
-            resourceManagement.release(vdu, e.getVnfcInstance());
-            virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
-            saveVirtualNetworkFunctionRecord();
-            OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
-            errorMessage.setMessage(
-                "Error creating VM for VNFR ("
-                    + virtualNetworkFunctionRecord.getId()
-                    + ") while scaling out. "
-                    + e.getLocalizedMessage());
-            errorMessage.setVnfr(virtualNetworkFunctionRecord);
-            errorMessage.setAction(Action.ERROR);
-            vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
-            return errorMessage;
-          } catch (VimDriverException e) {
-            virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
-            saveVirtualNetworkFunctionRecord();
-            OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
-            errorMessage.setMessage(
-                "Error creating VM for VNFR ("
-                    + virtualNetworkFunctionRecord.getId()
-                    + ") while scaling out. "
-                    + e.getLocalizedMessage());
-            errorMessage.setVnfr(virtualNetworkFunctionRecord);
-            errorMessage.setAction(Action.ERROR);
-            vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
-            return errorMessage;
-          }
+        } else if (vimInstance != null) {
+          Future<VNFCInstance> future =
+              resourceManagement.allocate(
+                  vdu, virtualNetworkFunctionRecord, componentToAdd, vimInstance, userdata);
+          log.debug(
+              "Added new VNFC with id: "
+                  + future.get()
+                  + " to VNFR "
+                  + virtualNetworkFunctionRecord.getId());
+        } else {
+          log.error(
+              "Not enough resources on any of the PoPs in order to scale out. Please check your quota");
+          log.error(
+              "VNFR " + virtualNetworkFunctionRecord.getName() + " remains in status ACTIVE.");
+          virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
+          OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
+          errorMessage.setMessage(
+              "Not enough resources on any of the PoPs in order to scale out. Please check your quota");
+          errorMessage.setVnfr(virtualNetworkFunctionRecord);
+          errorMessage.setAction(Action.ERROR);
+          saveVirtualNetworkFunctionRecord();
+          vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
+          return errorMessage;
         }
-      } else {
-        log.error(
-            "Not enough resources on any of the PoPs in order to scale out. Please check your quota");
-        log.error("VNFR " + virtualNetworkFunctionRecord.getName() + " remains in status ACTIVE.");
-        virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
-        OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
-        errorMessage.setMessage(
-            "Not enough resources on any of the PoPs in order to scale out. Please check your quota");
-        errorMessage.setVnfr(virtualNetworkFunctionRecord);
-        errorMessage.setAction(Action.ERROR);
-        saveVirtualNetworkFunctionRecord();
-        vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
-        return errorMessage;
+      } catch (ExecutionException exe) {
+        try {
+          Throwable realException = exe.getCause();
+          if (realException instanceof VimException) {
+            throw (VimException) realException;
+          }
+          if (realException instanceof VimDriverException) {
+            throw (VimDriverException) realException;
+          }
+          throw exe;
+        } catch (VimException e) {
+          resourceManagement.release(vdu, e.getVnfcInstance());
+          virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
+          saveVirtualNetworkFunctionRecord();
+          OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
+          errorMessage.setMessage(
+              "Error creating VM for VNFR ("
+                  + virtualNetworkFunctionRecord.getId()
+                  + ") while scaling out. "
+                  + e.getLocalizedMessage());
+          errorMessage.setVnfr(virtualNetworkFunctionRecord);
+          errorMessage.setAction(Action.ERROR);
+          vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
+          return errorMessage;
+        } catch (VimDriverException e) {
+          virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
+          saveVirtualNetworkFunctionRecord();
+          OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
+          errorMessage.setMessage(
+              "Error creating VM for VNFR ("
+                  + virtualNetworkFunctionRecord.getId()
+                  + ") while scaling out. "
+                  + e.getLocalizedMessage());
+          errorMessage.setVnfr(virtualNetworkFunctionRecord);
+          errorMessage.setAction(Action.ERROR);
+          vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
+          return errorMessage;
+        }
       }
     } else {
       log.warn(
           "Please consider turning the check quota (nfvo.quota.check in openbaton.properties) to true.");
       try {
-        log.debug(
-            "Added new component with id: "
-                + resourceManagement
-                    .allocate(
-                        vdu,
-                        virtualNetworkFunctionRecord,
-                        componentToAdd,
-                        vnfPlacementManagement.choseRandom(
-                            vdu.getVimInstanceName(), virtualNetworkFunctionRecord.getProjectId()),
-                        userdata)
-                    .get());
+        if (vimInstance == null) {
+          log.debug(
+              "Added new component with id: "
+                  + resourceManagement
+                      .allocate(
+                          vdu,
+                          virtualNetworkFunctionRecord,
+                          componentToAdd,
+                          vnfPlacementManagement.choseRandom(
+                              vdu.getVimInstanceName(),
+                              virtualNetworkFunctionRecord.getProjectId()),
+                          userdata)
+                      .get());
+        } else {
+          log.debug(
+              "Added new component with id: "
+                  + resourceManagement
+                      .allocate(
+                          vdu, virtualNetworkFunctionRecord, componentToAdd, vimInstance, userdata)
+                      .get());
+        }
       } catch (VimDriverException e) {
         log.error(e.getLocalizedMessage());
         virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
@@ -204,7 +238,9 @@ public class ScalingTask extends AbstractTask {
         return errorMessage;
       } catch (VimException e) {
         log.error(e.getLocalizedMessage());
-        if (e.getVnfcInstance() != null) resourceManagement.release(vdu, e.getVnfcInstance());
+        if (e.getVnfcInstance() != null) {
+          resourceManagement.release(vdu, e.getVnfcInstance());
+        }
         virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
         OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
         errorMessage.setMessage(
@@ -241,5 +277,13 @@ public class ScalingTask extends AbstractTask {
   @Override
   protected void setDescription() {
     description = "The resources of this VNFR are scaling at the moment";
+  }
+
+  public void setVimInstance(VimInstance vimInstance) {
+    this.vimInstance = vimInstance;
+  }
+
+  public VimInstance getVimInstance() {
+    return vimInstance;
   }
 }

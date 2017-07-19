@@ -36,7 +36,7 @@
 <div class="row">
 	<div class="col-lg-12" ng-show="vnfdinfo">
 		<div class="col-lg-6">
-			
+			<a href="#" data-toggle="modal" ng-click="prettyJson(vnfdJson)" data-target="#JsonCode">Show JSON</a>
 			<br/>
 			<div class="table-responsive">
 				<table class="table table-bordered table-hover tablesorter" id="vnfdTabletable">
@@ -109,15 +109,18 @@
 								<td>VNF Package Location</td>
 								<td><a href="#packages/{{vnfdinfo.vnfPackageLocation}}">{{vnfdinfo.vnfPackageLocation}}</a></td>
 							</tr>
-							<tr ng-show="vnfdinfo.vnffgd.length > 0">
+						<tr>
+							<td>Deployment Flavour keys</td>
+							<td><span ng-repeat="df in vnfdinfo.deployment_flavour">{{df.flavour_key}}{{$last ? '' : ', '}}</span>
+							</td></tr>
+						<tr ng-show="vnfdinfo.vnffgd.length > 0">
 								<td>VNF Forwarding Graph</td>
 								<td>{{vnfdinfo.vnffgd}}</td>
 							</tr>
 
-
-
 					</tbody>
 				</table>
+
 			</div>
 		</div>
 		<div class="col-lg-12">
@@ -180,15 +183,10 @@
 									<tr>
 										<th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i>
 										</th>
-										<th ng-click="predicate = 'version'; reverse = !reverse">Version <i class="fa fa-sort"></i>
-										</th>
 										<th ng-click="predicate = 'vm_image'; reverse = !reverse">VM Image <i class="fa fa-sort"></i>
 										</th>
 										<th ng-click="predicate = 'vimInstanceName'; reverse = !reverse">VIM Name
 											<i class="fa fa-sort"></i>
-										</th>
-
-										<th ng-click="predicate = 'vnfc.id'; reverse = !reverse">Connection Point <i class="fa fa-sort"></i>
 										</th>
 
 									</tr>
@@ -196,20 +194,12 @@
 								<tbody>
 									<tr ng-repeat="vdu in vnfdinfo.vdu | orderBy:predicate:reverse">
 										<td>
-											<!--a href="#nsdescriptors/{{nsdinfo.id}}/vnfdinfoescriptors/{{vnfdinfo.id}}/vdus/{{vdu.id}}">{{vdu.id}}</a-->
-											{{vdu.id}}
+											<a href="#/vnfdescriptors/{{vnfdinfo.id}}/vdus/{{vdu.id}}">{{vdu.id}}</a>
+
 										</td>
-										<td>{{vdu.version}}</td>
-										<td>{{vdu.vm_image}}</td>
-										<td>{{vdu.vimInstanceName}}</td>
+										<td>{{vdu.vm_image | clearText}}</td>
+										<td>{{vdu.vimInstanceName | clearText}}</td>
 										<!--<td>{{vdu.vnfc_instance}}</td>-->
-										<td>
-											<ul ng-repeat="vnfc in vdu.vnfc">
-												<li ng-repeat="cp in vnfc.connection_point">
-													<b>{{cp.virtual_link_reference}}</b>: <span title="floatingIp">{{cp.floatingIp}}</span>
-												</li>
-											</ul>
-										</td>
 									</tr>
 								</tbody>
 							</table>
@@ -236,36 +226,6 @@
 										<td>{{le.event}}</td>
 										<td><span ng-repeat="ev in le.lifecycle_events">{{ev}}<span
                                             ng-if="!$last">, </span></span>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-					</tab>
-					<tab heading="Deployment Flavour">
-						<div class="table-responsive" ng-show="vnfdinfo.deployment_flavour.length > 0">
-							<h3>Deployment Flavour</h3>
-							<table class="table table-bordered table-striped table-hover tablesorter" id="">
-								<thead>
-									<tr>
-										<th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i>
-										</th>
-										<th ng-click="predicate = 'version'; reverse = !reverse">Version <i class="fa fa-sort"></i>
-										</th>
-										<th ng-show='vnfdinfo.deployment_flavour[0].flavour_key' ng-click="predicate = 'flavour_key'; reverse = !reverse">flavour key <i class="fa fa-sort"></i>
-										</th>
-										<th ng-show='vnfdinfo.deployment_flavour[0].df_constraint' ng-click="predicate = 'vnfc.df_constraint'; reverse = !reverse">df Constraint <i class="fa fa-sort"></i>
-										</th>
-										</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr ng-repeat="df in vnfdinfo.deployment_flavour | orderBy:predicate:reverse">
-										<td>{{df.id}}</td>
-										<td>{{df.version}}</td>
-										<td ng-show='vnfdinfo.deployment_flavour[0].flavour_key'>{{df.flavour_key}}</td>
-										<td ng-show='df.df_constraint'>
-											{{df.df_constraint}}
 										</td>
 									</tr>
 								</tbody>
@@ -356,7 +316,7 @@
 									<tr ng-repeat="par in vnfdinfo.configurations.configurationParameters track by $index">
 										<td>{{par.confKey}}</td>
 										<td>{{par.value}}</td>
-										</td>{{par.description}}</td>
+										<td>{{par.description}}</td>
 									</tr>
 								</tbody>
 							</table>
@@ -372,21 +332,45 @@
 		</div>
 	</div>
 </div>
+
 <div class="modal" id="jsonInfo" tabindex="" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal"><span
-                        aria-hidden="true">&times;</span><span
-                        class="sr-only">Close</span></button>
-				<dt class="modal-title" id="myModalLabel">JSON of NSD: {{vnfdInfo.name}}</dt>
+						aria-hidden="true">&times;</span><span
+						class="sr-only">Close</span></button>
+					<dt class="modal-title" id="myModalLabel">JSON of NSD: {{vnfdInfo.name}}</dt>
 			</div>
 			<div class="modal-body">
 				<div id="jsonS"></div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" id="closeModal" class="btn btn-default" data-dismiss="modal">Close
-                </button>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- VNFD Json Modal -->
+
+<div class="modal" id="JsonCode" tabindex="" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"><span
+						aria-hidden="true">&times;</span><span
+						class="sr-only">Close</span></button>
+				<dt class="modal-title" id="myModalLabel"><span class="cursordefault">JSON of VNFD:</span> {{vnfdinfo.name}}</dt>
+			</div>
+			<div class="modal-body">
+				<div id="jsonvnfd">
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" id="closeModal" class="btn btn-default" data-dismiss="modal">Close
+				</button>
 			</div>
 		</div>
 	</div>

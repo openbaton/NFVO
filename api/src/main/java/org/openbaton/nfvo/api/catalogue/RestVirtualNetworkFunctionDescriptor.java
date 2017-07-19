@@ -19,8 +19,10 @@ package org.openbaton.nfvo.api.catalogue;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import javax.validation.Valid;
+import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.exceptions.EntityInUseException;
+import org.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.core.interfaces.VirtualNetworkFunctionManagement;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +66,7 @@ public class RestVirtualNetworkFunctionDescriptor {
   public VirtualNetworkFunctionDescriptor create(
       @RequestBody @Valid VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
       @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException {
+      throws NotFoundException, NetworkServiceIntegrityException {
     return vnfdManagement.add(virtualNetworkFunctionDescriptor, projectId);
   }
 
@@ -167,5 +169,23 @@ public class RestVirtualNetworkFunctionDescriptor {
       @PathVariable("id") String id,
       @RequestHeader(value = "project-id") String projectId) {
     return vnfdManagement.update(virtualNetworkFunctionDescriptor, id, projectId);
+  }
+
+  @ApiOperation(
+    value = "Retrieving a Virtual Deployment Unit",
+    notes =
+        "The vnfdId in the URL belongs to the requested Virtual Network Function Descriptor and the vduId to the Virtual Deployment Unit inside the VNFD"
+  )
+  @RequestMapping(value = "{vnfdId}/vdus/{vduId}", method = RequestMethod.GET)
+  public VirtualDeploymentUnit getVDU(
+      @PathVariable("vnfdId") String vnfdId,
+      @PathVariable("vduId") String vduId,
+      @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
+
+    for (VirtualDeploymentUnit vdu : vnfdManagement.query(vnfdId, projectId).getVdu()) {
+      if (vdu.getId().equals(vduId)) return vdu;
+    }
+    throw new NotFoundException("No vdu with id: " + vduId + " was found.");
   }
 }
