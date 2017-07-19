@@ -22,7 +22,8 @@ dependencies {
     compile project(':security')
     compile project(':tosca-parser')
 
-    compile("mysql:mysql-connector-java:5.1.40")
+//    compile("mysql:mysql-connector-java:5.1.40")
+    compile group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.0.3'
     compile("org.hsqldb:hsqldb:2.3.4")
 
     compile 'com.google.code.gson:gson:2.8.0'
