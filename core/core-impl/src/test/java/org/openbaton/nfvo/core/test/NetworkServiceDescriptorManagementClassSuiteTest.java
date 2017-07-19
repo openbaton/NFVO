@@ -21,11 +21,16 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.NoResultException;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -34,13 +39,37 @@ import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.HighAvailability;
 import org.openbaton.catalogue.mano.common.ResiliencyLevel;
 import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
-import org.openbaton.catalogue.mano.descriptor.*;
+import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VNFComponent;
+import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
+import org.openbaton.catalogue.mano.descriptor.VNFDependency;
+import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
-import org.openbaton.catalogue.nfvo.*;
-import org.openbaton.exceptions.*;
+import org.openbaton.catalogue.nfvo.NFVImage;
+import org.openbaton.catalogue.nfvo.Network;
+import org.openbaton.catalogue.nfvo.VNFPackage;
+import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.exceptions.AlreadyExistingException;
+import org.openbaton.exceptions.BadFormatException;
+import org.openbaton.exceptions.BadRequestException;
+import org.openbaton.exceptions.CyclicDependenciesException;
+import org.openbaton.exceptions.EntityInUseException;
+import org.openbaton.exceptions.EntityUnreachableException;
+import org.openbaton.exceptions.IncompatibleVNFPackage;
+import org.openbaton.exceptions.NetworkServiceIntegrityException;
+import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.PluginException;
+import org.openbaton.exceptions.VimException;
+import org.openbaton.exceptions.WrongStatusException;
 import org.openbaton.nfvo.core.api.NetworkServiceDescriptorManagement;
 import org.openbaton.nfvo.core.utils.NSDUtils;
-import org.openbaton.nfvo.repositories.*;
+import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
+import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
+import org.openbaton.nfvo.repositories.VimRepository;
+import org.openbaton.nfvo.repositories.VnfPackageRepository;
+import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,7 +119,9 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
   @Test
   public void nsdManagementEnableTest()
       throws NotFoundException, WrongStatusException, BadFormatException,
-          NetworkServiceIntegrityException, CyclicDependenciesException, EntityInUseException {
+          NetworkServiceIntegrityException, CyclicDependenciesException, EntityInUseException,
+          BadRequestException, IOException, AlreadyExistingException, PluginException,
+          IncompatibleVNFPackage, VimException, InterruptedException, EntityUnreachableException {
     NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
     when(vimRepository.findByProjectId(anyString()))
         .thenReturn(
@@ -113,7 +144,9 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
   @Test
   public void nsdManagementDisableTest()
       throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
-          CyclicDependenciesException, WrongStatusException, EntityInUseException {
+          CyclicDependenciesException, WrongStatusException, EntityInUseException,
+          BadRequestException, IOException, AlreadyExistingException, PluginException,
+          IncompatibleVNFPackage, VimException, InterruptedException, EntityUnreachableException {
     NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
     nsd_exp.setEnabled(true);
     when(vimRepository.findAll())
@@ -175,7 +208,9 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
   @Ignore
   public void nsdManagementOnboardExceptionTest()
       throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
-          CyclicDependenciesException, EntityInUseException {
+          CyclicDependenciesException, EntityInUseException, BadRequestException, IOException,
+          AlreadyExistingException, PluginException, IncompatibleVNFPackage, VimException,
+          InterruptedException, EntityUnreachableException {
     NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
     when(vnfmManagerEndpointRepository.findAll()).thenReturn(new ArrayList<VnfmManagerEndpoint>());
     exception.expect(NotFoundException.class);
@@ -185,7 +220,9 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
   @Test
   public void nsdManagementOnboardTest()
       throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
-          CyclicDependenciesException, EntityInUseException {
+          CyclicDependenciesException, EntityInUseException, BadRequestException, IOException,
+          AlreadyExistingException, PluginException, IncompatibleVNFPackage, VimException,
+          InterruptedException, EntityUnreachableException {
 
     NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
 
@@ -212,7 +249,9 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
   public void nsdManagementUpdateTest()
       throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
           CyclicDependenciesException, WrongStatusException, EntityInUseException,
-          BadRequestException {
+          BadRequestException, AlreadyExistingException, IOException, VimException,
+          IncompatibleVNFPackage, PluginException, InterruptedException,
+          EntityUnreachableException {
     when(nsdRepository.findAll()).thenReturn(new ArrayList<NetworkServiceDescriptor>());
     when(nsdRepository.findByProjectId(anyString()))
         .thenReturn(new ArrayList<NetworkServiceDescriptor>());

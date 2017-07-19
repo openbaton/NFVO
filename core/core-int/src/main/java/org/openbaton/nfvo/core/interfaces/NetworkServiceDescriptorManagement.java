@@ -46,8 +46,10 @@ public interface NetworkServiceDescriptorManagement {
    */
   NetworkServiceDescriptor onboard(
       NetworkServiceDescriptor networkServiceDescriptor, String projectId)
-      throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
-          CyclicDependenciesException, EntityInUseException;
+      throws NotFoundException, NetworkServiceIntegrityException, CyclicDependenciesException,
+          BadFormatException, EntityInUseException, BadRequestException, PluginException,
+          IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
+          EntityUnreachableException, InterruptedException;
 
   NetworkServiceDescriptor onboardFromMarketplace(String link, String project_id)
       throws BadFormatException, CyclicDependenciesException, NetworkServiceIntegrityException,
