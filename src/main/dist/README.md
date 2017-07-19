@@ -63,7 +63,7 @@ Ensure your properties look like below:
 ```properties
 # Active configurations
 spring.datasource.url=jdbc:mysql://localhost:3306/openbaton?useSSL=false
-spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
 spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
 spring.jpa.show-sql=false
 # ddl-auto available values: create-drop, update
