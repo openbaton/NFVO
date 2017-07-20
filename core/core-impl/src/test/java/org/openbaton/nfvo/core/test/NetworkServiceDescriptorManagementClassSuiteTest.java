@@ -146,7 +146,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
 
   @Test
   public void nsdManagementQueryTest()
-      throws WrongStatusException, EntityInUseException, BadRequestException {
+      throws WrongStatusException, EntityInUseException, BadRequestException, NotFoundException {
     when(nsdRepository.findAll()).thenReturn(new ArrayList<NetworkServiceDescriptor>());
     when(nsdRepository.findByProjectId(anyString()))
         .thenReturn(new ArrayList<NetworkServiceDescriptor>());

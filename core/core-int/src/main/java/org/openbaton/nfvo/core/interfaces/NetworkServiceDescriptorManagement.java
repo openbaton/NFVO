@@ -89,7 +89,7 @@ public interface NetworkServiceDescriptorManagement {
 
   /** This operation is used to remove a disabled Network Service Descriptor. */
   void delete(String id, String projectId)
-      throws WrongStatusException, EntityInUseException, BadRequestException;
+      throws WrongStatusException, EntityInUseException, BadRequestException, NotFoundException;
 
   /**
    * Removes the VNFDescriptor into NSD

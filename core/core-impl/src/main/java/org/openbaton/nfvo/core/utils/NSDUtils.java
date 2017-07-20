@@ -393,13 +393,13 @@ public class NSDUtils {
 
     if (virtualNetworkFunctionDescriptor.getName() == null
         || virtualNetworkFunctionDescriptor.getName().isEmpty()) {
-      throw new NetworkServiceIntegrityException("Not found name of VNFD. Must be defined");
+      throw new NetworkServiceIntegrityException("The VNFD has to have a name.");
     }
 
     if (virtualNetworkFunctionDescriptor.getType() == null
         || virtualNetworkFunctionDescriptor.getType().isEmpty()) {
       throw new NetworkServiceIntegrityException(
-          "Not found type of VNFD " + virtualNetworkFunctionDescriptor.getName());
+          "The VNFD " + virtualNetworkFunctionDescriptor.getName() + " misses a VNFD type.");
     }
 
     if (virtualNetworkFunctionDescriptor.getDeployment_flavour() != null
@@ -434,12 +434,12 @@ public class NSDUtils {
     if (virtualNetworkFunctionDescriptor.getEndpoint() == null
         || virtualNetworkFunctionDescriptor.getEndpoint().isEmpty()) {
       throw new NetworkServiceIntegrityException(
-          "Not found endpoint in VNFD " + virtualNetworkFunctionDescriptor.getName());
+          "No endpoint found in VNFD " + virtualNetworkFunctionDescriptor.getName());
     }
     if (virtualNetworkFunctionDescriptor.getVdu() == null
         || virtualNetworkFunctionDescriptor.getVdu().size() == 0)
       throw new NetworkServiceIntegrityException(
-          "Not found any VDU defined in VNFD \" + virtualNetworkFunctionDescriptor.getName()");
+          "No VDU defined in VNFD " + virtualNetworkFunctionDescriptor.getName());
     int i = 1;
     for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
       if (vdu.getVnfc() == null || vdu.getVnfc().size() == 0)
@@ -450,7 +450,9 @@ public class NSDUtils {
       }
       if (vdu.getVm_image() == null || vdu.getVm_image().isEmpty()) {
         throw new NetworkServiceIntegrityException(
-            "Not found image in a VDU of VNFD " + virtualNetworkFunctionDescriptor.getName());
+            "At least one VDU in the VNFD "
+                + virtualNetworkFunctionDescriptor.getName()
+                + " does not contain an image.");
       }
       vdu.setProjectId(virtualNetworkFunctionDescriptor.getProjectId());
     }
@@ -459,7 +461,7 @@ public class NSDUtils {
       for (InternalVirtualLink vl : virtualNetworkFunctionDescriptor.getVirtual_link()) {
         if (vl.getName() == null || Objects.equals(vl.getName(), ""))
           throw new NetworkServiceIntegrityException(
-              "The vnfd: "
+              "The VNFD "
                   + virtualNetworkFunctionDescriptor.getName()
                   + " has a virtual link with no name specified");
       }
@@ -468,9 +470,13 @@ public class NSDUtils {
     if (virtualNetworkFunctionDescriptor.getLifecycle_event() != null) {
       for (LifecycleEvent event : virtualNetworkFunctionDescriptor.getLifecycle_event()) {
         if (event == null) {
-          throw new NetworkServiceIntegrityException("LifecycleEvent is null");
+          throw new NetworkServiceIntegrityException(
+              "LifecycleEvent in VNFD " + virtualNetworkFunctionDescriptor.getName() + " is null");
         } else if (event.getEvent() == null) {
-          throw new NetworkServiceIntegrityException("Event in one LifecycleEvent does not exist");
+          throw new NetworkServiceIntegrityException(
+              "Event in one LifecycleEvent of VNFD "
+                  + virtualNetworkFunctionDescriptor.getName()
+                  + " does not exist");
         }
       }
     }

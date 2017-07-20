@@ -553,7 +553,7 @@ public class NetworkServiceDescriptorManagement
   /** This operation is used to remove a disabled Network Service Descriptor. */
   @Override
   public void delete(String id, String projectId)
-      throws WrongStatusException, EntityInUseException, BadRequestException {
+      throws WrongStatusException, EntityInUseException, BadRequestException, NotFoundException {
     log.info("Removing NetworkServiceDescriptor with id " + id);
     NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findFirstById(id);
     if (networkServiceDescriptor == null)

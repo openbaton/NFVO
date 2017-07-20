@@ -141,7 +141,7 @@ public class RestNetworkServiceDescriptor {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
-      throws WrongStatusException, EntityInUseException, BadRequestException {
+      throws WrongStatusException, EntityInUseException, BadRequestException, NotFoundException {
     networkServiceDescriptorManagement.delete(id, projectId);
   }
 

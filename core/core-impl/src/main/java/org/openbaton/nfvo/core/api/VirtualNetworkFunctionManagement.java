@@ -83,10 +83,14 @@ public class VirtualNetworkFunctionManagement
   }
 
   @Override
-  public void delete(String id, String projectId) throws EntityInUseException {
+  public void delete(String id, String projectId) throws EntityInUseException, NotFoundException {
 
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
         vnfdRepository.findFirstById(id);
+    if (virtualNetworkFunctionDescriptor == null) {
+      throw new NotFoundException(
+          "Virtual Network Function Descriptor with ID " + id + " was not found");
+    }
     for (NetworkServiceDescriptor networkServiceDescriptor :
         nsdRepository.findByProjectId(projectId)) {
       for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
@@ -127,6 +131,7 @@ public class VirtualNetworkFunctionManagement
   public VirtualNetworkFunctionDescriptor query(String id, String projectId) {
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
         vnfdRepository.findFirstById(id);
+    if (virtualNetworkFunctionDescriptor == null) return virtualNetworkFunctionDescriptor;
     if (!virtualNetworkFunctionDescriptor.getProjectId().equals(projectId))
       throw new UnauthorizedUserException(
           "VNFD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
@@ -137,9 +142,12 @@ public class VirtualNetworkFunctionManagement
   public VirtualNetworkFunctionDescriptor update(
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
       String id,
-      String projectId) {
+      String projectId)
+      throws NotFoundException {
     //TODO Update inner fields
-    if (!vnfdRepository.findFirstById(id).getProjectId().equals(projectId))
+    VirtualNetworkFunctionDescriptor originalVnfd = vnfdRepository.findFirstById(id);
+    if (originalVnfd == null) throw new NotFoundException("No VNFD found with ID " + id);
+    if (!originalVnfd.getProjectId().equals(projectId))
       throw new UnauthorizedUserException(
           "VNFD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     return vnfdRepository.save(virtualNetworkFunctionDescriptor);

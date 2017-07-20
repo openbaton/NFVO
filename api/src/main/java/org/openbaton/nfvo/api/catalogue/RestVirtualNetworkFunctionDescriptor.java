@@ -85,7 +85,7 @@ public class RestVirtualNetworkFunctionDescriptor {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
-      throws EntityInUseException {
+      throws EntityInUseException, NotFoundException {
 
     vnfdManagement.delete(id, projectId);
   }
@@ -109,7 +109,7 @@ public class RestVirtualNetworkFunctionDescriptor {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void multipleDelete(
       @RequestBody @Valid List<String> ids, @RequestHeader(value = "project-id") String projectId)
-      throws EntityInUseException {
+      throws EntityInUseException, NotFoundException {
     for (String id : ids) vnfdManagement.delete(id, projectId);
   }
 
@@ -139,9 +139,12 @@ public class RestVirtualNetworkFunctionDescriptor {
   )
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
   public VirtualNetworkFunctionDescriptor findById(
-      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
+      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
 
-    return vnfdManagement.query(id, projectId);
+    VirtualNetworkFunctionDescriptor vnfd = vnfdManagement.query(id, projectId);
+    if (vnfd == null) throw new NotFoundException("No VNFD found with ID " + id);
+    return vnfd;
   }
 
   /**
@@ -167,7 +170,8 @@ public class RestVirtualNetworkFunctionDescriptor {
   public VirtualNetworkFunctionDescriptor update(
       @RequestBody @Valid VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
       @PathVariable("id") String id,
-      @RequestHeader(value = "project-id") String projectId) {
+      @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
     return vnfdManagement.update(virtualNetworkFunctionDescriptor, id, projectId);
   }
 
@@ -182,10 +186,12 @@ public class RestVirtualNetworkFunctionDescriptor {
       @PathVariable("vduId") String vduId,
       @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException {
-
-    for (VirtualDeploymentUnit vdu : vnfdManagement.query(vnfdId, projectId).getVdu()) {
+    VirtualNetworkFunctionDescriptor vnfd = vnfdManagement.query(vnfdId, projectId);
+    if (vnfd == null) throw new NotFoundException("No VNFD found with ID " + vnfdId);
+    for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
       if (vdu.getId().equals(vduId)) return vdu;
     }
-    throw new NotFoundException("No vdu with id: " + vduId + " was found.");
+    throw new NotFoundException(
+        "No VDU with ID " + vduId + " was found in the VNFD with ID " + vnfdId);
   }
 }

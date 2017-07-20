@@ -232,7 +232,7 @@ public class OpenbatonCLI implements CommandLineRunner {
   }
 
   private void deleteDescriptor(String line)
-      throws WrongStatusException, EntityInUseException, BadRequestException {
+      throws WrongStatusException, EntityInUseException, BadRequestException, NotFoundException {
     StringTokenizer stringTokenizer = new StringTokenizer(line, " ");
 
     if (stringTokenizer.countTokens() != 2) {

@@ -109,7 +109,8 @@ public class ApiRestNSDescriptorTest {
   }
 
   @Test
-  public void NSDDelete() throws WrongStatusException, EntityInUseException, BadRequestException {
+  public void NSDDelete()
+      throws WrongStatusException, EntityInUseException, BadRequestException, NotFoundException {
     restNetworkService.delete("id", "project-id");
   }
 

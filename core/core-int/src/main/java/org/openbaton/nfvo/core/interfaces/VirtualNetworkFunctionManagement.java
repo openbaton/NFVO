@@ -28,7 +28,7 @@ public interface VirtualNetworkFunctionManagement {
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor, String projectId)
       throws NotFoundException, NetworkServiceIntegrityException;
 
-  void delete(String id, String projectId) throws EntityInUseException;
+  void delete(String id, String projectId) throws EntityInUseException, NotFoundException;
 
   Iterable<VirtualNetworkFunctionDescriptor> query();
 
@@ -37,7 +37,8 @@ public interface VirtualNetworkFunctionManagement {
   VirtualNetworkFunctionDescriptor update(
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
       String id,
-      String projectId);
+      String projectId)
+      throws NotFoundException;
 
   Iterable<VirtualNetworkFunctionDescriptor> queryByProjectId(String projectId);
 }
