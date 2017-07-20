@@ -174,36 +174,42 @@
             <div ng-if="vimInstance.images.length>0">
                 <h4>Images</h4>
                 <!--{{vimInstance.images[0]}}-->
-                <table class="table table-bordered table-striped table-hover tablesorter" id="nsdTabletable">
+                <table
+                        class="table table-bordered table-striped table-hover tablesorter"
+                        id="nsdTabletable">
                     <thead>
                     <tr>
-                        <th ng-click="predicate = 'name'; reverse = !reverse">Name <i class="fa fa-sort"></i></th>
-                        <!--<th class="col-sm-4" ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i> </th>-->
-                        <th ng-click="predicate = 'extId'; reverse = !reverse">External Id <i class="fa fa-sort"></i>
+                        <th class="col-sm-4" ng-click="predicate = 'id'; reverse = !reverse">Id <i
+                                class="fa fa-sort"></i>
                         </th>
-                        <th ng-click="predicate = 'status'; reverse = !reverse">Status <i class="fa fa-sort"></i></th>
-                        <th ng-click="predicate = 'minRam'; reverse = !reverse">Minimum Ram <i class="fa fa-sort"></i>
-                        </th>
-                        <th ng-click="predicate = 'minDiskSpace'; reverse = !reverse">Minimum Disk <i
+                        <th ng-click="predicate = 'version'; reverse = !reverse">version <i
                                 class="fa fa-sort"></i></th>
-                        <th ng-click="predicate = 'isPublic'; reverse = !reverse">Is Public <i class="fa fa-sort"></i>
+                        <th ng-click="predicate = 'extId'; reverse = !reverse">extId <i class="fa fa-sort"></i>
+                        <th ng-click="predicate = 'name'; reverse = !reverse">name <i class="fa fa-sort"></i>
+                        <th>status <i class="fa fa-sort"></i>
+                        <th ng-click="predicate = 'minRam'; reverse = !reverse">ram <i class="fa fa-sort"></i>
+                        <th ng-click="predicate = 'minDiskSpace'; reverse = !reverse">disk <i
+                                class="fa fa-sort"></i>
+                        <th ng-click="predicate = 'isPublic'; reverse = !reverse">public <i
+                                class="fa fa-sort"></i>
                         </th>
-                        <!--<th ng-click="predicate = 'version'; reverse = !reverse">Version <i class="fa fa-sort"></i></th>-->
                     </tr>
                     </thead>
                     <tbody>
                     <tr ng-repeat="image in vimInstance.images| orderBy:predicate:reverse">
-                        <td>{{image.name}}</td>
-                        <!--<td>{{image.id}}</td>-->
+                        <td>{{image.id}}</td>
+                        <td>{{image.version}}</td>
                         <td>{{image.extId}}</td>
-                        < <td style="text-align: center;">{{image.status}} <span ng-show='ActiveVIM(image.status)'><span
-                            class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span></span><span
-                            ng-show='PendingVIM(image.status)'><span
-                            class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span></span></td>
+                        <td>{{image.name}}</td>
+
+                        <td style="text-align: center;">{{image.status}} <span ng-show='ActiveVIM(image.status)'><span
+                                class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span></span><span
+                                ng-show='PendingVIM(image.status)'><span
+                                class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span></span></td>
+
                         <td>{{image.minRam}}</td>
                         <td>{{image.minDiskSpace}}</td>
                         <td>{{image.isPublic}}</td>
-                        <!--<td>{{image.version}}</td>-->
                     </tr>
                     </tbody>
                 </table>
