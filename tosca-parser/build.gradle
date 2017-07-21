@@ -31,7 +31,7 @@ dependencies {
     compile 'commons-validator:commons-validator:1.5.1'
     compile 'org.springframework.boot:spring-boot:' + springBootVersion
     compile 'org.springframework.boot:spring-boot-autoconfigure:' + springBootVersion
-    compile 'org.springframework:spring-jms:' + springVersion
+//    compile 'org.springframework:spring-jms:' + springVersion
     compile 'org.springframework.data:spring-data-jpa:1.10.6.RELEASE'
     compile 'org.springframework.boot:spring-boot-starter-amqp:' + springBootVersion
 
