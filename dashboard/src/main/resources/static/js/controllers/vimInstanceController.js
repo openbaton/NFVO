@@ -35,11 +35,11 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
     $scope.setFormInput = function () {
         formInput = true;
         fileInput = false;
-        
+
     };
     $scope.setFileInput = function () {
         formInput = false;
-        fileInput = true;    
+        fileInput = true;
     };
 
     $scope.changeText = function (text) {
@@ -85,14 +85,14 @@ angular.module('app').controller('vimInstanceCtrl', function ($scope, $routePara
     $scope.hoverOut = function () {
         this.hoverEdit = false;
     };
-function checkKey() {
-    if (angular.isUndefined($scope.newvim.keyPair)) {
-        return;
+    function checkKey() {
+        if (angular.isUndefined($scope.newvim.keyPair)) {
+            return;
+        }
+        if ($scope.newvim.keyPair === '') {
+            delete $scope.newvim.keyPair;
+        }
     }
-    if ($scope.newvim.keyPair === '') {
-        delete $scope.newvim.keyPair;
-    }
-}
     $scope.setFile = function (element) {
         $scope.$apply(function ($scope) {
 
@@ -138,7 +138,7 @@ function checkKey() {
                         loadVIM();
                     })
                     .error(function (data, status) {
-                            showError(data, status);
+                        showError(data, status);
 
                     });
             } else if ($scope.textTopologyJson !== '') {
@@ -160,9 +160,9 @@ function checkKey() {
 
         }
         $('#modalDC').on('hidden.bs.modal', function () {
-        $(this).find("input,textarea,select").val('').end();
+            $(this).find("input,textarea,select").val('').end();
 
-            });
+        });
         $scope.textTopologyJson = '';
         $scope.file = '';
     };
@@ -263,8 +263,8 @@ function checkKey() {
                     $scope.vimInstanceJSON = JSON.stringify(response, undefined, 4);
 
                 }).error(function (data, status) {
-                    showError(data, status);
-                });
+                showError(data, status);
+            });
         else {
             http.get(url)
                 .success(function (response) {
@@ -276,6 +276,45 @@ function checkKey() {
         }
     }
 
+    $scope.loadVIM = function() {
+        if (!angular.isUndefined($routeParams.vimInstanceId))
+            http.get(url + $routeParams.vimInstanceId)
+                .success(function (response, status) {
+                    console.log(response);
+                    $scope.vimInstance = response;
+                    $scope.vimInstanceJSON = JSON.stringify(response, undefined, 4);
+
+                }).error(function (data, status) {
+                showError(data, status);
+            });
+        else {
+            http.get(url)
+                .success(function (response) {
+                    $scope.vimInstances = response;
+                })
+                .error(function (data, status) {
+                    showError(data, status);
+                });
+        }
+    }
+    var promise = $interval($scope.loadVIM, 10000);
+    $scope.$on('$destroy',function(){
+        if(promise)
+            $interval.cancel(promise);
+    });
+
+    $scope.ActiveVIM = function(status) {
+        if(status === 'ACTIVE') {
+            return true;
+        }
+        return false;
+    };
+    $scope.PendingVIM = function(status) {
+        if(status != 'ACTIVE') {
+            return true;
+        }
+        return false;
+    };
 
     function loadInstalled() {
         http.get(bareUrl + "/api/v1/plugins").success(function (response) {
@@ -299,15 +338,15 @@ function checkKey() {
     function showError(data, status) {
         if (status === 500) {
             $scope.alerts.push({
-            type: 'danger',
-            msg: 'An error occured and could not be handled properly, please, report to us and we will fix it as soon as possible'
-        });
+                type: 'danger',
+                msg: 'An error occured and could not be handled properly, please, report to us and we will fix it as soon as possible'
+            });
         } else {
-        console.log('Status: ' + status + ' Data: ' + JSON.stringify(data));
-        $scope.alerts.push({
-            type: 'danger',
-            msg:  data.message + " Code: " + status
-        });
+            console.log('Status: ' + status + ' Data: ' + JSON.stringify(data));
+            $scope.alerts.push({
+                type: 'danger',
+                msg:  data.message + " Code: " + status
+            });
         }
 
         $('.modal').modal('hide');
