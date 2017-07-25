@@ -19,7 +19,12 @@ package org.openbaton.catalogue.nfvo;
 
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.PrePersist;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Version;
 import org.openbaton.catalogue.util.IdGenerator;
 
 /** Created by lto on 11/05/15. */
@@ -43,6 +48,8 @@ public class NFVImage implements Serializable {
 
   @Temporal(TemporalType.TIMESTAMP)
   private Date updated;
+
+  private ImageStatus status;
 
   public NFVImage() {}
 
@@ -147,6 +154,21 @@ public class NFVImage implements Serializable {
     this.containerFormat = containerFormat;
   }
 
+  public ImageStatus getStatus() {
+    return status;
+  }
+
+  public void setStatus(String status) {
+    if (status == null) this.status = ImageStatus.UNRECOGNIZED;
+    else {
+      try {
+        this.status = ImageStatus.valueOf(status.toUpperCase());
+      } catch (IllegalArgumentException e) {
+        this.status = ImageStatus.UNRECOGNIZED;
+      }
+    }
+  }
+
   @Override
   public String toString() {
     return "Image{"
@@ -178,6 +200,9 @@ public class NFVImage implements Serializable {
         + '\''
         + ", containerFormat='"
         + containerFormat
+        + '\''
+        + ", status='"
+        + status
         + '\''
         + ", created='"
         + created
