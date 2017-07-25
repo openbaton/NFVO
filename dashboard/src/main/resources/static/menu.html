@@ -14,7 +14,7 @@
   ~ limitations under the License.
   ~
   -->
-<div ng-controller="IndexCtrl">
+ <div ng-controller="IndexCtrl">
     <div id="wrapper">
         <!-- Navigation -->
         <nav class="navbar navbar-default navbar-static-top"  style="margin-bottom: 0;padding-top: 2px;" >
@@ -66,9 +66,88 @@
                 </li>
             </ul>
             <!-- /.navbar-top-links -->
-            <div style="width: 250px;border-top:1px solid #e7e7e7;" class="navbar-default sidebar" role="navigation">
+            <div ng-controller="prController" ng-hide="ipadd != null" style="width: 250px;border-top:1px solid #e7e7e7;" class="navbar-default sidebar" role="navigation">
                 <div class="sidebar-nav">
                     <ul class="nav" id="side-menu">
+                        <li>
+                            <a href="#main" ><i class="fa fa-dashboard fa-fw"></i> Overview</a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-database fa-fw"></i> Catalogue<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level metismenu">
+                                <li>
+                                    <a href="#nsdescriptors"><i class="fa fa-pencil-square-o fa-fw"></i> NS Descriptors</a>
+                                </li>
+                                <li>
+                                    <a href="#vnfdescriptors"><i class="fa fa-file-text-o fa-fw"></i> VNF
+                                        Descriptors</a>
+                                </li>
+                                <li>
+                                    <a href="#vnfmanagers"><i class="fa fa-plug fa-fw"></i> VNF Managers</a>
+                                </li>
+                                <li>
+                                    <a href="#packages"><i class="fa fa-cube fa-fw"></i> VNF Packages</a>
+                                </li>
+                                <li>
+                                    <a href="#keypairs"><i class="fa fa-key fa-fw"></i> Key Pairs</a>
+                                </li>
+                                <li>
+                                    <a href="#marketplace"><i class="fa fa-database fa-fw"></i> Marketplace</a>
+                                </li>
+                            </ul>
+                            <!-- /.nav-second-level -->
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-cogs fa-fw"></i> Orchestrate NS<span
+                                    class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level metismenu">
+
+                                <li>
+                                    <a href="#nsrecords"><i class="fa fa-list-alt fa-fw"></i> NS Records</a>
+                                </li>
+
+                                <li>
+                                    <a href="#events"><i class="fa fa-calendar"></i> Events</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-sitemap fa-fw"></i> Manage PoPs<span
+                                    class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level metismenu">
+                                <li>
+                                    <a href="#vim-instances"><i class="fa fa-tasks"></i> PoP instances</a>
+                                </li>
+                            </ul>
+                            <!-- /.nav-second-level -->
+                        </li>
+                        <li ng-show="admin()">
+                            <a href="#"><i  class="fa fa-shield fa-fw"></i> Admin<span
+                                    class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level metismenu">
+                                <li>
+                                    <a href="#projects"><i class="fa fa-folder"></i> Projects</a>
+                                </li>
+                                <li>
+                                    <a href="#users"><i class="fa fa-users"></i> Users</a>
+                                </li>
+                                <li>
+                                    <a href="#vimdrivers"><i class="fa fa-arrows-h"></i> Vim drivers</a>
+                                </li>
+                            </ul>
+                            <!-- /.nav-second-level -->
+                        </li>
+                        <div class="" id="footer">
+                            <small class="text-muted">NFVO version: {{NFVOversion}}</small>
+                        </div>
+                    </ul>
+                    <div></div>
+                </div>
+                <!-- /.sidebar-collapse -->
+            </div>
+            <div ng-controller="prController" ng-hide="ipadd == undefined || ''" style="width: 250px;border-top:1px solid #e7e7e7;" class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav">
+                    <ul class="nav" id="side-menu-with-pr">
                         <li>
                             <a href="#main" ><i class="fa fa-dashboard fa-fw"></i> Overview</a>
                         </li>
@@ -140,9 +219,9 @@
                             </ul>
                             <!-- /.nav-second-level -->
                         </li>
-                        <div class="" id="footer">
-                            <small class="text-muted">NFVO version: {{NFVOversion}}</small>
-                        </div>
+                        <!--<div class="" id="footer-with-pr">-->
+                            <!--<small class="text-muted">NFVO version: {{NFVOversion}}</small>-->
+                        <!--</div>-->
                     </ul>
                     <div></div>
                 </div>

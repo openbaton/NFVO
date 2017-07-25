@@ -18,6 +18,7 @@
 $(function() {
 
     $('#side-menu').metisMenu();
+    $('#side-menu-with-pr').metisMenu();
 
 });
 

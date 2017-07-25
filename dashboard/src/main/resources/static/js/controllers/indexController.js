@@ -109,6 +109,7 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
 
 app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams, serviceAPI, $interval, $cookieStore, $location, AuthService, http, $rootScope, $window, $route) {
     $('#side-menu').metisMenu();
+    $('#side-menu-with-pr').metisMenu();
 
 
     $scope.adminRole = "ADMIN";
