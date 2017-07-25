@@ -418,3 +418,12 @@ select.form-control.ng-valid.ng-dirty {
     width: 250px;
     height: auto;
 }
+#footer-with-pr{
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: small;
+    position: fixed;
+    left: 20px;
+    bottom: 10px;
+    width: 250px;
+    height: auto;
+}
