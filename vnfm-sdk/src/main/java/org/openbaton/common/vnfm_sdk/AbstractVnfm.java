@@ -244,7 +244,10 @@ public abstract class AbstractVnfm
           if (!properties.getProperty("allocate", "true").equalsIgnoreCase("true")) {
             NFVMessage message2 =
                 vnfmHelper.sendAndReceive(
-                    VnfmUtils.getNfvScalingMessage(getUserData(), virtualNetworkFunctionRecord));
+                    VnfmUtils.getNfvScalingMessage(
+                        getUserData(),
+                        virtualNetworkFunctionRecord,
+                        scalingMessage.getVimInstance()));
             if (message2 instanceof OrVnfmGenericMessage) {
               OrVnfmGenericMessage message1 = (OrVnfmGenericMessage) message2;
               virtualNetworkFunctionRecord = message1.getVnfr();
