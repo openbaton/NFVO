@@ -1505,40 +1505,48 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="table-responsive">
-                                    <table class="table" id="vduTabletable">
+                                <table style="margin-bottom: 0px;" class="table table-responsive table-bordered table-striped table-hover" id="vduTabletable">
                                         <thead>
                                         <tr style="text-align: center">
-                                            <th> Configuration key</th>
-                                            <th> Configuration value</th>
-                                            <th>Description</th>
-                                            <th></th>
+                                            <th style="width: 50%;"> &nbsp; Configuration key</th>
+                                            <th> &nbsp;Configuration value</th>
                                         </tr>
                                         </thead>
+                                    </table>
+                                    <table class="table table-bordered table-striped table-hover" id="vduTabletable">
                                         <tbody>
                                         <tr ng-repeat="conf in launchConfiguration.configurations[vnfdname].configurationParameters track by $index">
-                                            <td><input style="font-weight: bold;" ng-disabled="conf.id.length > 0" type="text" class="form-control"
-                                                       id="Configuration Name" ng-model="conf.confKey"
-                                            /></td>
-                                            <td><input type="text" class="form-control" id="Configuration Name"
-                                                       ng-model="conf.value"
-                                            /></td>
-
-                                            <td><textarea ng-disabled="conf.id.length > 0"
-                                                          style="width:100%; resize:vertical;" name="Description"
-                                                          ng-model="conf.description" id="conf.description"
-                                                          title="Here you can put a human readable description"
-                                                          class="form-control">
-                                </textarea></td>
-                                            <td style="padding-left: 5px;"><a ng-disabled="conf.id.length > 0"
-                                                                              ng-hide="conf.id.length > 0" type="button"
-                                                                              ng-click="removeConf($index, vnfdname)">
-                                                <i class="fa fa-trash-o fa-lg padding10 text-danger"
-                                                   aria-hidden="true"></i></a></td>
+                                            <td>
+                                                <table class="col-md-12">
+                                                    <tr>
+                                                        <td style="border: none !important;"> <input placeholder="Configuration Key" ng-disabled="conf.id.length > 0" type="text" class="form-control"
+                                                                    id="Configuration Name" ng-model="conf.confKey"
+                                                        /></td>
+                                                        <td style="border: none !important;"><input placeholder="Configuration Key Value" type="text" class="form-control" id="Configuration Name"
+                                                                   ng-model="conf.value"
+                                                        />
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="border: none !important;" colspan="2">
+                                                            <textarea ng-disabled="conf.id.length > 0"
+                                                                      style="width:100%; resize:vertical;" name="Description"
+                                                                      ng-model="conf.description" id="conf.description"
+                                                                      placeholder="Description"
+                                                                      class="form-control">
+                                </textarea>
+                                                            <br ng-hide="conf.id.length > 0">
+                                                            <button class="btn btn-danger" ng-disabled="conf.id.length > 0"
+                                                                    ng-hide="conf.id.length > 0" type="button"
+                                                                    ng-click="removeConf($index, vnfdname)">
+                                                                Delete</button>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
                                         </tr>
                                         </tbody>
                                     </table>
-                                </div>
                                 <a type="button" class="btn btn-primary" ng-click="addConftoLaunch(vnfdname)">Add
                                     Parameter</a>
                             </tab>
