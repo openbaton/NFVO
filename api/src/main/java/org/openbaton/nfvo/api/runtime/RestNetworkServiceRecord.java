@@ -16,21 +16,11 @@
 
 package org.openbaton.nfvo.api.runtime;
 
+import io.swagger.annotations.ApiOperation;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import io.swagger.annotations.ApiOperation;
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import javax.validation.Valid;
+
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -70,6 +60,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/ns-records")
@@ -448,7 +451,7 @@ public class RestNetworkServiceRecord {
     VNFComponent component =
         gson.fromJson(body.getAsJsonObject("vnfComponent"), VNFComponent.class);
     List<String> vimInstanceNames =
-        gson.fromJson(body.getAsJsonObject("vimInstanceNames"), List.class);
+        gson.fromJson(body.getAsJsonArray("vimInstanceNames"), List.class);
     log.trace("Received: " + component);
     networkServiceRecordManagement.addVNFCInstance(
         id, idVnf, idVdu, component, "", projectId, vimInstanceNames);
@@ -536,7 +539,7 @@ public class RestNetworkServiceRecord {
     VNFComponent component =
         gson.fromJson(body.getAsJsonObject("vnfComponent"), VNFComponent.class);
     List<String> vimInstanceNames =
-        gson.fromJson(body.getAsJsonObject("vimInstanceNames"), List.class);
+        gson.fromJson(body.getAsJsonArray("vimInstanceNames"), List.class);
     log.debug("PostStandByVNFCInstance received the component: " + component);
     networkServiceRecordManagement.addVNFCInstance(
         id, idVnf, idVdu, component, "standby", projectId, vimInstanceNames);
