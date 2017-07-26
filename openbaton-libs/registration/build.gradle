@@ -15,17 +15,14 @@
  *
  */
 
-include 'catalogue'
-include 'vim-drivers'
-include 'exception'
-include 'plugin'
-include 'vim-impl'
-include 'vim-int'
-include 'vnfm-sdk'
-include 'vnfm-sdk-jms'
-include 'vnfm-sdk-amqp'
-include 'vnfm-sdk-rest'
-include 'monitoring'
-include 'utils'
-include 'registration'
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile 'org.slf4j:slf4j-api:1.7.22'
 
+    compile project(":catalogue")
+    compile project(":utils")
+
+    compile 'org.springframework:spring-context:' + springVersion
+    compile 'org.springframework.boot:spring-boot:' + springBootVersion
+    compile 'org.springframework.boot:spring-boot-starter-amqp:' + springBootVersion
+}
