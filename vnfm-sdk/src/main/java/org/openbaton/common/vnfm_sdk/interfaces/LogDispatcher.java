@@ -17,19 +17,18 @@
 
 package org.openbaton.common.vnfm_sdk.interfaces;
 
-import java.util.List;
-import java.util.Map;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmLogMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrLogMessage;
 
 /** Created by lto on 17/05/16. */
 public interface LogDispatcher {
 
   /**
-   * Returns a VMap<String, List<String>> containing the logging information that was requested in
-   * the request parameter.
+   * Returns a VnfmOrLogMessage object containing the logging information that was requested in the
+   * request parameter.
    *
    * @param request the OrVnfmLogMessage containing the request
-   * @return the request's reply encapsulated in a Map
+   * @return the request's reply encapsulated in a VnfmOrLogMessage
    */
-  Map<String, List<String>> getLogs(OrVnfmLogMessage request);
+  VnfmOrLogMessage getLogs(OrVnfmLogMessage request);
 }
