@@ -24,23 +24,28 @@ angular.module('app').factory('AuthService', function ($http, Session, $location
     authService.login = function (credentials, URL) {
         console.log(credentials);
         var basic = "Basic " + btoa(clientId + ":" + clientPass);
-        return $http({
-            method: 'POST',
-            url: URL + '/oauth/token',
-            headers: {
-                "Authorization": basic,
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            data: "username=" + credentials.username + "&password=" + credentials.password + "&grant_type=" + credentials.grant_type
-        })
-            .then(function (res) {
-                console.log(res);
-                Session.create(URL, res.data.value, credentials.username, true);
-                $location.path("/main");
-                $window.location.reload();
-                return;
-            });
+        var loginRes = function () {
+            return $http({
+                method: 'POST',
+                url: URL + '/oauth/token',
+                headers: {
+                    "Authorization": basic,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                data: "username=" + credentials.username + "&password=" + credentials.password + "&grant_type=" + credentials.grant_type
+            })
 
+                .then(function (res) {
+                    console.log(res);
+                    Session.create(URL, res.data.value, credentials.username, true);
+                    $location.path("/main");
+                    $window.location.reload();
+                    return true;
+                }, function (res) {
+                    return false;
+                });
+        };
+        return { loginRes: loginRes };
     };
 
     authService.loginGuest = function (URL) {

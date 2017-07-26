@@ -70,7 +70,7 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
                 }
                 console.info(('status != 404'));
                 console.error('Response error', status, data);
-            })
+            });
 
     };
 
@@ -81,8 +81,12 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
      * @returns {undefined}
      */
     $scope.login = function (credential) {
-        AuthService.login(credential, $scope.URL);
-        setTimeout(showLoginError, 10000);
+        var loginRes = AuthService.login(credential, $scope.URL).loginRes();
+        loginRes.then(function (result) {
+            if (!result){
+                setTimeout(showLoginError, 10);
+            }
+        });
     };
 
 

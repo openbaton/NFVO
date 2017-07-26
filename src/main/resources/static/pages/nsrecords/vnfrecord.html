@@ -147,42 +147,6 @@
                      </table>
                   </div>
                 </div>
-                <!--dl class="dl-horizontal" >
-                    <dt>name</dt>
-                    <dd>{{vnfr.name}}</dd>
-                    <dt>type</dt>
-                    <dd>{{vnfr.type}}</dd>
-                    <dt>version</dt>
-                    <dd>{{vnfr.version}}</dd>
-                    <dt>vendor</dt>
-                    <dd>{{vnfr.vendor}}</dd>
-                    <span ng-if="vnfr.configurations">
-                        <dt>{{vnfr.configurations.name}}</dt>
-                        <dd>
-                            <pairlist ng-repeat="cp in vnfr.configurations.configurationParameters">
-                                <pair>
-                                    <key><b>{{cp.confKey}}:</b>
-                                        <key>
-                                            <value>{{cp.value}}</value>
-                                </pair>
-                                <span ng-if="!$last">,</span>
-            </pairlist>
-            </dd>
-            </span>
-            <span ng-repeat="(k,v) in vnfr" ng-show="v != null" ng-if="k!='vdu' && k!='lifecycle_event'&& k!='lifecycle_event_history' && k!='virtual_link' && k!='configurations'  && k!='name' && k!='type' && k!='vendor' && k!='version'">
-                        <span ng-if="k!='requires' && k!='provides'">
-                                <dt>{{k}}</dt>
-                                <dd>{{v}}</dd>
-                        </span>
-
-            <span ng-if="k=='requires' || k=='provides'">
-                             <hr class="hr_title">
-                                <dt>{{k}}</dt>
-                                <dd>{{v.configurationParameters}}</dd>
-                              <hr class="hr_title">
-                        </span>
-            </span>
-            </dl-->
 
             <div class="col-lg-12">
                 <tabset>
@@ -438,55 +402,10 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title">Add the Connection Points to the VNFC</h4>
-                    Here you can edit the floating ips for the the new VNFCI (put real floating ip, random or nothing in the floating field)
+                    <b>Here you can edit the floating ips for the the new VNFCI (put real floating ip, random or nothing in the
+                        floating field)</b>
                 </div>
                 <div class="modal-body">
-                    <!--form role="form" class="form-horizontal">
-
-                    <div class="col-lg-offset-1">
-                        <div class="form-group ">
-                            <div class="form-group col-sm-3">
-                                <label class=" control-label">Virtual link reference</label>
-
-                                <div class="">
-                                    <select name="typeSelect" class="form-control modal-select"
-                                            ng-model="connection_point.virtual_link_reference"
-
-                                            ng-options="vl.name as vl.name for vl in vnfrSelected.virtual_link | orderBy:'name':false"
-                                            ng-change="">
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-lg-1"></div>
-                             <div class="col-sm-4 ">
-                                <label for="floatingIp" class="control-label">Interface ID (Must be an integer)</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="InterfaceID" name="InterfaceID"
-                                           ng-model="connection_point.interfaceId"/>
-
-                                </div>
-
-
-                            </div>
-                            <div class="col-sm-4 ">
-                                <label for="floatingIp" class="control-label">Floating IP</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="floatingIp" name="floatingIp"
-                                           ng-model="connection_point.floatingIp"/>
-                                                <span class="input-group-btn">
-                                                <button class="btn btn-default" ng-click="addCPtoVNFCIVDU()" type="button"
-                                                        title="Add this Connection Point to VNFCI">
-                                                    <span class="fa fa-plus" aria-hidden="true"></span>
-                                                </button>
-                                            </span>
-                                </div>
-
-
-                            </div>
-
-                            
-                        </div>
-                    </div-->
                     <table class="table table-bordered table-striped table-hover tablesorter" id="" ng-if="connection_pointsVDU.length > 0">
                         <thead>
                             <tr>
@@ -510,6 +429,12 @@
                         </tbody>
                     </table>
 
+                    <b>Please select the VimInstance(s) where deploy the new VNFComponent</b><br/>
+                    <ul style="padding-left: 0px;">
+                        <li style="display: inline;padding-right: 10px;" ng-repeat="vimInstancesList in vimInstancesList track by $index">
+                            <input type="checkbox" ng-checked="item.checked"> {{vimInstancesList.name}}<br/>
+                        </li>
+                    </ul>
                     </form>
                 </div>
                 <div class="modal-footer">

@@ -20,9 +20,12 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
     var url = baseUrl + 'ns-records/';
     var urlVNFD = baseUrl + 'vnf-descriptors/';
     var urlLog = baseUrl + 'logs/';
+    var urlVim = baseUrl + 'datacenters/';
+    var lst = $('lst');
 
 
     loadTable();
+    loadVIMs();
 
 
     $scope.textTopologyJson = '';
@@ -57,35 +60,43 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
         {active: false},
         {active: false}
     ];
- $scope.connection_points = [];
+    $scope.connection_points = [];
     $scope.addVNFCIModal = function (data) {
         $scope.connection_points = [];
         $scope.vnfrSelected = angular.copy(data);
-       // $scope.vnfrSelected.vdu.map(function(vdu) {
-         //   console.log("Been here");
-           //vdu.vnfc.map(function(vnfc) {
-                $scope.vnfrSelected.vdu[0].vnfc[0].connection_point.map(function (connection) {
-                    $scope.connection_points.push({"floatingIp":connection.floatingIp, "interfaceId":connection.interfaceId, "virtual_link_reference":connection.virtual_link_reference});
-                });
-        $scope.connection_points.map(function(cp) {
+        // $scope.vnfrSelected.vdu.map(function(vdu) {
+        //   console.log("Been here");
+        //vdu.vnfc.map(function(vnfc) {
+        $scope.vnfrSelected.vdu[0].vnfc[0].connection_point.map(function (connection) {
+            $scope.connection_points.push({
+                "floatingIp": connection.floatingIp,
+                "interfaceId": connection.interfaceId,
+                "virtual_link_reference": connection.virtual_link_reference
+            });
+        });
+        $scope.connection_points.map(function (cp) {
             if (angular.isUndefined(cp.interfaceId) || cp.interfaceId.length < 1) {
-            cp.interfaceId = 0;
+                cp.interfaceId = 0;
             }
         });
-        
+
         $('#addVNFCItoVDU').modal('show');
     };
     $scope.addVNFCI = function () {
         var cp_to_send = [];
-        $scope.connection_points.map(function(cp) {
+        var vims_to_send = [];
+        $scope.connection_points.map(function (cp) {
             if (angular.isUndefined(cp.floatingIp) || cp.floatingIp.length < 1) {
-                cp_to_send.push({"interfaceId":cp.interfaceId, "virtual_link_reference":cp.virtual_link_reference});
+                cp_to_send.push({"interfaceId": cp.interfaceId, "virtual_link_reference": cp.virtual_link_reference});
             } else {
                 cp_to_send.push(cp);
             }
+
         });
-        console.log(cp_to_send);
-        http.post(url + $routeParams.nsrecordId + '/vnfrecords/' + $scope.vnfrSelected.id + '/vdunits/vnfcinstances', {"connection_point": cp_to_send})
+        vims_to_send = $scope.lst;
+        var body = {"vnfComponent": {"connection_point": cp_to_send}, "vimInstanceNames": vims_to_send};
+        console.log("ADDVNFCInstance: Sending body: " + body)
+        http.post(url + $routeParams.nsrecordId + '/vnfrecords/' + $scope.vnfrSelected.id + '/vdunits/vnfcinstances', body)
             .success(function (response) {
                 showOk('Added a Virtual Network Function Component Instance.');
                 loadTable();
@@ -93,11 +104,12 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
             .error(function (data, status) {
                 showError(data, status);
             });
-             $scope.connection_point = {
-        "floatingIp": "",
-        "virtual_link_reference": "",
-        "interfaceId" : 0
-    };
+        $scope.connection_point = {
+            "floatingIp": "",
+            "virtual_link_reference": "",
+            "interfaceId": 0,
+            "VimInstances": ""
+        };
     };
     $scope.removeVNFCI = function (data) {
         http.delete(url + $routeParams.nsrecordId + '/vnfrecords/' + data.id + '/vdunits/vnfcinstances')
@@ -122,10 +134,11 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
     };
 
     function isInt(value) {
-        return !isNaN(value) && 
-            parseInt(Number(value)) == value && 
+        return !isNaN(value) &&
+            parseInt(Number(value)) == value &&
             !isNaN(parseInt(value, 10));
     }
+
     $scope.addCPtoVNFCI = function () {
         if (!isInt($scope.connection_point.interfaceId) || $scope.connection_point.virtual_link_reference.length < 1) {
             return;
@@ -135,22 +148,23 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
         }
         console.log($scope.vnfrSelected.virtual_link);
         $scope.connection_points.push(angular.copy($scope.connection_point));
-      
+
         $scope.connection_point.interfaceId = 0;
         $scope.connection_point.floatingIp = "";
         $scope.connection_point.virtual_link_reference = "";
+        $scope.connection_point.VimInstances = "";
     };
     $scope.removeCPtoVNFCI = function (index) {
         //var test = angular.copy($scope.connection_points[index]);
         //console.log(test);
-        
+
         $scope.connection_points.splice(index, 1);
         //$scope.vnfrSelected.virtual_link.push(test);
     };
-     $scope.removeCPtoVNFCIVDU = function (index) {
+    $scope.removeCPtoVNFCIVDU = function (index) {
         //var test = angular.copy($scope.connection_points[index]);
         //console.log(test);
-        
+
         $scope.connection_pointsVDU.splice(index, 1);
         //$scope.vnfrSelected.virtual_link.push(test);
     };
@@ -158,7 +172,8 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
     $scope.connection_point = {
         "floatingIp": "",
         "virtual_link_reference": "",
-        "interfaceId" : 0
+        "interfaceId": 0,
+        "VimInstances": ""
     };
     $scope.addCPtoVNFCIVDU = function () {
         if (!isInt($scope.connection_point.interfaceId) || $scope.connection_point.virtual_link_reference.length < 1) {
@@ -169,49 +184,48 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
         }
         console.log($scope.vnfrSelected.virtual_link);
         $scope.connection_pointsVDU.push(angular.copy($scope.connection_point));
-      
+
         $scope.connection_point.interfaceId = 0;
         $scope.connection_point.floatingIp = "";
         $scope.connection_point.virtual_link_reference = "";
+        $scope.connection_point.VimInstances = "";
     };
     $scope.addVNFCItoVDU = function (vnfr, vdu) {
-           $scope.connection_pointsVDU = [];
+        $scope.connection_pointsVDU = [];
         $scope.vduSelected = angular.copy(vdu);
         console.log($scope.vduSelected);
         $scope.vnfrSelected = angular.copy(vnfr);
-        //$scope.vduSelected.vnfc.map(function(vnfc) {
-          //  console.log("mapping");
-                $scope.vduSelected.vnfc[0].connection_point.map(function (connection) {
-                    $scope.connection_pointsVDU.push({"floatingIp":connection.floatingIp, "interfaceId":connection.interfaceId, "virtual_link_reference":connection.virtual_link_reference});
-                });
-            //});
-            if ($scope.connection_pointsVDU.lenght > 0) {
-                $scope.connection_pointsVDU = $scope.connection_pointsVDU[0];
-            }
+        $scope.vduSelected.vnfc[0].connection_point.map(function (connection) {
+            $scope.connection_pointsVDU.push({
+                "floatingIp": connection.floatingIp,
+                "interfaceId": connection.interfaceId,
+                "virtual_link_reference": connection.virtual_link_reference,
+                "VimInstances": $scope.vimInstancesList
+            });
+        });
+        if ($scope.connection_pointsVDU.lenght > 0) {
+            $scope.connection_pointsVDU = $scope.connection_pointsVDU[0];
+        }
         $('#addVNFCItoVDU').modal('show');
-        /*$scope.connectionPoints = {"connection_point": angular.copy(vdu.vnfc[0].connection_point)};
-         angular.forEach($scope.connectionPoints.connection_point, function (cp, index) {
-         if (!angular.isUndefined(cp.id)) {
-         delete cp.id;
-         delete cp.version;
-         }
-         });
-         //console.log($scope.connectionPoints);*/
-
     };
 
     $scope.addCPtoVDU = function () {
         cp_to_send = [];
-            console.log($scope.connection_pointsVDU);
-            $scope.connection_pointsVDU.map(function(cp) {
+        console.log($scope.connection_pointsVDU);
+        $scope.connection_pointsVDU.map(function (cp) {
             if (angular.isUndefined(cp.floatingIp) || cp.floatingIp.length < 1) {
-                cp_to_send.push({"interfaceId":cp.interfaceId, "virtual_link_reference":cp.virtual_link_reference});
+                cp_to_send.push({
+                    "interfaceId": cp.interfaceId,
+                    "virtual_link_reference": cp.virtual_link_reference
+                });
             } else {
                 cp_to_send.push(cp);
             }
         });
-              console.log(cp_to_send);
-        http.post(url + $routeParams.nsrecordId + '/vnfrecords/' + $routeParams.vnfrecordId + '/vdunits/' + $scope.vduSelected.id + '/vnfcinstances', {"connection_point": cp_to_send})
+        console.log(cp_to_send);
+        var body = {"vnfComponent": {"connection_point": cp_to_send}, "vimInstanceNames": $scope.lst};
+        console.log("ADDVNFCInstanceToVDU: body: " + body)
+        http.post(url + $routeParams.nsrecordId + '/vnfrecords/' + $routeParams.vnfrecordId + '/vdunits/' + $scope.vduSelected.id + '/vnfcinstances', body)
             .success(function (response) {
                 showOk('Added a Virtual Network Function Component Instance to Vdu with id: ' + $scope.vduSelected.id + '.');
                 loadTable();
@@ -219,12 +233,12 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
             .error(function (data, status) {
                 showError(data, status);
             });
-          $scope.connection_pointsVDU = [];
-    $scope.connection_point = {
-        "floatingIp": "",
-        "virtual_link_reference": "",
-        "interfaceId" : 0
-    };   
+        $scope.connection_pointsVDU = [];
+        $scope.connection_point = {
+            "floatingIp": "",
+            "virtual_link_reference": "",
+            "interfaceId": 0
+        };
     };
     $scope.setFile = function (element) {
         $scope.$apply(function ($scope) {
@@ -473,9 +487,9 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
             .error(function (response, status) {
                 showError(response, status);
             });
-            $scope.multipleDelete = false;
-            $scope.selection = {};
-            $scope.selection.ids = {};
+        $scope.multipleDelete = false;
+        $scope.selection = {};
+        $scope.selection.ids = {};
 
     };
     $scope.main = {checkbox: false};
@@ -516,15 +530,15 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
     function showError(data, status) {
         if (status === 500) {
             $scope.alerts.push({
-            type: 'danger',
-            msg: 'An error occured and could not be handled properly, please, report to us and we will fix it as soon as possible'
-        });
+                type: 'danger',
+                msg: 'An error occured and could not be handled properly, please, report to us and we will fix it as soon as possible'
+            });
         } else {
-        console.log('Status: ' + status + ' Data: ' + JSON.stringify(data));
-        $scope.alerts.push({
-            type: 'danger',
-            msg:  data.message + " Code: " + status
-        });
+            console.log('Status: ' + status + ' Data: ' + JSON.stringify(data));
+            $scope.alerts.push({
+                type: 'danger',
+                msg: data.message + " Code: " + status
+            });
         }
 
         $('.modal').modal('hide');
@@ -537,13 +551,13 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
 
     function showOk(msg) {
         $scope.alerts.push({type: 'success', msg: msg});
-         window.setTimeout(function() { 
-        for (i = 0; i < $scope.alerts.length; i++) {
-        if ($scope.alerts[i].type == 'success') {
-            $scope.alerts.splice(i, 1);
-        }
-    }
-    }, 5000);
+        window.setTimeout(function () {
+            for (i = 0; i < $scope.alerts.length; i++) {
+                if ($scope.alerts[i].type == 'success') {
+                    $scope.alerts.splice(i, 1);
+                }
+            }
+        }, 5000);
         $('.modal').modal('hide');
     }
 
@@ -590,7 +604,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
     }
 
 
-    $scope.loadTable = function() {
+    $scope.loadTable = function () {
         if (angular.isUndefined($routeParams.nsrecordId))
             http.get(url)
                 .success(function (response, status) {
@@ -616,56 +630,51 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
                     //$window.location.href = destinationUrl;
                 });
     }
-    var promise = $interval($scope.loadTable, 10000);
-    $scope.$on('$destroy',function(){
-        if(promise)
-            $interval.cancel(promise);
-    });
-    $scope.ActiveNSrecords = function(status) {
-        if(status === 'ACTIVE') {
+    $scope.ActiveNSrecords = function (status) {
+        if (status === 'ACTIVE') {
             return true;
         }
-         return false;
+        return false;
     };
-    $scope.PendingNSrecords = function(status) {
-        if(status != 'ACTIVE') {
+    $scope.PendingNSrecords = function (status) {
+        if (status != 'ACTIVE') {
             return true;
         }
         return false;
     };
     $scope.vnfrjsonname = "";
     $scope.vnfrJSON = "";
-    $scope.copyJson = function(vnfr) {
+    $scope.copyJson = function (vnfr) {
         $scope.vnfrjsonname = vnfr.name;
         $scope.vnfrJSON = vnfr;
         $scope.jsonrendVNFR();
     }
-    $scope.startVNFCI = function(vnfci, vnfr) {
-      startObj = {};
-      vnfciurl = url + $scope.nsrinfo.id + '/vnfrecords/' + vnfr.id +'/vnfcinstance/' + vnfci.id + '/start';
-      //console.log(vnfciaddres);
-      http.post(vnfciurl, startObj)
-          .success(function (response) {
-              showOk("Stopped VNFCI with id" + vnfci.id);
-          })
-          .error(function (data, status) {
-              showError(data, status);
-          });
+    $scope.startVNFCI = function (vnfci, vnfr) {
+        startObj = {};
+        vnfciurl = url + $scope.nsrinfo.id + '/vnfrecords/' + vnfr.id + '/vnfcinstance/' + vnfci.id + '/start';
+        //console.log(vnfciaddres);
+        http.post(vnfciurl, startObj)
+            .success(function (response) {
+                showOk("Stopped VNFCI with id" + vnfci.id);
+            })
+            .error(function (data, status) {
+                showError(data, status);
+            });
     };
 
-    $scope.stopVNFCI = function(vnfci, vnfr) {
-      startObj = {};
-      vnfciurl = url + $scope.nsrinfo.id + '/vnfrecords/' + vnfr.id +'/vnfcinstance/' + vnfci.id + '/stop';
-      //console.log(vnfciaddres);
-      http.post(vnfciurl, startObj)
-          .success(function (response) {
-              showOk("Stopped VNFCI with id" + vnfci.id);
-          })
-          .error(function (data, status) {
-              showError(data, status);
-          });
+    $scope.stopVNFCI = function (vnfci, vnfr) {
+        startObj = {};
+        vnfciurl = url + $scope.nsrinfo.id + '/vnfrecords/' + vnfr.id + '/vnfcinstance/' + vnfci.id + '/stop';
+        //console.log(vnfciaddres);
+        http.post(vnfciurl, startObj)
+            .success(function (response) {
+                showOk("Stopped VNFCI with id" + vnfci.id);
+            })
+            .error(function (data, status) {
+                showError(data, status);
+            });
     };
-     $scope.cleanmodal = function () {
+    $scope.cleanmodal = function () {
         var jsonDiv = document.querySelector("#json");
         jsonDiv.childNodes[0].remove();
 
@@ -676,7 +685,7 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
         var jsonDiv = document.querySelector("#json");
         console.log($scope.nsrJSON);
         jsonDiv.append(
-        renderjson($scope.nsrJSON)
+            renderjson($scope.nsrJSON)
         );
     }
     $scope.jsonrendVNFR = function () {
@@ -685,10 +694,10 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
         var jsonDiv = document.querySelector("#jsonvnfr");
         console.log($scope.vnfrJSON);
         jsonDiv.append(
-        renderjson($scope.vnfrJSON)
+            renderjson($scope.vnfrJSON)
         );
     }
-      $('#jsonInfo').on('hidden.bs.modal', function () {
+    $('#jsonInfo').on('hidden.bs.modal', function () {
         var jsonDiv = document.querySelector("#json");
         jsonDiv.childNodes[0].remove();
 
@@ -697,6 +706,26 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
         var jsonDiv = document.querySelector("#jsonvnfr");
         jsonDiv.childNodes[0].remove();
 
-        });
+    });
+    function loadVIMs() {
+        var promise = http.get(urlVim)
+            .success(function (response) {
+                $scope.vimInstancesList = response;
+                console.log($scope.vimInstancesList);
+            })
+            .error(function (data, status) {
+                showError(data, status);
+            });
+    }
+
+    $scope.lst = [];
+
+    $scope.change = function (vimInstancesList, active) {
+        if (active)
+            $scope.lst.push(vimInstancesList.name);
+        else
+            $scope.lst.splice($scope.lst.indexOf(vimInstancesList.name), 1);
+    };
+
 
 });
