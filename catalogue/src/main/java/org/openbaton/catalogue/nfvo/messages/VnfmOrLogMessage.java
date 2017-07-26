@@ -11,7 +11,7 @@ public class VnfmOrLogMessage extends VnfmOrMessage {
   private List<String> errorLog;
 
   public VnfmOrLogMessage() {
-      this.action = Action.LOG_REQUEST;
+    this.action = Action.LOG_REQUEST;
   }
 
   public VnfmOrLogMessage(List<String> outputLog, List<String> errorLog) {

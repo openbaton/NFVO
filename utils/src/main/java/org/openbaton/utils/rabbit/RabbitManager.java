@@ -47,7 +47,6 @@ import org.openbaton.exceptions.WrongStatusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 /** Created by lto on 25/11/15. */
@@ -122,8 +121,8 @@ public class RabbitManager {
     String authStr = rabbitUsername + ":" + rabbitPassword;
     String encoding = Base64.encodeBase64String(authStr.getBytes());
     put.setHeader("Authorization", "Basic " + encoding);
-    put.setHeader(new BasicHeader("Accept", MediaType.APPLICATION_JSON_VALUE));
-    put.setHeader(new BasicHeader("Content-type", MediaType.APPLICATION_JSON_VALUE));
+    put.setHeader(new BasicHeader("Accept", "application/json"));
+    put.setHeader(new BasicHeader("Content-type", "application/json"));
     put.setEntity(requestEntity);
 
     log.debug("Executing request: " + put.getMethod() + " on " + uri);
@@ -179,8 +178,8 @@ public class RabbitManager {
     String authStr = rabbitUsername + ":" + rabbitPassword;
     String encoding = Base64.encodeBase64String(authStr.getBytes());
     put.setHeader("Authorization", "Basic " + encoding);
-    put.setHeader(new BasicHeader("Accept", MediaType.APPLICATION_JSON_VALUE));
-    put.setHeader(new BasicHeader("Content-type", MediaType.APPLICATION_JSON_VALUE));
+    put.setHeader(new BasicHeader("Accept", "application/json"));
+    put.setHeader(new BasicHeader("Content-type", "application/json"));
     put.setEntity(new StringEntity(stringEntity, ContentType.APPLICATION_JSON));
 
     // TODO switch to SSL if possible
@@ -216,8 +215,8 @@ public class RabbitManager {
     String authStr = rabbitUsername + ":" + rabbitPassword;
     String encoding = Base64.encodeBase64String(authStr.getBytes());
     delete.setHeader("Authorization", "Basic " + encoding);
-    delete.setHeader(new BasicHeader("Accept", MediaType.APPLICATION_JSON_VALUE));
-    //        delete.setHeader(new BasicHeader("Content-type", MediaType.APPLICATION_JSON_VALUE));
+    delete.setHeader(new BasicHeader("Accept", "application/json"));
+    //        delete.setHeader(new BasicHeader("Content-type", "application/json"));
 
     log.debug("Executing request: " + delete.getMethod() + " on " + uri);
 
