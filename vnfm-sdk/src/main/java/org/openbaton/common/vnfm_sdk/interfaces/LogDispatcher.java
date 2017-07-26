@@ -25,11 +25,11 @@ import org.openbaton.catalogue.nfvo.messages.OrVnfmLogMessage;
 public interface LogDispatcher {
 
   /**
-   * Returns a VnfmOrLogMessage object containing the logging information that was requested in the
-   * request parameter.
+   * Returns a VMap<String, List<String>> containing the logging information that was requested in
+   * the request parameter.
    *
    * @param request the OrVnfmLogMessage containing the request
-   * @return the request's reply encapsulated in a VnfmOrLogMessage
+   * @return the request's reply encapsulated in a Map
    */
   Map<String, List<String>> getLogs(OrVnfmLogMessage request);
 }

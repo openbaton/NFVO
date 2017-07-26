@@ -47,6 +47,7 @@ import org.openbaton.exceptions.WrongStatusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 /** Created by lto on 25/11/15. */
@@ -115,22 +116,21 @@ public class RabbitManager {
     map.put("tags", "administrator");
     map.put("vhost", vHost);
     String pass = gson.toJson(map);
-    log.trace("Body is: " + pass);
+    log.debug("Body is: " + pass);
     org.apache.http.HttpEntity requestEntity = new StringEntity(pass, ContentType.APPLICATION_JSON);
     HttpPut put = new HttpPut(uri);
     String authStr = rabbitUsername + ":" + rabbitPassword;
     String encoding = Base64.encodeBase64String(authStr.getBytes());
     put.setHeader("Authorization", "Basic " + encoding);
-    put.setHeader(new BasicHeader("Accept", "application/json"));
-    put.setHeader(new BasicHeader("Content-type", "application/json"));
+    put.setHeader(new BasicHeader("Accept", MediaType.APPLICATION_JSON_VALUE));
+    put.setHeader(new BasicHeader("Content-type", MediaType.APPLICATION_JSON_VALUE));
     put.setEntity(requestEntity);
 
-    log.trace("Executing request: " + put.getMethod() + " on " + uri);
+    log.debug("Executing request: " + put.getMethod() + " on " + uri);
 
     CloseableHttpResponse response = httpclient.execute(put);
-    log.trace(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
-    if (!(response.getStatusLine().getStatusCode() == 204
-        || response.getStatusLine().getStatusCode() == 201)) {
+    log.debug(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
+    if (response.getStatusLine().getStatusCode() != 204) {
       httpclient.close();
       throw new WrongStatusException(
           "Error creating RabbitMQ user " + newUserName + ": " + response.getStatusLine());
@@ -175,25 +175,24 @@ public class RabbitManager {
     map.put("read", readPermission);
     String stringEntity = gson.toJson(map);
 
-    log.trace("Body is: " + stringEntity);
+    log.debug("Body is: " + stringEntity);
     String authStr = rabbitUsername + ":" + rabbitPassword;
     String encoding = Base64.encodeBase64String(authStr.getBytes());
     put.setHeader("Authorization", "Basic " + encoding);
-    put.setHeader(new BasicHeader("Accept", "application/json"));
-    put.setHeader(new BasicHeader("Content-type", "application/json"));
+    put.setHeader(new BasicHeader("Accept", MediaType.APPLICATION_JSON_VALUE));
+    put.setHeader(new BasicHeader("Content-type", MediaType.APPLICATION_JSON_VALUE));
     put.setEntity(new StringEntity(stringEntity, ContentType.APPLICATION_JSON));
 
     // TODO switch to SSL if possible
     CloseableHttpClient httpclient = HttpClients.createDefault();
-    log.trace("Executing request: " + put.getMethod() + " on " + uri);
+    log.debug("Executing request: " + put.getMethod() + " on " + uri);
     httpclient.execute(put);
     CloseableHttpResponse response = httpclient.execute(put);
-    log.trace(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
-    if (!(response.getStatusLine().getStatusCode() == 204
-        || response.getStatusLine().getStatusCode() == 201)) {
+    log.debug(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
+    if (response.getStatusLine().getStatusCode() != 204) {
       httpclient.close();
       throw new WrongStatusException(
-          "Error setting permissions of RabbitMQ user "
+          "Error setting permissions of RabbitMQ user"
               + username
               + ": "
               + response.getStatusLine());
@@ -217,17 +216,18 @@ public class RabbitManager {
     String authStr = rabbitUsername + ":" + rabbitPassword;
     String encoding = Base64.encodeBase64String(authStr.getBytes());
     delete.setHeader("Authorization", "Basic " + encoding);
-    delete.setHeader(new BasicHeader("Accept", "application/json"));
+    delete.setHeader(new BasicHeader("Accept", MediaType.APPLICATION_JSON_VALUE));
     //        delete.setHeader(new BasicHeader("Content-type", MediaType.APPLICATION_JSON_VALUE));
 
-    log.trace("Executing request: " + delete.getMethod() + " on " + uri);
+    log.debug("Executing request: " + delete.getMethod() + " on " + uri);
 
     CloseableHttpResponse response = httpclient.execute(delete);
-    log.trace(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
+    log.debug(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
     if (response.getStatusLine().getStatusCode() != 204) {
       throw new WrongStatusException(
           "Error removing RabbitMQ user " + userToRemove + ": " + response.getStatusLine());
     }
+
     if (response.getStatusLine().getStatusCode() == 404) {
       log.warn("User not found... the database is not consistent...");
       return;
