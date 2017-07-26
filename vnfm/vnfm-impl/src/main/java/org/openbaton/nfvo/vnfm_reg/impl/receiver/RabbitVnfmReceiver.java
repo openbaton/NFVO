@@ -47,9 +47,10 @@ public class RabbitVnfmReceiver implements VnfmReceiver {
 
     log.debug("----------Executing ACTION: " + message.getAction());
     Future<String> res = stateHandler.executeAction(message);
+    String result = res.get();
     log.debug("-----------Finished ACTION: " + message.getAction());
 
-    return res.get();
+    return result;
     //    return "";
   }
 

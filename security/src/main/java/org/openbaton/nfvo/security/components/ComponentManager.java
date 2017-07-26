@@ -245,7 +245,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
 
         String configurePermissions = "(" + username + ")|(nfvo." + username + ".actions)";
         String writePermissions =
-            "^amq\\.gen.*|amq\\.default$|(nfvo.vnfm.register)|(nfvo.vnfm.unregister)|("
+            "^amq\\.gen.*|amq\\.default$|("
                 + username
                 + ")|(vnfm.nfvo.actions)|(vnfm.nfvo.actions.reply)|(nfvo."
                 + username
