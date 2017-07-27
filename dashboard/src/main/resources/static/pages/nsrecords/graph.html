@@ -1,0 +1,51 @@
+ <!--Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ 
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+ 
+  limitations under the License.-->
+<div class="row">
+    <div class="col-lg-12">
+        <h1>Network Service Record
+            <small>Information</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li>
+                <a href="#main"><i class="fa fa-dashboard"></i>
+                    Overview</a>
+            </li>
+            <li>
+                <a href="#nsrecords"><i class="fa fa-pencil-square-o"></i>
+                    NS Records</a>
+            </li>
+            <li class="active"><i class="fa fa-pencil-square-o"></i>
+                NSR Name: {{nsrinfo.name}}
+            </li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <h2>NSR name: {{nsrinfo.name}}</h2>
+                <br/>
+        <dt>id:</dt>
+        <dd>{{nsrinfo.id}}</dd>
+        <dt>Vendor:</dt>
+        <dd>{{nsrinfo.vendor}}</dd>
+        <dt>Version:</dt>
+        <dd>{{nsrinfo.version}}</dd>
+        <dt>Status:</dt>
+        <dd>{{nsrinfo.status}}</dd>
+        <hr>
+        <div class="panel panel-default top-buffer" id="graphContainer"
+             style="min-height: 500px" data-ng-init="Jsplumb()"></div>
+    </div>
+</div>

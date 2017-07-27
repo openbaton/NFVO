@@ -1,0 +1,7 @@
+{
+  "event":"INSTANTIATE",
+  "lifecycle_events":
+  [
+    "install.sh"
+  ]
+}

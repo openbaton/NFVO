@@ -1,0 +1,469 @@
+<!--Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ 
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+ 
+  limitations under the License.-->
+<div class="row">
+    <div class="col-lg-12">
+        <h1>VNF Record
+            <small>Information</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li>
+                <a href="#main"><i class="fa fa-dashboard"></i>
+                    Overview</a>
+            </li>
+            <li>
+                <a href="#nsrecords"><i class="fa fa-pencil"></i>
+                    NS Records</a>
+            </li>
+            <li class="">
+                <a href="#nsrecords/{{nsrinfo.id}}"><i class="fa fa-pencil"></i>
+                    NSR: {{nsrinfo.name}}</a>
+            </li>
+            <!--li class="">
+                <a href="#nsrecords/{{nsrinfo.id}}/vnfrecords"><i class="fa fa-pencil-square-o"></i>
+                    VNF Records</a>
+            </li-->
+            <li class="active"><i class="fa fa-pencil-square-o"></i> VNF Record
+            </li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12 top-buffer" ng-show="nsrinfo">
+        <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">
+            <div ng-bind-html="alert.msg"></div>
+        </alert>
+        <div class="col-lg-12">
+            <span ng-repeat="vnfr in nsrinfo.vnfr" ng-show="vnfr.id==vnfrecordId">
+              <div class="col-lg-6">
+                   <a href="#" data-toggle="modal" ng-click="copyJson(vnfr)" data-target="#jsonInfoVNFR">Show JSON</a>
+              <br/>
+                <div class = "table-responsive">
+                   <table
+                          class="table table-bordered table-hover tablesorter"
+                          id="vnfrTabletable">
+                          <tbody>
+                            <tr>
+                              <td>Name</td>
+                              <td>{{vnfr.name}}</td>
+                            </tr>
+                            <tr>
+                              <td>Status</td>
+                              <td>{{vnfr.status}}</td>
+                            </tr>
+                            <tr>
+                              <td>Current Task</td>
+                              <td>{{vnfr.task}}</td>
+                            </tr>
+                            <tr>
+                              <td>ID</td>
+                              <td>{{vnfr.id}}</td>
+                            </tr>
+                            <!--tr>
+								<td>Created</td>
+								<td>{{vnfr.createdAt}}</td>
+							</tr-->
+							<tr>
+								<td>Updated</td>
+								<td>{{vnfr.updatedAt}}</td>
+							</tr>
+                            <tr>
+                              <td>Type</td>
+                              <td>{{vnfr.type}}</td>
+                            </tr>
+                            <tr>
+                              <td>Version</td>
+                              <td>{{vnfr.version}}</td>
+                            </tr>
+                            <tr>
+                              <td>Endpoint</td>
+                              <td>{{vnfr.endpoint}}</td>
+                            </tr>
+                            <tr ng-show="vnfr.connection_point.length > 0">
+                              <td>Connection point</td>
+                              <td>{{vnfr.connection_point}}</td>
+                            </tr>
+                            <tr>
+                              <td>Cyclic Dependency</td>
+                              <td>{{vnfr.cyclicDependency}}</td>
+                            </tr>
+                            <tr ng-show="vnfr.manifest_file_security.length > 0">
+                              <td>Manifest File Security</td>
+                              <td>{{vnfr.manifest_file_security}}</td>
+                            </tr>
+                            <tr ng-show="vnfr.monitoring_parameter.length > 0">
+                              <td>Monitoring Parameters</td>
+                              <td>{{vnfr.monitoring_parameter}}</td>
+                            </tr>
+                            <tr ng-show="vnfr.provides">
+                              <td>Provides</td>
+                              <td>{{vnfr.provides}}</td>
+                            </tr>
+                            <tr ng-show="vnfr.requires.length > 0">
+                              <td>Requires</td><td>{{vnfr.requires}}</td>
+                            </tr>
+                            <!--tr ng-show="vnfr.service_deployment_flavour">
+                              <td>Service Deployment Flavour</td><td>{{vnfr.service_deployment_flavour"}}</td>
+                            </tr-->
+                            <tr ng-show="vnfr.vdu_dependency.length > 0">
+                              <td>VDU dependency</td><td>{{vnfr.vdu_dependency}}</td>
+                            </tr>
+                            <tr>
+                              <td>Flavour</td><td>{{vnfr.deployment_flavour_key}}</td>
+                            </tr>
+                            <tr ng-show="vnfr.vld.length > 0">
+                              <td>VLD</td><td>{{vnfr.vld}}</td>
+                            </tr>
+                            <tr ng-show="vnfr.packageId">
+                              <td>Package ID</td><td><a href="#packages/{{vnfr.packageId}}">{{vnfr.packageId}}</a></td>
+                            </tr>
+                            <tr ng-show="vnfr.connected_external_virtual_link.length > 0">
+                              <td>External Virtual Link</td><td>{{vnfr.connected_external_virtual_link}}</td>
+                            </tr>
+                            <tr ng-show="vnfr.parent_ns_id">
+                              <td>Parent NSR</td><td><a href="#nsrecords/{{vnfr.parent_ns_id}}">{{vnfr.parent_ns_id}}</a></td>
+                            </tr>
+                            <tr ng-show="vnfr.projectId">
+                              <td>Project ID</td><td>{{vnfr.projectId}}</td>
+                            </tr>
+                            <tr ng-show="vnfr.runtime_policy_info.length > 0">
+                              <td>Runtime Policy Info</td><td>{{vnfr.runtime_policy_info}}</td>
+                            </tr>
+                            <tr ng-show="vnfr.vnf_adress">
+                              <td>VNF Adress</td><td>{{vnfr.vnf_adress}}</td>
+                            </tr>
+                          </tbody>
+                     </table>
+                  </div>
+                </div>
+
+            <div class="col-lg-12">
+                <tabset>
+                    <tab heading="Vdu">
+                        <div class="table-responsive" ng-show="vnfr.vdu.length > 0">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <h3 class="col-lg-3">Virtual Deployment Unit</h3>
+
+                                </div>
+                            </div>
+                            <table class="table table-bordered table-striped table-hover tablesorter">
+                                <thead>
+                                    <tr>
+                                        <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i>
+                                        </th>
+                                        <th ng-click="predicate = 'version'; reverse = !reverse">Version <i class="fa fa-sort"></i>
+                                        </th>
+
+                                        <th ng-click="predicate = 'vimInstanceName'; reverse = !reverse">
+                                            vimInstanceName
+                                            <i class="fa fa-sort"></i>
+                                        </th>
+                                        <th ng-click="predicate = 'vnfc_instance'; reverse = !reverse">vnfc instance
+                                            <i class="fa fa-sort"></i>
+                                        </th>
+                                        <th ng-click="predicate = 'vnfc.id'; reverse = !reverse">vnfc <i class="fa fa-sort"></i>
+                                        </th>
+                                        <th ng-click="predicate = 'scale_in_out'; reverse = !reverse">scale <i class="fa fa-sort"></i></th>
+                                        <th ng-click="predicate = 'instances'; reverse = !reverse">n. instances<i class="fa fa-sort"></i></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="vdu in vnfr.vdu | orderBy:predicate:reverse">
+                                        <td>
+                                            <a href="" ng-click="setVNFRName(vdu.id, vnfr.name)">{{vdu.id}}</a>
+                                            <a ng-href="#nsrecords/{{nsrinfo.id}}/vnfrecords/{{vnfr.id}}/vdus/{{vdu.id}}"></a>
+                                        </td>
+                                        <td>{{vdu.version}}</td>
+
+                                        <td>{{vdu.vimInstanceName | clearText}}</td>
+                                        <td class=" col-lg-3">
+                                            <span ng-repeat="vnfci in vdu.vnfc_instance" class="">
+
+
+                                                    <dl class="dl-horizontal dl-table">
+                                                        <dt>hostname</dt>
+                                                        <dd>{{vnfci.hostname}}</dd>
+
+                                                        <dt>floatingIps</dt>
+                                                        <dd title="netName" ng-repeat="fip in vnfci.floatingIps">
+                                                            <li>{{fip.netName}}: {{fip.ip}}</li>
+                                                        </dd>
+
+                                                        <dt>vnfComponent</dt>
+                                                        <dd title="vnfComponent"
+                                                            ng-repeat="cp in vnfci.vnfComponent.connection_point">
+                                                            <li>
+                                                                <span title="virtual_link_reference">{{cp.virtual_link_reference}}</span>:
+                                            <span title="floatingIp">{{cp.floatingIp}}</span>
+                                            </li>
+                                            </dd>
+
+
+                                            <dt>ips</dt>
+                                            <dd>
+                                                <span ng-repeat="ips in vnfci.ips">
+                                                    <li title="netName">{{ips.netName}}: {{ips.ip}}</li>
+                                                </span>
+                                            </dd>
+                                            </dl>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="dl-horizontal dl-table" ng-repeat="vnfc in vdu.vnfc">
+                                            <span ng-repeat="cp in vnfc.connection_point">
+                                                    <b title="virtual_link_reference">{{cp.virtual_link_reference}}:</b>
+                                                    <span title="floatingIp">{{cp.floatingIp}}</span>
+                                            <span ng-if="!$last"><br/></span>
+                                            </span>
+                                            </span>
+                                        </td>
+                                        <td>{{vdu.scale_in_out}}</td>
+                                        <td class="col-lg-2">
+
+                                            <div class="btn-group" role="group" aria-label="...">
+                                                <button type="button" class="btn btn-default" ng-click="removeVNFCItoVDU(vdu)">-
+                                            </button>
+                                                <button type="button" class="btn btn-default disabled">
+                                                {{vdu.vnfc_instance.length}}
+                                            </button>
+                                                <button type="button" class="btn btn-default"  ng-disabled="vdu.vnfc_instance.length == vdu.scale_in_out" ng-click="addVNFCItoVDU(vnfr, vdu)">
+                                                +
+                                            </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </tab>
+                    <tab heading="Lifecycle Event">
+                        <div class="table-responsive" ng-show="vnfr.lifecycle_event.length > 0">
+                            <h3>Lifecycle Event</h3>
+                            <table class="table table-bordered table-striped table-hover tablesorter" id="">
+                                <thead>
+                                    <tr>
+                                        <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i>
+                                        </th>
+                                        <th ng-click="predicate = 'event'; reverse = !reverse">event <i class="fa fa-sort"></i>
+                                        </th>
+                                        <th ng-click="predicate = 'lifecycle_events'; reverse = !reverse">lifecycle events <i class="fa fa-sort"></i>
+                                        </th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="le in vnfr.lifecycle_event | orderBy:predicate:reverse">
+                                        <td>{{le.id}}</td>
+                                        <td>{{le.event}}</td>
+                                        <td><span ng-repeat="ev in le.lifecycle_events">{{ev}}<span ng-if="!$last">, </span></span></td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </tab>
+                    <tab heading="Lifecycle Event History">
+                        <div class="table-responsive" ng-show="vnfr.lifecycle_event_history.length > 0">
+                            <h3>Lifecycle Event</h3>
+                            <table class="table table-bordered table-striped table-hover tablesorter" id="">
+                                <thead>
+                                    <tr>
+                                        <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i>
+                                        </th>
+                                        <th ng-click="predicate = 'event'; reverse = !reverse">event <i class="fa fa-sort"></i>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="le in vnfr.lifecycle_event_history | orderBy:'executedAt'">
+                                        <td>{{le.id}}</td>
+                                        <td>{{le.event}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </tab>
+                    <tab heading="Virtual Link">
+                        <div class="table-responsive" ng-show="vnfr.virtual_link.length > 0">
+                            <h3>Virtual Link</h3>
+                            <table class="table table-bordered table-striped table-hover tablesorter" id="">
+                                <thead>
+                                    <tr>
+                                        <th ng-click="predicate = 'id'; reverse = !reverse">Id <i class="fa fa-sort"></i>
+                                        </th>
+                                        <th ng-click="predicate = 'name'; reverse = !reverse">name <i class="fa fa-sort"></i>
+                                        </th>
+                                        <th ng-click="predicate = 'extId'; reverse = !reverse">extId <i class="fa fa-sort"></i>
+                                        </th>
+                                        <th ng-click="predicate = 'qos'; reverse = !reverse">qos <i class="fa fa-sort"></i>
+                                        </th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="vl in vnfr.virtual_link | orderBy:predicate:reverse">
+                                        <td>{{vl.id}}</td>
+                                        <td>{{vl.name}}</td>
+                                        <td>{{vl.extId}}</td>
+                                        <td>{{vl.qos}}</td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </tab>
+                    <tab heading="Auto Scaling Policies" ng-show="vnfr.auto_scale_policy">
+                        <div class="table-responsive">
+                            <h3>Auto Scaling Policies</h3>
+                            <table class="table table-bordered table-striped table-hover tablesorter" id="">
+                                <thead>
+                                    <tr>
+                                        <th>Version</th>
+                                        <th>Name</th>
+                                        <th>Threshold</th>
+                                        <th>Comparison Operator</th>
+                                        <th>Period</th>
+                                        <th>Cooldown</th>
+                                        <th>Mode</th>
+                                        <th>Type</th>
+                                        <th>Alarms</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="policy in vnfr.auto_scale_policy">
+                                        <td>{{policy.version}}</td>
+                                        <td>{{policy.name}}</td>
+                                        <td>{{policy.threshold}}</td>
+                                        <td>{{policy.comparisonOperator}}</td>
+                                        <td>{{policy.period}}</td>
+                                        <td>{{policy.cooldown}}</td>
+                                        <td>{{policy.mode}}</td>
+                                        <td>{{policy.type}}</td>
+                                        <td>
+                                            <div ng-repeat="alarm in policy.alarms">
+                                                {{alarm.metric}} {{alarm.comparisonOperator}} {{alarm.threshold}} <br> </div>
+                                        </td>
+                                        <td>
+                                            <div ng-repeat="action in policy.actions">{{action.type}} {{action.value}} <br></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </tab>
+                    <tab heading="Configuration Parameters">
+                        <h3>{{vnfr.configurations.name}}</h3>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped table-hover tablesorter" id="">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="par in vnfr.configurations.configurationParameters">
+                                        <td>{{par.confKey}}</td>
+                                        <td>{{par.value}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </tab>
+
+                </tabset>
+                </span>
+                <br/>
+                <br/>
+
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" tabindex="-1" role="dialog" id="addVNFCItoVDU">
+        <div class="modal-dialog" style="width:70%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Add the Connection Points to the VNFC</h4>
+                    <b>Here you can edit the floating ips for the the new VNFCI (put real floating ip, random or nothing in the
+                        floating field)</b>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered table-striped table-hover tablesorter" id="" ng-if="connection_pointsVDU.length > 0">
+                        <thead>
+                            <tr>
+
+                                <th>Virtual link reference</th>
+                                <th>floatingIp</th>
+                                <th>Interface ID </th>
+                                <!--th>Delete</th-->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="cp in connection_pointsVDU track by $index | orderBy:predicate:reverse">
+                                <td>{{cp.virtual_link_reference}}</td>
+                                <td><input type="text" class="form-control" id="floatingIp" name="floatingIp" ng-model="cp.floatingIp"
+                                    /></td>
+                                <td>{{cp.interfaceId}}</td>
+                                <!--td>
+                                    <a href="" ng-click="removeCPtoVNFCIVDU($index)"><span class="fa fa-trash"></span></a>
+                                </td-->
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <b>Please select the VimInstance(s) where deploy the new VNFComponent</b><br/>
+                    <ul style="padding-left: 0px;">
+                        <li style="display: inline;padding-right: 10px;" ng-repeat="vimInstancesList in vimInstancesList track by $index">
+                            <input type="checkbox" ng-checked="item.checked"> {{vimInstancesList.name}}<br/>
+                        </li>
+                    </ul>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" ng-click="addCPtoVDU()" ng-disabled="connection_pointsVDU.length===0">Add Instance</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
+    <div class="modal" id="jsonInfoVNFR" tabindex="" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span
+                        aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                    <dt class="modal-title" id="myModalLabel">JSON of VNFR: {{vnfrjsonname}}</dt>
+                </div>
+                <div class="modal-body">
+                    <div id="jsonvnfr"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="closeModal" class="btn btn-default" data-dismiss="modal">Close
+                </button>
+                </div>
+            </div>
+        </div>
+    </div>

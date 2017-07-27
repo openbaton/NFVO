@@ -1,0 +1,209 @@
+ <!--Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+
+ limitations under the License.-->
+<div class="row">
+    <div class="col-lg-12">
+        <h1>
+            Overview
+        </h1>
+        <ol class="breadcrumb">
+            <li class="active"><i class="fa fa-dashboard"></i> Overview</li>
+        </ol>
+        <div id="topologyAlertOk" class="alert alert-success"
+             style="display: none;">
+            <button type="button" class="close" aria-hidden="true">×</button>
+            <div class="body"></div>
+        </div>
+        <div id="topologyAlertError" class="alert alert-danger"
+             style="display: none;">
+            <button type="button" class="close" aria-hidden="true">×</button>
+            <div class="body"></div>
+        </div>
+
+        <!--div class="alert alert-info alert-dismissable">
+            <button type="button" class="close"
+                    aria-hidden="true">&times;</button>
+            Welcome to OpenBaton Network orchestrator Overview Admin by <a
+                class="alert-link" href="http://www.OpenBaton.org">the
+            OpenBaton team</a>!
+        </div-->
+    </div>
+</div>
+<div class="row">
+    <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">
+        <div ng-bind-html="alert.msg"></div>
+    </alert>
+</div>
+<!-- /.row -->
+<div class="row">
+    <div class="col-lg-3 col-md-6">
+        <div class="panel panel-primary panelbox">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-list-alt fa-5x white"></i>
+                    </div>
+                    <div class="col-xs-9 text-right white">
+                        <div class="huge">{{numberNSR}}</div>
+                        <div>Network Service Records</div>
+                    </div>
+                </div>
+            </div>
+            <a  href="#nsrecords">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6">
+        <div class="panel panel-green panelbox">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-cloud-upload fa-5x white"></i>
+                    </div>
+                    <div class="col-xs-9 text-right white">
+                        <div class="huge">{{numberVNF}}</div>
+                        <div>Virtual Network Functions</div>
+                    </div>
+                </div>
+            </div>
+            <a  href="#vnfdescriptors">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="panel panel-red panelbox">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-pencil-square-o fa-5x white"></i>
+                    </div>
+                    <div class="col-xs-9 text-right white">
+                        <div class="huge">{{numberNSD}}</div>
+                        <div>Network Service Descriptors</div>
+                    </div>
+                </div>
+            </div>
+            <a  href="#nsdescriptors">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6">
+        <div class="panel panel-yellow panelbox">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-key fa-5x white"></i>
+                    </div>
+                    <div class="col-xs-9 text-right white">
+                        <div class="huge">{{numberKeys}}</div>
+                        <div>Keys</div>
+                    </div>
+                </div>
+            </div>
+            <a  href="#keypairs">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="panel panelbox">
+            <div class="panel-heading-white panel-heading text-center">
+                <h4>CPU Cores Allocation</h4>
+            </div>
+            <div class="panel-body">
+                <center>
+
+                    <div title="Getting information on quota" ng-if="!chartsLoaded()">
+                        <center><div  class="sk-rotating-plane"></div></center>
+                    </div>
+                    <canvas ng-if="chartsLoaded()" class="doughnut-chart" id="cpuChart" height="100" width="200" style="width: 200px; height: 100px;"></canvas>
+                </center>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="panel panelbox">
+            <div class="panel-heading-white panel-heading text-center">
+                <h4>RAM Allocation</h4>
+            </div>
+            <div class="panel-body">
+                <center>
+                    <div title="Getting information on quota"  ng-if="!chartsLoaded()">
+                        <center><div class="sk-rotating-plane"></div></center>
+                    </div>
+                    <canvas ng-if="chartsLoaded()" class="doughnut-chart" id="ramChart"  height="100" width="200" style="width: 200px; height: 100px;"></canvas>
+                </center>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="panel panelbox">
+            <div class="panel-heading-white panel-heading text-center">
+                <h4>Floating IPs Allocation</h4>
+            </div>
+            <div class="panel-body">
+                <center>
+                    <div title="Getting information on quota" ng-if="!chartsLoaded()">
+                        <center><div  class="sk-rotating-plane"></div></center>
+                    </div>
+                    <canvas ng-if="chartsLoaded()" class="doughnut-chart" id="ipChart"  height="100" width="200" style="width: 200px; height: 100px;"></canvas>
+                </center>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="panel panelbox">
+            <div class="panel-heading-white panel-heading text-center">
+                <h4>Instances Allocation</h4>
+            </div>
+            <div class="panel-body">
+                <center>
+                    <div title="Getting information on quota"  ng-if="!chartsLoaded()">
+                        <center><div class="sk-rotating-plane"></div></center>
+                    </div>
+                    <canvas ng-if="chartsLoaded()" class="doughnut-chart" id="instChart"  height="100" width="200" style="width: 200px; height: 100px;"></canvas>
+                </center>
+            </div>
+        </div>
+    </div>
+
+
+</div>
