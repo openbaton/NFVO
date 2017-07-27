@@ -1,17 +1,17 @@
- <!--Copyright (c) 2016 Open Baton (http://www.openbaton.org)
- 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
- 
-      http://www.apache.org/licenses/LICENSE-2.0
- 
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
- 
-  limitations under the License.-->
+<!--Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+
+ limitations under the License.-->
 <div class="container">
 
     <div class="row">
@@ -21,23 +21,25 @@
                     <h3 class="panel-title">Please Sign In</h3>
                 </div>
                 <div class="panel-body">
-                  <div class="row">
-                    <div class="">
-                      <div class="container logo">
-                          <a><img style="margin-left: 25%; height: 30%; width: 50%" src="img/OpenBatonLogoTransp.png" class="img-responsive"
-                               alt="Responsive image"></a>
-                      </div>
+                    <div class="row">
+                        <div class="">
+                            <div class="container logo">
+                                <a><img style="margin-left: 25%; height: 30%; width: 50%"
+                                        src="img/OpenBatonLogoTransp.png" class="img-responsive"
+                                        alt="Responsive image"></a>
+                            </div>
+                        </div>
                     </div>
-                  </div>
-                    <form class="form-signin" ng-submit="login(credential)" >
+                    <form class="form-signin" ng-submit="login(credential)">
                         <fieldset>
                             <div class="form-group">
-                                <input ng-model="credential.username" class="form-control" placeholder="Username" name="email"
+                                <input ng-model="credential.username" class="form-control" placeholder="Username"
+                                       name="email"
                                        type="text" autofocus>
                             </div>
                             <div class="form-group">
-                                <input  ng-model="credential.password" class="form-control" placeholder="Password"
-                                        name="password" type="password" value="">
+                                <input ng-model="credential.password" class="form-control" placeholder="Password"
+                                       name="password" type="password" value="">
                             </div>
                             <p ng-if="loginError" class="help-block">The Username or password isn't valid</p>
                             <button type="submit" class="btn btn-lg btn-success btn-block">Login</button>
