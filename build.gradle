@@ -14,6 +14,11 @@
  * limitations under the License.
  *
  */
+buildscript {
+    repositories { mavenCentral() }
+    dependencies { classpath("se.transmode.gradle:gradle-docker:1.2") }
+}
+
 plugins {
     id 'net.researchgate.release' version '2.5.0'
     id "nebula.ospackage" version "4.3.0"
@@ -26,6 +31,7 @@ plugins {
 }
 
 apply plugin: 'java'
+apply plugin: 'docker'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 
@@ -74,6 +80,7 @@ apply from: 'openbaton-libs/gradle/gradle/run.application.java.gradle'
 apply from: 'openbaton-libs/gradle/gradle/git.release.gradle'
 
 apply from: 'gradle/gradle/packaging.nfvo.debian.gradle'
+apply from: 'gradle/gradle/packaging.nfvo.docker.gradle'
 apply from: 'gradle/gradle/packaging.innosetup.gradle'
 apply from: 'gradle/gradle/distribution.gradle'
 apply from: 'gradle/gradle/dependencies.updater.gradle'

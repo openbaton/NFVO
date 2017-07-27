@@ -17,9 +17,11 @@
 
 package org.openbaton.nfvo.core.api;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.api.DeployNSRBody;
@@ -40,6 +42,7 @@ import org.openbaton.nfvo.core.interfaces.DependencyManagement;
 import org.openbaton.nfvo.core.interfaces.EventDispatcher;
 import org.openbaton.nfvo.core.interfaces.NetworkManagement;
 import org.openbaton.nfvo.core.interfaces.ResourceManagement;
+import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.openbaton.nfvo.core.utils.NSDUtils;
 import org.openbaton.nfvo.core.utils.NSRUtils;
 import org.openbaton.nfvo.repositories.*;
@@ -118,6 +121,7 @@ public class NetworkServiceRecordManagement
 
   @Autowired private KeyRepository keyRepository;
   @Autowired private VnfPackageRepository vnfPackageRepository;
+  @Autowired private VimManagement vimManagement;
 
   @PostConstruct
   private void init() {
@@ -134,9 +138,14 @@ public class NetworkServiceRecordManagement
 
   @Override
   public NetworkServiceRecord onboard(
-      String idNsd, String projectID, List keys, Map vduVimInstances, Map configurations)
+      String idNsd,
+      String projectID,
+      List keys,
+      Map vduVimInstances,
+      Map configurations,
+      String monitoringIp)
       throws VimException, NotFoundException, PluginException, MissingParameterException,
-          BadRequestException {
+          BadRequestException, IOException, AlreadyExistingException {
     log.info("Looking for NetworkServiceDescriptor with id: " + idNsd);
     NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findFirstById(idNsd);
     if (networkServiceDescriptor == null) {
@@ -168,7 +177,7 @@ public class NetworkServiceRecordManagement
       body.setKeys(keys1);
       log.debug("Found keys: " + body.getKeys());
     }
-    return deployNSR(networkServiceDescriptor, projectID, body);
+    return deployNSR(networkServiceDescriptor, projectID, body, monitoringIp);
   }
 
   @Override
@@ -357,9 +366,10 @@ public class NetworkServiceRecordManagement
       String projectId,
       List keys,
       Map vduVimInstances,
-      Map configurations)
+      Map configurations,
+      String monitoringIp)
       throws VimException, NotFoundException, PluginException, MissingParameterException,
-          BadRequestException {
+          BadRequestException, IOException, AlreadyExistingException {
     networkServiceDescriptor.setProjectId(projectId);
     //    nsdUtils.fetchVimInstances(networkServiceDescriptor, projectId);
     DeployNSRBody body = new DeployNSRBody();
@@ -384,7 +394,7 @@ public class NetworkServiceRecordManagement
       body.setKeys(keys1);
       log.debug("Found keys: " + body.getKeys());
     }
-    return deployNSR(networkServiceDescriptor, projectId, body);
+    return deployNSR(networkServiceDescriptor, projectId, body, monitoringIp);
   }
 
   public void deleteVNFRecord(String idNsr, String idVnf, String projectId)
@@ -458,7 +468,12 @@ public class NetworkServiceRecordManagement
   }
 
   @Override
-  public void addVNFCInstance(String id, String idVnf, VNFComponent component, String projectId)
+  public void addVNFCInstance(
+      String id,
+      String idVnf,
+      VNFComponent component,
+      String projectId,
+      List<String> vimInstanceNames)
       throws NotFoundException, BadFormatException, WrongStatusException {
     log.info("Adding new VNFCInstance to VNFR with id: " + idVnf);
     NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id);
@@ -491,18 +506,44 @@ public class NetworkServiceRecordManagement
       throw new NotFoundException(
           "All VirtualDeploymentUnits have reached their maximum number of VNFCInstances");
 
+    Set<String> names = new HashSet<>();
+    for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId)) {
+      names.add(vimInstance.getName());
+    }
+    if (vimInstanceNames == null || vimInstanceNames.isEmpty()) {
+      vimInstanceNames = new ArrayList<>();
+      for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId)) {
+        vimInstanceNames.add(vimInstance.getName());
+      }
+    }
+    names.retainAll(vimInstanceNames);
+    if (names.size() == 0) {
+      log.error("VimInstance names passed not found");
+      throw new NotFoundException("VimInstance names passed not found");
+    }
     log.debug(
         "A new VNFCInstance will be added to the VDU with id " + virtualDeploymentUnit.getId());
 
     networkServiceRecord.setStatus(Status.SCALING);
     networkServiceRecord = nsrRepository.save(networkServiceRecord);
     scaleOUT(
-        networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, component, "");
+        networkServiceRecord,
+        virtualNetworkFunctionRecord,
+        virtualDeploymentUnit,
+        component,
+        "",
+        vimInstanceNames);
   }
 
   @Override
   public void addVNFCInstance(
-      String id, String idVnf, String idVdu, VNFComponent component, String mode, String projectId)
+      String id,
+      String idVnf,
+      String idVdu,
+      VNFComponent component,
+      String mode,
+      String projectId,
+      List<String> vimInstanceNames)
       throws NotFoundException, BadFormatException, WrongStatusException {
     log.info("Adding new VNFCInstance to VNFR with id " + idVnf + " and VDU with id " + idVdu);
     NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id);
@@ -529,10 +570,33 @@ public class NetworkServiceRecordManagement
           "The VirtualDeploymentUnit chosen has reached the maximum number of VNFCInstance");
     }
 
+    Set<String> names = new HashSet<>();
+    for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId)) {
+      names.add(vimInstance.getName());
+    }
+    if (vimInstanceNames == null || vimInstanceNames.isEmpty()) {
+      vimInstanceNames = new ArrayList<>();
+      for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId)) {
+        vimInstanceNames.add(vimInstance.getName());
+      }
+    }
+    names.retainAll(vimInstanceNames);
+    if (names.size() == 0) {
+      log.error("VimInstance names passed not found");
+      throw new NotFoundException("VimInstance names passed not found");
+    }
+    log.debug(
+        "A new VNFCInstance will be added to the VDU with id " + virtualDeploymentUnit.getId());
+
     networkServiceRecord.setStatus(Status.SCALING);
     networkServiceRecord = nsrRepository.save(networkServiceRecord);
     scaleOUT(
-        networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, component, mode);
+        networkServiceRecord,
+        virtualNetworkFunctionRecord,
+        virtualDeploymentUnit,
+        component,
+        mode,
+        vimInstanceNames);
   }
 
   private void scaleOUT(
@@ -540,7 +604,8 @@ public class NetworkServiceRecordManagement
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
       VirtualDeploymentUnit virtualDeploymentUnit,
       VNFComponent component,
-      String mode)
+      String mode,
+      List<String> vimInstanceNames)
       throws BadFormatException, NotFoundException {
 
     networkServiceRecord.setTask("Scaling out");
@@ -582,7 +647,16 @@ public class NetworkServiceRecordManagement
 
     log.debug("Found Dependency: " + dependencyTarget);
 
-    vnfmManager.addVnfc(virtualNetworkFunctionRecord, component, dependencyTarget, mode);
+    try {
+      vnfmManager
+          .addVnfc(
+              virtualNetworkFunctionRecord, component, dependencyTarget, mode, vimInstanceNames)
+          .get();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    } catch (ExecutionException e) {
+      e.printStackTrace();
+    }
   }
 
   @Override
@@ -1065,9 +1139,15 @@ public class NetworkServiceRecordManagement
   }
 
   private NetworkServiceRecord deployNSR(
-      NetworkServiceDescriptor networkServiceDescriptor, String projectID, DeployNSRBody body)
+      NetworkServiceDescriptor networkServiceDescriptor,
+      String projectID,
+      DeployNSRBody body,
+      String monitoringIp)
       throws NotFoundException, VimException, PluginException, MissingParameterException,
-          BadRequestException {
+          BadRequestException, IOException, AlreadyExistingException {
+
+    for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectID))
+      vimManagement.refresh(vimInstance);
     Map<String, List<String>> vduVimInstances = new HashMap<>();
     log.info("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor.getName());
     log.info("VNFD are: ");
@@ -1123,6 +1203,29 @@ public class NetworkServiceRecordManagement
 
             if (vimInstance == null) {
               throw new NotFoundException("Not found VIM instance: " + vimInstanceName);
+            }
+
+            if (!vimInstance.getType().equals("test")) {
+              boolean found = false;
+              vimManagement.refresh(vimInstance);
+
+              for (String imageName : vdu.getVm_image()) {
+
+                for (NFVImage image : vimInstance.getImages()) {
+                  if (image.getName().equals(imageName) || image.getExtId().equals(imageName)) {
+                    found = true;
+                    if (!image.getStatus().equals(ImageStatus.ACTIVE))
+                      //log.warn("Image " + image.getName() + " is NOT ACTIVE!");
+                      throw new NotFoundException("Image " + image.getName() + " is NOT ACTIVE!");
+                  }
+                }
+              }
+              if (!found)
+                throw new NotFoundException(
+                    "None of the selected images "
+                        + vdu.getVm_image()
+                        + "was found on vim: "
+                        + vimInstanceName);
             }
 
             //check networks
@@ -1191,11 +1294,10 @@ public class NetworkServiceRecordManagement
     }
 
     checkConfigParameter(networkServiceDescriptor, body);
-
-    fillDeploymentTimeIPs(networkServiceDescriptor, body, vduVimInstances);
-    checkSshInfo(networkServiceDescriptor, body);
-
-    vnfmManager.deploy(networkServiceDescriptor, networkServiceRecord, body, vduVimInstances);
+      fillDeploymentTimeIPs(networkServiceDescriptor, body, vduVimInstances);
+      checkSshInfo(networkServiceDescriptor, body);
+    vnfmManager.deploy(
+        networkServiceDescriptor, networkServiceRecord, body, vduVimInstances, monitoringIp);
     log.debug("Returning NSR " + networkServiceRecord.getName());
     return networkServiceRecord;
   }
@@ -1579,11 +1681,14 @@ public class NetworkServiceRecordManagement
   }
 
   @Override
-  public NetworkServiceRecord query(String id, String projectId) {
-    log.debug("Id is: " + id);
+  public NetworkServiceRecord query(String id, String projectId) throws NotFoundException {
+    log.trace("Id is: " + id);
     NetworkServiceRecord networkServiceRecord = nsrRepository.findFirstById(id);
+    if (networkServiceRecord == null) {
+      throw new NotFoundException(String.format("NetworkServiceRecord with id %s not found", id));
+    }
     log.trace("found nsr = " + networkServiceRecord);
-    log.debug(" project id is: " + projectId);
+    log.trace(" project id is: " + projectId);
     if (!networkServiceRecord.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
           "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");

@@ -97,13 +97,22 @@ public class NetworkServiceDescriptorManagement
   @Override
   public NetworkServiceDescriptor onboard(
       NetworkServiceDescriptor networkServiceDescriptor, String projectId)
-      throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
-          CyclicDependenciesException, EntityInUseException {
+      throws NotFoundException, NetworkServiceIntegrityException, CyclicDependenciesException,
+          BadFormatException, EntityInUseException, BadRequestException, PluginException,
+          IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
+          EntityUnreachableException, InterruptedException {
     SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
     networkServiceDescriptor.setProjectId(projectId);
     log.info("Starting onboarding process for NSD: " + networkServiceDescriptor.getName());
 
-    nsdUtils.fetchExistingVnfd(networkServiceDescriptor);
+    List<String> marketIds = nsdUtils.fetchExistingVnfd(networkServiceDescriptor, projectId);
+    for (String marketId : marketIds) {
+      String link =
+          "http://" + marketIp + ":" + marketPort + "/api/v1/vnf-packages/" + marketId + "/tar";
+      VirtualNetworkFunctionDescriptor vnfd =
+          vnfPackageManagement.onboardFromMarket(link, projectId);
+      networkServiceDescriptor.getVnfd().add(vnfd);
+    }
 
     if (networkServiceDescriptor.getVld() != null) {
       for (VirtualLinkDescriptor vld : networkServiceDescriptor.getVld()) {
@@ -153,7 +162,8 @@ public class NetworkServiceDescriptorManagement
   public NetworkServiceDescriptor onboardFromMarketplace(String link, String projectId)
       throws BadFormatException, CyclicDependenciesException, NetworkServiceIntegrityException,
           NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
-          AlreadyExistingException, EntityInUseException, BadRequestException {
+          AlreadyExistingException, EntityInUseException, BadRequestException, InterruptedException,
+          EntityUnreachableException {
 
     InputStream in = new BufferedInputStream(new URL(link).openStream());
     ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -166,25 +176,13 @@ public class NetworkServiceDescriptorManagement
     in.close();
     String json = out.toString();
     NetworkServiceDescriptor nsd = gson.fromJson(json, NetworkServiceDescriptor.class);
-
-    List<String> market_ids = new ArrayList<>();
-    for (VirtualNetworkFunctionDescriptor vnfd : nsd.getVnfd()) {
-      market_ids.add(vnfd.getId());
-    }
-    nsd.getVnfd().clear();
-    List<String> vnfd_ids = getIds(market_ids, projectId);
-    log.debug("Catalogue ids of VNFD are: " + vnfd_ids);
-    for (String vnfd_id : vnfd_ids) {
-      VirtualNetworkFunctionDescriptor vnfd = new VirtualNetworkFunctionDescriptor();
-      vnfd.setId(vnfd_id);
-      nsd.getVnfd().add(vnfd);
-    }
     return onboard(nsd, projectId);
   }
 
   private List<String> getIds(List<String> market_ids, String project_id)
       throws NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
-          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException {
+          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException,
+          InterruptedException, EntityUnreachableException {
     List<String> not_found_ids = new ArrayList<>();
     not_found_ids.addAll(market_ids);
     List<String> vnfdIds = new ArrayList<>();

@@ -16,12 +16,19 @@
 
 package org.openbaton.nfvo.api.tosca;
 
+import java.io.IOException;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
+import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.CyclicDependenciesException;
 import org.openbaton.exceptions.EntityInUseException;
+import org.openbaton.exceptions.EntityUnreachableException;
+import org.openbaton.exceptions.IncompatibleVNFPackage;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.PluginException;
+import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
 import org.openbaton.tosca.parser.TOSCAParser;
 import org.openbaton.tosca.templates.NSDTemplate;
@@ -30,7 +37,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 /** Created by rvl on 25.08.16. */
 @RestController
@@ -48,7 +60,9 @@ public class RestToscaNetworkServiceDescriptor {
       @RequestBody String nsd_yaml, @RequestHeader(value = "project-id") String projectId)
       throws NetworkServiceIntegrityException, BadFormatException, NotFoundException,
           CyclicDependenciesException, EntityInUseException,
-          org.openbaton.tosca.exceptions.NotFoundException {
+          org.openbaton.tosca.exceptions.NotFoundException, BadRequestException, IOException,
+          AlreadyExistingException, PluginException, IncompatibleVNFPackage, VimException,
+          InterruptedException, EntityUnreachableException {
 
     NSDTemplate nsdTemplate = Utils.stringToNSDTemplate(nsd_yaml);
     NetworkServiceDescriptor nsd = toscaParser.parseNSDTemplate(nsdTemplate);

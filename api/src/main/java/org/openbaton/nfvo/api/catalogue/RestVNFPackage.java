@@ -64,12 +64,12 @@ public class RestVNFPackage {
   )
   @RequestMapping(method = RequestMethod.POST)
   @ResponseBody
-  public String onboard(
+  public VirtualNetworkFunctionDescriptor onboard(
       @RequestParam("file") MultipartFile file,
       @RequestHeader(value = "project-id") String projectId)
       throws IOException, VimException, NotFoundException, SQLException, PluginException,
           IncompatibleVNFPackage, AlreadyExistingException, NetworkServiceIntegrityException,
-          BadRequestException {
+          BadRequestException, InterruptedException, EntityUnreachableException {
 
     log.debug("Onboarding");
     if (file == null || file.isEmpty()) throw new NullPointerException("File is null or empty!");
@@ -82,9 +82,7 @@ public class RestVNFPackage {
       else log.error(e.getMessage());
       throw new BadRequestException(e.getMessage());
     }
-    if (virtualNetworkFunctionDescriptor != null)
-      return "{ \"id\": \"" + virtualNetworkFunctionDescriptor.getVnfPackageLocation() + "\"}";
-    return "{\"error\"}";
+    return virtualNetworkFunctionDescriptor;
   }
 
   @ApiOperation(
@@ -100,7 +98,8 @@ public class RestVNFPackage {
   public String marketDownload(
       @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
       throws IOException, PluginException, VimException, NotFoundException, IncompatibleVNFPackage,
-          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException {
+          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException,
+          InterruptedException, EntityUnreachableException {
     Gson gson = new Gson();
     JsonObject jsonObject = gson.fromJson(link, JsonObject.class);
     String downloadlink = jsonObject.getAsJsonPrimitive("link").getAsString();

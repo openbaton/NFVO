@@ -32,6 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import javax.annotation.PostConstruct;
@@ -266,7 +267,8 @@ public class VnfmManager
       NetworkServiceDescriptor networkServiceDescriptor,
       NetworkServiceRecord networkServiceRecord,
       DeployNSRBody body,
-      Map<String, List<String>> vduVimInstances)
+      Map<String, List<String>> vduVimInstances,
+      String monitoringIp)
       throws NotFoundException {
 
     try {
@@ -333,6 +335,7 @@ public class VnfmManager
         Map<String, String> extension = getExtension();
 
         extension.put("nsr-id", networkServiceRecord.getId());
+        if (monitoringIp != null) extension.put("monitoringIp", monitoringIp.trim());
 
         extension = fillAccessibilityConfigurationParameters(extension, vnfd, body);
 
@@ -520,6 +523,7 @@ public class VnfmManager
       VnfmOrScalingMessage vnfmOrScalingMessage = (VnfmOrScalingMessage) nfvMessage;
       virtualNetworkFunctionRecord = vnfmOrScalingMessage.getVirtualNetworkFunctionRecord();
       ((ScalingTask) task).setUserdata(vnfmOrScalingMessage.getUserData());
+      ((ScalingTask) task).setVimInstance(vnfmOrScalingMessage.getVimInstance());
     } else if (nfvMessage.getAction().ordinal() == Action.ALLOCATE_RESOURCES.ordinal()) {
       VnfmOrAllocateResourcesMessage vnfmOrAllocateResourcesMessage =
           (VnfmOrAllocateResourcesMessage) nfvMessage;
@@ -818,7 +822,8 @@ public class VnfmManager
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
       VNFComponent component,
       VNFRecordDependency dependency,
-      String mode)
+      String mode,
+      List<String> vimInstanceNames)
       throws NotFoundException {
     VnfmManagerEndpoint endpoint = vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint());
 
@@ -840,6 +845,11 @@ public class VnfmManager
     message.setExtension(getExtension());
     message.setDependency(dependency);
     message.setMode(mode);
+
+    message.setVimInstance(
+        vimInstanceRepository.findByProjectIdAndName(
+            virtualNetworkFunctionRecord.getProjectId(),
+            vimInstanceNames.get(new Random().nextInt(vimInstanceNames.size()))));
 
     log.debug("SCALE_OUT MESSAGE IS: \n" + message);
 

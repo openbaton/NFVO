@@ -27,6 +27,7 @@ import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.nfvo.ImageStatus;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.Subnet;
@@ -175,7 +176,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   }
 
   @Override
-  public VimInstance refresh(VimInstance vimInstance)
+  public synchronized VimInstance refresh(VimInstance vimInstance)
       throws VimException, PluginException, IOException, BadRequestException,
           AlreadyExistingException {
     if (vimCheck) {
@@ -334,6 +335,16 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     }
   }
 
+  @Override
+  public Set<NFVImage> queryImagesDirectly(VimInstance vimInstance)
+      throws PluginException, VimException {
+
+    Set<NFVImage> images = new HashSet<>();
+    images.addAll(vimBroker.getVim(vimInstance.getType()).queryImages(vimInstance));
+
+    return images;
+  }
+
   public void setCheckForVimInVnfr(boolean checkForVimInVnfr) {
     this.checkForVimInVnfr = checkForVimInVnfr;
   }
@@ -365,6 +376,12 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
             nfvImage_nfvo.setContainerFormat(image_new.getContainerFormat());
             nfvImage_nfvo.setCreated(image_new.getCreated());
             nfvImage_nfvo.setUpdated(image_new.getUpdated());
+            ImageStatus imageStatus = image_new.getStatus();
+            if (imageStatus != null) {
+              nfvImage_nfvo.setStatus(imageStatus.toString());
+            } else {
+              nfvImage_nfvo.setStatus(ImageStatus.ACTIVE.toString());
+            }
             found = true;
             break;
           }
