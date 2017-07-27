@@ -207,7 +207,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
     ServiceMetadata serviceMetadataToRemove = serviceRepository.findById(id);
     log.debug("Found service: " + serviceMetadataToRemove);
     if (serviceMetadataToRemove.getToken() != null)
-        serverConfig.tokenServices().revokeToken(serviceMetadataToRemove.getToken());
+      serverConfig.tokenServices().revokeToken(serviceMetadataToRemove.getToken());
     serviceRepository.delete(id);
   }
 
