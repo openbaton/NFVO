@@ -1,19 +1,8 @@
 package org.openbaton.nfvo.security.components;
 
-import static org.openbaton.utils.rabbit.RabbitManager.createRabbitMqUser;
-import static org.openbaton.utils.rabbit.RabbitManager.removeRabbitMqUser;
-import static org.openbaton.utils.rabbit.RabbitManager.setRabbitMqUserPermissions;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.util.Date;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
+
 import org.openbaton.catalogue.nfvo.ManagerCredentials;
 import org.openbaton.catalogue.nfvo.ServiceMetadata;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
@@ -31,6 +20,20 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.util.Date;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
+import static org.openbaton.utils.rabbit.RabbitManager.createRabbitMqUser;
+import static org.openbaton.utils.rabbit.RabbitManager.removeRabbitMqUser;
+import static org.openbaton.utils.rabbit.RabbitManager.setRabbitMqUserPermissions;
 
 //import java.util.Base64;
 
@@ -191,6 +194,21 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
       }
     }
     return false;
+  }
+
+  @Override
+  public Iterable<ServiceMetadata> listServices() {
+    return serviceRepository.findAll();
+  }
+
+  @Override
+  public void removeService(String id) {
+    //TODO remove also associated toker
+    ServiceMetadata serviceMetadataToRemove = serviceRepository.findById(id);
+    log.debug("Found service: " + serviceMetadataToRemove);
+    if (serviceMetadataToRemove.getToken() != null)
+        serverConfig.tokenServices().revokeToken(serviceMetadataToRemove.getToken());
+    serviceRepository.delete(id);
   }
 
   /*

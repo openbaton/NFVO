@@ -26,6 +26,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.validation.Valid;
+import org.openbaton.catalogue.nfvo.ServiceMetadata;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.security.interfaces.ComponentManager;
@@ -34,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -122,24 +124,32 @@ public class RestComponents {
     return componentManager.registerService(serviceRegisterBody);
   }
 
-  //  /** Enable a new Manager. this generates a new Rabbit User that must be used in the Manager SDK */
-  //  @ApiOperation(
-  //    value = "Enable Manager",
-  //    notes =
-  //        "Enable a new Manager. this generates a Rabbit user that must be used in the Manager SDK"
-  //  )
-  //  @RequestMapping(
-  //    value = "/managers",
-  //    method = RequestMethod.POST,
-  //    consumes = MediaType.APPLICATION_JSON_VALUE,
-  //    produces = MediaType.APPLICATION_JSON_VALUE
-  //  )
-  //  @ResponseStatus(HttpStatus.CREATED)
-  //  public ManagerCredentials enableManager(
-  //      @RequestHeader(value = "project-id") String projectId,
-  //      @RequestBody @Valid JsonObject serviceRegisterBody)
-  //      throws IOException {
-  //
-  //    return componentManager.enableManager(serviceRegisterBody);
-  //  }
+  /** Enable a new Service. */
+  @ApiOperation(value = "Delete Service", notes = "Remove a specific service")
+  @RequestMapping(
+    value = "/services/{id}",
+    method = RequestMethod.DELETE,
+    produces = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ResponseStatus(HttpStatus.OK)
+  public void deleteService(
+      @RequestHeader(value = "project-id") String projectId, @PathVariable("id") String id)
+      throws IOException {
+    log.debug("id is " + id);
+    componentManager.removeService(id);
+  }
+
+  /** Enable a new Service. */
+  @ApiOperation(value = "List Services", notes = "List all services")
+  @RequestMapping(
+    value = "/services",
+    method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ResponseStatus(HttpStatus.OK)
+  public Iterable<ServiceMetadata> listServices(
+      @RequestHeader(value = "project-id") String projectId) throws IOException {
+
+    return componentManager.listServices();
+  }
 }

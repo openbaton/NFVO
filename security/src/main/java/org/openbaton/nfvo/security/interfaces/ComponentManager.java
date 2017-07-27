@@ -7,6 +7,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import org.openbaton.catalogue.nfvo.ManagerCredentials;
+import org.openbaton.catalogue.nfvo.ServiceMetadata;
 import org.openbaton.exceptions.NotFoundException;
 
 /** Created by lto on 04/04/2017. */
@@ -24,4 +25,8 @@ public interface ComponentManager {
   boolean isService(String token)
       throws InvalidKeyException, BadPaddingException, NoSuchAlgorithmException,
           IllegalBlockSizeException, NoSuchPaddingException;
+
+  Iterable<ServiceMetadata> listServices();
+
+  void removeService(String id);
 }
