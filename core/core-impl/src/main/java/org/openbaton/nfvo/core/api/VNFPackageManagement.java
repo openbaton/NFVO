@@ -208,7 +208,7 @@ public class VNFPackageManagement
       throws IOException, VimException, NotFoundException, SQLException, PluginException,
           ExistingVNFPackage, DescriptorWrongFormat, VNFPackageFormatException,
           IncompatibleVNFPackage, BadRequestException, AlreadyExistingException,
-          NetworkServiceIntegrityException {
+          NetworkServiceIntegrityException, EntityUnreachableException, InterruptedException {
 
     CheckVNFPackage.checkStructure(pack, isImageIncluded, fromMarketPlace);
 
@@ -988,8 +988,8 @@ public class VNFPackageManagement
   public VirtualNetworkFunctionDescriptor onboardFromPackageRepository(
       String link, String projectId)
       throws IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
-          NotFoundException, PluginException, NetworkServiceIntegrityException,
-          BadRequestException {
+          NotFoundException, PluginException, NetworkServiceIntegrityException, BadRequestException,
+          InterruptedException, EntityUnreachableException {
     log.debug("Onboard from Package Repository, this is the download link: " + link);
     URL packageLink = new URL(link);
 

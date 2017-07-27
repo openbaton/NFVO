@@ -57,7 +57,7 @@ public interface VNFPackageManagement {
       throws IOException, VimException, NotFoundException, SQLException, PluginException,
           ExistingVNFPackage, DescriptorWrongFormat, VNFPackageFormatException,
           IncompatibleVNFPackage, BadRequestException, AlreadyExistingException,
-          NetworkServiceIntegrityException;
+          NetworkServiceIntegrityException, EntityUnreachableException, InterruptedException;
 
   /**
    * This operation handles the data about the image of the vnf package
@@ -100,7 +100,8 @@ public interface VNFPackageManagement {
    */
   VirtualNetworkFunctionDescriptor onboardFromPackageRepository(String link, String projectId)
       throws IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
-          NotFoundException, PluginException, NetworkServiceIntegrityException, BadRequestException;
+          NotFoundException, PluginException, NetworkServiceIntegrityException, BadRequestException,
+          InterruptedException, EntityUnreachableException;
 
   /**
    * This operation allows disabling the VNF Package, so that it is not possible to instantiate any

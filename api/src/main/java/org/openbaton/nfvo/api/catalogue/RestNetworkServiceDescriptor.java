@@ -144,7 +144,8 @@ public class RestNetworkServiceDescriptor {
       @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
       throws BadFormatException, CyclicDependenciesException, NetworkServiceIntegrityException,
           NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
-          AlreadyExistingException, EntityInUseException, BadRequestException {
+          AlreadyExistingException, EntityInUseException, BadRequestException,
+          EntityUnreachableException, InterruptedException {
 
     log.debug("Received request to download nsd from Package Repository from this link: " + link);
     String downloadlink = link.get("link").getAsString();

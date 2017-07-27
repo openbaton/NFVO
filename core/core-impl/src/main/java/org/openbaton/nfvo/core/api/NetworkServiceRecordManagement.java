@@ -1294,8 +1294,8 @@ public class NetworkServiceRecordManagement
     }
 
     checkConfigParameter(networkServiceDescriptor, body);
-      fillDeploymentTimeIPs(networkServiceDescriptor, body, vduVimInstances);
-      checkSshInfo(networkServiceDescriptor, body);
+    fillDeploymentTimeIPs(networkServiceDescriptor, body, vduVimInstances);
+    checkSshInfo(networkServiceDescriptor, body);
     vnfmManager.deploy(
         networkServiceDescriptor, networkServiceRecord, body, vduVimInstances, monitoringIp);
     log.debug("Returning NSR " + networkServiceRecord.getName());

@@ -146,6 +146,31 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
     }
 
 
+    function env() {
+        http.get($cookieStore.get('URL') + '/env')
+            .success(function (response) {
+                //console.log(response);
+                //$scope.env1 = response;
+                var appConfig = "";
+                for (var key in response) {
+                    if (key.startsWith("applicationConfig: [file:")) {
+                        appConfig = key;
+                    }
+                }
+                defaultUrl = response[appConfig]['nfvo.package-repository.ip'] + ":" +
+                    response[appConfig]['nfvo.package-repository.port'];
+                $scope.defaultUrl = defaultUrl;
+                $scope.ipadd = response[appConfig]['nfvo.package-repository.ip']
+                newloadTable();
+                NSDTable();
+                getVersion();
+
+            })
+            .error(function (response, status) {
+                showError(response, status);
+            });
+    }
+    env();
 
     function loadCurrentUser() {
         http.get(url + '/users/current')

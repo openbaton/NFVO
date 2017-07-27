@@ -174,5 +174,5 @@ public interface NetworkServiceDescriptorManagement {
       throws IOException, BadFormatException, CyclicDependenciesException,
           NetworkServiceIntegrityException, EntityInUseException, NotFoundException,
           AlreadyExistingException, IncompatibleVNFPackage, BadRequestException, VimException,
-          PluginException;
+          PluginException, InterruptedException, EntityUnreachableException;
 }

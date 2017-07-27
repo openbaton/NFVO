@@ -495,7 +495,7 @@ public class NetworkServiceDescriptorManagement
       throws IOException, BadFormatException, CyclicDependenciesException,
           NetworkServiceIntegrityException, EntityInUseException, NotFoundException,
           AlreadyExistingException, IncompatibleVNFPackage, BadRequestException, VimException,
-          PluginException {
+          PluginException, InterruptedException, EntityUnreachableException {
 
     String nsdJson = getStringFromRemoteLink(downloadlink);
 
@@ -519,8 +519,8 @@ public class NetworkServiceDescriptorManagement
   private List<String> getVNFDIdsFromPackageRepository(
       List<String> packageRepositoryIds, String projectId)
       throws IOException, BadRequestException, PluginException, AlreadyExistingException,
-          NetworkServiceIntegrityException, IncompatibleVNFPackage, NotFoundException,
-          VimException {
+          NetworkServiceIntegrityException, IncompatibleVNFPackage, NotFoundException, VimException,
+          EntityUnreachableException, InterruptedException {
     List<String> vnfdIds = new ArrayList<>();
     for (String packageRepositorySymbolicId : packageRepositoryIds) {
       String link =

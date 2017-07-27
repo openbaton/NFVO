@@ -121,7 +121,8 @@ public class RestVNFPackage {
   public String packageRepositoryDownload(
       @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
       throws IOException, PluginException, VimException, NotFoundException, IncompatibleVNFPackage,
-          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException {
+          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException,
+          EntityUnreachableException, InterruptedException {
     Gson gson = new Gson();
     JsonObject jsonObject = gson.fromJson(link, JsonObject.class);
     String downloadlink = jsonObject.getAsJsonPrimitive("link").getAsString();
