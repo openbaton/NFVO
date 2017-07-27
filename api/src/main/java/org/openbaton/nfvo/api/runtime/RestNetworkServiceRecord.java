@@ -448,7 +448,7 @@ public class RestNetworkServiceRecord {
     VNFComponent component =
         gson.fromJson(body.getAsJsonObject("vnfComponent"), VNFComponent.class);
     List<String> vimInstanceNames =
-        gson.fromJson(body.getAsJsonObject("vimInstanceNames"), List.class);
+        gson.fromJson(body.getAsJsonArray("vimInstanceNames"), List.class);
     log.trace("Received: " + component);
     networkServiceRecordManagement.addVNFCInstance(
         id, idVnf, idVdu, component, "", projectId, vimInstanceNames);
@@ -536,7 +536,7 @@ public class RestNetworkServiceRecord {
     VNFComponent component =
         gson.fromJson(body.getAsJsonObject("vnfComponent"), VNFComponent.class);
     List<String> vimInstanceNames =
-        gson.fromJson(body.getAsJsonObject("vimInstanceNames"), List.class);
+        gson.fromJson(body.getAsJsonArray("vimInstanceNames"), List.class);
     log.debug("PostStandByVNFCInstance received the component: " + component);
     networkServiceRecordManagement.addVNFCInstance(
         id, idVnf, idVdu, component, "standby", projectId, vimInstanceNames);
