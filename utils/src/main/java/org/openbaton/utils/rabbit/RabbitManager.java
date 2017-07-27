@@ -129,7 +129,9 @@ public class RabbitManager {
 
     CloseableHttpResponse response = httpclient.execute(put);
     log.debug(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
-    if (response.getStatusLine().getStatusCode() != 204) {
+    log.debug("Received status: " + response.getStatusLine().getStatusCode());
+    if (response.getStatusLine().getStatusCode() != 204 // already exists
+        && response.getStatusLine().getStatusCode() != 201) { // create new one
       httpclient.close();
       throw new WrongStatusException(
           "Error creating RabbitMQ user " + newUserName + ": " + response.getStatusLine());
