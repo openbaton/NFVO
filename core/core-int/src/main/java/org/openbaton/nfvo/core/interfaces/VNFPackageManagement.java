@@ -19,19 +19,12 @@ package org.openbaton.nfvo.core.interfaces;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
-import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.EntityUnreachableException;
-import org.openbaton.exceptions.IncompatibleVNFPackage;
-import org.openbaton.exceptions.NetworkServiceIntegrityException;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimException;
-import org.openbaton.exceptions.WrongAction;
+import org.openbaton.exceptions.*;
 
 /** Created by mpa on 05/05/15. */
 public interface VNFPackageManagement {
@@ -111,7 +104,8 @@ public interface VNFPackageManagement {
   /** This operation is used to remove a disabled VNF Package. */
   void delete(String id, String projectId) throws WrongAction;
 
-  Script updateScript(Script script, String vnfPackageId) throws NotFoundException;
+  Script updateScript(Script script, String vnfPackageId)
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 
   Iterable<VNFPackage> queryByProjectId(String projectId);
 }

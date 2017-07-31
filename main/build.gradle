@@ -20,8 +20,7 @@ dependencies {
     compile project(':catalogue')
     compile project(':plugin')
     compile project(':core-int')
-
-    runtime project(':security')
+    compile project(':security')
 
     runtime project(':dashboard')
     runtime project(':core-impl')

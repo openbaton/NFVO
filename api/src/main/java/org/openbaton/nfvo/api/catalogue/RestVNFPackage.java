@@ -22,11 +22,13 @@ import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import javax.validation.Valid;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.exceptions.AlreadyExistingException;
+import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.EntityUnreachableException;
 import org.openbaton.exceptions.IncompatibleVNFPackage;
@@ -91,7 +93,7 @@ public class RestVNFPackage {
       byte[] bytes = file.getBytes();
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
           vnfPackageManagement.onboard(bytes, projectId);
-      //      return "{ \"id\": \"" + virtualNetworkFunctionDescriptor.getVnfPackageLocation() + "\"}";
+      log.debug("return vnfd: " + virtualNetworkFunctionDescriptor.getName());
       return virtualNetworkFunctionDescriptor;
     } else throw new IOException("File is empty!");
   }
@@ -210,7 +212,7 @@ public class RestVNFPackage {
       @PathVariable("scriptId") String scriptId,
       @RequestBody String scriptNew,
       @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException {
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
     VNFPackage vnfPackage = vnfPackageManagement.query(vnfPackageId, projectId);
     for (Script script : vnfPackage.getScripts()) {
       if (script.getId().equals(scriptId)) {

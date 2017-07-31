@@ -22,13 +22,9 @@ import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmStartStopMessage;
-import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.VNFCInstanceRepository;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
-import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
@@ -86,17 +82,6 @@ public class StopTask extends AbstractTask {
     saveVirtualNetworkFunctionRecord();
 
     return null;
-  }
-
-  private void sendStop(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
-      throws NotFoundException {
-    VnfmSender vnfmSender;
-    vnfmSender =
-        this.getVnfmSender(
-            vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
-    vnfmSender.sendCommand(
-        new OrVnfmStartStopMessage(virtualNetworkFunctionRecord, null, Action.STOP),
-        vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
   }
 
   @Override

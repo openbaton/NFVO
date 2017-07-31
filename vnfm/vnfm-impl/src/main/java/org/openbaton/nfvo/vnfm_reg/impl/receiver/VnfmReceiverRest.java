@@ -22,8 +22,12 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import java.util.concurrent.ExecutionException;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.messages.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmGrantLifecycleOperationMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrAllocateResourcesMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrGenericMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrScalingMessage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
@@ -38,7 +42,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 /** Created by lto on 26/05/15. */
 @RestController
@@ -65,7 +73,8 @@ public class VnfmReceiverRest implements VnfmReceiver {
     log.debug("NFVO - core module received (via REST): " + nfvMessage);
     NFVMessage message = gson.fromJson(nfvMessage, NFVMessage.class);
 
-    return vnfmManager.executeAction(message);
+    return "{}";
+    //    return vnfmManager.executeAction(message).get();
   }
 
   @RequestMapping(
@@ -98,7 +107,7 @@ public class VnfmReceiverRest implements VnfmReceiver {
       throws NotFoundException, VimException, ExecutionException, InterruptedException {
     log.debug("NFVO - core module received (via REST): " + nfvMessage);
     NFVMessage message = gson.fromJson(nfvMessage, NFVMessage.class);
-    vnfmManager.executeAction(message);
+    //    vnfmManager.executeAction(message);
   }
 
   @RequestMapping(
@@ -114,8 +123,9 @@ public class VnfmReceiverRest implements VnfmReceiver {
     log.debug("NFVO - core module received (via REST):" + message);
 
     Gson gson = new GsonBuilder().create();
-    String executeReturned = vnfmManager.executeAction(message);
-    return this.gson.fromJson(executeReturned, OrVnfmGrantLifecycleOperationMessage.class);
+    //    String executeReturned = vnfmManager.executeAction(message).get();
+
+    return this.gson.fromJson("{}", OrVnfmGrantLifecycleOperationMessage.class);
   }
 
   @RequestMapping(
@@ -128,14 +138,15 @@ public class VnfmReceiverRest implements VnfmReceiver {
   public NFVMessage allocate(@RequestBody VnfmOrAllocateResourcesMessage message)
       throws VimException {
 
-    try {
-      return gson.fromJson(vnfmManager.executeAction(message), OrVnfmGenericMessage.class);
-    } catch (ExecutionException e1) {
-      e1.printStackTrace();
-    } catch (InterruptedException e1) {
-      e1.printStackTrace();
-    }
-    return null;
+    //    try {
+    //      return gson.fromJson(vnfmManager.executeAction(message).get(), OrVnfmGenericMessage.class);
+    return gson.fromJson("{}", OrVnfmGenericMessage.class);
+    //    } catch (ExecutionException e1) {
+    //      e1.printStackTrace();
+    //    } catch (InterruptedException e1) {
+    //      e1.printStackTrace();
+    //    }
+    //    return null;
   }
 
   @RequestMapping(
@@ -147,7 +158,8 @@ public class VnfmReceiverRest implements VnfmReceiver {
   @ResponseStatus(HttpStatus.ACCEPTED)
   public NFVMessage scale(@RequestBody VnfmOrScalingMessage message)
       throws InterruptedException, ExecutionException, VimException, NotFoundException {
-    return gson.fromJson(vnfmManager.executeAction(message), OrVnfmGenericMessage.class);
+    //    return gson.fromJson(vnfmManager.executeAction(message).get(), OrVnfmGenericMessage.class);
+    return gson.fromJson("{}", OrVnfmGenericMessage.class);
   }
 
   private VirtualNetworkFunctionRecord saveVirtualNetworkFunctionRecord(

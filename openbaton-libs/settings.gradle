@@ -27,4 +27,5 @@ include 'vnfm-sdk-amqp'
 include 'vnfm-sdk-rest'
 include 'monitoring'
 include 'utils'
+include 'registration'
 

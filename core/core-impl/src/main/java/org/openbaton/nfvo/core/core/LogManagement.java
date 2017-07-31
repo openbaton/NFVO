@@ -17,20 +17,19 @@
 
 package org.openbaton.nfvo.core.core;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.stream.JsonReader;
-import java.io.StringReader;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrLogMessage;
+import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
+import org.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,13 +38,12 @@ import org.springframework.stereotype.Service;
 public class LogManagement implements org.openbaton.nfvo.core.interfaces.LogManagement {
 
   @Autowired private NetworkServiceRecordRepository networkServiceRecordRepository;
-
-  @Autowired private RabbitTemplate rabbitTemplate;
-  @Autowired private Gson gson;
+  @Autowired private VnfmManager vnfmManager;
   private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Override
-  public HashMap getLog(String nsrId, String vnfrName, String hostname) throws NotFoundException {
+  public VnfmOrLogMessage getLog(String nsrId, String vnfrName, String hostname)
+      throws NotFoundException, InterruptedException, BadFormatException, ExecutionException {
     for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord :
         networkServiceRecordRepository.findFirstById(nsrId).getVnfr()) {
       if (virtualNetworkFunctionRecord.getName().equals(vnfrName)) {
@@ -53,35 +51,11 @@ public class LogManagement implements org.openbaton.nfvo.core.interfaces.LogMana
           for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
             if (hostname.equals(vnfcInstance.getHostname())) {
 
-              log.debug("Requesting log from GenericVNFM");
-              String json =
-                  (String)
-                      rabbitTemplate.convertSendAndReceive(
-                          "nfvo.vnfm.logs",
-                          "{\"vnfrName\":\"" + vnfrName + "\", \"hostname\":\"" + hostname + "\"}");
-              log.trace("RECEIVED: " + json);
-
-              JsonReader reader = new JsonReader(new StringReader(json));
-              reader.setLenient(true);
-              JsonObject answer = null;
-              try {
-                answer =
-                    ((JsonObject) gson.fromJson(reader, JsonObject.class))
-                        .get("answer")
-                        .getAsJsonObject();
-              } catch (IllegalStateException e) {
-                LinkedList<String> error = new LinkedList<>();
-                error.add(
-                    ((JsonObject) gson.fromJson(reader, JsonObject.class))
-                        .get("answer")
-                        .getAsString());
-                for (String line : error) {
-                  log.error(line);
-                }
-                throw e;
-              }
-              log.trace("ANSWER: " + answer);
-              return gson.fromJson(answer, HashMap.class);
+              log.debug("Requesting log from VNFM");
+              Future<NFVMessage> futureMessage =
+                  vnfmManager.requestLog(virtualNetworkFunctionRecord, hostname);
+              VnfmOrLogMessage vnfmOrLogMessage = (VnfmOrLogMessage) futureMessage.get();
+              return vnfmOrLogMessage;
             }
           }
         }

@@ -17,17 +17,34 @@
 
 package org.openbaton.nfvo.security.authentication;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import javax.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
@@ -36,12 +53,38 @@ import org.springframework.security.provisioning.UserDetailsManager;
 @Configuration
 @EnableAuthorizationServer
 @EnableResourceServer
+@ConfigurationProperties
 public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
   public static final String RESOURCE_ID = "oauth2-server";
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private AuthenticationManager authenticationManager;
+  private DefaultTokenServices tokenServices;
+  private DefaultTokenServices serviceTokenServices;
+
+  public int getUserTokenValidityDuration() {
+    return userTokenValidityDuration;
+  }
+
+  public void setUserTokenValidityDuration(int userTokenValidityDuration) {
+    this.userTokenValidityDuration = userTokenValidityDuration;
+  }
+
+  @Value("${nfvo.security.user.token.validity:600}")
+  private int userTokenValidityDuration;
+
+  @Value("${nfvo.security.service.token.validity:31556952}")
+  private int serviceTokenValidityDuration;
 
   private TokenStore tokenStore = new InMemoryTokenStore();
+
+  @PostConstruct
+  private void init() {
+    this.serviceTokenServices = new DefaultTokenServices();
+    this.serviceTokenServices.setSupportRefreshToken(true);
+    this.serviceTokenServices.setTokenStore(this.tokenStore);
+    this.serviceTokenServices.setAccessTokenValiditySeconds(serviceTokenValidityDuration);
+  }
 
   @Autowired
   @Qualifier("customUserDetailsService")
@@ -74,9 +117,62 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
   @Bean
   @Primary
   public DefaultTokenServices tokenServices() {
-    DefaultTokenServices tokenServices = new DefaultTokenServices();
-    tokenServices.setSupportRefreshToken(true);
-    tokenServices.setTokenStore(this.tokenStore);
+    this.tokenServices = new DefaultTokenServices();
+    this.tokenServices.setSupportRefreshToken(true);
+    this.tokenServices.setTokenStore(this.tokenStore);
+    this.tokenServices.setAccessTokenValiditySeconds(userTokenValidityDuration);
     return tokenServices;
   }
+
+  public OAuth2AccessToken getNewServiceToken(String serviceName) {
+    Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+    authorities.add(new SimpleGrantedAuthority("ADMIN"));
+
+    Map<String, String> requestParameters = new HashMap<>();
+    boolean approved = true;
+    Set<String> scope = new HashSet<>();
+    scope.add("write");
+    scope.add("read");
+    Set<String> resourceIds = new HashSet<>();
+    Set<String> responseTypes = new HashSet<>();
+    responseTypes.add("code");
+    Map<String, Serializable> extensionProperties = new HashMap<>();
+
+    OAuth2Request oAuth2Request =
+        new OAuth2Request(
+            requestParameters,
+            serviceName,
+            authorities,
+            true,
+            scope,
+            resourceIds,
+            null,
+            responseTypes,
+            extensionProperties);
+
+    User userPrincipal =
+        new User(serviceName, "" + Math.random() * 1000, true, true, true, true, authorities);
+
+    UsernamePasswordAuthenticationToken authenticationToken =
+        new UsernamePasswordAuthenticationToken(userPrincipal, null, authorities);
+    OAuth2Authentication auth = new OAuth2Authentication(oAuth2Request, authenticationToken);
+
+    //    DefaultTokenServices tokenServices = new DefaultTokenServices();
+    //        tokenServices.setSupportRefreshToken(true);
+    //        tokenServices.setTokenStore(this.tokenStore);
+    //        tokenServices.setAccessTokenValiditySeconds(serviceTokenValidityDuration);
+
+    OAuth2AccessToken token = serviceTokenServices.createAccessToken(auth);
+    log.trace("New Service token: " + token);
+    return token;
+  }
+
+  //  @Bean
+  //  public DefaultTokenServices serviceTokenServices() {
+  //    DefaultTokenServices tokenServices = new DefaultTokenServices();
+  //    tokenServices.setSupportRefreshToken(true);
+  //    tokenServices.setTokenStore(this.tokenStore);
+  //    tokenServices.setAccessTokenValiditySeconds(serviceTokenValidityDuration);
+  //    return tokenServices;
+  //  }
 }

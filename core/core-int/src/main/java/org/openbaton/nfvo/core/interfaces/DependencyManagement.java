@@ -19,15 +19,17 @@ package org.openbaton.nfvo.core.interfaces;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
 
 /** Created by lto on 30/06/15. */
 public interface DependencyManagement {
   int provisionDependencies(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
-      throws NotFoundException;
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 
   void fillDependecyParameters(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
