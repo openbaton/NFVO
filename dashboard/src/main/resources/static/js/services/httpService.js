@@ -63,7 +63,7 @@ angular.module('app')
         http.getRC = function (url) {
             //console.log(customHeaders);
 
-        
+
             customHeaders['Accept'] = 'application/octet-stream';
             customHeaders['Content-type'] = 'application/octet-stream';
 
@@ -80,14 +80,12 @@ angular.module('app')
         };
 
 
-
         http.getPlain = function (url) {
             //console.log(customHeaders);
 
 
             customHeaders['Accept'] = 'application/json';
             customHeaders['Content-type'] = 'application/json';
-
 
 
             //customHeaders['project-id'] = $cookieStore.get('project').id;
@@ -102,11 +100,11 @@ angular.module('app')
         };
 
 
-
         http.post = function (url, data) {
             customHeaders['Accept'] = 'application/json';
             customHeaders['Content-type'] = 'application/json';
             customHeaders['project-id'] = $cookieStore.get('project').id;
+
             //console.log(data);
             $('#modalSend').modal('show');
             return $http({
@@ -117,6 +115,21 @@ angular.module('app')
             });
 
         };
+
+        http.post_with_header = function (url, data, ch) {
+            ch['project-id'] = $cookieStore.get('project').id;
+            var res = {};
+            $.extend(res, customHeaders, ch);
+            $('#modalSend').modal('show');
+            return $http({
+                url: url,
+                method: 'POST',
+                data: data,
+                headers: res,
+                dataType: 'json'
+            });
+        };
+
         http.postPlain = function (url, data) {
             customHeaders['project-id'] = $cookieStore.get('project').id;
             customHeaders['Accept'] = 'text/plain';
@@ -193,10 +206,10 @@ angular.module('app')
             http.get(url).success(function (data, status) {
                 deferred.resolve(data);
             })
-            .error(function (response, status) {
-                deferred.resolve(status);
-            });
-           
+                .error(function (response, status) {
+                    deferred.resolve(status);
+                });
+
             return deferred.promise;
         };
 

@@ -16,7 +16,6 @@
  */
 
 
-
 var app = angular.module('app');
 
 /**
@@ -27,8 +26,8 @@ var app = angular.module('app');
 
 app.controller('LoginController', function ($scope, AuthService, Session, $rootScope, $location, $cookieStore, $http) {
     $scope.currentUser = null;
-    //$scope.URL = 'http://lore:8080';
-    $scope.URL = '';
+    $scope.URL = 'http://10.147.66.148:8080';
+    // $scope.URL = '';
     $scope.alerts = [];
     $scope.NFVOVersion = "";
     $scope.credential = {
@@ -84,7 +83,7 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
     $scope.login = function (credential) {
         var loginRes = AuthService.login(credential, $scope.URL).loginRes();
         loginRes.then(function (result) {
-            if (!result){
+            if (!result) {
                 setTimeout(showLoginError, 10);
             }
         });
@@ -101,6 +100,7 @@ app.controller('LoginController', function ($scope, AuthService, Session, $rootS
             .error(function (status, data) {
             });
     };
+
     function showLoginError() {
         $scope.$apply(function () {
             $scope.loginError = angular.isUndefined($cookieStore.get('logged'));
@@ -149,7 +149,6 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
     }
 
 
-
     function loadCurrentUser() {
         http.get(url + '/users/current')
             .success(function (response) {
@@ -181,6 +180,7 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
     };
 
     $scope.logged = $cookieStore.get('logged');
+
     //console.log($scope.logged);
 
 
@@ -320,7 +320,7 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
     };
 
     if ($scope.logged)
-        //console.log('Ok Logged');
+    //console.log('Ok Logged');
         $location.replace();
     $scope.username = $cookieStore.get('userName');
 
@@ -349,22 +349,21 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
 
     $scope.$watchGroup(["newPassword", "newPassword1"], function (newValue, oldValue) {
         if ($scope.newPassword.length < 8 || !(/[a-z]/.test($scope.newPassword)) || !(/[A-Z]/.test($scope.newPassword)) || !(/[0-9]/.test($scope.newPassword))) {
-            $scope.newPasswordStyle = { 'background-color': 'pink' };
+            $scope.newPasswordStyle = {'background-color': 'pink'};
             $scope.newPasswordStrong = false;
         } else {
-            $scope.newPasswordStyle = { 'background-color': 'white' };
+            $scope.newPasswordStyle = {'background-color': 'white'};
             $scope.newPasswordStrong = true;
         }
 
         if ($scope.newPassword !== $scope.newPassword1) {
-            $scope.newPasswordRepeat = { 'background-color': 'pink' };
+            $scope.newPasswordRepeat = {'background-color': 'pink'};
             $scope.newPasswordSame = false;
         } else {
-            $scope.newPasswordRepeat = { 'background-color': 'white' };
+            $scope.newPasswordRepeat = {'background-color': 'white'};
             $scope.newPasswordSame = true;
         }
     }, true);
-
 
 
     $scope.postNew = function () {
@@ -401,14 +400,14 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
     };
 
 
-    $(document).ready(function () { });
+    $(document).ready(function () {
+    });
     $scope.refreshQuota = function () {
         $scope.quota = null;
         chartsHere = false;
         loadQuota();
 
     };
-
 
 
     function loadQuota() {
@@ -424,9 +423,10 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
                 //chartsHere = true;
                 $scope.quota = $scope.failedquota;
                 $cookieStore.put('QUOTA', $scope.failedquota);
-                showError({message:"Was not possible to retrieve the quota"}, "ERROR");
+                showError({message: "Was not possible to retrieve the quota"}, "ERROR");
             });
     }
+
     $scope.closeAlert = function (index) {
         $scope.alerts.splice(index, 1);
     };
@@ -500,13 +500,14 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
             console.log('Status: ' + status + ' Data: ' + JSON.stringify(data));
             $scope.alerts.push({
                 type: 'danger',
-                msg: data.message 
+                msg: data.message
             });
         }
 
         $('.modal').modal('hide');
 
     }
+
     $scope.failedquota = {
         "total": {
             "version": 1,
@@ -525,8 +526,9 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
             "ram": 0
         }
     };
+
     function showOk(msg) {
-        $scope.alerts.push({ type: 'success', msg: msg });
+        $scope.alerts.push({type: 'success', msg: msg});
         window.setTimeout(function () {
             for (i = 0; i < $scope.alerts.length; i++) {
                 if ($scope.alerts[i].type == 'success') {
@@ -537,9 +539,11 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
         $scope.changeProject();
         $('.modal').modal('hide');
     }
+
     $scope.chartsLoaded = function () {
         return chartsHere;
     };
+
     function createCharts() {
         console.log("Creating charts");
 
@@ -550,12 +554,12 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
                 highlight: "#15BA67",
                 label: "Availaible"
             },
-            {
-                value: $scope.quota.total.ram - $scope.quota.left.ram,
-                color: "#B22222",
-                highlight: "#15BA67",
-                label: "Used"
-            }
+                {
+                    value: $scope.quota.total.ram - $scope.quota.left.ram,
+                    color: "#B22222",
+                    highlight: "#15BA67",
+                    label: "Used"
+                }
 
             ]
             if ($scope.quota.total.ram === 0) {
@@ -573,12 +577,12 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
                 highlight: "#15BA67",
                 label: "Availaible"
             },
-            {
-                value: $scope.quota.total.instances - $scope.quota.left.instances,
-                color: "#B22222",
-                highlight: "#15BA67",
-                label: "Used"
-            }
+                {
+                    value: $scope.quota.total.instances - $scope.quota.left.instances,
+                    color: "#B22222",
+                    highlight: "#15BA67",
+                    label: "Used"
+                }
 
             ]
 
@@ -597,12 +601,12 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
                 highlight: "#15BA67",
                 label: "Availaible"
             },
-            {
-                value: $scope.quota.total.cores - $scope.quota.left.cores,
-                color: "#B22222",
-                highlight: "#15BA67",
-                label: "Used"
-            }
+                {
+                    value: $scope.quota.total.cores - $scope.quota.left.cores,
+                    color: "#B22222",
+                    highlight: "#15BA67",
+                    label: "Used"
+                }
 
             ]
 
@@ -621,12 +625,12 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
                 highlight: "#15BA67",
                 label: "Availaible"
             },
-            {
-                value: $scope.quota.total.floatingIps - $scope.quota.left.floatingIps,
-                color: "#B22222",
-                highlight: "#15BA67",
-                label: "Used"
-            }
+                {
+                    value: $scope.quota.total.floatingIps - $scope.quota.left.floatingIps,
+                    color: "#B22222",
+                    highlight: "#15BA67",
+                    label: "Used"
+                }
 
             ]
 
@@ -646,83 +650,85 @@ app.controller('IndexCtrl', function ($document, $scope, $compile, $routeParams,
 
             //Get the context of the canvas element we want to select
             var c = $('#cpuChart');
-            var cp = c.get(0).getContext('2d');
-
-            cpuChart = new Chart(cp).Doughnut(cpuData, options);
+            if (c.size() > 0){
+                var cp = c.get(0).getContext('2d');
+                cpuChart = new Chart(cp).Doughnut(cpuData, options);
+            }
 
             var r = $('#ramChart');
-            var ra = r.get(0).getContext('2d');
-
-            ramChart = new Chart(ra).Doughnut(ramData, options);
+            if (r.size() > 0) {
+                var ra = r.get(0).getContext('2d');
+                ramChart = new Chart(ra).Doughnut(ramData, options);
+            }
 
             var i = $('#ipChart');
-            var ip = i.get(0).getContext('2d');
-
-            ipChart = new Chart(ip).Doughnut(ipData, options);
-
+            if (i.size() > 0) {
+                var ip = i.get(0).getContext('2d');
+                ipChart = new Chart(ip).Doughnut(ipData, options);
+            }
             var h = $('#instChart');
-            var hd = h.get(0).getContext('2d');
-
-            hddChart = new Chart(hd).Doughnut(instData, options);
-
+            if (h.size() > 0) {
+                var hd = h.get(0).getContext('2d');
+                hddChart = new Chart(hd).Doughnut(instData, options);
+            }
         })
 
     };
 
-        $("input[type=password]").keyup(function(){
-            var ucase = new RegExp("[A-Z]+");
-            var lcase = new RegExp("[a-z]+");
-            var num = new RegExp("[0-9]+");
+    $("input[type=password]").keyup(function () {
+        var ucase = new RegExp("[A-Z]+");
+        var lcase = new RegExp("[a-z]+");
+        var num = new RegExp("[0-9]+");
 
-            if($("#newPassword").val().length >= 8){
-                $("#8char").removeClass("glyphicon-remove");
-                $("#8char").addClass("glyphicon-ok");
-                $("#8char").css("color","#00A41E");
-            }else{
-                $("#8char").removeClass("glyphicon-ok");
-                $("#8char").addClass("glyphicon-remove");
-                $("#8char").css("color","#FF0004");
-            }
+        if ($("#newPassword").val().length >= 8) {
+            $("#8char").removeClass("glyphicon-remove");
+            $("#8char").addClass("glyphicon-ok");
+            $("#8char").css("color", "#00A41E");
+        } else {
+            $("#8char").removeClass("glyphicon-ok");
+            $("#8char").addClass("glyphicon-remove");
+            $("#8char").css("color", "#FF0004");
+        }
 
-            if(ucase.test($("#newPassword").val())){
-                $("#ucase").removeClass("glyphicon-remove");
-                $("#ucase").addClass("glyphicon-ok");
-                $("#ucase").css("color","#00A41E");
-            }else{
-                $("#ucase").removeClass("glyphicon-ok");
-                $("#ucase").addClass("glyphicon-remove");
-                $("#ucase").css("color","#FF0004");
-            }
+        if (ucase.test($("#newPassword").val())) {
+            $("#ucase").removeClass("glyphicon-remove");
+            $("#ucase").addClass("glyphicon-ok");
+            $("#ucase").css("color", "#00A41E");
+        } else {
+            $("#ucase").removeClass("glyphicon-ok");
+            $("#ucase").addClass("glyphicon-remove");
+            $("#ucase").css("color", "#FF0004");
+        }
 
-            if(lcase.test($("#newPassword").val())){
-                $("#lcase").removeClass("glyphicon-remove");
-                $("#lcase").addClass("glyphicon-ok");
-                $("#lcase").css("color","#00A41E");
-            }else{
-                $("#lcase").removeClass("glyphicon-ok");
-                $("#lcase").addClass("glyphicon-remove");
-                $("#lcase").css("color","#FF0004");
-            }
+        if (lcase.test($("#newPassword").val())) {
+            $("#lcase").removeClass("glyphicon-remove");
+            $("#lcase").addClass("glyphicon-ok");
+            $("#lcase").css("color", "#00A41E");
+        } else {
+            $("#lcase").removeClass("glyphicon-ok");
+            $("#lcase").addClass("glyphicon-remove");
+            $("#lcase").css("color", "#FF0004");
+        }
 
-            if(num.test($("#newPassword").val())){
-                $("#num").removeClass("glyphicon-remove");
-                $("#num").addClass("glyphicon-ok");
-                $("#num").css("color","#00A41E");
-            }else{
-                $("#num").removeClass("glyphicon-ok");
-                $("#num").addClass("glyphicon-remove");
-                $("#num").css("color","#FF0004");
-            }
+        if (num.test($("#newPassword").val())) {
+            $("#num").removeClass("glyphicon-remove");
+            $("#num").addClass("glyphicon-ok");
+            $("#num").css("color", "#00A41E");
+        } else {
+            $("#num").removeClass("glyphicon-ok");
+            $("#num").addClass("glyphicon-remove");
+            $("#num").css("color", "#FF0004");
+        }
 
-            if(($("#newPassword").val() == $("#newPassword1").val() )&& $("#newPassword").val() !='' && $("#newPassword1").val()!='' ){
-                $("#pwmatch").removeClass("glyphicon-remove");
-                $("#pwmatch").addClass("glyphicon-ok");
-                $("#pwmatch").css("color","#00A41E");
-            }else{
-                $("#pwmatch").removeClass("glyphicon-ok");
-                $("#pwmatch").addClass("glyphicon-remove");
-                $("#pwmatch").css("color","#FF0004");
-            }
-        });
+        if (($("#newPassword").val() == $("#newPassword1").val() ) && $("#newPassword").val() != '' && $("#newPassword1").val() != '') {
+            $("#pwmatch").removeClass("glyphicon-remove");
+            $("#pwmatch").addClass("glyphicon-ok");
+            $("#pwmatch").css("color", "#00A41E");
+        } else {
+            $("#pwmatch").removeClass("glyphicon-ok");
+            $("#pwmatch").addClass("glyphicon-remove");
+            $("#pwmatch").css("color", "#FF0004");
+        }
+    });
 
 });
