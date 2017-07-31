@@ -17,20 +17,6 @@
 
 package org.openbaton.nfvo.system;
 
-import static org.openbaton.utils.rabbit.RabbitManager.createRabbitMqUser;
-import static org.openbaton.utils.rabbit.RabbitManager.setRabbitMqUserPermissions;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Map.Entry;
-import java.util.Properties;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.openbaton.nfvo.repositories.ConfigurationRepository;
@@ -44,6 +30,21 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Map.Entry;
+import java.util.Properties;
+
+import static org.openbaton.utils.rabbit.RabbitManager.createRabbitMqUser;
+import static org.openbaton.utils.rabbit.RabbitManager.setRabbitMqUserPermissions;
 
 /** Created by lto on 12/05/15. */
 @Service
@@ -158,9 +159,9 @@ class SystemStartup implements CommandLineRunner {
         managementPort,
         managerRegistrationUserName,
         virtualHost,
-        null,
-        "nfvo.manager.handling|openbaton-exchange",
-        "nfvo.manager.handling|openbaton-exchange");
+        "^amq\\.gen.*|amq\\.default$",
+        "^amq\\.gen.*|amq\\.default$|nfvo.manager.handling|openbaton-exchange",
+        "^amq\\.gen.*|amq\\.default$|nfvo.manager.handling|openbaton-exchange");
 
     if (installPlugin) {
       startPlugins(pluginDir);
