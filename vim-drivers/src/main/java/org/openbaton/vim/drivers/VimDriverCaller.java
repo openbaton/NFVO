@@ -60,6 +60,7 @@ public class VimDriverCaller extends VimDriver {
       String username,
       String password,
       int port,
+      String virtualHost,
       String type,
       String name,
       String managementPort,
@@ -76,6 +77,7 @@ public class VimDriverCaller extends VimDriver {
             username,
             password,
             port,
+            virtualHost,
             Integer.parseInt(managementPort),
             pluginTimeout);
   }

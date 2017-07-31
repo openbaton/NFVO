@@ -36,12 +36,22 @@ public class RabbitPluginBroker {
       String username,
       String password,
       int port,
+      String virtualHost,
       String type,
       String name,
       String managementPort,
       int timeout) {
     return context.getBean(
-        "vimDriverCaller", brokerIp, username, password, port, type, name, managementPort, timeout);
+        "vimDriverCaller",
+        brokerIp,
+        username,
+        password,
+        port,
+        virtualHost,
+        type,
+        name,
+        managementPort,
+        timeout);
   }
 
   /*
@@ -53,6 +63,7 @@ public class RabbitPluginBroker {
       String username,
       String password,
       int port,
+      String virtualHost,
       String type,
       String name,
       String managementPort,
@@ -63,6 +74,7 @@ public class RabbitPluginBroker {
         username,
         password,
         port,
+        virtualHost,
         type,
         name,
         managementPort,

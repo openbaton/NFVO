@@ -90,6 +90,14 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
     this.port = port;
   }
 
+  public String getVirtualHost() {
+    return virtualHost;
+  }
+
+  public void setVirtualHost(String virtualHost) {
+    this.virtualHost = virtualHost;
+  }
+
   @Value("${nfvo.plugin.timeout:120000}")
   private String pluginTimeout;
 
@@ -104,6 +112,9 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
 
   @Value("${spring.rabbitmq.port:5672}")
   private String port;
+
+  @Value("${spring.rabbitmq.virtual-host:/}")
+  private String virtualHost;
 
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -185,6 +196,7 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
         rabbitPassword,
         brokerIp,
         Integer.parseInt(port),
+        virtualHost,
         this.managementPort,
         context,
         pluginName,
