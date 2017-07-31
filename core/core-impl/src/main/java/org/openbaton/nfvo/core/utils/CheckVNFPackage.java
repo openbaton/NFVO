@@ -18,10 +18,7 @@ import org.slf4j.LoggerFactory;
 /** Created by mob on 05/04/2017. */
 public class CheckVNFPackage {
   // Identification required keys
-  private static final String[] REQUIRED_VNF_PACKAGE_IDENTIFIER_KEYS =
-      new String[] {"name", "version"};
-  private static final String[] REQUIRED_VNF_PACKAGE_IDENTIFIER_FOR_MARKETPLACE_KEYS =
-      new String[] {"name"};
+  private static final String[] REQUIRED_VNF_PACKAGE_IDENTIFIER_KEYS = new String[] {"name"};
   // Required common keys between vnf package and vnfd
   // Basically, those keys must be present and be equals in the vnf package and the relative vnfd
   private static final String[] REQUIRED_VNF_PACKAGE_AND_VNFD_COMMON_KEYS =
@@ -107,13 +104,8 @@ public class CheckVNFPackage {
 
             Map<String, Object> metadata = Utils.getMapFromYamlFile(content);
 
-            //check required keys in metadata
-            if (fromMarketPlace)
-              CheckVNFPackage.checkRequiredFirstLevelMetadataKeys(
-                  metadata, REQUIRED_VNF_PACKAGE_IDENTIFIER_FOR_MARKETPLACE_KEYS);
-            else
-              CheckVNFPackage.checkRequiredFirstLevelMetadataKeys(
-                  metadata, REQUIRED_VNF_PACKAGE_IDENTIFIER_KEYS);
+            CheckVNFPackage.checkRequiredFirstLevelMetadataKeys(
+                metadata, REQUIRED_VNF_PACKAGE_IDENTIFIER_KEYS);
             CheckVNFPackage.checkRequiredFirstLevelMetadataKeys(
                 metadata, REQUIRED_VNF_PACKAGE_KEYS_FOR_OPENBATON);
             // throw an exception if either vim-types and vim_types are not provided, or both are provided together.
@@ -124,9 +116,9 @@ public class CheckVNFPackage {
               throw new VNFPackageFormatException(
                   "\"vendor\" or \"provider\" is not specified in the VNF Package Metadata");
 
-            if (metadata.containsKey("nfvo-version") && metadata.containsKey("nfvo_version"))
+            if (metadata.containsKey("nfvo-version") == metadata.containsKey("nfvo_version"))
               throw new VNFPackageFormatException(
-                  "nfvo-version and nfvo_version are provided, which is the correct one?");
+                  "nfvo-version and nfvo_version are both provided or missing. Please specify only one nfvo-version");
 
             Map<String, Object> imageDetails = (Map<String, Object>) metadata.get("image");
 
@@ -232,6 +224,8 @@ public class CheckVNFPackage {
       throws IncompatibleVNFPackage, NotFoundException {
 
     if (nfvoVersion == null) throw new NullPointerException("The nfvo version in null");
+    if (vnfPackageNFVOVersion.isEmpty())
+      throw new NullPointerException("The nfvo version in the Metadata is empty");
 
     //    // If the user does not specify the nfvo_version field, we suppose it is compatible (best effort)
     //    if (vnfPackageNFVOVersion == null || vnfPackageNFVOVersion.isEmpty()) return true;

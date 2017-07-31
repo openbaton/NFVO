@@ -249,6 +249,7 @@ public class VNFPackageManagement
             }
             CheckVNFPackage.compareNFVOVersions(
                 vnfPackageNFVOVersion, getNfvoVersionWithoutSNAPSHOT());
+
             vnfPackage.setNfvo_version(vnfPackageNFVOVersion);
             vnfPackageMetadata.setNfvoVersion(vnfPackageNFVOVersion);
 
@@ -258,8 +259,13 @@ public class VNFPackageManagement
               vnfPackageMetadata.setVendor((String) metadata.get("provider"));
             }
 
-            if (fromMarketPlace) vnfPackageMetadata.setVersion("1.0");
-            else vnfPackageMetadata.setVersion(String.valueOf(metadata.get("version")));
+            if (metadata.containsKey("version")) {
+              vnfPackageMetadata.setVersion(String.valueOf(metadata.get("version")));
+            } else {
+              log.warn(
+                  "The VNF Package Metadata does not contain the field \"version\". Setting version 1.0 by default");
+              vnfPackageMetadata.setVersion("1.0");
+            }
 
             if (metadata.containsKey("vim-types")) {
               vnfPackageMetadata.setVimTypes(
