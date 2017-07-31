@@ -243,14 +243,12 @@ public class VNFPackageManagement
             String vnfPackageNFVOVersion = null;
             if (metadata.containsKey("nfvo-version")) {
               vnfPackageNFVOVersion = (String) metadata.get("nfvo-version");
-              CheckVNFPackage.compareNFVOVersions(
-                  vnfPackageNFVOVersion, getNfvoVersionWithoutSNAPSHOT());
             }
             if (metadata.containsKey("nfvo_version")) {
               vnfPackageNFVOVersion = (String) metadata.get("nfvo_version");
-              CheckVNFPackage.compareNFVOVersions(
-                  vnfPackageNFVOVersion, getNfvoVersionWithoutSNAPSHOT());
             }
+            CheckVNFPackage.compareNFVOVersions(
+                vnfPackageNFVOVersion, getNfvoVersionWithoutSNAPSHOT());
             vnfPackage.setNfvo_version(vnfPackageNFVOVersion);
             vnfPackageMetadata.setNfvoVersion(vnfPackageNFVOVersion);
 

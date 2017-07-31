@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
@@ -232,12 +233,16 @@ public class CheckVNFPackage {
 
     if (nfvoVersion == null) throw new NullPointerException("The nfvo version in null");
 
-    // If the user does not specify the nfvo_version field, we suppose it is compatible (best effort)
-    if (vnfPackageNFVOVersion == null || vnfPackageNFVOVersion.isEmpty()) return true;
+    //    // If the user does not specify the nfvo_version field, we suppose it is compatible (best effort)
+    //    if (vnfPackageNFVOVersion == null || vnfPackageNFVOVersion.isEmpty()) return true;
+    //
+    //    int compatible = vnfPackageNFVOVersion.compareTo(nfvoVersion);
+    //
+    //    return compatible <= 0;
+    String[] nfvoVersionSplitted = nfvoVersion.split(Pattern.quote("."));
+    String[] vnfPackageNFVOVersionSplitted = vnfPackageNFVOVersion.split(Pattern.quote("."));
 
-    int compatible = vnfPackageNFVOVersion.compareTo(nfvoVersion);
-
-    return compatible <= 0;
+    return nfvoVersionSplitted[0].equals(vnfPackageNFVOVersionSplitted[0]);
   }
 
   public static void compareNFVOVersions(String vnfPackageNfvoVersion, String actualNfvoVersion)
@@ -248,6 +253,7 @@ public class CheckVNFPackage {
               + vnfPackageNfvoVersion
               + " specified in the Metadata"
               + " is not compatible with this NFVO version: "
-              + actualNfvoVersion);
+              + actualNfvoVersion
+              + ". The first digit of the version must be the same.");
   }
 }
