@@ -61,6 +61,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
       String username,
       String password,
       int port,
+      String virtualHost,
       String type,
       String name,
       String managementPort,
@@ -77,6 +78,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
             username,
             password,
             port,
+            virtualHost,
             Integer.parseInt(managementPort),
             pluginTimeout);
   }

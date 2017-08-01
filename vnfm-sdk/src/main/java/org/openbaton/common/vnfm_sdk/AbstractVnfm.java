@@ -20,6 +20,8 @@ package org.openbaton.common.vnfm_sdk;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -49,13 +51,16 @@ import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGrantLifecycleOperationMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmHealVNFRequestMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmInstantiateMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmLogMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmScalingMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmStartStopMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmUpdateMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrLogMessage;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.common.vnfm_sdk.exception.BadFormatException;
 import org.openbaton.common.vnfm_sdk.exception.NotFoundException;
 import org.openbaton.common.vnfm_sdk.exception.VnfmSdkException;
+import org.openbaton.common.vnfm_sdk.interfaces.LogDispatcher;
 import org.openbaton.common.vnfm_sdk.interfaces.VNFLifecycleChangeNotification;
 import org.openbaton.common.vnfm_sdk.interfaces.VNFLifecycleManagement;
 import org.openbaton.common.vnfm_sdk.utils.VNFRUtils;
@@ -103,6 +108,9 @@ public abstract class AbstractVnfm
   }
 
   private String description;
+
+  // If the VNFM supports the requesting of log files, it can instantiate this field (e.g. in the setup method), otherwise it will not be used.
+  protected LogDispatcher logDispatcher;
 
   @PreDestroy
   private void shutdown() {}
@@ -193,7 +201,7 @@ public abstract class AbstractVnfm
     enabled = Boolean.parseBoolean(properties.getProperty("enabled", "true"));
   }
 
-  protected void onAction(NFVMessage message) throws NotFoundException, BadFormatException {
+  protected NFVMessage onAction(NFVMessage message) throws NotFoundException, BadFormatException {
 
     VirtualNetworkFunctionRecord virtualNetworkFunctionRecord = null;
 
@@ -246,7 +254,7 @@ public abstract class AbstractVnfm
               log.trace("HB_VERSION == " + virtualNetworkFunctionRecord.getHb_version());
             } else if (message2 instanceof OrVnfmErrorMessage) {
               this.handleError(((OrVnfmErrorMessage) message2).getVnfr());
-              return;
+              return null;
             }
             vnfcInstance_new = getVnfcInstance(virtualNetworkFunctionRecord, component);
             if (vnfcInstance_new == null) {
@@ -331,7 +339,7 @@ public abstract class AbstractVnfm
           try {
             msg = result.get();
             if (msg == null) {
-              return;
+              return null;
             }
           } catch (ExecutionException e) {
             log.error("Got exception while allocating vms");
@@ -351,7 +359,7 @@ public abstract class AbstractVnfm
             try {
               virtualNetworkFunctionRecord = executor.submit(allocateResources).get();
               if (virtualNetworkFunctionRecord == null) {
-                return;
+                return null;
               }
             } catch (ExecutionException e) {
               log.error("Got exception while allocating vms");
@@ -475,13 +483,25 @@ public abstract class AbstractVnfm
                     + "'");
             break;
           }
+        case LOG_REQUEST:
+          {
+            OrVnfmLogMessage orVnfmLogMessage = (OrVnfmLogMessage) message;
+            // if the VNFM does not support log requests (i.e. no LogDispatcher is implemented), it will return a default "error" OrVnfmLogMessage
+            if (logDispatcher != null) {
+              nfvMessage = new VnfmOrLogMessage();
+              nfvMessage = logDispatcher.getLogs(orVnfmLogMessage);
+            } else {
+              List<String> errorList = new LinkedList<>();
+              errorList.add("This VNFM does not support the requesting of log files.");
+              nfvMessage = new VnfmOrLogMessage(new LinkedList<String>(), errorList);
+            }
+          }
       }
 
       log.debug(
           "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
       if (nfvMessage != null) {
-        log.debug("send " + nfvMessage.getClass().getSimpleName() + " to NFVO");
-        vnfmHelper.sendToNfvo(nfvMessage);
+        return nfvMessage;
       }
     } catch (Throwable e) {
       log.error("ERROR: ", e);
@@ -489,21 +509,18 @@ public abstract class AbstractVnfm
         VnfmSdkException vnfmSdkException = (VnfmSdkException) e;
         if (vnfmSdkException.getVnfr() != null) {
           log.debug("sending VNFR with version: " + vnfmSdkException.getVnfr().getHb_version());
-          vnfmHelper.sendToNfvo(
-              VnfmUtils.getNfvErrorMessage(vnfmSdkException.getVnfr(), vnfmSdkException, nsrId));
-          return;
+          return VnfmUtils.getNfvErrorMessage(vnfmSdkException.getVnfr(), vnfmSdkException, nsrId);
         }
       } else if (e.getCause() instanceof VnfmSdkException) {
         VnfmSdkException vnfmSdkException = (VnfmSdkException) e.getCause();
         if (vnfmSdkException.getVnfr() != null) {
           log.debug("sending VNFR with version: " + vnfmSdkException.getVnfr().getHb_version());
-          vnfmHelper.sendToNfvo(
-              VnfmUtils.getNfvErrorMessage(vnfmSdkException.getVnfr(), vnfmSdkException, nsrId));
-          return;
+          return VnfmUtils.getNfvErrorMessage(vnfmSdkException.getVnfr(), vnfmSdkException, nsrId);
         }
       }
-      vnfmHelper.sendToNfvo(VnfmUtils.getNfvErrorMessage(virtualNetworkFunctionRecord, e, nsrId));
+      return VnfmUtils.getNfvErrorMessage(virtualNetworkFunctionRecord, e, nsrId);
     }
+    return null;
   }
 
   private VNFCInstance getVnfcInstance(

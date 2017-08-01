@@ -18,6 +18,9 @@
 package org.openbaton.common.vnfm_sdk.amqp;
 
 import com.google.gson.Gson;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.concurrent.TimeoutException;
@@ -25,11 +28,6 @@ import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.common.vnfm_sdk.VnfmHelper;
 import org.openbaton.common.vnfm_sdk.amqp.configuration.RabbitConfiguration;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,11 +52,10 @@ public class VnfmSpringHelperRabbit extends VnfmHelper {
   @Value("${vnfm.rabbitmq.exclusive}")
   private boolean exclusive;
 
+  @Value("${vnfm.rabbitmq.virtual-host:/}")
+  private String virtualHost;
+
   @Autowired private RabbitTemplate rabbitTemplate;
-
-  private RabbitAdmin rabbitAdmin;
-
-  @Autowired private ConnectionFactory connectionFactory;
 
   @Value("${vnfm.rabbitmq.sar.timeout:1000}")
   private int timeout;
@@ -95,20 +92,13 @@ public class VnfmSpringHelperRabbit extends VnfmHelper {
     this.timeout = timeout;
   }
 
+  public RabbitTemplate getRabbitTemplate() {
+    return rabbitTemplate;
+  }
+
   @PostConstruct
-  private void init() throws IOException {
-    log.info("Initialization of VnfmSpringHelperRabbit");
-    rabbitAdmin = new RabbitAdmin(connectionFactory);
-    rabbitAdmin.declareExchange(new TopicExchange("openbaton-exchange"));
-    rabbitAdmin.declareQueue(
-        new Queue(RabbitConfiguration.queueName_vnfmRegister, true, exclusive, autodelete));
-    rabbitAdmin.declareBinding(
-        new Binding(
-            RabbitConfiguration.queueName_vnfmRegister,
-            Binding.DestinationType.QUEUE,
-            "openbaton-exchange",
-            RabbitConfiguration.queueName_vnfmRegister,
-            null));
+  private void init() {
+    this.rabbitTemplate.setExchange("openbaton-exchange"); //TODO
   }
 
   public void sendMessageToQueue(String sendToQueueName, final Serializable message) {
@@ -154,5 +144,60 @@ public class VnfmSpringHelperRabbit extends VnfmHelper {
               + " seconds the ems did not answer. You can change this value by editing the application.properties propery \"vnfm.rabbitmq.sar.timeout\"");
     }
     return res;
+  }
+
+  public void createQueue(
+      String brokerIp,
+      int port,
+      String rabbitUsername,
+      String rabbitPassword,
+      String virtualHost,
+      String queue,
+      String exchange)
+      throws IOException, TimeoutException {
+    //    rabbitAdmin = new RabbitAdmin(this.rabbitTemplate.getConnectionFactory());
+    //
+    //    rabbitAdmin.declareQueue(
+    //        new Queue(RabbitConfiguration.queueName_vnfmRegister, true, exclusive, autodelete));
+    //    rabbitAdmin.declareBinding(
+    //        new Binding(
+    //            RabbitConfiguration.queueName_vnfmRegister,
+    //            Binding.DestinationType.QUEUE,
+    //            "openbaton-exchange",
+    //            RabbitConfiguration.queueName_vnfmRegister,
+    //            null));
+
+    ConnectionFactory factory =
+        getConnectionFactory(brokerIp, port, rabbitUsername, rabbitPassword, virtualHost);
+    Connection connection = factory.newConnection();
+    Channel channel = connection.createChannel();
+    //    channel.exchangeDeclare(exchange, "topic", true);
+    channel.queueDeclare(queue, false, false, true, null);
+    channel.queueBind(queue, exchange, queue);
+    channel.basicQos(1);
+    channel.close();
+    connection.close();
+  }
+
+  private ConnectionFactory getConnectionFactory(
+      String brokerIp, int port, String rabbitUsername, String rabbitPassword, String virtualHost) {
+    ConnectionFactory factory = new ConnectionFactory();
+    factory.setHost(brokerIp);
+    factory.setPort(port);
+    factory.setUsername(rabbitUsername);
+    factory.setPassword(rabbitPassword);
+    factory.setVirtualHost(virtualHost);
+    return factory;
+  }
+
+  public void deleteQueue(
+      String queueName, String brokerIp, int port, String rabbitUsername, String rabbitPassword)
+      throws IOException, TimeoutException {
+    ConnectionFactory factory =
+        getConnectionFactory(brokerIp, port, rabbitUsername, rabbitPassword, virtualHost);
+    Connection connection = factory.newConnection();
+    Channel channel = connection.createChannel();
+    //    channel.exchangeDeclare(exchange, "topic", true);
+    channel.queueDelete(queueName, false, false);
   }
 }
