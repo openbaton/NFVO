@@ -14,30 +14,22 @@
  * limitations under the License.
  *
  */
-
 buildscript {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.bmuschko:gradle-nexus-plugin:2.3'
-    }
+	repositories {
+		mavenLocal()
+		mavenCentral()
+		jcenter()
+	}
+	dependencies {
+		classpath 'com.bmuschko:gradle-nexus-plugin:2.3'
+	}
 }
 
 apply plugin: 'com.bmuschko.nexus'
 apply from: '../gradle/gradle/nexus.upload.plugin.gradle'
 
 dependencies {
-    compile project(':catalogue')
-    compile project(':exception')
-
-    compile 'org.springframework.boot:spring-boot-starter-logging:' + springBootVersion
-
-    compile 'com.google.code.gson:gson:2.8.0'
-    compile 'org.springframework.boot:spring-boot-starter-amqp:' + springBootVersion
-
-    compile 'org.apache.tomcat:tomcat-catalina:8.0.39'
-    compile group: 'commons-codec', name: 'commons-codec', version: '1.10'
+	compile project(':catalogue')
+	compile project(':plugin')
+	compile 'org.slf4j:slf4j-api:1.7.22'
 }

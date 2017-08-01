@@ -35,8 +35,9 @@ apply plugin: 'docker'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 
-apply from: 'openbaton-libs/gradle/gradle/git.helpers.gradle'
-apply from: 'openbaton-libs/gradle/gradle/command.line.helper.gradle'
+
+apply from: 'gradle/gradle/git.helpers.gradle'
+apply from: 'gradle/gradle/command.line.helper.gradle'
 
 /**
  * Project settings
@@ -75,15 +76,18 @@ ext {
     junitVersion = "4.12"
 }
 
-apply from: 'openbaton-libs/gradle/gradle/application.java.gradle'
-apply from: 'openbaton-libs/gradle/gradle/run.application.java.gradle'
-apply from: 'openbaton-libs/gradle/gradle/git.release.gradle'
+apply from: 'gradle/gradle/application.java.gradle'
+apply from: 'gradle/gradle/run.application.java.gradle'
+apply from: 'gradle/gradle/git.release.gradle'
 
 apply from: 'gradle/gradle/packaging.nfvo.debian.gradle'
 apply from: 'gradle/gradle/packaging.nfvo.docker.gradle'
 apply from: 'gradle/gradle/packaging.innosetup.gradle'
+
 apply from: 'gradle/gradle/distribution.gradle'
+
 apply from: 'gradle/gradle/dependencies.updater.gradle'
+
 apply from: 'gradle/gradle/brew.formula.creator.gradle'
 
 repositories {

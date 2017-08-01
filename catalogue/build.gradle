@@ -14,7 +14,6 @@
  * limitations under the License.
  *
  */
-
 buildscript {
     repositories {
         mavenLocal()
@@ -30,14 +29,8 @@ apply plugin: 'com.bmuschko.nexus'
 apply from: '../gradle/gradle/nexus.upload.plugin.gradle'
 
 dependencies {
-    compile project(':catalogue')
-    compile project(':exception')
-
-    compile 'org.springframework.boot:spring-boot-starter-logging:' + springBootVersion
-
-    compile 'com.google.code.gson:gson:2.8.0'
-    compile 'org.springframework.boot:spring-boot-starter-amqp:' + springBootVersion
-
-    compile 'org.apache.tomcat:tomcat-catalina:8.0.39'
-    compile group: 'commons-codec', name: 'commons-codec', version: '1.10'
+    compile 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.8.6'
 }
+
+

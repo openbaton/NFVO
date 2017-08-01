@@ -14,7 +14,6 @@
  * limitations under the License.
  *
  */
-
 buildscript {
     repositories {
         mavenLocal()
@@ -30,14 +29,12 @@ apply plugin: 'com.bmuschko.nexus'
 apply from: '../gradle/gradle/nexus.upload.plugin.gradle'
 
 dependencies {
+    compile project(':plugin')
     compile project(':catalogue')
+
     compile project(':exception')
+    compile project(':monitoring')
+    compile project(':vim-drivers')
 
-    compile 'org.springframework.boot:spring-boot-starter-logging:' + springBootVersion
-
-    compile 'com.google.code.gson:gson:2.8.0'
-    compile 'org.springframework.boot:spring-boot-starter-amqp:' + springBootVersion
-
-    compile 'org.apache.tomcat:tomcat-catalina:8.0.39'
-    compile group: 'commons-codec', name: 'commons-codec', version: '1.10'
+    testCompile group: 'junit', name: 'junit', version: junitVersion
 }

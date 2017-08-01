@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
  *
@@ -14,7 +15,6 @@
  * limitations under the License.
  *
  */
-
 buildscript {
     repositories {
         mavenLocal()
@@ -28,16 +28,18 @@ buildscript {
 
 apply plugin: 'com.bmuschko.nexus'
 apply from: '../gradle/gradle/nexus.upload.plugin.gradle'
-
 dependencies {
-    compile project(':catalogue')
-    compile project(':exception')
-
+    compile 'org.springframework:spring-context:' + springVersion
+    compile 'org.springframework.boot:spring-boot:' + springBootVersion
     compile 'org.springframework.boot:spring-boot-starter-logging:' + springBootVersion
+    compile 'org.springframework.boot:spring-boot-autoconfigure:' + springBootVersion
+    compile("org.springframework.boot:spring-boot-starter-websocket:" + springBootVersion)
 
+    compile 'com.rabbitmq:amqp-client:4.0.1'
     compile 'com.google.code.gson:gson:2.8.0'
-    compile 'org.springframework.boot:spring-boot-starter-amqp:' + springBootVersion
 
-    compile 'org.apache.tomcat:tomcat-catalina:8.0.39'
-    compile group: 'commons-codec', name: 'commons-codec', version: '1.10'
+    compile 'org.apache.httpcomponents:httpclient:4.5.2'
+
+    compile project(":exception")
+    compile project(":catalogue")
 }

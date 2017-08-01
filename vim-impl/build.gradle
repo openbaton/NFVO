@@ -29,15 +29,23 @@ buildscript {
 apply plugin: 'com.bmuschko.nexus'
 apply from: '../gradle/gradle/nexus.upload.plugin.gradle'
 
+apply plugin: 'jacoco'
+
 dependencies {
+    compile project(':vim-int')
     compile project(':catalogue')
     compile project(':exception')
+    compile project(':monitoring')
+    compile project(':vim-drivers')
+    compile project(':plugin')
 
-    compile 'org.springframework.boot:spring-boot-starter-logging:' + springBootVersion
+    compile 'org.slf4j:slf4j-api:1.7.22'
+    compile 'org.springframework:spring-context:' + springVersion
+    compile 'org.springframework.boot:spring-boot:' + springBootVersion
 
-    compile 'com.google.code.gson:gson:2.8.0'
-    compile 'org.springframework.boot:spring-boot-starter-amqp:' + springBootVersion
-
-    compile 'org.apache.tomcat:tomcat-catalina:8.0.39'
-    compile group: 'commons-codec', name: 'commons-codec', version: '1.10'
+    testCompile 'org.mockito:mockito-all:2.0.2-beta'
+    testCompile("org.powermock:powermock-mockito-release-full:1.6.4")
+    testCompile 'org.springframework:spring-test:' + springVersion
+    testCompile group: 'junit', name: 'junit', version: junitVersion
+    testCompile 'commons-io:commons-io:2.5'
 }

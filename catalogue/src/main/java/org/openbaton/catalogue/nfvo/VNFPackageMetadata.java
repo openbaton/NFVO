@@ -49,6 +49,8 @@ public class VNFPackageMetadata implements Serializable {
 
   private String vnfmType;
 
+  private String vnfPackageFatherId;
+
   private boolean shared;
 
   private boolean defaultFlag;
@@ -57,7 +59,8 @@ public class VNFPackageMetadata implements Serializable {
 
   protected String projectId;
 
-  @ElementCollection private Map<String, String> requirements;
+  @ElementCollection(fetch = FetchType.EAGER)
+  private Map<String, String> requirements;
 
   //URL to the image's location
   //    @JsonIgnore
@@ -74,7 +77,7 @@ public class VNFPackageMetadata implements Serializable {
   @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   private ImageMetadata imageMetadata;
 
-  @ElementCollection(fetch = FetchType.LAZY)
+  @ElementCollection(fetch = FetchType.EAGER)
   private Set<String> vimTypes;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -330,6 +333,14 @@ public class VNFPackageMetadata implements Serializable {
 
   public String getOsId() {
     return osId;
+  }
+
+  public String getVnfPackageFatherId() {
+    return vnfPackageFatherId;
+  }
+
+  public void setVnfPackageFatherId(String vnfPackageFatherId) {
+    this.vnfPackageFatherId = vnfPackageFatherId;
   }
 
   public String getOsVersion() {
