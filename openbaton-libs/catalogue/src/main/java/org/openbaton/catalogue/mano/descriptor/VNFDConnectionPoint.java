@@ -35,6 +35,8 @@ public class VNFDConnectionPoint extends ConnectionPoint {
 
   private String floatingIp;
 
+  private String fixedIp;
+
   public int getInterfaceId() {
     return interfaceId;
   }
@@ -54,6 +56,9 @@ public class VNFDConnectionPoint extends ConnectionPoint {
         + ", floatingIp='"
         + floatingIp
         + '\''
+        + ", fixedip='"
+        + fixedIp
+        + '\''
         + ", interfaceId="
         + interfaceId
         + "} "
@@ -72,6 +77,14 @@ public class VNFDConnectionPoint extends ConnectionPoint {
 
   public String getVirtual_link_reference() {
     return virtual_link_reference;
+  }
+
+  public String getFixedIp() {
+    return fixedIp;
+  }
+
+  public void setFixedIp(String fixedIp) {
+    this.fixedIp = fixedIp;
   }
 
   public void setVirtual_link_reference(String virtual_link_reference) {
