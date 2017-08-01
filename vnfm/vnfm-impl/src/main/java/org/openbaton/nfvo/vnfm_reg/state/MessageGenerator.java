@@ -202,22 +202,22 @@ public class MessageGenerator implements org.openbaton.vnfm.interfaces.manager.M
   }
 
   private Map<String, String> fillAccessibilityConfigurationParameters(
-          Map<String, String> extension, VirtualNetworkFunctionDescriptor vnfd, DeployNSRBody body)
-          throws NotFoundException {
+      Map<String, String> extension, VirtualNetworkFunctionDescriptor vnfd, DeployNSRBody body)
+      throws NotFoundException {
     if (body.getConfigurations().get(vnfd.getName()) == null) return extension;
     for (ConfigurationParameter passedConfigurationParameter :
-            body.getConfigurations().get(vnfd.getName()).getConfigurationParameters()) {
+        body.getConfigurations().get(vnfd.getName()).getConfigurationParameters()) {
       if (passedConfigurationParameter.getConfKey().equalsIgnoreCase("ssh_username")
-              && passedConfigurationParameter.getValue() != null
-              && !passedConfigurationParameter.getValue().isEmpty()) {
+          && passedConfigurationParameter.getValue() != null
+          && !passedConfigurationParameter.getValue().isEmpty()) {
         extension.put(
-                passedConfigurationParameter.getConfKey(), passedConfigurationParameter.getValue());
+            passedConfigurationParameter.getConfKey(), passedConfigurationParameter.getValue());
       }
       if (passedConfigurationParameter.getConfKey().equals("ssh_password")
-              && passedConfigurationParameter.getValue() != null
-              && !passedConfigurationParameter.getValue().isEmpty()) {
+          && passedConfigurationParameter.getValue() != null
+          && !passedConfigurationParameter.getValue().isEmpty()) {
         extension.put(
-                passedConfigurationParameter.getConfKey(), passedConfigurationParameter.getValue());
+            passedConfigurationParameter.getConfKey(), passedConfigurationParameter.getValue());
       }
     }
     return extension;

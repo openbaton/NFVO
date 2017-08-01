@@ -25,7 +25,6 @@ import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
-import org.openbaton.exceptions.*;
 import org.openbaton.catalogue.nfvo.VNFPackageMetadata;
 import org.openbaton.exceptions.*;
 
