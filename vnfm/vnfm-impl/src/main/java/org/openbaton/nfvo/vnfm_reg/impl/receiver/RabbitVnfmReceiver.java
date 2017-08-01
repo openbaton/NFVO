@@ -19,11 +19,12 @@ package org.openbaton.nfvo.vnfm_reg.impl.receiver;
 
 import com.google.gson.Gson;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.VimException;
-import org.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.openbaton.vnfm.interfaces.manager.VnfmReceiver;
+import org.openbaton.vnfm.interfaces.state.VnfStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +36,8 @@ public class RabbitVnfmReceiver implements VnfmReceiver {
 
   @Autowired private Gson gson;
 
-  @Autowired private VnfmManager vnfmManager;
-
   private Logger log = LoggerFactory.getLogger(this.getClass());
+  @Autowired private VnfStateHandler stateHandler;
 
   @Override
   public String actionFinished(String nfvMessage)
@@ -46,9 +46,12 @@ public class RabbitVnfmReceiver implements VnfmReceiver {
     log.debug("NFVO - core module received (via MB): " + message.getAction());
 
     log.debug("----------Executing ACTION: " + message.getAction());
-    String res = vnfmManager.executeAction(message);
+    Future<String> res = stateHandler.executeAction(message);
+    String result = res.get();
     log.debug("-----------Finished ACTION: " + message.getAction());
-    return res;
+
+    return result;
+    //    return "";
   }
 
   @Override
@@ -58,7 +61,7 @@ public class RabbitVnfmReceiver implements VnfmReceiver {
     log.debug("NFVO - core module received (via MB)" + message.getAction());
 
     log.debug("----------Executing ACTION: " + message.getAction());
-    vnfmManager.executeAction(message);
+    stateHandler.executeAction(message);
     log.debug("-----------Finished ACTION: " + message.getAction());
   }
 }

@@ -57,6 +57,9 @@ public class EventManagement implements org.openbaton.nfvo.core.interfaces.Event
   @Value("${spring.rabbitmq.password:openbaton}")
   private String password;
 
+  @Value("${spring.rabbitmq.virtual-host:/}")
+  private String virtualHost;
+
   @Value("${nfvo.rabbit.management.port:15672}")
   private int managementPort;
 
@@ -88,7 +91,8 @@ public class EventManagement implements org.openbaton.nfvo.core.interfaces.Event
         }
       } else if (eventEndpoint.getType().ordinal() == EndpointType.RABBIT.ordinal()) {
         try {
-          if (!RabbitManager.getQueues(brokerIp.trim(), username, password, managementPort)
+          if (!RabbitManager.getQueues(
+                  brokerIp.trim(), username, password, virtualHost, managementPort)
               .contains(eventEndpoint.getEndpoint())) {
             log.warn("Event endpoint " + eventEndpoint + " is not there anymore.");
             eventEndpointRepository.delete(eventEndpoint.getId());

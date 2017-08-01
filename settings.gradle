@@ -35,7 +35,9 @@ include 'dashboard'
 include 'plugin'
 include 'security'
 include 'tosca-parser'
+include 'registration'
 
+project(':registration').projectDir = file('openbaton-libs/registration')
 project(':catalogue').projectDir = file('openbaton-libs/catalogue')
 project(':monitoring').projectDir = file('openbaton-libs/monitoring')
 project(':vim-drivers').projectDir = file('openbaton-libs/vim-drivers')

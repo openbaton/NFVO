@@ -20,10 +20,12 @@ package org.openbaton.nfvo.core.interfaces;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
+import org.openbaton.exceptions.*;
 import org.openbaton.catalogue.nfvo.VNFPackageMetadata;
 import org.openbaton.exceptions.*;
 
@@ -136,7 +138,8 @@ public interface VNFPackageManagement {
   /** This operation is used to remove a disabled VNF Package. */
   void delete(String id, String projectId) throws WrongAction;
 
-  Script updateScript(Script script, String vnfPackageId) throws NotFoundException;
+  Script updateScript(Script script, String vnfPackageId)
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 
   Iterable<VNFPackage> queryByProjectId(String projectId);
 }

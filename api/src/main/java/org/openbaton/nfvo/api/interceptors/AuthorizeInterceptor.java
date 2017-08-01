@@ -18,11 +18,13 @@ package org.openbaton.nfvo.api.interceptors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.openbaton.catalogue.nfvo.ServiceMetadata;
 import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
 import org.openbaton.catalogue.security.User;
 import org.openbaton.exceptions.NotAllowedException;
 import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.nfvo.repositories.ServiceRepository;
 import org.openbaton.nfvo.security.interfaces.ProjectManagement;
 import org.openbaton.nfvo.security.interfaces.UserManagement;
 import org.slf4j.Logger;
@@ -42,6 +44,7 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
 
   @Autowired private UserManagement userManagement;
   @Autowired private ProjectManagement projectManagement;
+  @Autowired private ServiceRepository serviceRepository;
 
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -92,7 +95,18 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
     log.trace("projectId: \"" + project + "\"");
     log.trace(request.getMethod() + " on URI: " + request.getRequestURI());
     log.trace("UserManagement: " + userManagement);
-    User user = userManagement.queryByName(currentUserName);
+    User user = null;
+    try {
+      user = userManagement.queryByName(currentUserName);
+    } catch (NotFoundException e) {
+      log.warn("User not found for name: " + currentUserName + " maybe a service?");
+      ServiceMetadata serviceMetadata = serviceRepository.findByName(currentUserName);
+      if (serviceMetadata != null) {
+        log.debug(currentUserName + " is a service");
+        return true;
+      }
+      throw e;
+    }
 
     if (project != null && !project.isEmpty()) {
 
@@ -136,7 +150,9 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
         || (request.getMethod().equalsIgnoreCase("post")
             && request.getRequestURI().equals("/admin/v1/vnfm-unregister"))
         || (request.getMethod().equalsIgnoreCase("post")
-            && request.getRequestURI().startsWith("/admin/v1/vnfm-core-"));
+            && request.getRequestURI().startsWith("/admin/v1/vnfm-core-"))
+        || (request.getMethod().equalsIgnoreCase("post")
+            && request.getRequestURI().equals("/api/v1/components/services/register"));
   }
 
   //TODO realize this configurable
@@ -146,6 +162,7 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
         || (request.getRequestURI().equals("/api/v1/users/current"))
         || (request.getRequestURI().equals("/api/v1/users"))
         || (request.getRequestURI().equals("/api/v1/version"))
-        || (request.getRequestURI().equals("/api/v1/users/")));
+        || (request.getRequestURI().equals("/api/v1/users/"))
+        || (request.getRequestURI().equals("/api/v1/components/services/register")));
   }
 }

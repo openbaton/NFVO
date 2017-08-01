@@ -144,17 +144,19 @@
                         </div>
                     </div-->
                     <hr>
-                    <h3>Role <a title="Add a new Role to this user" href="" ng-click="addRole()"><li class="fa fa-plus-square"></li></a></h3>
+                    <h3>Role <a title="Add a new Role to this service" href="" ng-click="addRole()">
+                        <li class="fa fa-plus-square"></li>
+                    </a></h3>
                     <div class="form-group" ng-repeat="role in userObj.roles track by $index">
 
-                            <label for="action" class="col-sm-2 control-label">Project</label>
-                            <div class="col-sm-3">
-                                <select name="typeSelect" class="form-control modal-select" id="action"
-                                        ng-model="userObj.roles[$index].project"
-                                        ng-options="project.name as project.name for project in projects"
-                                        ng-change="">
-                                </select>
-                            </div>
+                        <label for="action" class="col-sm-2 control-label">Project</label>
+                        <div class="col-sm-3">
+                            <select name="typeSelect" class="form-control modal-select" id="action"
+                                    ng-model="userObj.roles[$index].project"
+                                    ng-options="project.name as project.name for project in projects"
+                                    ng-change="">
+                            </select>
+                        </div>
 
                         <label for="action" class="col-sm-1 control-label">Role</label>
                         <div class="col-sm-3">
@@ -165,7 +167,11 @@
                             </select>
                         </div>
                         <div class="col-sm-1">
-                            <a href="" ng-click="userObj.roles.splice($index, 1)"><h4><li class="fa fa-trash"></li></h4></a>
+                            <a href="" ng-click="userObj.roles.splice($index, 1)">
+                                <h4>
+                                    <li class="fa fa-trash"></li>
+                                </h4>
+                            </a>
                         </div>
 
                     </div>

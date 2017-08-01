@@ -17,8 +17,18 @@
 
 package org.openbaton.common.vnfm_sdk.interfaces;
 
+import org.openbaton.catalogue.nfvo.messages.OrVnfmLogMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrLogMessage;
+
 /** Created by lto on 17/05/16. */
 public interface LogDispatcher {
 
-  String sendLogs(String request);
+  /**
+   * Returns a VnfmOrLogMessage object containing the logging information that was requested in the
+   * request parameter.
+   *
+   * @param request the OrVnfmLogMessage containing the request
+   * @return the request's reply encapsulated in a VnfmOrLogMessage
+   */
+  VnfmOrLogMessage getLogs(OrVnfmLogMessage request);
 }

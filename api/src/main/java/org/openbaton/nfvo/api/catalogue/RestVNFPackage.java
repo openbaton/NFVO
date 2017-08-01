@@ -22,6 +22,7 @@ import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import javax.validation.Valid;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Script;
@@ -222,7 +223,7 @@ public class RestVNFPackage {
       @PathVariable("scriptId") String scriptId,
       @RequestBody String scriptNew,
       @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException {
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
     VNFPackage vnfPackage = vnfPackageManagement.query(vnfPackageId, projectId);
     for (Script script : vnfPackage.getScripts()) {
       if (script.getId().equals(scriptId)) {

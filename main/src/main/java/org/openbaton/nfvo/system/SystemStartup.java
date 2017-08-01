@@ -17,6 +17,9 @@
 
 package org.openbaton.nfvo.system;
 
+import static org.openbaton.utils.rabbit.RabbitManager.createRabbitMqUser;
+import static org.openbaton.utils.rabbit.RabbitManager.setRabbitMqUserPermissions;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,8 +64,14 @@ class SystemStartup implements CommandLineRunner {
   @Value("${spring.rabbitmq.password:openbaton}")
   private String password;
 
+  @Value("${nfvo.rabbit.brokerIp:localhost}")
+  private String brokerIp;
+
   @Value("${nfvo.rabbit.management.port:15672}")
   private String managementPort;
+
+  @Value("${spring.rabbit.virtual-host:/}")
+  private String virtualHost;
 
   @Value("${nfvo.plugin.installation-dir:./plugins}")
   private String pluginDir;
@@ -79,8 +88,11 @@ class SystemStartup implements CommandLineRunner {
   @Value("${nfvo.plugin.log.path:./plugin-logs}")
   private String pluginLogPath;
 
-  @Value("${nfvo.rabbit.brokerIp:localhost}")
-  private String brokerIp;
+  @Value("${nfvo.rabbit.manager-registration-user.name:openbaton-manager-user}")
+  private String managerRegistrationUserName;
+
+  @Value("${nfvo.rabbit.manager-registration-user.password:openbaton}")
+  private String getManagerRegistrationUserPassword;
 
   @Override
   public void run(String... args) throws Exception {
@@ -130,6 +142,26 @@ class SystemStartup implements CommandLineRunner {
 
     configurationRepository.save(c);
 
+    createRabbitMqUser(
+        username,
+        password,
+        brokerIp,
+        managementPort,
+        managerRegistrationUserName,
+        getManagerRegistrationUserPassword,
+        virtualHost);
+
+    setRabbitMqUserPermissions(
+        username,
+        password,
+        brokerIp,
+        managementPort,
+        managerRegistrationUserName,
+        virtualHost,
+        "^amq\\.gen.*|amq\\.default$",
+        "^amq\\.gen.*|amq\\.default$|nfvo.manager.handling|openbaton-exchange",
+        "^amq\\.gen.*|amq\\.default$|nfvo.manager.handling|openbaton-exchange");
+
     if (installPlugin) {
       startPlugins(pluginDir);
     }
@@ -144,6 +176,7 @@ class SystemStartup implements CommandLineRunner {
         Integer.parseInt(numConsumers),
         username,
         password,
+        virtualHost,
         managementPort,
         pluginLogPath);
   }

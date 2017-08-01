@@ -48,6 +48,7 @@ public class PluginCaller {
   private final String brokerIp;
   private final String username;
   private final String password;
+  private final String virtualHost;
   private final long timeout;
   private ConnectionFactory factory;
   private Connection connection;
@@ -78,9 +79,10 @@ public class PluginCaller {
       String username,
       String password,
       int port,
+      String virtualHost,
       int managementPort)
       throws TimeoutException, IOException, NotFoundException {
-    this(pluginId, brokerIp, username, password, port, managementPort, 500000);
+    this(pluginId, brokerIp, username, password, port, virtualHost, managementPort, 500000);
   }
 
   public PluginCaller(
@@ -89,14 +91,17 @@ public class PluginCaller {
       String username,
       String password,
       int port,
+      String virtualHost,
       int managementPort,
       long timeout)
       throws IOException, TimeoutException, NotFoundException {
-    this.pluginId = getFullPluginId(pluginId, brokerIp, username, password, managementPort);
+    this.pluginId =
+        getFullPluginId(pluginId, brokerIp, username, password, virtualHost, managementPort);
     this.managementPort = managementPort;
     this.brokerIp = brokerIp;
     this.username = username;
     this.password = password;
+    this.virtualHost = virtualHost;
     this.timeout = timeout;
     factory = new ConnectionFactory();
     factory.setHost(brokerIp);
@@ -106,6 +111,7 @@ public class PluginCaller {
     else factory.setPassword("openbaton");
     if (port > 1024) factory.setPort(port);
     else factory.setPort(5672);
+    if (virtualHost != null && !"".equals(virtualHost)) factory.setVirtualHost(virtualHost);
     //connection = factory.newConnection();
 
     //        replyQueueName = channel.queueDeclare().getQueue();
@@ -119,9 +125,14 @@ public class PluginCaller {
   }
 
   private String getFullPluginId(
-      String pluginId, String brokerIp, String username, String password, int port)
+      String pluginId,
+      String brokerIp,
+      String username,
+      String password,
+      String virtualHost,
+      int port)
       throws IOException, NotFoundException {
-    List<String> queues = RabbitManager.getQueues(brokerIp, username, password, port);
+    List<String> queues = RabbitManager.getQueues(brokerIp, username, password, virtualHost, port);
     for (String queue : queues) {
       if (queue.startsWith(pluginId)) return queue;
     }
@@ -139,13 +150,14 @@ public class PluginCaller {
     }
     Channel channel = connection.createChannel();
     String replyQueueName = channel.queueDeclare().getQueue();
-    String exchange = "plugin-exchange";
+    String exchange = "openbaton-exchange";
     channel.queueBind(replyQueueName, exchange, replyQueueName);
     QueueingConsumer consumer = new QueueingConsumer(channel);
     String consumerTag = channel.basicConsume(replyQueueName, true, consumer);
 
     //Check if plugin is still up
-    if (!RabbitManager.getQueues(brokerIp, username, password, managementPort).contains(pluginId)) {
+    if (!RabbitManager.getQueues(brokerIp, username, password, virtualHost, managementPort)
+        .contains(pluginId)) {
       connection.close();
       throw new PluginException("Plugin with id: " + pluginId + " not existing anymore...");
     }

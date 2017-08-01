@@ -65,6 +65,9 @@ public class GsonDeserializerNFVMessage implements JsonDeserializer<NFVMessage> 
       case "STOP":
         result = gson.fromJson(json, VnfmOrStartStopMessage.class);
         break;
+      case "LOG_REQUEST":
+        result = gson.fromJson(json, VnfmOrLogMessage.class);
+        break;
       default:
         result = gson.fromJson(json, VnfmOrGenericMessage.class);
         break;

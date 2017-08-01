@@ -23,6 +23,12 @@ import java.io.*;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -31,6 +37,23 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.exceptions.*;
+import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.nfvo.NFVImage;
+import org.openbaton.catalogue.nfvo.Script;
+import org.openbaton.catalogue.nfvo.VNFPackage;
+import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.AlreadyExistingException;
+import org.openbaton.exceptions.BadFormatException;
+import org.openbaton.exceptions.BadRequestException;
+import org.openbaton.exceptions.EntityUnreachableException;
+import org.openbaton.exceptions.IncompatibleVNFPackage;
+import org.openbaton.exceptions.NetworkServiceIntegrityException;
+import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.PluginException;
+import org.openbaton.exceptions.VimException;
+import org.openbaton.exceptions.WrongAction;
 import org.openbaton.nfvo.core.interfaces.VnfPlacementManagement;
 import org.openbaton.nfvo.core.utils.CheckVNFDescriptor;
 import org.openbaton.nfvo.core.utils.CheckVNFPackage;
@@ -1161,7 +1184,8 @@ public class VNFPackageManagement
   }
 
   @Override
-  public Script updateScript(Script script, String vnfPackageId) throws NotFoundException {
+  public Script updateScript(Script script, String vnfPackageId)
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
 
     script = scriptRepository.save(script);
     vnfmManager.updateScript(script, vnfPackageId);

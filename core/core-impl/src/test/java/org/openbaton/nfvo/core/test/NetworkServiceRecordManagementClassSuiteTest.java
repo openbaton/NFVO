@@ -222,7 +222,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
   @Test
   public void nsrManagementDeleteTest()
       throws VimException, InterruptedException, ExecutionException, NamingException,
-          NotFoundException, WrongStatusException, PluginException {
+          NotFoundException, WrongStatusException, PluginException, BadFormatException {
     NetworkServiceRecord nsd_exp = createNetworkServiceRecord();
     when(resourceManagement.release(any(VirtualDeploymentUnit.class), any(VNFCInstance.class)))
         .thenReturn(new AsyncResult<Void>(null));
