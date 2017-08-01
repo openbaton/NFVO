@@ -28,7 +28,6 @@ dependencies {
 
         compile 'org.springframework:spring-jms:' + springVersion
         compile 'org.apache.activemq:activemq-broker:5.14.3'
-        compile 'javax.jms:javax.jms-api:2.0.1'
 
         compile 'commons-codec:commons-codec:1.10'
 

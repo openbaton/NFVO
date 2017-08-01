@@ -5,14 +5,13 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $compile, $cookieStore, $routeParams, http, serviceAPI, topologiesAPI, AuthService, $location, $interval) {
@@ -652,21 +651,21 @@ var app = angular.module('app').controller('NsrCtrl', function ($scope, $http, $
     }
     $scope.startVNFCI = function (vnfci, vnfr) {
         startObj = {};
-        vnfciurl = url + $scope.nsrinfo.id + '/vnfrecords/' + vnfr.id + '/vdunits/' + vdu.id + '/vnfcinstances/' + vnfci.id + '/start';
-        //console.log(vnfciurl);
+        vnfciurl = url + $scope.nsrinfo.id + '/vnfrecords/' + vnfr.id + '/vnfcinstance/' + vnfci.id + '/start';
+        //console.log(vnfciaddres);
         http.post(vnfciurl, startObj)
             .success(function (response) {
-                showOk("Started VNFCI with id" + vnfci.id);
+                showOk("Stopped VNFCI with id" + vnfci.id);
             })
             .error(function (data, status) {
                 showError(data, status);
             });
     };
 
-    $scope.stopVNFCI = function (vdu, vnfci, vnfr) {
+    $scope.stopVNFCI = function (vnfci, vnfr) {
         startObj = {};
-        vnfciurl = url + $scope.nsrinfo.id + '/vnfrecords/' + vnfr.id + '/vdunits/' + vdu.id + '/vnfcinstances/' + vnfci.id + '/stop';
-        //console.log(vnfciurl);
+        vnfciurl = url + $scope.nsrinfo.id + '/vnfrecords/' + vnfr.id + '/vnfcinstance/' + vnfci.id + '/stop';
+        //console.log(vnfciaddres);
         http.post(vnfciurl, startObj)
             .success(function (response) {
                 showOk("Stopped VNFCI with id" + vnfci.id);

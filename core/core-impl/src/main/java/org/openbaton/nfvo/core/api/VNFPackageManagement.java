@@ -19,12 +19,10 @@ package org.openbaton.nfvo.core.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
+import java.sql.SQLException;
+import java.util.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,13 +34,16 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.*;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
@@ -54,12 +55,11 @@ import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.exceptions.WrongAction;
 import org.openbaton.nfvo.core.interfaces.VnfPlacementManagement;
+import org.openbaton.nfvo.core.utils.CheckVNFDescriptor;
+import org.openbaton.nfvo.core.utils.CheckVNFPackage;
 import org.openbaton.nfvo.core.utils.NSDUtils;
-import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
-import org.openbaton.nfvo.repositories.ScriptRepository;
-import org.openbaton.nfvo.repositories.VNFDRepository;
-import org.openbaton.nfvo.repositories.VimRepository;
-import org.openbaton.nfvo.repositories.VnfPackageRepository;
+import org.openbaton.nfvo.core.utils.Utils;
+import org.openbaton.nfvo.repositories.*;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.openbaton.vnfm.interfaces.manager.VnfmManager;
@@ -84,6 +84,9 @@ public class VNFPackageManagement
 
   @Value("${vnfd.vnfp.cascade.delete:false}")
   private boolean cascadeDelete;
+  // This is only in case you run the NFVO from IDE
+  @Value("${nfvo.version:null}")
+  private String nfvoVersion;
 
   private final Logger log = LoggerFactory.getLogger(this.getClass());
   private final Gson mapper = new GsonBuilder().create();
@@ -97,8 +100,8 @@ public class VNFPackageManagement
   @Autowired private VnfmManager vnfmManager;
   @Autowired private ImageChecker imageChecker;
   @Autowired private VnfPlacementManagement vnfPlacementManagement;
+  @Autowired private VNFPackageMetadataRepository vnfPackageMetadataRepository;
 
-  private String real_nfvo_version;
   @Autowired private org.openbaton.nfvo.core.interfaces.VimManagement vimManagement;
 
   public boolean isCascadeDelete() {
@@ -223,6 +226,364 @@ public class VNFPackageManagement
   }
 
   @Override
+  public VirtualNetworkFunctionDescriptor add(
+      byte[] pack, boolean isImageIncluded, String projectId, boolean fromMarketPlace)
+      throws IOException, VimException, NotFoundException, SQLException, PluginException,
+          ExistingVNFPackage, DescriptorWrongFormat, VNFPackageFormatException,
+          IncompatibleVNFPackage, BadRequestException, AlreadyExistingException,
+          NetworkServiceIntegrityException, EntityUnreachableException, InterruptedException {
+
+    CheckVNFPackage.checkStructure(pack, isImageIncluded, fromMarketPlace);
+
+    VNFPackage vnfPackage = new VNFPackage();
+    VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = null;
+    VNFPackageMetadata vnfPackageMetadata = null;
+    NFVImage image = new NFVImage();
+    ImageMetadata imageMetadata = new ImageMetadata();
+
+    Map<String, Object> imageDetails = null;
+    Map<String, Object> metadata = null;
+
+    try (ArchiveInputStream tarFile =
+        new ArchiveStreamFactory()
+            .createArchiveInputStream("tar", new ByteArrayInputStream(pack))) {
+      TarArchiveEntry entry;
+      // Here there are almost no checks whether keys exists or not, since the check has been done in the CheckVNFPackage class
+      while ((entry = (TarArchiveEntry) tarFile.getNextEntry()) != null) {
+        if (entry.isFile() && !entry.getName().startsWith("./._")) {
+          byte[] content = new byte[(int) entry.getSize()];
+          tarFile.read(content, 0, content.length);
+          if (entry.getName().equals("Metadata.yaml")) {
+            metadata = Utils.getMapFromYamlFile(content);
+            vnfPackage.setName((String) metadata.get("name"));
+
+            vnfPackageMetadata = new VNFPackageMetadata();
+
+            vnfPackageMetadata.setName((String) metadata.get("name"));
+            vnfPackage.setName((String) metadata.get("name"));
+
+            //Check version compatibility between VNF Package and actual NFVO
+            String vnfPackageNFVOVersion = null;
+            if (metadata.containsKey("nfvo-version")) {
+              vnfPackageNFVOVersion = (String) metadata.get("nfvo-version");
+            }
+            if (metadata.containsKey("nfvo_version")) {
+              vnfPackageNFVOVersion = (String) metadata.get("nfvo_version");
+            }
+            CheckVNFPackage.compareNFVOVersions(
+                vnfPackageNFVOVersion, getNfvoVersionWithoutSNAPSHOT());
+
+            vnfPackage.setNfvo_version(vnfPackageNFVOVersion);
+            vnfPackageMetadata.setNfvoVersion(vnfPackageNFVOVersion);
+
+            if (metadata.containsKey("vendor")) {
+              vnfPackageMetadata.setVendor((String) metadata.get("vendor"));
+            } else {
+              vnfPackageMetadata.setVendor((String) metadata.get("provider"));
+            }
+
+            if (metadata.containsKey("version")) {
+              vnfPackageMetadata.setVersion(String.valueOf(metadata.get("version")));
+            } else {
+              log.warn(
+                  "The VNF Package Metadata does not contain the field \"version\". Setting version 1.0 by default");
+              vnfPackageMetadata.setVersion("1.0");
+            }
+
+            if (metadata.containsKey("vim-types")) {
+              vnfPackageMetadata.setVimTypes(
+                  new HashSet<String>((ArrayList) metadata.get("vim-types")));
+              vnfPackage.setVimTypes((ArrayList) metadata.get("vim-types"));
+            } else {
+              vnfPackageMetadata.setVimTypes(
+                  new HashSet<String>((ArrayList) metadata.get("vim_types")));
+              vnfPackage.setVimTypes((ArrayList) metadata.get("vim_types"));
+            }
+
+            vnfPackageMetadata.setDescription((String) metadata.get("description"));
+            vnfPackageMetadata.setRequirements((Map) metadata.get("requirements"));
+
+            // Optional keys
+            vnfPackageMetadata.setTag((String) metadata.get("tag"));
+            vnfPackage.setScriptsLink((String) metadata.get("scripts-link"));
+            vnfPackageMetadata.setOsId((String) metadata.get("os-id"));
+            vnfPackageMetadata.setOsVersion(String.valueOf(metadata.get("os-version")));
+            vnfPackageMetadata.setOsArchitecture((String) metadata.get("os-architecture"));
+
+            if (metadata.containsKey("additional-repos")) {
+              List<Map<String, Object>> repoConfigurationInfoList =
+                  (List<Map<String, Object>>) metadata.get("additional-repos");
+              for (Map<String, Object> rci : repoConfigurationInfoList) {
+                String packageTypeString = (String) rci.get("type");
+                PackageType packageType =
+                    packageTypeString.equalsIgnoreCase("rpm") ? PackageType.RPM : PackageType.DEB;
+                AdditionalRepoInfo additionalRepoInfo = new AdditionalRepoInfo(packageType);
+                if (rci.containsKey("key-url"))
+                  additionalRepoInfo.setKeyUrl((String) rci.get("key-url"));
+                List<String> configurationInfo = (List<String>) rci.get("configuration");
+                additionalRepoInfo.setConfiguration(configurationInfo);
+                vnfPackageMetadata.addRepoConfigurationInfo(additionalRepoInfo);
+              }
+            }
+
+            imageDetails = (Map<String, Object>) metadata.get("image");
+            //            try {
+            //              imageDetails = handleMetadata(metadata, vnfPackage, imageDetails, image);
+            //            } catch (IncompatibleVNFPackage incompatibleVNFPackage) {
+            //              incompatibleVNFPackage.printStackTrace();
+            //            }
+
+            //imageMetadata.setUsername(userManagement.getCurrentUser());
+            imageMetadata.setUpload((String) imageDetails.get("option"));
+
+            if (imageDetails.containsKey("ids")) {
+              imageMetadata.setIds((Set<String>) imageDetails.get("ids"));
+            } else {
+              imageMetadata.setIds(new HashSet<String>());
+            }
+            if (imageDetails.containsKey("names")) {
+              imageMetadata.setNames(new HashSet<String>((ArrayList) imageDetails.get("names")));
+            } else {
+              imageMetadata.setNames(new HashSet<String>());
+            }
+            if (imageDetails.containsKey("link")) {
+              imageMetadata.setLink((String) imageDetails.get("link"));
+            } else {
+              imageMetadata.setLink(null);
+            }
+
+            //If upload==true -> create a new Image
+            if (imageDetails.get("upload").equals("true")
+                || imageDetails.get("upload").equals("check")) {
+              vnfPackage.setImageLink((String) imageDetails.get("link"));
+              Map<String, Object> imageConfig = (Map<String, Object>) metadata.get("image-config");
+
+              image.setName((String) imageConfig.get("name"));
+              image.setDiskFormat(((String) imageConfig.get("diskFormat")).toUpperCase());
+              image.setContainerFormat(((String) imageConfig.get("containerFormat")).toUpperCase());
+
+              image.setMinCPU(Integer.toString((Integer) imageConfig.get("minCPU")));
+              image.setMinDiskSpace(Long.parseLong(imageConfig.get("minDisk").toString()));
+              image.setMinRam(Long.parseLong(imageConfig.get("minRam").toString()));
+
+              image.setIsPublic((boolean) imageConfig.get("isPublic"));
+            }
+          } else if (!entry.getName().startsWith("scripts/") && entry.getName().endsWith(".json")) {
+            //this must be the vnfd
+            String json = new String(content);
+            CheckVNFDescriptor.checkIntegrity(json);
+
+            virtualNetworkFunctionDescriptor =
+                mapper.fromJson(json, VirtualNetworkFunctionDescriptor.class);
+
+            int i = 1;
+            for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
+              if (vdu.getName() == null) {
+                vdu.setName(virtualNetworkFunctionDescriptor.getName() + "-" + i);
+                i++;
+              }
+            }
+            for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
+              log.debug("vdu name: " + vdu.getName());
+            }
+
+            log.debug("Created VNFD: " + virtualNetworkFunctionDescriptor.getName());
+            log.trace("Created VNFD: " + virtualNetworkFunctionDescriptor);
+            nsdUtils.fetchVimInstances(virtualNetworkFunctionDescriptor, projectId);
+
+            vnfPackageMetadata.setVnfmType(virtualNetworkFunctionDescriptor.getEndpoint());
+
+            //vnfPackageMetadata.setVnfd(virtualNetworkFunctionDescriptor);
+
+          } else if (entry.getName().startsWith("scripts/")) {
+            Script script = new Script();
+            script.setName(entry.getName().substring(8));
+            script.setPayload(content);
+            if (vnfPackage.getScripts() == null) vnfPackage.setScripts(new HashSet<Script>());
+            vnfPackage.getScripts().add(script);
+          }
+        }
+      }
+    } catch (ArchiveException e) {
+      throw new VNFPackageFormatException(
+          "Error opening the VNF package, ensure the extension is .tar and the archive is not corrupted",
+          e);
+    } catch (IOException e) {
+      throw new VNFPackageFormatException(
+          "Error reading the VNF package, ensure the archive is not corrupted", e);
+    }
+
+    handleImage(
+        vnfPackage,
+        null,
+        virtualNetworkFunctionDescriptor,
+        metadata,
+        image,
+        imageDetails,
+        projectId);
+
+    if (vnfPackage.getScriptsLink() != null
+        && (vnfPackage.getScripts() != null && vnfPackage.getScripts().size() > 0)) {
+      log.debug("Remove scripts got by scripts/ because the scripts-link is defined");
+      vnfPackage.setScripts(new HashSet<Script>());
+    }
+
+    Map<String, Object> vnfPackageMetadataParameters = new HashMap<>();
+    vnfPackageMetadataParameters.put("name", vnfPackageMetadata.getName());
+    vnfPackageMetadataParameters.put("vendor", vnfPackageMetadata.getVendor());
+
+    Map<String, Object> vnfdParameters = new HashMap<>();
+    vnfdParameters.put("name", virtualNetworkFunctionDescriptor.getName());
+    vnfdParameters.put("vendor", virtualNetworkFunctionDescriptor.getVendor());
+    CheckVNFPackage.checkCommonParametersWithVNFD(vnfPackageMetadataParameters, vnfdParameters);
+
+    //vnfPackageMetadata.setVnfPackage(vnfPackage);
+    //vnfPackageMetadata.setNfvImage(image);
+
+    //vnfPackageMetadata.setImageMetadata(imageMetadata);
+
+    //vnfPackageMetadata.setVnfPackageFileName(fileName);
+    vnfPackageMetadata.setProjectId(projectId);
+    //vnfPackageMetadata.setVnfPackageFile(pack);
+    //vnfPackageMetadata.setMd5sum(DigestUtils.md5DigestAsHex(pack));
+    vnfPackageMetadata.setType("tar");
+    vnfPackage.setVnfPackageMetadata(vnfPackageMetadata);
+    vnfPackage.setImage(image);
+
+    virtualNetworkFunctionDescriptor.setProjectId(projectId);
+    vnfPackage.setProjectId(projectId);
+    // check if package already exists
+
+    Iterable<VNFPackageMetadata> vnfPackageMetadataIterable =
+        query(
+            vnfPackageMetadata.getName(),
+            vnfPackageMetadata.getVendor(),
+            vnfPackageMetadata.getVersion(),
+            vnfPackageMetadata.getNfvoVersion(),
+            vnfPackageMetadata.getVnfmType(),
+            vnfPackageMetadata.getOsId(),
+            vnfPackageMetadata.getOsVersion(),
+            vnfPackageMetadata.getOsArchitecture(),
+            vnfPackageMetadata.getTag(),
+            vnfPackageMetadata.getProjectId());
+    if (vnfPackageMetadataIterable != null && vnfPackageMetadataIterable.iterator().hasNext()) {
+      for (VNFPackageMetadata vnfpm : vnfPackageMetadataIterable)
+        log.trace("Already existing: " + vnfpm);
+      throw new ExistingVNFPackage("VNF package already exists.");
+    }
+
+    nsdUtils.checkIntegrity(virtualNetworkFunctionDescriptor);
+    // check if it is the first and set to default
+    //    if(!vnfPackageMetadataRepository.findAllByNameAndVendor(vnfPackageMetadata.getName(),vnfPackageMetadata.getVendor()).iterator().hasNext()){
+    //      log.debug("Setting VNF package to default");
+    //      vnfPackageMetadata.setDefaultFlag(true);
+    //    }
+    //    else vnfPackageMetadata.setDefaultFlag(false);
+    //vnfPackageMetadataRepository.save(vnfPackageMetadata);
+    vnfPackage = vnfPackageRepository.save(vnfPackage);
+    log.trace("Persisted " + vnfPackage);
+    vnfPackageMetadataRepository.setVNFPackageId(vnfPackage.getId());
+
+    virtualNetworkFunctionDescriptor.setVnfPackageLocation(vnfPackage.getId());
+    virtualNetworkFunctionDescriptor = setIPConfigurations(virtualNetworkFunctionDescriptor);
+    virtualNetworkFunctionDescriptor = vnfdRepository.save(virtualNetworkFunctionDescriptor);
+    log.trace("Persisted " + virtualNetworkFunctionDescriptor);
+    log.trace(
+        "Onboarded VNFPackage ("
+            + virtualNetworkFunctionDescriptor.getVnfPackageLocation()
+            + ") successfully");
+    return virtualNetworkFunctionDescriptor;
+  }
+
+  private VirtualNetworkFunctionDescriptor setIPConfigurations(
+      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor)
+      throws DescriptorWrongFormat {
+    // If the VNF manager is not the fixed-host then skip this part
+    if (!virtualNetworkFunctionDescriptor.getEndpoint().equalsIgnoreCase("fixed-host"))
+      return virtualNetworkFunctionDescriptor;
+
+    log.info("Adding configuration parameters for the configuration of IP, username and password");
+
+    VNFComponent component =
+        virtualNetworkFunctionDescriptor.getVdu().iterator().next().getVnfc().iterator().next();
+
+    // Try to find smartly a floating IP to be used for the ssh_ip property. This IP will be used by the fixed-host VNFM for connecting to the VNF machine.
+    // For floating IP we mean an IP which the fixed-host VNFM can connect to.
+    // If the VNFC has multiple floating IPs, only one is needed for accessing it..
+    String floatingIp = "";
+    String virtualLinkName = "";
+    for (VNFDConnectionPoint vnfdConnectionPoint : component.getConnection_point()) {
+      if (vnfdConnectionPoint.getFloatingIp() != null
+          && !vnfdConnectionPoint.getFloatingIp().isEmpty()
+          && !vnfdConnectionPoint.getFloatingIp().equals("random")) {
+        floatingIp = vnfdConnectionPoint.getFloatingIp();
+        virtualLinkName = vnfdConnectionPoint.getVirtual_link_reference();
+        break;
+      }
+    }
+
+    // At this point the floating IP could be empty, find the virtual link with the random floating IP
+    if (floatingIp.equals(""))
+      for (VNFDConnectionPoint vnfdConnectionPoint : component.getConnection_point()) {
+        if (vnfdConnectionPoint.getFloatingIp() != null
+            && !vnfdConnectionPoint.getFloatingIp().isEmpty()) {
+          floatingIp = vnfdConnectionPoint.getFloatingIp();
+          virtualLinkName = vnfdConnectionPoint.getVirtual_link_reference();
+          break;
+        }
+      }
+
+    // Only one IP, username and password shall be set, because here we specify only the information for accessing the VNFC through the fixed-host VNFM.
+
+    Set<ConfigurationParameter> configurationParameters = new HashSet<>();
+
+    String ipConfigKey = "ssh_" + virtualLinkName + "_ip";
+    String ipConfigValue = floatingIp;
+    ConfigurationParameter ipConfigurationParameter = new ConfigurationParameter();
+    ipConfigurationParameter.setConfKey(ipConfigKey);
+    ipConfigurationParameter.setValue(ipConfigValue);
+    ipConfigurationParameter.setDescription("IP to be used for accessing the VNF machine");
+    configurationParameters.add(ipConfigurationParameter);
+
+    String usernameConfigKey = "ssh_username";
+    String usernameConfigValue = "";
+    ConfigurationParameter usernameConfigurationParameter = new ConfigurationParameter();
+    usernameConfigurationParameter.setConfKey(usernameConfigKey);
+    usernameConfigurationParameter.setValue(usernameConfigValue);
+    usernameConfigurationParameter.setDescription(
+        "SSH username for accessing the existing machine of the VNF");
+    configurationParameters.add(usernameConfigurationParameter);
+
+    String passwordConfigKey = "ssh_password";
+    String passwordConfigValue = "";
+    ConfigurationParameter passwordConfigurationParameter = new ConfigurationParameter();
+    passwordConfigurationParameter.setConfKey(passwordConfigKey);
+    passwordConfigurationParameter.setValue(passwordConfigValue);
+    passwordConfigurationParameter.setDescription(
+        "SSH password for accessing the existing machine of the VNF");
+    configurationParameters.add(passwordConfigurationParameter);
+
+    if (virtualNetworkFunctionDescriptor.getConfigurations() == null
+        || virtualNetworkFunctionDescriptor.getConfigurations().getConfigurationParameters() == null
+        || virtualNetworkFunctionDescriptor
+            .getConfigurations()
+            .getConfigurationParameters()
+            .isEmpty()) {
+      Configuration ipConfiguration = new Configuration();
+      ipConfiguration.setName("configuration");
+      ipConfiguration.setProjectId(virtualNetworkFunctionDescriptor.getProjectId());
+      ipConfiguration.setConfigurationParameters(configurationParameters);
+      virtualNetworkFunctionDescriptor.setConfigurations(ipConfiguration);
+    } else {
+      virtualNetworkFunctionDescriptor
+          .getConfigurations()
+          .getConfigurationParameters()
+          .addAll(configurationParameters);
+    }
+    return virtualNetworkFunctionDescriptor;
+  }
+
+  @Override
   public Map<String, Object> handleMetadata(
       Map<String, Object> metadata,
       VNFPackage vnfPackage,
@@ -243,7 +604,7 @@ public class VNFPackageManagement
     }
     String[] actualNfvoVersion;
     try {
-      actualNfvoVersion = getNfvoVersion();
+      actualNfvoVersion = getNfvoVersionSplitted();
     } catch (NotFoundException ne) {
       log.warn(ne.getMessage());
       actualNfvoVersion = null;
@@ -364,6 +725,7 @@ public class VNFPackageManagement
         vnfPackage.setScripts(new HashSet<Script>());
       }
     }
+
     List<String> vimInstances = new ArrayList<>();
     if (imageDetails.get("upload").equals("check")) {
       if (vnfPackage.getImageLink() == null && imageFile == null) {
@@ -627,7 +989,7 @@ public class VNFPackageManagement
     InputStream in = new BufferedInputStream(packageLink.openStream());
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     byte[] bytes = new byte[1024];
-    int n = 0;
+    int n;
     while (-1 != (n = in.read(bytes))) {
       out.write(bytes, 0, n);
     }
@@ -635,15 +997,70 @@ public class VNFPackageManagement
     in.close();
     byte[] packageOnboard = out.toByteArray();
     log.debug("Downloaded " + packageOnboard.length + " bytes");
-    return onboard(packageOnboard, projectId);
+    VirtualNetworkFunctionDescriptor vnfd;
+    try {
+      vnfd = add(packageOnboard, false, projectId, true);
+    } catch (SQLException
+        | ExistingVNFPackage
+        | DescriptorWrongFormat
+        | VNFPackageFormatException e) {
+      if (log.isDebugEnabled()) log.error(e.getMessage(), e);
+      else log.error(e.getMessage());
+      throw new BadRequestException(e.getMessage());
+    }
+    return vnfd;
   }
 
-  private String[] getNfvoVersion() throws NotFoundException {
+  @Override
+  public VirtualNetworkFunctionDescriptor onboardFromPackageRepository(
+      String link, String projectId)
+      throws IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
+          NotFoundException, PluginException, NetworkServiceIntegrityException, BadRequestException,
+          InterruptedException, EntityUnreachableException {
+    log.debug("Onboard from Package Repository, this is the download link: " + link);
+    URL packageLink = new URL(link);
+
+    InputStream in = new BufferedInputStream(packageLink.openStream());
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    byte[] bytes = new byte[1024];
+    int n;
+    while (-1 != (n = in.read(bytes))) {
+      out.write(bytes, 0, n);
+    }
+    out.close();
+    in.close();
+    byte[] packageOnboard = out.toByteArray();
+    log.debug("Downloaded " + packageOnboard.length + " bytes");
+    VirtualNetworkFunctionDescriptor vnfd;
+    try {
+      vnfd = add(packageOnboard, false, projectId, false);
+    } catch (SQLException
+        | ExistingVNFPackage
+        | DescriptorWrongFormat
+        | VNFPackageFormatException e) {
+      if (log.isDebugEnabled()) log.error(e.getMessage(), e);
+      else log.error(e.getMessage());
+      throw new BadRequestException(e.getMessage());
+    }
+    return vnfd;
+  }
+
+  private String[] getNfvoVersionSplitted() throws NotFoundException {
+    return getNfvoVersionWithoutSNAPSHOT().split(Pattern.quote("."));
+  }
+
+  private String getNfvoVersionWithoutSNAPSHOT() throws NotFoundException {
     String version = VNFPackageManagement.class.getPackage().getImplementationVersion();
-    if (version == null) throw new NotFoundException("The NFVO version number is not available");
-    if (version.lastIndexOf("-SNAPSHOT") != -1)
-      version = version.substring(0, version.lastIndexOf("-SNAPSHOT"));
-    return version.split(Pattern.quote("."));
+    //this is because you are running it into an IDE
+    if (version == null) {
+      if (nfvoVersion.equals("null"))
+        throw new NotFoundException(
+            "The NFVO version number is not available, seems you are running the NFVO from the IDE. Set nfvo.version property into the NFVO property file.");
+      else version = nfvoVersion;
+    }
+    return version.lastIndexOf("-SNAPSHOT") != -1
+        ? version.substring(0, version.lastIndexOf("-SNAPSHOT"))
+        : version;
   }
 
   @Override
@@ -677,6 +1094,32 @@ public class VNFPackageManagement
   @Override
   public Iterable<VNFPackage> query() {
     return vnfPackageRepository.findAll();
+  }
+
+  @Override
+  public Iterable<VNFPackageMetadata> query(
+      String name,
+      String vendor,
+      String version,
+      String nfvoVersion,
+      String vnfmType,
+      String osId,
+      String osVersion,
+      String osArchitecture,
+      String tag,
+      String projectId) {
+    return vnfPackageMetadataRepository
+        .findAllByNameAndVendorAndVersionAndNfvoVersionAndVnfmTypeAndOsIdAndOsVersionAndOsArchitectureAndTagAndProjectId(
+            name,
+            vendor,
+            version,
+            nfvoVersion,
+            vnfmType,
+            osId,
+            osVersion,
+            osArchitecture,
+            tag,
+            projectId);
   }
 
   @Override

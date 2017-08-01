@@ -27,16 +27,7 @@ import javax.validation.Valid;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
-import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.exceptions.BadFormatException;
-import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.EntityUnreachableException;
-import org.openbaton.exceptions.IncompatibleVNFPackage;
-import org.openbaton.exceptions.NetworkServiceIntegrityException;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimException;
-import org.openbaton.exceptions.WrongAction;
+import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.core.interfaces.VNFPackageManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,15 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -72,6 +55,7 @@ public class RestVNFPackage {
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private VNFPackageManagement vnfPackageManagement;
+
   /** Adds a new VNFPackage to the VNFPackages repository */
   @ApiOperation(
     value = "Adding a VNFPackage",
@@ -89,13 +73,17 @@ public class RestVNFPackage {
           BadRequestException, InterruptedException, EntityUnreachableException {
 
     log.debug("Onboarding");
-    if (!file.isEmpty()) {
-      byte[] bytes = file.getBytes();
-      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
-          vnfPackageManagement.onboard(bytes, projectId);
-      log.debug("return vnfd: " + virtualNetworkFunctionDescriptor.getName());
-      return virtualNetworkFunctionDescriptor;
-    } else throw new IOException("File is empty!");
+    if (file == null || file.isEmpty()) throw new NullPointerException("File is null or empty!");
+    byte[] bytes = file.getBytes();
+    VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = null;
+    try {
+      virtualNetworkFunctionDescriptor = vnfPackageManagement.add(bytes, false, projectId, false);
+    } catch (ExistingVNFPackage | DescriptorWrongFormat | VNFPackageFormatException e) {
+      if (log.isDebugEnabled()) log.error(e.getMessage(), e);
+      else log.error(e.getMessage());
+      throw new BadRequestException(e.getMessage());
+    }
+    return virtualNetworkFunctionDescriptor;
   }
 
   @ApiOperation(
@@ -118,6 +106,29 @@ public class RestVNFPackage {
     String downloadlink = jsonObject.getAsJsonPrimitive("link").getAsString();
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
         vnfPackageManagement.onboardFromMarket(downloadlink, projectId);
+    return "{ \"id\": \"" + virtualNetworkFunctionDescriptor.getVnfPackageLocation() + "\"}";
+  }
+
+  @ApiOperation(
+    value = "Adding a VNFPackage from the Package Repository",
+    notes =
+        "The JSON object in the request body contains a field named link, which holds the URL to the package on the Open Baton Marketplace"
+  )
+  @RequestMapping(
+    value = "/package-repository-download",
+    method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  public String packageRepositoryDownload(
+      @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
+      throws IOException, PluginException, VimException, NotFoundException, IncompatibleVNFPackage,
+          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException,
+          EntityUnreachableException, InterruptedException {
+    Gson gson = new Gson();
+    JsonObject jsonObject = gson.fromJson(link, JsonObject.class);
+    String downloadlink = jsonObject.getAsJsonPrimitive("link").getAsString();
+    VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
+        vnfPackageManagement.onboardFromPackageRepository(downloadlink, projectId);
     return "{ \"id\": \"" + virtualNetworkFunctionDescriptor.getVnfPackageLocation() + "\"}";
   }
 

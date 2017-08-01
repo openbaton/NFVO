@@ -124,6 +124,35 @@ public class RestNetworkServiceDescriptor {
   }
 
   /**
+   * This operation allows downloading and onboarding an NSD from the Package Repository
+   *
+   * @param link : link to the Network Service Descriptor to be created
+   * @return networkServiceDescriptor: the Network Service Descriptor filled with id and values from
+   *     core
+   */
+  @ApiOperation(
+    value = " Adding a NSD from the marketplace",
+    notes = "POST request with the a JSON object in the request body containing a field named link"
+  )
+  @RequestMapping(
+    value = "/package-repository-download",
+    method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ResponseStatus(HttpStatus.CREATED)
+  public NetworkServiceDescriptor packageRepositoryDownload(
+      @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
+      throws BadFormatException, CyclicDependenciesException, NetworkServiceIntegrityException,
+          NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
+          AlreadyExistingException, EntityInUseException, BadRequestException,
+          EntityUnreachableException, InterruptedException {
+
+    log.debug("Received request to download nsd from Package Repository from this link: " + link);
+    String downloadlink = link.get("link").getAsString();
+    return networkServiceDescriptorManagement.onboardFromPackageRepository(downloadlink, projectId);
+  }
+
+  /**
    * This operation is used to remove a disabled Network Service Descriptor
    *
    * @param id of Network Service Descriptor

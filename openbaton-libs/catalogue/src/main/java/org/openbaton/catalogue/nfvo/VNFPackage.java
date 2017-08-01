@@ -20,15 +20,7 @@ package org.openbaton.catalogue.nfvo;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
-import javax.persistence.CascadeType;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.PrePersist;
-import javax.persistence.Version;
+import javax.persistence.*;
 import org.openbaton.catalogue.util.IdGenerator;
 
 /** Created by lto on 22/07/15. */
@@ -44,38 +36,7 @@ public class VNFPackage implements Serializable {
   //NFVO Version
   private String nfvo_version;
 
-  @Override
-  public String toString() {
-    return "VNFPackage{"
-        + "id='"
-        + id
-        + '\''
-        + ", version="
-        + version
-        + ", name='"
-        + name
-        + '\''
-        + ", nfvo_version='"
-        + nfvo_version
-        + '\''
-        + ", vimTypes='"
-        + vimTypes
-        + '\''
-        + ", imageLink='"
-        + imageLink
-        + '\''
-        + ", scriptsLink='"
-        + scriptsLink
-        + '\''
-        + ", image="
-        + image
-        + ", scripts="
-        + scripts
-        + ", projectId='"
-        + projectId
-        + '\''
-        + '}';
-  }
+  private String vnfPackageVersion;
 
   public List<String> getVimTypes() {
     return vimTypes;
@@ -101,6 +62,9 @@ public class VNFPackage implements Serializable {
     orphanRemoval = true
   )
   private NFVImage image;
+
+  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  private VNFPackageMetadata vnfPackageMetadata;
 
   //Set of scripts to execute
   @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -185,5 +149,54 @@ public class VNFPackage implements Serializable {
 
   public void setNfvo_version(String nfvo_version) {
     this.nfvo_version = nfvo_version;
+  }
+
+  public String getVnfPackageVersion() {
+    return vnfPackageVersion;
+  }
+
+  public void setVnfPackageVersion(String vnfPackageVersion) {
+    this.vnfPackageVersion = vnfPackageVersion;
+  }
+
+  public VNFPackageMetadata getVnfPackageMetadata() {
+    return vnfPackageMetadata;
+  }
+
+  public void setVnfPackageMetadata(VNFPackageMetadata vnfPackageMetadata) {
+    this.vnfPackageMetadata = vnfPackageMetadata;
+  }
+
+  @Override
+  public String toString() {
+    return "VNFPackage{"
+        + "id='"
+        + id
+        + '\''
+        + ", name='"
+        + name
+        + '\''
+        + ", nfvo_version='"
+        + nfvo_version
+        + '\''
+        + ", vnfPackageVersion='"
+        + vnfPackageVersion
+        + '\''
+        + ", vimTypes="
+        + vimTypes
+        + ", imageLink='"
+        + imageLink
+        + '\''
+        + ", scriptsLink='"
+        + scriptsLink
+        + '\''
+        + ", image="
+        + image
+        + ", scripts="
+        + scripts
+        + ", projectId='"
+        + projectId
+        + '\''
+        + '}';
   }
 }

@@ -25,6 +25,9 @@ import org.springframework.data.repository.CrudRepository;
 public interface VNFDRepository extends CrudRepository<VirtualNetworkFunctionDescriptor, String> {
   VirtualNetworkFunctionDescriptor findFirstById(String id);
 
+  VirtualNetworkFunctionDescriptor findByVnfPackageLocationAndProjectId(
+      String vnfPackageLocation, String projectId);
+
   List<VirtualNetworkFunctionDescriptor> findByProjectId(String id);
 
   VirtualNetworkFunctionDescriptor findFirstByProjectIdAndVendorAndNameAndVersion(

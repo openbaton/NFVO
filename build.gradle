@@ -24,7 +24,7 @@ plugins {
     id "nebula.ospackage" version "4.3.0"
     id 'com.github.sherter.google-java-format' version '0.5'
     // For the managing of the Licences
-    id "com.github.hierynomus.license" version "0.13.1"
+    id "com.github.hierynomus.license" version "0.14.0"
     // For managing the dependencies' versions
     id 'com.github.ben-manes.versions' version '0.13.0'
     //id 'org.springframework.boot' version '1.4.3.RELEASE'
@@ -89,6 +89,26 @@ apply from: 'gradle/gradle/brew.formula.creator.gradle'
 repositories {
     mavenCentral()
 }
+
+downloadLicenses {
+    ext.apacheTwo = license('Apache License, Version 2.0', 'http://opensource.org/licenses/Apache-2.0')
+    ext.bsd = license('BSD License', 'http://www.opensource.org/licenses/bsd-license.php')
+    ext.lgplTwoOne = license('LGPL 2.1','https://www.gnu.org/licenses/lgpl-2.1.html')
+    ext.gplTwo = license('GPL v2','https://www.gnu.org/licenses/old-licenses/gpl-2.0.html')
+    ext.mit = license('MIT','https://opensource.org/licenses/MIT')
+
+    includeProjectDependencies = true
+
+    aliases = [
+            (apacheTwo) : ['The Apache Software License, Version 2.0', 'Apache 2', 'Apache License Version 2.0','Apache 2.0','Apache License, version 2.0', 'Apache License, Version 2.0', 'Apache License 2.0', license('Apache License', 'http://www.apache.org/licenses/LICENSE-2.0')],
+            (bsd) : ['BSD', license('New BSD License', 'http://www.opensource.org/licenses/bsd-license.php')],
+            (lgplTwoOne) : ['GNU Lesser General Public License 2.1', 'LGPL 2.1','GNU Lesser General Public License'],
+            (gplTwo) : ['The GNU General Public License, Version 2', 'GPL v2'],
+            (mit) : ['MIT', 'MIT License']
+    ]
+
+}
+
 
 dependencies {
     compile project(':main')

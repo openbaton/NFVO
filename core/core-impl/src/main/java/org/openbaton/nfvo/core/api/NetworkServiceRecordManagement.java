@@ -19,13 +19,7 @@ package org.openbaton.nfvo.core.api;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -33,44 +27,16 @@ import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.Ip;
-import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
-import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.openbaton.catalogue.mano.descriptor.VNFComponent;
-import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
-import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
-import org.openbaton.catalogue.mano.record.Status;
-import org.openbaton.catalogue.mano.record.VNFCInstance;
-import org.openbaton.catalogue.mano.record.VNFRecordDependency;
-import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.Action;
-import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
-import org.openbaton.catalogue.nfvo.ConfigurationParameter;
-import org.openbaton.catalogue.nfvo.HistoryLifecycleEvent;
-import org.openbaton.catalogue.nfvo.ImageStatus;
-import org.openbaton.catalogue.nfvo.NFVImage;
-import org.openbaton.catalogue.nfvo.Network;
-import org.openbaton.catalogue.nfvo.Quota;
-import org.openbaton.catalogue.nfvo.Subnet;
-import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
-import org.openbaton.catalogue.nfvo.VNFPackage;
-import org.openbaton.catalogue.nfvo.VimInstance;
-import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.catalogue.mano.descriptor.*;
+import org.openbaton.catalogue.mano.record.*;
+import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmHealVNFRequestMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmStartStopMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrHealedMessage;
 import org.openbaton.catalogue.security.Key;
-import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.exceptions.BadFormatException;
-import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.MissingParameterException;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimException;
-import org.openbaton.exceptions.WrongStatusException;
+import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
 import org.openbaton.nfvo.core.interfaces.DependencyManagement;
 import org.openbaton.nfvo.core.interfaces.EventDispatcher;
@@ -79,17 +45,7 @@ import org.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.openbaton.nfvo.core.utils.NSDUtils;
 import org.openbaton.nfvo.core.utils.NSRUtils;
-import org.openbaton.nfvo.repositories.KeyRepository;
-import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
-import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
-import org.openbaton.nfvo.repositories.VNFCRepository;
-import org.openbaton.nfvo.repositories.VNFDRepository;
-import org.openbaton.nfvo.repositories.VNFRRepository;
-import org.openbaton.nfvo.repositories.VNFRecordDependencyRepository;
-import org.openbaton.nfvo.repositories.VduRepository;
-import org.openbaton.nfvo.repositories.VimRepository;
-import org.openbaton.nfvo.repositories.VnfPackageRepository;
-import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
+import org.openbaton.nfvo.repositories.*;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.openbaton.vnfm.interfaces.state.VnfStateHandler;
@@ -1331,11 +1287,96 @@ public class NetworkServiceRecordManagement
     }
 
     checkConfigParameter(networkServiceDescriptor, body);
-
+    fillDeploymentTimeIPs(networkServiceDescriptor, body, vduVimInstances);
+    checkSshInfo(networkServiceDescriptor, body);
     vnfmManager.deploy(
         networkServiceDescriptor, networkServiceRecord, body, vduVimInstances, monitoringIp);
     log.debug("Returning NSR " + networkServiceRecord.getName());
     return networkServiceRecord;
+  }
+
+  private void checkSshInfo(NetworkServiceDescriptor nsd, DeployNSRBody body)
+      throws NotFoundException {
+    for (VirtualNetworkFunctionDescriptor vnfd : nsd.getVnfd()) {
+      if (body.getConfigurations().get(vnfd.getName()) == null) continue;
+      boolean isSshUsernameProvided = false;
+      boolean isSshPasswordProvided = false;
+      for (ConfigurationParameter passedConfigurationParameter :
+          body.getConfigurations().get(vnfd.getName()).getConfigurationParameters()) {
+        if (passedConfigurationParameter.getConfKey().equalsIgnoreCase("ssh_username")
+            && passedConfigurationParameter.getValue() != null
+            && !passedConfigurationParameter.getValue().isEmpty()) {
+          isSshUsernameProvided = true;
+        }
+        if (passedConfigurationParameter.getConfKey().equals("ssh_password")
+            && passedConfigurationParameter.getValue() != null
+            && !passedConfigurationParameter.getValue().isEmpty()) {
+          isSshPasswordProvided = true;
+        }
+      }
+      // Throw an exception if only one of them is provided.
+      // - username without password is not allowed
+      // - password without username is not allowed
+      // - username and password is allowed
+      // - no username and no password is allowed because this configuration can be done in the configuration file of
+      //    the Fixed-host VNFM.
+      if (isSshPasswordProvided != isSshUsernameProvided)
+        throw new NotFoundException(
+            "Provide both ssh_username and ssh_password for the vnfd: " + vnfd.getName());
+    }
+  }
+
+  private void fillDeploymentTimeIPs(
+      NetworkServiceDescriptor networkServiceDescriptor,
+      DeployNSRBody body,
+      Map<String, List<String>> vduVimInstances)
+      throws NotFoundException {
+    for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
+        networkServiceDescriptor.getVnfd()) {
+
+      if (!virtualNetworkFunctionDescriptor.getEndpoint().equals("fixed-host")) continue;
+
+      // Here we assume the VNFD contains only one VDU and one VNF component.
+      VirtualDeploymentUnit vdu = virtualNetworkFunctionDescriptor.getVdu().iterator().next();
+      VNFComponent vnfComponent = vdu.getVnfc().iterator().next();
+
+      boolean isFixedHostVimUsed = false;
+      for (VimInstance vimInstance :
+          vimInstanceRepository.findByProjectId(virtualNetworkFunctionDescriptor.getProjectId())) {
+        if (vduVimInstances.get(vdu.getId()).contains(vimInstance.getName())
+            && vimInstance.getType().equals("fixed-host")) isFixedHostVimUsed = true;
+      }
+
+      for (ConfigurationParameter passedConfigurationParameter :
+          body.getConfigurations()
+              .get(virtualNetworkFunctionDescriptor.getName())
+              .getConfigurationParameters()) {
+        if (passedConfigurationParameter.getConfKey().startsWith("ssh_")
+            && passedConfigurationParameter.getConfKey().endsWith("_ip")) {
+          if (passedConfigurationParameter.getValue().equals("random") && isFixedHostVimUsed)
+            throw new NotFoundException(
+                "Specify the parameter "
+                    + passedConfigurationParameter.getConfKey()
+                    + " of the vnfd "
+                    + virtualNetworkFunctionDescriptor.getName()
+                    + " with a valid IP");
+          for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point())
+            if (passedConfigurationParameter
+                .getConfKey()
+                .contains(vnfdConnectionPoint.getVirtual_link_reference())) {
+              log.debug(
+                  "VNF: "
+                      + virtualNetworkFunctionDescriptor.getName()
+                      + ", setting ip: "
+                      + passedConfigurationParameter.getValue()
+                      + " to cp: "
+                      + vnfdConnectionPoint.getVirtual_link_reference());
+              vnfdConnectionPoint.setFloatingIp(passedConfigurationParameter.getValue());
+              break;
+            }
+        }
+      }
+    }
   }
 
   private void checkConfigParameter(

@@ -169,4 +169,10 @@ public interface NetworkServiceDescriptorManagement {
   void deleteSecurty(String id, String idS, String projectId);
 
   Iterable<NetworkServiceDescriptor> queryByProjectId(String projectId);
+
+  NetworkServiceDescriptor onboardFromPackageRepository(String downloadlink, String projectId)
+      throws IOException, BadFormatException, CyclicDependenciesException,
+          NetworkServiceIntegrityException, EntityInUseException, NotFoundException,
+          AlreadyExistingException, IncompatibleVNFPackage, BadRequestException, VimException,
+          PluginException, InterruptedException, EntityUnreachableException;
 }
