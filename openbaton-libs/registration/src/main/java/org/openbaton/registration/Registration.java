@@ -145,7 +145,8 @@ public class Registration {
     channel.queueDeclarePassive("nfvo.manager.handling");
     channel.basicQos(1);
 
-    String replyQueueName = "amq.rabbitmq.reply-to";
+    //    String replyQueueName = "amq.rabbitmq.reply-to";
+    String replyQueueName = channel.queueDeclare().getQueue();
     final String corrId = UUID.randomUUID().toString();
 
     AMQP.BasicProperties props =
