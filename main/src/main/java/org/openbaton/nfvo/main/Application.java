@@ -17,9 +17,11 @@
 
 package org.openbaton.nfvo.main;
 
+import org.openbaton.nfvo.security.interfaces.ComponentManager;
 import org.openbaton.plugin.mgmt.PluginStartup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.orm.jpa.EntityScan;
@@ -39,6 +41,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class Application implements ApplicationListener<ContextClosedEvent> {
 
   private static Logger log = LoggerFactory.getLogger(Application.class);
+  @Autowired private ComponentManager componentManager;
 
   public static void main(String[] args) {
 
@@ -50,5 +53,6 @@ public class Application implements ApplicationListener<ContextClosedEvent> {
   public void onApplicationEvent(ContextClosedEvent event) {
     log.info("Shutting down...");
     PluginStartup.destroy();
+    componentManager.removeTokens();
   }
 }

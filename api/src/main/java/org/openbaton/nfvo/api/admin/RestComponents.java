@@ -16,16 +16,9 @@
 
 package org.openbaton.nfvo.api.admin;
 
-import com.google.gson.JsonObject;
 import io.swagger.annotations.ApiOperation;
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.validation.Valid;
+import com.google.gson.JsonObject;
+
 import org.openbaton.catalogue.nfvo.ServiceMetadata;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.NotFoundException;
@@ -42,6 +35,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/components")
@@ -74,7 +77,7 @@ public class RestComponents {
     produces = MediaType.APPLICATION_OCTET_STREAM_VALUE
   )
   @ResponseStatus(HttpStatus.CREATED)
-  public byte[] createService(
+  public String createService(
       @RequestHeader(value = "project-id") String projectId,
       @RequestBody @Valid JsonObject serviceCreateBody)
       throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, BadRequestException {
@@ -112,11 +115,11 @@ public class RestComponents {
   @RequestMapping(
     value = "/services/register",
     method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE,
+    consumes = MediaType.TEXT_PLAIN_VALUE,
     produces = MediaType.TEXT_PLAIN_VALUE
   )
   @ResponseStatus(HttpStatus.CREATED)
-  public String registerService(@RequestBody byte[] serviceRegisterBody)
+  public String registerService(@RequestBody String serviceRegisterBody)
       throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NotFoundException,
           InvalidKeyException, BadPaddingException, NoSuchPaddingException,
           IllegalBlockSizeException {

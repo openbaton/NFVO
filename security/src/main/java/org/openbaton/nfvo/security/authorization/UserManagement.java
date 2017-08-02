@@ -17,9 +17,6 @@
 
 package org.openbaton.nfvo.security.authorization;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.Pattern;
 import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
 import org.openbaton.catalogue.security.User;
@@ -42,6 +39,10 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 /** Created by lto on 25/02/16. */
 @Service
@@ -154,6 +155,7 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
   public User queryByName(String username) throws NotFoundException {
     log.trace("Get user: " + username);
     User user = userRepository.findFirstByUsername(username);
+
     if (user == null) {
       throw new NotFoundException("Not found user " + username);
     }

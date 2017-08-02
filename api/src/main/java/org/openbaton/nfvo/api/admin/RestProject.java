@@ -17,10 +17,8 @@
 package org.openbaton.nfvo.api.admin;
 
 import io.swagger.annotations.ApiOperation;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import javax.validation.Valid;
+
+import org.openbaton.catalogue.nfvo.ServiceMetadata;
 import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
 import org.openbaton.catalogue.security.User;
@@ -28,6 +26,7 @@ import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.EntityInUseException;
 import org.openbaton.exceptions.NotAllowedException;
 import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.nfvo.repositories.ServiceRepository;
 import org.openbaton.nfvo.security.interfaces.ProjectManagement;
 import org.openbaton.nfvo.security.interfaces.UserManagement;
 import org.slf4j.Logger;
@@ -45,7 +44,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Created by lto on 25/05/16. */
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.validation.Valid;
+
+/**
+ * Created by lto on 25/05/16.
+ */
 @RestController
 @RequestMapping("/api/v1/projects")
 public class RestProject {
@@ -53,6 +60,7 @@ public class RestProject {
 
   @Autowired private ProjectManagement projectManagement;
   @Autowired private UserManagement userManagement;
+  @Autowired private ServiceRepository serviceRepository;
 
   /**
    * Adds a new Project to the Projects repository
@@ -60,18 +68,12 @@ public class RestProject {
    * @param project
    * @return project
    */
-  @ApiOperation(
-    value = "Adding a Project",
-    notes = "Project data has to be passed as JSON in the Request Body."
-  )
-  @RequestMapping(
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+  @ApiOperation(value = "Adding a Project", notes = "Project data has to be passed as JSON in the Request Body.")
+  @RequestMapping(method = RequestMethod.POST,
+                  consumes = MediaType.APPLICATION_JSON_VALUE,
+                  produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
-  public Project create(@RequestBody @Valid Project project)
-      throws NotAllowedException, NotFoundException {
+  public Project create(@RequestBody @Valid Project project) throws NotAllowedException, NotFoundException {
     log.info("Adding Project: " + project.getName());
     if (isAdmin()) {
       return projectManagement.add(project);
@@ -85,14 +87,14 @@ public class RestProject {
    *
    * @param id : the id of project to be removed
    */
-  @ApiOperation(
-    value = "Remove a Project",
-    notes = "Specify the id of the project that will be deleted in the URL"
-  )
+  @ApiOperation(value = "Remove a Project", notes = "Specify the id of the project that will be deleted in the URL")
   @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void delete(@PathVariable("id") String id)
-      throws NotAllowedException, NotFoundException, EntityInUseException, BadRequestException {
+  public void delete(@PathVariable("id") String id) throws
+                                                    NotAllowedException,
+                                                    NotFoundException,
+                                                    EntityInUseException,
+                                                    BadRequestException {
     log.info("Removing Project with id " + id);
     if (isAdmin()) {
       projectManagement.delete(projectManagement.query(id));
@@ -101,20 +103,19 @@ public class RestProject {
     }
   }
 
-  @ApiOperation(
-    value = "Removing multiple Projects",
-    notes = "In the Request Body pass a list of project ids that have to be deleted"
-  )
-  @RequestMapping(
-    value = "/multipledelete",
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE
-  )
+  @ApiOperation(value = "Removing multiple Projects",
+                notes = "In the Request Body pass a list of project ids that have to be deleted")
+  @RequestMapping(value = "/multipledelete", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void multipleDelete(@RequestBody @Valid List<String> ids)
-      throws NotAllowedException, NotFoundException, EntityInUseException, BadRequestException {
+  public void multipleDelete(@RequestBody @Valid List<String> ids) throws
+                                                                   NotAllowedException,
+                                                                   NotFoundException,
+                                                                   EntityInUseException,
+                                                                   BadRequestException {
     if (isAdmin()) {
-      for (String id : ids) projectManagement.delete(projectManagement.query(id));
+      for (String id : ids) {
+        projectManagement.delete(projectManagement.query(id));
+      }
     } else {
       throw new NotAllowedException("Forbidden to delete projects " + ids);
     }
@@ -127,13 +128,18 @@ public class RestProject {
    */
   @ApiOperation(value = "Retrieve all Projects", notes = "Returns all the created projects")
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public @ResponseBody Iterable<Project> findAll() throws NotFoundException, NotAllowedException {
+  public @ResponseBody
+  Iterable<Project> findAll() throws NotFoundException, NotAllowedException {
     log.trace("Finding all Projects");
     Set<Project> projects = new HashSet<>();
     if (isAdmin()) {
-      for (Project project : projectManagement.query()) projects.add(project);
+      for (Project project : projectManagement.query()) {
+        projects.add(project);
+      }
     } else {
-      for (Project project : projectManagement.query(getCurrentUser())) projects.add(project);
+      for (Project project : projectManagement.query(getCurrentUser())) {
+        projects.add(project);
+      }
     }
     return projects;
   }
@@ -146,11 +152,12 @@ public class RestProject {
    */
   @ApiOperation(value = "Retrieve a Project", notes = "Pass the id of the project in the URL")
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
-  public Project findById(@PathVariable("id") String id)
-      throws NotFoundException, NotAllowedException {
+  public Project findById(@PathVariable("id") String id) throws NotFoundException, NotAllowedException {
     log.trace("Finding Project with id " + id);
     Project project = projectManagement.query(id);
-    if (project == null) throw new NotFoundException("Not found project " + id);
+    if (project == null) {
+      throw new NotFoundException("Not found project " + id);
+    }
     log.trace("Found Project: " + project);
     if (isAdmin()) {
       return project;
@@ -170,19 +177,13 @@ public class RestProject {
    * @param new_project : The Project to be updated
    * @return Project The Project updated
    */
-  @ApiOperation(
-    value = "Update a Project",
-    notes = "The Request Body holds the Project as JSON that will be updated."
-  )
-  @RequestMapping(
-    value = "{id}",
-    method = RequestMethod.PUT,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+  @ApiOperation(value = "Update a Project", notes = "The Request Body holds the Project as JSON that will be updated.")
+  @RequestMapping(value = "{id}",
+                  method = RequestMethod.PUT,
+                  consumes = MediaType.APPLICATION_JSON_VALUE,
+                  produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.ACCEPTED)
-  public Project update(@RequestBody @Valid Project new_project)
-      throws NotFoundException, NotAllowedException {
+  public Project update(@RequestBody @Valid Project new_project) throws NotFoundException, NotAllowedException {
     if (isAdmin()) {
       return projectManagement.update(new_project);
     } else {
@@ -190,21 +191,47 @@ public class RestProject {
     }
   }
 
+  private ServiceMetadata getCurrentService() throws NotFoundException {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication == null) {
+      throw new NotFoundException("authentication invalid");
+    }
+    String currentServiceName = authentication.getName();
+    ServiceMetadata serviceMetadata = serviceRepository.findByName(currentServiceName);
+    if (serviceMetadata != null) {
+      return serviceMetadata;
+    } else {
+      throw new NotFoundException("Service with name " + currentServiceName + " not found");
+    }
+  }
+
+
+
   private User getCurrentUser() throws NotFoundException {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication == null) throw new NotFoundException("authentication invalid");
+    if (authentication == null) {
+      throw new NotFoundException("authentication invalid");
+    }
     String currentUserName = authentication.getName();
     return userManagement.queryByName(currentUserName);
   }
 
   public boolean isAdmin() throws NotAllowedException, NotFoundException {
-    User currentUser = getCurrentUser();
-    log.trace("Check user if admin: " + currentUser.getUsername());
-    for (Role role : currentUser.getRoles()) {
-      if (role.getRole().ordinal() == Role.RoleEnum.ADMIN.ordinal()) {
+    try {
+      getCurrentService();
+    } catch (NotFoundException e) {
+      User currentUser = getCurrentUser();
+
+      if (serviceRepository.findByName(currentUser.getUsername()) != null) {
         return true;
       }
+      log.trace("Check user if admin: " + currentUser.getUsername());
+      for (Role role : currentUser.getRoles()) {
+        if (role.getRole().ordinal() == Role.RoleEnum.ADMIN.ordinal()) {
+          return true;
+        }
+      }
     }
-    return false;
+    return true;
   }
 }

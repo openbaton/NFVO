@@ -16,8 +16,6 @@
 
 package org.openbaton.nfvo.api.interceptors;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.openbaton.catalogue.nfvo.ServiceMetadata;
 import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
@@ -35,6 +33,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /** Created by lto on 25/05/16. */
 @Service
@@ -99,7 +100,7 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
     try {
       user = userManagement.queryByName(currentUserName);
     } catch (NotFoundException e) {
-      log.warn("User not found for name: " + currentUserName + " maybe a service?");
+      log.trace("User not found for name: " + currentUserName + " maybe a service?");
       ServiceMetadata serviceMetadata = serviceRepository.findByName(currentUserName);
       if (serviceMetadata != null) {
         log.debug(currentUserName + " is a service");

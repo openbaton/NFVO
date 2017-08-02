@@ -17,9 +17,6 @@
 
 package org.openbaton.nfvo.core.api;
 
-import java.util.Arrays;
-import java.util.Date;
-import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.security.HistoryEntity;
 import org.openbaton.catalogue.security.User;
 import org.openbaton.nfvo.repositories.HistoryEntityRepository;
@@ -30,6 +27,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.Date;
+
+import javax.annotation.PostConstruct;
 
 /** Created by lto on 17/10/16. */
 @Service
@@ -70,7 +72,7 @@ public class HistoryManagement implements org.openbaton.nfvo.core.interfaces.His
       try {
         user = userManagement.getCurrentUser();
       } catch (org.openbaton.exceptions.NotFoundException ex) {
-        log.warn("Not storing requests from anonymousUser");
+        //log.warn("Not storing requests from anonymousUser");
         return;
       }
 
