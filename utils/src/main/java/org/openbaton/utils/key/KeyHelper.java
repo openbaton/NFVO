@@ -40,7 +40,7 @@ public class KeyHelper {
 
   public static Key genKey() throws NoSuchAlgorithmException, IOException {
     KeyGenerator generator = KeyGenerator.getInstance(AES_ALGORITHM);
-    generator.init(256);
+    generator.init(128);
     return generator.generateKey();
   }
 
