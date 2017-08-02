@@ -1,9 +1,8 @@
 package org.openbaton.catalogue.nfvo;
 
-import org.openbaton.catalogue.util.BaseEntity;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by lto on 04/04/2017. */
 @Entity

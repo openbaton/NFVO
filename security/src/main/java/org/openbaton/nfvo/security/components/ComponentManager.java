@@ -1,8 +1,18 @@
 package org.openbaton.nfvo.security.components;
 
+import static org.openbaton.utils.rabbit.RabbitManager.createRabbitMqUser;
+import static org.openbaton.utils.rabbit.RabbitManager.removeRabbitMqUser;
+import static org.openbaton.utils.rabbit.RabbitManager.setRabbitMqUserPermissions;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Date;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import org.openbaton.catalogue.nfvo.ManagerCredentials;
 import org.openbaton.catalogue.nfvo.ServiceMetadata;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
@@ -20,19 +30,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Date;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-
-import static org.openbaton.utils.rabbit.RabbitManager.createRabbitMqUser;
-import static org.openbaton.utils.rabbit.RabbitManager.removeRabbitMqUser;
-import static org.openbaton.utils.rabbit.RabbitManager.setRabbitMqUserPermissions;
 
 //import java.util.Base64;
 
@@ -86,19 +83,15 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
    * @throws NoSuchPaddingException
    */
   @Override
-  public String registerService(String body) throws
-                                             IllegalBlockSizeException,
-                                             InvalidKeyException,
-                                             BadPaddingException,
-                                             NoSuchAlgorithmException,
-                                             NoSuchPaddingException, NotFoundException {
+  public String registerService(String body)
+      throws IllegalBlockSizeException, InvalidKeyException, BadPaddingException,
+          NoSuchAlgorithmException, NoSuchPaddingException, NotFoundException {
 
     ServiceMetadata service = null;
     String unencryptedBody = null;
     for (ServiceMetadata serviceMetadata : serviceRepository.findAll()) {
       try {
-        unencryptedBody =
-            KeyHelper.decryptNew(body, serviceMetadata.getKeyValue());
+        unencryptedBody = KeyHelper.decryptNew(body, serviceMetadata.getKeyValue());
       } catch (NoSuchPaddingException e) {
         e.printStackTrace();
         continue;
@@ -149,7 +142,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
         if (service.getTokenExpirationDate() > (new Date()).getTime()) return service.getToken();
       }
       OAuth2AccessToken token = serverConfig.getNewServiceToken(serviceName);
-      service.setToken(KeyHelper.encryptNew(token.getValue(),service.getKeyValue()));
+      service.setToken(KeyHelper.encryptNew(token.getValue(), service.getKeyValue()));
       service.setTokenExpirationDate(token.getExpiration().getTime());
       serviceRepository.save(service);
       return service.getToken();
@@ -190,7 +183,8 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
         String encryptedServiceToken = serviceMetadata.getToken();
         String keyData = serviceMetadata.getKeyValue();
         try {
-          if (KeyHelper.decryptNew(encryptedServiceToken, keyData).equals(tokenToCheck)) return true;
+          if (KeyHelper.decryptNew(encryptedServiceToken, keyData).equals(tokenToCheck))
+            return true;
         } catch (Exception e) {
           e.printStackTrace();
         }
@@ -209,8 +203,8 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
     //TODO remove also associated toker
     ServiceMetadata serviceMetadataToRemove = serviceRepository.findById(id);
     log.debug("Found service: " + serviceMetadataToRemove);
-  //  if (serviceMetadataToRemove.getToken() != null)
-//      serverConfig.tokenServices().revokeToken(serviceMetadataToRemove.getToken());
+    //  if (serviceMetadataToRemove.getToken() != null)
+    //      serverConfig.tokenServices().revokeToken(serviceMetadataToRemove.getToken());
     serviceRepository.delete(id);
   }
 
@@ -344,6 +338,5 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
       serviceMetadata.setToken(null);
       serviceRepository.save(serviceMetadata);
     }
-
   }
 }

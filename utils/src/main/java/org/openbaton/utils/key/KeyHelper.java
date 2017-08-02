@@ -1,13 +1,6 @@
 package org.openbaton.utils.key;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
-
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.text.RandomStringGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.commons.codec.binary.Base64.encodeBase64;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -25,18 +18,20 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Random;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.text.RandomStringGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 
-import static org.apache.commons.codec.binary.Base64.encodeBase64;
-
-/**
- * Created by lto on 04/04/2017.
- */
+/** Created by lto on 04/04/2017. */
 public class KeyHelper {
 
   private static final Logger log = LoggerFactory.getLogger(KeyHelper.class);
@@ -48,7 +43,8 @@ public class KeyHelper {
     // Using Apache Commons RNG for randomness
     Random rng = new Random();
     // Generates a 20 code point string, using only the letters a-z
-    RandomStringGenerator generator = new RandomStringGenerator.Builder().withinRange('A', 'z').build();
+    RandomStringGenerator generator =
+        new RandomStringGenerator.Builder().withinRange('A', 'z').build();
     return generator.generate(16);
   }
 
@@ -56,12 +52,9 @@ public class KeyHelper {
     return new SecretKeySpec(keyBytes, AES_ALGORITHM);
   }
 
-  private static byte[] encrypt(byte[] bytes, Key key) throws
-                                                       BadPaddingException,
-                                                       IllegalBlockSizeException,
-                                                       InvalidKeyException,
-                                                       NoSuchPaddingException,
-                                                       NoSuchAlgorithmException {
+  private static byte[] encrypt(byte[] bytes, Key key)
+      throws BadPaddingException, IllegalBlockSizeException, InvalidKeyException,
+          NoSuchPaddingException, NoSuchAlgorithmException {
 
     Cipher cipher = Cipher.getInstance(AES_ALGORITHM);
     cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -69,22 +62,16 @@ public class KeyHelper {
     return cipher.doFinal(bytes);
   }
 
-  public static byte[] encrypt(String text, Key key) throws
-                                                     NoSuchPaddingException,
-                                                     NoSuchAlgorithmException,
-                                                     InvalidKeyException,
-                                                     BadPaddingException,
-                                                     IllegalBlockSizeException {
+  public static byte[] encrypt(String text, Key key)
+      throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException,
+          BadPaddingException, IllegalBlockSizeException {
 
     return encrypt(text.getBytes(StandardCharsets.UTF_8), key);
   }
 
-  public static String encryptNew(String valueToEnc, String keyValue) throws
-                                                                      NoSuchPaddingException,
-                                                                      NoSuchAlgorithmException,
-                                                                      InvalidKeyException,
-                                                                      BadPaddingException,
-                                                                      IllegalBlockSizeException {
+  public static String encryptNew(String valueToEnc, String keyValue)
+      throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException,
+          BadPaddingException, IllegalBlockSizeException {
     Key key = generateKey(keyValue.getBytes());
     Cipher c = Cipher.getInstance(AES_ALGORITHM);
     c.init(Cipher.ENCRYPT_MODE, key);
@@ -93,13 +80,9 @@ public class KeyHelper {
     return encryptedValue;
   }
 
-  public static String decryptNew(String encryptedValue, String keyValue) throws
-                                                                          NoSuchPaddingException,
-                                                                          NoSuchAlgorithmException,
-                                                                          InvalidKeyException,
-                                                                          IOException,
-                                                                          BadPaddingException,
-                                                                          IllegalBlockSizeException {
+  public static String decryptNew(String encryptedValue, String keyValue)
+      throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IOException,
+          BadPaddingException, IllegalBlockSizeException {
     Key key = generateKey(keyValue.getBytes());
     Cipher c = Cipher.getInstance(AES_ALGORITHM);
     c.init(Cipher.DECRYPT_MODE, key);
@@ -114,33 +97,24 @@ public class KeyHelper {
     return key;
   }
 
-  public static String decrypt(byte[] bytes, Key key) throws
-                                                      NoSuchPaddingException,
-                                                      NoSuchAlgorithmException,
-                                                      InvalidKeyException,
-                                                      BadPaddingException,
-                                                      IllegalBlockSizeException {
+  public static String decrypt(byte[] bytes, Key key)
+      throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException,
+          BadPaddingException, IllegalBlockSizeException {
     Cipher cipher = Cipher.getInstance(AES_ALGORITHM);
     cipher.init(Cipher.DECRYPT_MODE, key);
     return new String(cipher.doFinal(bytes), StandardCharsets.UTF_8);
   }
 
-  public static String decrypt(String bytes, Key key) throws
-                                                      IllegalBlockSizeException,
-                                                      InvalidKeyException,
-                                                      BadPaddingException,
-                                                      NoSuchAlgorithmException,
-                                                      NoSuchPaddingException {
+  public static String decrypt(String bytes, Key key)
+      throws IllegalBlockSizeException, InvalidKeyException, BadPaddingException,
+          NoSuchAlgorithmException, NoSuchPaddingException {
 
     return decrypt(bytes.getBytes(StandardCharsets.ISO_8859_1), key);
   }
 
-  public static String encryptToString(String text, Key key) throws
-                                                             NoSuchAlgorithmException,
-                                                             NoSuchPaddingException,
-                                                             InvalidKeyException,
-                                                             BadPaddingException,
-                                                             IllegalBlockSizeException {
+  public static String encryptToString(String text, Key key)
+      throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
+          BadPaddingException, IllegalBlockSizeException {
     return new String(encrypt(text, key), StandardCharsets.ISO_8859_1);
   }
 
@@ -197,7 +171,7 @@ public class KeyHelper {
   private String encodePublicKey(RSAPublicKey key, String keyname) throws IOException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     /* encode the "ssh-rsa" string */
-    byte[] sshrsa = new byte[]{0, 0, 0, 7, 's', 's', 'h', '-', 'r', 's', 'a'};
+    byte[] sshrsa = new byte[] {0, 0, 0, 7, 's', 's', 'h', '-', 'r', 's', 'a'};
     out.write(sshrsa);
     /* Encode the public exponent */
     BigInteger e = key.getPublicExponent();

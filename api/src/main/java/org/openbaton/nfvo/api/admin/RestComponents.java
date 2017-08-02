@@ -16,9 +16,16 @@
 
 package org.openbaton.nfvo.api.admin;
 
-import io.swagger.annotations.ApiOperation;
 import com.google.gson.JsonObject;
-
+import io.swagger.annotations.ApiOperation;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.validation.Valid;
 import org.openbaton.catalogue.nfvo.ServiceMetadata;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.NotFoundException;
@@ -35,16 +42,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/components")
