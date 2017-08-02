@@ -21,13 +21,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import io.swagger.annotations.ApiOperation;
 import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import javax.validation.Valid;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
@@ -87,7 +82,7 @@ public class RestNetworkServiceRecord {
    *     core
    */
   @ApiOperation(
-    value = "Deploying a Network Service Record from an JSON NSD",
+    value = "Deploying a Network Service Record from a JSON NSD",
     notes =
         "The NSD is passed in the Request Body as a json and the other needed parameters are passed as json in the bodyJson object"
   )
@@ -105,7 +100,14 @@ public class RestNetworkServiceRecord {
           BadFormatException, VimDriverException, QuotaExceededException, PluginException,
           MissingParameterException, BadRequestException {
 
-    JsonObject jsonObject = gson.fromJson(bodyJson, JsonObject.class);
+    JsonObject jsonObject;
+    try {
+      jsonObject = gson.fromJson(bodyJson, JsonObject.class);
+    } catch (Exception e) {
+      log.error("Exception while parsing Json body.");
+      e.printStackTrace();
+      throw new BadRequestException("The request's Json body could not be parsed.");
+    }
     String monitoringIp = null;
     if (jsonObject.has("monitoringIp")) {
       monitoringIp = jsonObject.get("monitoringIp").getAsString();
@@ -162,26 +164,31 @@ public class RestNetworkServiceRecord {
           BadFormatException, VimDriverException, QuotaExceededException, PluginException,
           MissingParameterException, BadRequestException {
 
-    log.debug("Json Body is" + body);
     String monitoringIp = null;
-    if (body.has("monitoringIp")) {
-      monitoringIp = body.get("monitoringIp").getAsString();
-    }
     List keys = null;
     Map vduVimInstances = null;
     Map<String, Configuration> configurations = null;
 
-    log.debug("Json Body is " + body);
+    log.debug("Json Body is" + body);
     if (body != null) {
-      if (body.has("keys")) {
-        keys = gson.fromJson(body.getAsJsonArray("keys"), List.class);
-      }
-      if (body.has("vduVimInstances")) {
-        vduVimInstances = gson.fromJson(body.getAsJsonObject("vduVimInstances"), Map.class);
-      }
-      if (body.has("configurations")) {
-        Type mapType = new TypeToken<Map<String, Configuration>>() {}.getType();
-        configurations = gson.fromJson(body.get("configurations"), mapType);
+      try {
+        if (body.has("monitoringIp")) {
+          monitoringIp = body.get("monitoringIp").getAsString();
+        }
+        if (body.has("keys")) {
+          keys = gson.fromJson(body.getAsJsonArray("keys"), List.class);
+        }
+        if (body.has("vduVimInstances")) {
+          vduVimInstances = gson.fromJson(body.getAsJsonObject("vduVimInstances"), Map.class);
+        }
+        if (body.has("configurations")) {
+          Type mapType = new TypeToken<Map<String, Configuration>>() {}.getType();
+          configurations = gson.fromJson(body.get("configurations"), mapType);
+        }
+      } catch (Exception e) {
+        log.error("The passed request body is not correct.");
+        e.printStackTrace();
+        throw new BadRequestException("The passed request body is not correct.");
       }
     }
     return networkServiceRecordManagement.onboard(
@@ -442,12 +449,15 @@ public class RestNetworkServiceRecord {
       @PathVariable("idVnf") String idVnf,
       @PathVariable("idVdu") String idVdu,
       @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException, BadFormatException, WrongStatusException {
-    VNFComponent component =
-        gson.fromJson(body.getAsJsonObject("vnfComponent"), VNFComponent.class);
-    List<String> vimInstanceNames =
-        gson.fromJson(body.getAsJsonObject("vimInstanceNames"), List.class);
-    log.trace("Received: " + component);
+      throws NotFoundException, BadFormatException, WrongStatusException, BadRequestException {
+    if (!body.has("vnfComponent"))
+      throw new BadRequestException(
+          "The passed request body is not correct. It should include a field named: vnfComponent");
+
+    VNFComponent component = retrieveVNFComponentFromRequest(body);
+    List<String> vimInstanceNames = retrieveVimInstanceNamesFromRequest(body);
+
+    log.trace("Received: " + component + "\nand\n" + vimInstanceNames);
     networkServiceRecordManagement.addVNFCInstance(
         id, idVnf, idVdu, component, "", projectId, vimInstanceNames);
   }
@@ -467,14 +477,60 @@ public class RestNetworkServiceRecord {
       @PathVariable("id") String id,
       @PathVariable("idVnf") String idVnf,
       @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException, BadFormatException, WrongStatusException {
-    VNFComponent component =
-        gson.fromJson(body.getAsJsonObject("vnfComponent"), VNFComponent.class);
-    List<String> vimInstanceNames =
-        gson.fromJson(body.getAsJsonArray("vimInstanceNames"), List.class);
-    log.trace("Received: " + component);
+      throws NotFoundException, BadFormatException, WrongStatusException, BadRequestException {
+    if (!body.has("vnfComponent"))
+      throw new BadRequestException(
+          "The passed request body is not correct. It should include a field named: vnfComponent");
+    VNFComponent component = retrieveVNFComponentFromRequest(body);
+    List<String> vimInstanceNames = retrieveVimInstanceNamesFromRequest(body);
+
+    log.trace("Received: " + component + "\nand\n" + vimInstanceNames);
     networkServiceRecordManagement.addVNFCInstance(
         id, idVnf, component, projectId, vimInstanceNames);
+  }
+
+  /**
+   * Helper method for extracting the VNFComponent object from API requests that add a VNFCInstance
+   * to a VNFR.
+   *
+   * @param body the request's Json body. It looks like this: {"vnfComponent":{...},
+   *     "vimInstanceNames":{...}}
+   * @return the extracted VNFComponent
+   */
+  private VNFComponent retrieveVNFComponentFromRequest(JsonObject body) throws BadRequestException {
+    VNFComponent component;
+    try {
+      component = gson.fromJson(body.getAsJsonObject("vnfComponent"), VNFComponent.class);
+    } catch (Exception e) {
+      log.error("Could not convert the request body's vnfComponent field into a VNFC");
+      e.printStackTrace();
+      throw new BadRequestException(
+          "The vnfComponent field has to be a Json representation of a VNFC");
+    }
+    return component;
+  }
+
+  /**
+   * Helper method for extracting the list of VimInstance names from API requests that add a
+   * VNFCInstance to a VNFR.
+   *
+   * @param body the request's Json body. It looks like this: {"vnfComponent":{...},
+   *     "vimInstanceNames":{...}}
+   * @return the extracted list of VimInstance names
+   */
+  private List<String> retrieveVimInstanceNamesFromRequest(JsonObject body)
+      throws BadRequestException {
+    List<String> vimInstanceNames = new LinkedList<>();
+    if (body.has("vimInstanceNames")) {
+      try {
+        vimInstanceNames = gson.fromJson(body.getAsJsonArray("vimInstanceNames"), List.class);
+      } catch (Exception e) {
+        log.error("Could not convert the request body's vimInstanceNames field into a list");
+        e.printStackTrace();
+        throw new BadRequestException("The vimInstanceNames field has to be a Json list");
+      }
+    }
+    return vimInstanceNames;
   }
 
   @ApiOperation(
@@ -534,8 +590,12 @@ public class RestNetworkServiceRecord {
     VNFComponent component =
         gson.fromJson(body.getAsJsonObject("vnfComponent"), VNFComponent.class);
     List<String> vimInstanceNames =
-        gson.fromJson(body.getAsJsonObject("vimInstanceNames"), List.class);
-    log.debug("PostStandByVNFCInstance received the component: " + component);
+        gson.fromJson(body.getAsJsonArray("vimInstanceNames"), List.class);
+    log.debug(
+        "PostStandByVNFCInstance received the component: "
+            + component
+            + "\nand\n"
+            + vimInstanceNames);
     networkServiceRecordManagement.addVNFCInstance(
         id, idVnf, idVdu, component, "standby", projectId, vimInstanceNames);
   }
@@ -653,9 +713,9 @@ public class RestNetworkServiceRecord {
       @PathVariable("id") String id,
       @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException {
-    NetworkServiceRecord nsd = networkServiceRecordManagement.query(id, projectId);
-    nsd.getVnfr().add(vnfRecord);
-    networkServiceRecordManagement.update(nsd, id, projectId);
+    NetworkServiceRecord nsr = networkServiceRecordManagement.query(id, projectId);
+    nsr.getVnfr().add(vnfRecord);
+    networkServiceRecordManagement.update(nsr, id, projectId);
     return vnfRecord;
   }
 
@@ -676,17 +736,17 @@ public class RestNetworkServiceRecord {
       @PathVariable("idVnf") String idVnf,
       @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException {
-    NetworkServiceRecord nsd = networkServiceRecordManagement.query(idNsr, projectId);
-    nsd.getVnfr().add(vnfRecord);
-    networkServiceRecordManagement.update(nsd, idNsr, projectId);
+    NetworkServiceRecord nsr = networkServiceRecordManagement.query(idNsr, projectId);
+    nsr.getVnfr().add(vnfRecord);
+    networkServiceRecordManagement.update(nsr, idNsr, projectId);
     return vnfRecord;
   }
 
   /**
-   * Returns the list of VNFDependency into a NSD with id
+   * Returns a set of VNFDependency objects belonging to a specific NSR.
    *
-   * @param id : The id of NSD
-   * @return List<VNFDependency>: The List of VNFDependency into NSD
+   * @param id : the ID of NSR
+   * @return the list of VNFDependency objects of the NSR
    */
   @ApiOperation(value = "Retrieve the VNF Dependencies of a NSR", notes = "")
   @RequestMapping(
@@ -698,8 +758,8 @@ public class RestNetworkServiceRecord {
   public Set<VNFRecordDependency> getVNFDependencies(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException {
-    NetworkServiceRecord nsd = networkServiceRecordManagement.query(id, projectId);
-    return nsd.getVnf_dependency();
+    NetworkServiceRecord nsr = networkServiceRecordManagement.query(id, projectId);
+    return nsr.getVnf_dependency();
   }
 
   @ApiOperation(
@@ -802,7 +862,7 @@ public class RestNetworkServiceRecord {
   }
 
   @ApiOperation(
-    value = "Update a VNF Dependency in a NSR",
+    value = "Updates a VNF Dependency in an NSR",
     notes = "Updates a VNF Dependency based on the if of the VNF it concerns"
   )
   @RequestMapping(
@@ -818,9 +878,7 @@ public class RestNetworkServiceRecord {
       @PathVariable("id_vnfd") String id_vnfd,
       @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException {
-    NetworkServiceRecord nsr = networkServiceRecordManagement.query(id, projectId);
-    nsr.getVnf_dependency().add(vnfDependency);
-    networkServiceRecordManagement.update(nsr, id, projectId);
+    log.warn("Not yet implemented");
     return vnfDependency;
   }
 
@@ -940,7 +998,7 @@ public class RestNetworkServiceRecord {
   }
 
   @ApiOperation(
-    value = "Returns the history of the VNFRs of a NSR",
+    value = "Returns the history of the VNFRs of an NSR",
     notes = "Returns the history of the specified VNFR"
   )
   @RequestMapping(
