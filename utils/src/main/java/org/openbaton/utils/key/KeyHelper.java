@@ -1,9 +1,7 @@
 package org.openbaton.utils.key;
 
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.text.RandomStringGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.commons.codec.binary.Base64.decodeBase64;
+import static org.apache.commons.codec.binary.Base64.encodeBase64;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -22,15 +20,15 @@ import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Base64;
 import java.util.Random;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
-
-import static org.apache.commons.codec.binary.Base64.decodeBase64;
-import static org.apache.commons.codec.binary.Base64.encodeBase64;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.text.RandomStringGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Created by lto on 04/04/2017. */
 public class KeyHelper {

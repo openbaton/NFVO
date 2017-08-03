@@ -10,7 +10,11 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
-
+import java.io.IOException;
+import java.util.UUID;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeoutException;
 import org.openbaton.catalogue.nfvo.ManagerCredentials;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.slf4j.Logger;
@@ -21,12 +25,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.util.UUID;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeoutException;
 
 /** This class handles the registration of Vnfms and plugins to the Nfvo. */
 @Service
@@ -170,7 +168,8 @@ public class Registration {
               throws IOException {
             if (properties.getCorrelationId().equals(corrId)) {
               String bodyString = new String(body);
-              ManagerCredentials managerCredentials = gson.fromJson(bodyString,ManagerCredentials.class);
+              ManagerCredentials managerCredentials =
+                  gson.fromJson(bodyString, ManagerCredentials.class);
               if (managerCredentials == null)
                 throw new RuntimeException(
                     "Could not obtain credentials while registering plugin to Nfvo since the reply is no ManagerCredentials object");
@@ -223,7 +222,9 @@ public class Registration {
     connection.close();
   }
 
-  public static void main(String[] args) throws InterruptedException, TimeoutException, IOException {
-    new Registration().registerPluginToNfvo("localhost",5672,"admin","openbaton", "/","cippalippa");
+  public static void main(String[] args)
+      throws InterruptedException, TimeoutException, IOException {
+    new Registration()
+        .registerPluginToNfvo("localhost", 5672, "admin", "openbaton", "/", "cippalippa");
   }
 }
