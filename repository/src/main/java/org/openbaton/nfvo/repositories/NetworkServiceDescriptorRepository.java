@@ -26,5 +26,7 @@ public interface NetworkServiceDescriptorRepository
         NetworkServiceDescriptorRepositoryCustom {
   NetworkServiceDescriptor findFirstById(String id);
 
+  NetworkServiceDescriptor findFirstByIdAndProjectId(String id, String projectId);
+
   List<NetworkServiceDescriptor> findByProjectId(String projectId);
 }

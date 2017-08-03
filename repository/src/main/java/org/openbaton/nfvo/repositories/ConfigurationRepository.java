@@ -25,5 +25,7 @@ import org.springframework.data.repository.CrudRepository;
 public interface ConfigurationRepository extends CrudRepository<Configuration, String> {
   Configuration findFirstById(String id);
 
+  Configuration findFirstByIdAndProjectId(String id, String projectId);
+
   List<Configuration> findByProjectId(String projectId);
 }

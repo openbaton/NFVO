@@ -22,7 +22,6 @@ import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.ConfigurationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
 /** Created by lto on 13/05/15. */
@@ -44,12 +43,11 @@ public class ConfigurationManagement
   }
 
   @Override
-  public Configuration update(Configuration newConfiguration, String id, String projectId) {
-    if (configurationRepository.findFirstById(id) != null
-        && configurationRepository.findFirstById(id).getProjectId().equals(projectId))
-      return configurationRepository.save(newConfiguration);
-    throw new UnauthorizedUserException(
-        "Configuration not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+  public Configuration update(Configuration newConfiguration, String id, String projectId)
+      throws NotFoundException {
+    if (configurationRepository.findFirstByIdAndProjectId(id, projectId) == null)
+      throw new NotFoundException("No Configuration found with ID " + id);
+    return configurationRepository.save(newConfiguration);
   }
 
   @Override
@@ -64,11 +62,7 @@ public class ConfigurationManagement
 
   @Override
   public Configuration query(String id, String projectId) {
-    Configuration configuration = configurationRepository.findFirstById(id);
-    if (configuration == null) return configuration;
-    if (configuration.getProjectId().equals(projectId)) return configuration;
-    throw new UnauthorizedUserException(
-        "Configuration not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+    return configurationRepository.findFirstByIdAndProjectId(id, projectId);
   }
 
   @Override

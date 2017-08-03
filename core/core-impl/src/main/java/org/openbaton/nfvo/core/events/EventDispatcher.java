@@ -25,6 +25,7 @@ import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
 import org.openbaton.catalogue.nfvo.EventEndpoint;
 import org.openbaton.exceptions.MissingParameterException;
+import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
 import org.openbaton.nfvo.core.interfaces.EventSender;
 import org.openbaton.nfvo.repositories.EventEndpointRepository;
@@ -34,7 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
-import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
 /**
@@ -161,16 +161,11 @@ class EventDispatcher
   }
 
   @Override
-  public void unregister(String id, String projectId) {
+  public void unregister(String id, String projectId) throws NotFoundException {
     eventManagement.removeUnreachableEndpoints();
-    EventEndpoint endpoint = eventEndpointRepository.findFirstById(id);
-    if (endpoint != null) {
-      if (endpoint.getProjectId().equals(projectId)) {
-        log.info("Removing EventEndpoint with id: " + id);
-        eventEndpointRepository.delete(id);
-      } else
-        throw new UnauthorizedUserException(
-            "Event not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
-    }
+    EventEndpoint endpoint = eventEndpointRepository.findFirstByIdAndProjectId(id, projectId);
+    if (endpoint == null) throw new NotFoundException("No event found with ID " + id);
+    log.info("Removing EventEndpoint with id: " + id);
+    eventEndpointRepository.delete(id);
   }
 }

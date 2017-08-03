@@ -56,7 +56,7 @@ public interface VimManagement {
    */
   NFVImage addImage(String id, NFVImage image, String projectId)
       throws VimException, PluginException, EntityUnreachableException, IOException,
-          BadRequestException, AlreadyExistingException;
+          BadRequestException, AlreadyExistingException, NotFoundException;
 
   /**
    * Returns the NFVImage with idImage from VimInstance with idVim

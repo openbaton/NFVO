@@ -35,7 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
-import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
 /** Created by mpa on 01.10.15. */
@@ -86,7 +85,7 @@ public class VirtualNetworkFunctionManagement
   public void delete(String id, String projectId) throws EntityInUseException, NotFoundException {
 
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
-        vnfdRepository.findFirstById(id);
+        vnfdRepository.findFirstByIdAndProjectId(id, projectId);
     if (virtualNetworkFunctionDescriptor == null) {
       throw new NotFoundException(
           "Virtual Network Function Descriptor with ID " + id + " was not found");
@@ -102,9 +101,6 @@ public class VirtualNetworkFunctionManagement
         }
       }
     }
-    if (!virtualNetworkFunctionDescriptor.getProjectId().equals(projectId))
-      throw new UnauthorizedUserException(
-          "VNFD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     log.info("Removing VNFD: " + virtualNetworkFunctionDescriptor.getName());
     vnfdRepository.delete(virtualNetworkFunctionDescriptor);
     if (cascadeDelete) {
@@ -129,13 +125,7 @@ public class VirtualNetworkFunctionManagement
 
   @Override
   public VirtualNetworkFunctionDescriptor query(String id, String projectId) {
-    VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
-        vnfdRepository.findFirstById(id);
-    if (virtualNetworkFunctionDescriptor == null) return virtualNetworkFunctionDescriptor;
-    if (!virtualNetworkFunctionDescriptor.getProjectId().equals(projectId))
-      throw new UnauthorizedUserException(
-          "VNFD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
-    return virtualNetworkFunctionDescriptor;
+    return vnfdRepository.findFirstByIdAndProjectId(id, projectId);
   }
 
   @Override
@@ -145,11 +135,9 @@ public class VirtualNetworkFunctionManagement
       String projectId)
       throws NotFoundException {
     //TODO Update inner fields
-    VirtualNetworkFunctionDescriptor originalVnfd = vnfdRepository.findFirstById(id);
+    VirtualNetworkFunctionDescriptor originalVnfd =
+        vnfdRepository.findFirstByIdAndProjectId(id, projectId);
     if (originalVnfd == null) throw new NotFoundException("No VNFD found with ID " + id);
-    if (!originalVnfd.getProjectId().equals(projectId))
-      throw new UnauthorizedUserException(
-          "VNFD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
     return vnfdRepository.save(virtualNetworkFunctionDescriptor);
   }
 

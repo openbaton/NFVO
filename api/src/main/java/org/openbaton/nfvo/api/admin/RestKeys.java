@@ -156,6 +156,8 @@ public class RestKeys {
   public Key findById(
       @RequestHeader(value = "project-id") String projectId, @PathVariable("id") String id)
       throws NotFoundException {
-    return keyManagement.queryById(projectId, id);
+    Key key = keyManagement.queryById(projectId, id);
+    if (key == null) throw new NotFoundException("No key found with ID " + id);
+    return key;
   }
 }

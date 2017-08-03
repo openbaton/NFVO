@@ -93,9 +93,9 @@ public interface VNFPackageManagement {
   void enable();
 
   /** This operation allows updating the VNF Package. */
-  VNFPackage update(String id, VNFPackage pack_new, String projectId);
+  VNFPackage update(String id, VNFPackage pack_new, String projectId) throws NotFoundException;
 
-  VNFPackage query(String id, String projectId);
+  VNFPackage query(String id, String projectId) throws NotFoundException;
 
   /** This operation is used to query information on VNF Packages. */
   Iterable<VNFPackage> query();

@@ -212,7 +212,7 @@ public class RestVimInstances {
       NFVImage nfvImage,
       @RequestHeader(value = "project-id") String projectId)
       throws VimException, PluginException, EntityUnreachableException, IOException,
-          BadRequestException, AlreadyExistingException {
+          BadRequestException, AlreadyExistingException, NotFoundException {
     return vimManagement.addImage(id, nfvImage, projectId);
   }
 
@@ -234,7 +234,7 @@ public class RestVimInstances {
       @RequestBody @Valid NFVImage image,
       @RequestHeader(value = "project-id") String projectId)
       throws VimException, PluginException, EntityUnreachableException, IOException,
-          BadRequestException, AlreadyExistingException {
+          BadRequestException, AlreadyExistingException, NotFoundException {
     return vimManagement.addImage(idVim, image, projectId);
   }
 

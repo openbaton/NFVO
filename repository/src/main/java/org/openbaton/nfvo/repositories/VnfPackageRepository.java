@@ -26,5 +26,7 @@ public interface VnfPackageRepository extends CrudRepository<VNFPackage, String>
 
   VNFPackage findFirstById(String id);
 
+  VNFPackage findFirstByIdAndProjectId(String id, String projectId);
+
   List<VNFPackage> findByProjectId(String id);
 }

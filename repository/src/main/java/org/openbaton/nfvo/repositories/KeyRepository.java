@@ -26,5 +26,7 @@ public interface KeyRepository extends CrudRepository<Key, String>, KeyRepositor
 
   Key findFirstById(String id);
 
+  Key findFirstByIdAndProjectId(String id, String projectId);
+
   Key findKey(String projectId, String name);
 }

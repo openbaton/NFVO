@@ -678,25 +678,19 @@ public class VNFPackageManagement
   public void enable() {}
 
   @Override
-  public VNFPackage update(String id, VNFPackage pack_new, String projectId) {
-    VNFPackage old = vnfPackageRepository.findFirstById(id);
-    if (!old.getProjectId().equals(projectId)) {
-      throw new UnauthorizedUserException(
-          "VNFPackage not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
-    }
+  public VNFPackage update(String id, VNFPackage pack_new, String projectId)
+      throws NotFoundException {
+    VNFPackage old = vnfPackageRepository.findFirstByIdAndProjectId(id, projectId);
+    if (old == null) throw new NotFoundException("No VNFPackage found with ID " + id);
     old.setName(pack_new.getName());
     old.setImage(pack_new.getImage());
+    vnfPackageRepository.save(old);
     return old;
   }
 
   @Override
-  public VNFPackage query(String id, String projectId) {
-    VNFPackage vnfPackage = vnfPackageRepository.findFirstById(id);
-    if (!vnfPackage.getProjectId().equals(projectId)) {
-      throw new UnauthorizedUserException(
-          "VNFPackage not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
-    }
-    return vnfPackage;
+  public VNFPackage query(String id, String projectId) throws NotFoundException {
+    return vnfPackageRepository.findFirstByIdAndProjectId(id, projectId);
   }
 
   @Override

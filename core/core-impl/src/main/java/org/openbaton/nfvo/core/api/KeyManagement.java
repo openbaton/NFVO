@@ -46,7 +46,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
 /** Created by lto on 13/05/15. */
@@ -67,15 +66,7 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
 
   @Override
   public Key queryById(String projectId, String id) throws NotFoundException {
-    Key key = keyRepository.findFirstById(id);
-    if (key == null) {
-      throw new NotFoundException("Not found key with ID " + id);
-    }
-    if (!key.getProjectId().equals(projectId)) {
-      throw new UnauthorizedUserException(
-          "Forbidden to query this key. It does not belong to the project.");
-    }
-    return key;
+    return keyRepository.findFirstByIdAndProjectId(id, projectId);
   }
 
   @Override
@@ -85,13 +76,9 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
 
   @Override
   public void delete(String projectId, String id) throws NotFoundException {
-    Key keyToDelete = keyRepository.findFirstById(id);
+    Key keyToDelete = keyRepository.findFirstByIdAndProjectId(id, projectId);
     if (keyToDelete == null) {
       throw new NotFoundException("Not found key with id " + id);
-    }
-    if (!keyToDelete.getProjectId().equals(projectId)) {
-      throw new UnauthorizedUserException(
-          "Forbidden to delete this key. It does not belong to the project.");
     }
     keyRepository.delete(id);
   }
@@ -154,7 +141,7 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
     String[] decodedKeyArray = decodedKey.split(" ");
     if (decodedKeyArray.length < 2)
       throw new BadFormatException(
-          "The passed key has a wrong format. It should look like this: <keyType> <encodedData>");
+          "The passed key has a wrong format. It should look like this: KEY_TYPE ENCODED_DATA>");
     decodedKey = decodedKeyArray[1];
     return Base64.decodeBase64(decodedKey.getBytes("utf-8"));
   }

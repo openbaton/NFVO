@@ -18,6 +18,7 @@ package org.openbaton.nfvo.api.admin;
 
 import javax.validation.Valid;
 import org.openbaton.catalogue.nfvo.Configuration;
+import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.core.interfaces.ConfigurationManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,7 +115,8 @@ public class RestConfiguration {
   public Configuration update(
       @RequestBody @Valid Configuration new_configuration,
       @PathVariable("id") String id,
-      @RequestHeader(value = "project-id", required = false) String projectId) {
+      @RequestHeader(value = "project-id", required = false) String projectId)
+      throws NotFoundException {
     log.trace("updating Configuration with id " + id + " with values: " + new_configuration);
     log.debug("updating Configuration with id " + id);
     return configurationManagement.update(new_configuration, id, projectId);

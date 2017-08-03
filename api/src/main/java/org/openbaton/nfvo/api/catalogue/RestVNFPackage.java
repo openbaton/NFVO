@@ -179,6 +179,7 @@ public class RestVNFPackage {
       @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException {
     VNFPackage vnfPackage = vnfPackageManagement.query(id, projectId);
+    if (vnfPackage == null) throw new NotFoundException("No VNFPackage found with ID " + id);
     for (Script script : vnfPackage.getScripts()) {
       if (script.getId().equals(scriptId)) {
         return new String(script.getPayload());
@@ -205,6 +206,8 @@ public class RestVNFPackage {
       @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException {
     VNFPackage vnfPackage = vnfPackageManagement.query(vnfPackageId, projectId);
+    if (vnfPackage == null)
+      throw new NotFoundException("No VNFPackage found with ID " + vnfPackageId);
     for (Script script : vnfPackage.getScripts()) {
       if (script.getId().equals(scriptId)) {
         script.setPayload(scriptNew.getBytes());
@@ -228,8 +231,11 @@ public class RestVNFPackage {
   )
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
   public VNFPackage findById(
-      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
-    return vnfPackageManagement.query(id, projectId);
+      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
+    VNFPackage vnfPackage = vnfPackageManagement.query(id, projectId);
+    if (vnfPackage == null) throw new NotFoundException("No VNFPackage found with ID " + id);
+    return vnfPackage;
   }
 
   /**
@@ -253,7 +259,8 @@ public class RestVNFPackage {
   public VNFPackage update(
       @RequestBody @Valid VNFPackage vnfPackage_new,
       @PathVariable("id") String id,
-      @RequestHeader(value = "project-id") String projectId) {
+      @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
     return vnfPackageManagement.update(id, vnfPackage_new, projectId);
   }
 }

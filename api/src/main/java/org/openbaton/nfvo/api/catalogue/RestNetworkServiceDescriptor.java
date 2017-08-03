@@ -309,7 +309,8 @@ public class RestNetworkServiceDescriptor {
   public VirtualNetworkFunctionDescriptor postVNFD(
       @RequestBody @Valid VirtualNetworkFunctionDescriptor vnfDescriptor,
       @PathVariable("id") String idNsd,
-      @RequestHeader(value = "project-id") String projectId) {
+      @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
     return networkServiceDescriptorManagement.addVnfd(vnfDescriptor, idNsd, projectId);
   }
 
@@ -329,7 +330,8 @@ public class RestNetworkServiceDescriptor {
       @RequestBody @Valid VirtualNetworkFunctionDescriptor vnfDescriptor,
       @PathVariable("idNsd") String idNsd,
       @PathVariable("idVfn") String idVfn,
-      @RequestHeader(value = "project-id") String projectId) {
+      @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
     return networkServiceDescriptorManagement.updateVNF(idNsd, idVfn, vnfDescriptor, projectId);
   }
 
@@ -404,7 +406,8 @@ public class RestNetworkServiceDescriptor {
   public VNFDependency postVNFDependency(
       @RequestBody @Valid VNFDependency vnfDependency,
       @PathVariable("idNsd") String idNsd,
-      @RequestHeader(value = "project-id") String projectId) {
+      @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
     networkServiceDescriptorManagement.saveVNFDependency(idNsd, vnfDependency, projectId);
     return vnfDependency;
   }
@@ -424,7 +427,8 @@ public class RestNetworkServiceDescriptor {
       @RequestBody @Valid VNFDependency vnfDependency,
       @PathVariable("idNsd") String idNsd,
       @PathVariable("idVnf") String idVnf,
-      @RequestHeader(value = "project-id") String projectId) {
+      @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
     networkServiceDescriptorManagement.saveVNFDependency(idNsd, vnfDependency, projectId);
     return vnfDependency;
   }
@@ -511,7 +515,8 @@ public class RestNetworkServiceDescriptor {
   public PhysicalNetworkFunctionDescriptor postPhysicalNetworkFunctionDescriptor(
       @RequestBody @Valid PhysicalNetworkFunctionDescriptor pDescriptor,
       @PathVariable("id") String idNsd,
-      @RequestHeader(value = "project-id") String projectId) {
+      @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
     return networkServiceDescriptorManagement.addPnfDescriptor(pDescriptor, idNsd, projectId);
   }
 
@@ -572,7 +577,8 @@ public class RestNetworkServiceDescriptor {
   public void deleteSecurity(
       @PathVariable("id") String idNSD,
       @PathVariable("idS") String idS,
-      @RequestHeader(value = "project-id") String projectId) {
+      @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
     networkServiceDescriptorManagement.deleteSecurty(idNSD, idS, projectId);
   }
 
@@ -594,7 +600,8 @@ public class RestNetworkServiceDescriptor {
   public Security postSecurity(
       @RequestBody @Valid Security security,
       @PathVariable("id") String id,
-      @RequestHeader(value = "project-id") String projectId) {
+      @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
     return networkServiceDescriptorManagement.addSecurity(id, security, projectId);
   }
 

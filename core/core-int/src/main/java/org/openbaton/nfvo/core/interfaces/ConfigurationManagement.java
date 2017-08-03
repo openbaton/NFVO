@@ -30,7 +30,8 @@ public interface ConfigurationManagement {
   void delete(String id);
 
   /** This operation allows updating the datacenter in the datacenter repository. */
-  Configuration update(Configuration new_datacenter, String id, String projectId);
+  Configuration update(Configuration new_datacenter, String id, String projectId)
+      throws NotFoundException;
 
   /**
    * This operation allows querying the information of the datacenters in the datacenter repository.

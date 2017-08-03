@@ -26,5 +26,7 @@ public interface NetworkServiceRecordRepository
     extends CrudRepository<NetworkServiceRecord, String>, NetworkServiceRecordRepositoryCustom {
   NetworkServiceRecord findFirstById(String id);
 
+  NetworkServiceRecord findFirstByIdAndProjectId(String id, String projectId);
+
   List<NetworkServiceRecord> findByProjectId(String projectId);
 }
