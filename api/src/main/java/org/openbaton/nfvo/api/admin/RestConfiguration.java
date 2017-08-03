@@ -19,7 +19,6 @@ package org.openbaton.nfvo.api.admin;
 import javax.validation.Valid;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.nfvo.core.interfaces.ConfigurationManagement;
-import org.openbaton.nfvo.security.interfaces.ProjectManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +33,6 @@ public class RestConfiguration {
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private ConfigurationManagement configurationManagement;
-  @Autowired private ProjectManagement projectManagement;
 
   /**
    * Adds a new Configuration to the Configurations repository
