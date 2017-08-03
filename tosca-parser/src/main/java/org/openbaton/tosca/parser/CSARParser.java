@@ -38,12 +38,7 @@ import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
-import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.IncompatibleVNFPackage;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimException;
+import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.core.interfaces.VNFPackageManagement;
 import org.openbaton.nfvo.repositories.VNFDRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
@@ -183,7 +178,7 @@ public class CSARParser {
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
       String projectId)
       throws NotFoundException, PluginException, VimException, IncompatibleVNFPackage,
-          BadRequestException, IOException, AlreadyExistingException {
+          BadRequestException, IOException, AlreadyExistingException, BadFormatException {
 
     Map<String, Object> metadata;
     NFVImage image = new NFVImage();
@@ -210,7 +205,7 @@ public class CSARParser {
   private String saveVNFD(
       VirtualNetworkFunctionDescriptor vnfd, String projectId, Set<Script> vnfScripts)
       throws PluginException, VimException, NotFoundException, IncompatibleVNFPackage,
-          BadRequestException, IOException, AlreadyExistingException {
+          BadRequestException, IOException, AlreadyExistingException, BadFormatException {
 
     VNFPackage vnfPackage = new VNFPackage();
 
@@ -237,7 +232,7 @@ public class CSARParser {
   public VirtualNetworkFunctionDescriptor onboardVNFD(byte[] bytes, String projectId)
       throws NotFoundException, PluginException, VimException, IOException, IncompatibleVNFPackage,
           org.openbaton.tosca.exceptions.NotFoundException, BadRequestException,
-          AlreadyExistingException {
+          AlreadyExistingException, BadFormatException {
 
     File temp = File.createTempFile("CSAR", null);
     FileOutputStream fos = new FileOutputStream(temp);
@@ -262,7 +257,7 @@ public class CSARParser {
   public NetworkServiceDescriptor onboardNSD(byte[] bytes, String projectId)
       throws NotFoundException, PluginException, VimException, IOException, IncompatibleVNFPackage,
           org.openbaton.tosca.exceptions.NotFoundException, BadRequestException,
-          AlreadyExistingException {
+          AlreadyExistingException, BadFormatException {
 
     File temp = File.createTempFile("CSAR", null);
     FileOutputStream fos = new FileOutputStream(temp);

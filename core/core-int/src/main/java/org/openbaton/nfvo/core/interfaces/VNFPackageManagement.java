@@ -31,7 +31,8 @@ public interface VNFPackageManagement {
   /** This operation allows submitting and validating the VNF Package. */
   VirtualNetworkFunctionDescriptor onboard(byte[] pack, String projectId)
       throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage,
-          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException;
+          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException,
+          BadFormatException;
 
   /** This operation allows submitting and validating the VNF Package from the marketplace. */
   /**
@@ -47,7 +48,7 @@ public interface VNFPackageManagement {
       VNFPackage vnfPackage,
       Map<String, Object> imageDetails,
       NFVImage image)
-      throws IncompatibleVNFPackage, NotFoundException;
+      throws IncompatibleVNFPackage, BadFormatException;
 
   /**
    * This operation handles the data about the image of the vnf package
@@ -79,7 +80,8 @@ public interface VNFPackageManagement {
    */
   VirtualNetworkFunctionDescriptor onboardFromMarket(String link, String projectId)
       throws IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
-          NotFoundException, PluginException, NetworkServiceIntegrityException, BadRequestException;
+          NotFoundException, PluginException, NetworkServiceIntegrityException, BadRequestException,
+          BadFormatException;
 
   /**
    * This operation allows disabling the VNF Package, so that it is not possible to instantiate any

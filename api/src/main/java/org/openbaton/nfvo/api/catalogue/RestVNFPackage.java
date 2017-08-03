@@ -26,14 +26,7 @@ import javax.validation.Valid;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
-import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.IncompatibleVNFPackage;
-import org.openbaton.exceptions.NetworkServiceIntegrityException;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimException;
-import org.openbaton.exceptions.WrongAction;
+import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.core.interfaces.VNFPackageManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,15 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -83,7 +68,7 @@ public class RestVNFPackage {
       @RequestHeader(value = "project-id") String projectId)
       throws IOException, VimException, NotFoundException, SQLException, PluginException,
           IncompatibleVNFPackage, AlreadyExistingException, NetworkServiceIntegrityException,
-          BadRequestException {
+          BadRequestException, BadFormatException {
 
     log.debug("Onboarding");
     if (!file.isEmpty()) {
@@ -92,7 +77,7 @@ public class RestVNFPackage {
           vnfPackageManagement.onboard(bytes, projectId);
       //      return "{ \"id\": \"" + virtualNetworkFunctionDescriptor.getVnfPackageLocation() + "\"}";
       return virtualNetworkFunctionDescriptor;
-    } else throw new IOException("File is empty!");
+    } else throw new BadRequestException("File is empty!");
   }
 
   @ApiOperation(
@@ -108,10 +93,20 @@ public class RestVNFPackage {
   public String marketDownload(
       @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
       throws IOException, PluginException, VimException, NotFoundException, IncompatibleVNFPackage,
-          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException {
+          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException,
+          BadFormatException {
     Gson gson = new Gson();
     JsonObject jsonObject = gson.fromJson(link, JsonObject.class);
-    String downloadlink = jsonObject.getAsJsonPrimitive("link").getAsString();
+    if (!jsonObject.has("link"))
+      throw new BadRequestException("The sent Json has to contain a field named: link");
+
+    String downloadlink;
+    try {
+      downloadlink = jsonObject.getAsJsonPrimitive("link").getAsString();
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new BadRequestException("The provided link has to be a string.");
+    }
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
         vnfPackageManagement.onboardFromMarket(downloadlink, projectId);
     return "{ \"id\": \"" + virtualNetworkFunctionDescriptor.getVnfPackageLocation() + "\"}";
