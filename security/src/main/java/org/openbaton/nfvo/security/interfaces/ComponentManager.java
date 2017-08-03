@@ -6,7 +6,6 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import org.openbaton.catalogue.nfvo.ManagerCredentials;
 import org.openbaton.catalogue.nfvo.ServiceMetadata;
 import org.openbaton.exceptions.NotFoundException;
 
@@ -20,7 +19,7 @@ public interface ComponentManager {
   String createService(String serviceName, String projectId)
       throws NoSuchAlgorithmException, IOException;
 
-  ManagerCredentials enableManager(String message) throws IOException;
+  String enableManager(String message) throws IOException;
 
   boolean isService(String token)
       throws InvalidKeyException, BadPaddingException, NoSuchAlgorithmException,

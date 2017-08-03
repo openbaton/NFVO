@@ -1,6 +1,7 @@
 package org.openbaton.registration;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.rabbitmq.client.AMQP;
@@ -9,24 +10,23 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.util.UUID;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeoutException;
+
 import org.openbaton.catalogue.nfvo.ManagerCredentials;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.util.UUID;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeoutException;
 
 /** This class handles the registration of Vnfms and plugins to the Nfvo. */
 @Service
@@ -35,13 +35,17 @@ import org.springframework.stereotype.Service;
 public class Registration {
 
   private static Logger log = LoggerFactory.getLogger(Registration.class);
-  @Autowired private Gson gson;
+  private Gson gson;
 
   private String username;
   private String password;
 
   @Value("${vnfm.connect.tries:20}")
   private int maxTries;
+
+  public Registration() {
+    this.gson = new GsonBuilder().setPrettyPrinting().create();
+  }
 
   /**
    * This method registers a Vnfm to the Nfvo by sending a request to the nfvo.manager.handling
@@ -78,13 +82,14 @@ public class Registration {
     if (res == null) {
       throw new IllegalArgumentException("The NFVO's answer to the registration request is null.");
     }
-    if (!(res instanceof ManagerCredentials)) {
+    if (!(res instanceof String)) {
       throw new IllegalArgumentException(
-          "The NFVO's answer to the registration request should be of type ManagerCredentials, but it is "
+          "The NFVO's answer to the registration request should be of type String, but it is "
               + res.getClass().getSimpleName());
     }
-    this.username = ((ManagerCredentials) res).getRabbitUsername();
-    this.password = ((ManagerCredentials) res).getRabbitPassword();
+    ManagerCredentials managerCredentials = gson.fromJson((String) res, ManagerCredentials.class);
+    this.username = managerCredentials.getRabbitUsername();
+    this.password = managerCredentials.getRabbitPassword();
     ((CachingConnectionFactory) rabbitTemplate.getConnectionFactory()).setUsername(username);
     ((CachingConnectionFactory) rabbitTemplate.getConnectionFactory()).setPassword(password);
     String[] usernamePassword = new String[2];
@@ -164,20 +169,11 @@ public class Registration {
               String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
               throws IOException {
             if (properties.getCorrelationId().equals(corrId)) {
-              ManagerCredentials managerCredentials = null;
-              ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(body);
-              ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
-              Object replyObject = null;
-              try {
-                replyObject = objectInputStream.readObject();
-              } catch (ClassNotFoundException e) {
-                throw new RuntimeException(
-                    "Could not deserialize the registration request's reply.", e.getCause());
-              }
-              if (!(replyObject instanceof ManagerCredentials))
+              String bodyString = new String(body);
+              ManagerCredentials managerCredentials = gson.fromJson(bodyString,ManagerCredentials.class);
+              if (managerCredentials == null)
                 throw new RuntimeException(
                     "Could not obtain credentials while registering plugin to Nfvo since the reply is no ManagerCredentials object");
-              managerCredentials = (ManagerCredentials) replyObject;
               response.offer(managerCredentials);
             }
           }
@@ -225,5 +221,9 @@ public class Registration {
     channel.basicPublish("openbaton-exchange", "nfvo.manager.handling", null, message.getBytes());
     channel.close();
     connection.close();
+  }
+
+  public static void main(String[] args) throws InterruptedException, TimeoutException, IOException {
+    new Registration().registerPluginToNfvo("localhost",5672,"admin","openbaton", "/","cippalippa");
   }
 }

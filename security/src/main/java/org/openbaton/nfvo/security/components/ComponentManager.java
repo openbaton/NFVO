@@ -5,6 +5,7 @@ import static org.openbaton.utils.rabbit.RabbitManager.removeRabbitMqUser;
 import static org.openbaton.utils.rabbit.RabbitManager.setRabbitMqUserPermissions;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -212,7 +213,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
    * Manager related operations
    */
 
-  public ManagerCredentials enableManager(byte[] message) {
+  public String enableManager(byte[] message) {
     return enableManager(new String(message));
   }
 
@@ -225,7 +226,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
    * @throws IOException
    */
   @Override
-  public ManagerCredentials enableManager(String message) {
+  public String enableManager(String message) {
     try {
       // deserialize message
       JsonObject body = gson.fromJson(message, JsonObject.class);
@@ -233,6 +234,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
         log.error("Could not process Json message. The 'action' property is missing.");
         return null;
       }
+      JsonElement vnfmManagerEndpoint = body.get("vnfmManagerEndpoint");
       if (body.get("action").getAsString().toLowerCase().equals("register")) {
 
         // register plugin or vnfm
@@ -245,13 +247,14 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
 
         ManagerCredentials managerCredentials =
             managerCredentialsRepository.findFirstByRabbitUsername(username);
-        VnfmManagerEndpoint endpoint;
+        VnfmManagerEndpoint endpoint = null;
         if (managerCredentials != null) {
           log.error("Manager already registered.");
-          return managerCredentials;
+          return gson.toJson(managerCredentials);
         } else {
           managerCredentials = new ManagerCredentials();
-          endpoint = gson.fromJson(body.get("vnfmManagerEndpoint"), VnfmManagerEndpoint.class);
+          if (vnfmManagerEndpoint != null)
+            endpoint = gson.fromJson(vnfmManagerEndpoint.getAsString(), VnfmManagerEndpoint.class);
         }
 
         //          String regexOpenbaton = "(^nfvo)";
@@ -295,7 +298,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
         managerCredentials.setRabbitPassword(password);
         managerCredentials = managerCredentialsRepository.save(managerCredentials);
         if (endpoint != null) vnfmManagerEndpointRepository.save(endpoint);
-        return managerCredentials;
+        return gson.toJson(managerCredentials);
       } else if (body.get("action").getAsString().toLowerCase().equals("unregister")
           || body.get("action").getAsString().toLowerCase().equals("deregister")) {
 
@@ -318,8 +321,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
           managerCredentialsRepository.delete(managerCredentials);
           // if message comes from a vnfm, remove the endpoint
           if (body.has("vnfmManagerEndpoint"))
-            vnfmRegister.unregister(
-                gson.fromJson(body.get("vnfmManagerEndpoint"), VnfmManagerEndpoint.class));
+            vnfmRegister.unregister(gson.fromJson(vnfmManagerEndpoint, VnfmManagerEndpoint.class));
 
           removeRabbitMqUser(rabbitUsername, rabbitPassword, brokerIp, managementPort, username);
         }
