@@ -1,6 +1,10 @@
 package org.openbaton.utils.key;
 
-import static org.apache.commons.codec.binary.Base64.encodeBase64;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.text.RandomStringGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -18,18 +22,15 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Random;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.text.RandomStringGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+
+import static org.apache.commons.codec.binary.Base64.decodeBase64;
+import static org.apache.commons.codec.binary.Base64.encodeBase64;
 
 /** Created by lto on 04/04/2017. */
 public class KeyHelper {
@@ -37,7 +38,7 @@ public class KeyHelper {
   private static final Logger log = LoggerFactory.getLogger(KeyHelper.class);
 
   public static String DESEDE_ALGORITHM = "DESede";
-  public static String AES_ALGORITHM = "AES";
+  private static String AES_ALGORITHM = "AES";
 
   public static String genKey() throws NoSuchAlgorithmException, IOException {
     // Using Apache Commons RNG for randomness
@@ -48,7 +49,7 @@ public class KeyHelper {
     return generator.generate(16);
   }
 
-  public static Key restoreKey(byte[] keyBytes) {
+  private static Key restoreKey(byte[] keyBytes) {
     return new SecretKeySpec(keyBytes, AES_ALGORITHM);
   }
 
@@ -62,7 +63,7 @@ public class KeyHelper {
     return cipher.doFinal(bytes);
   }
 
-  public static byte[] encrypt(String text, Key key)
+  private static byte[] encrypt(String text, Key key)
       throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException,
           BadPaddingException, IllegalBlockSizeException {
 
@@ -76,8 +77,7 @@ public class KeyHelper {
     Cipher c = Cipher.getInstance(AES_ALGORITHM);
     c.init(Cipher.ENCRYPT_MODE, key);
     byte[] encValue = c.doFinal(valueToEnc.getBytes());
-    String encryptedValue = new BASE64Encoder().encode(encValue);
-    return encryptedValue;
+    return Base64.encodeBase64String(encValue);
   }
 
   public static String decryptNew(String encryptedValue, String keyValue)
@@ -86,10 +86,9 @@ public class KeyHelper {
     Key key = generateKey(keyValue.getBytes());
     Cipher c = Cipher.getInstance(AES_ALGORITHM);
     c.init(Cipher.DECRYPT_MODE, key);
-    byte[] decordedValue = new BASE64Decoder().decodeBuffer(encryptedValue);
-    byte[] decValue = c.doFinal(decordedValue);
-    String decryptedValue = new String(decValue);
-    return decryptedValue;
+    byte[] decodedValue = decodeBase64(encryptedValue);
+    byte[] decValue = c.doFinal(decodedValue);
+    return new String(decValue);
   }
 
   private static Key generateKey(byte[] keyValue) {
@@ -97,7 +96,7 @@ public class KeyHelper {
     return key;
   }
 
-  public static String decrypt(byte[] bytes, Key key)
+  private static String decrypt(byte[] bytes, Key key)
       throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException,
           BadPaddingException, IllegalBlockSizeException {
     Cipher cipher = Cipher.getInstance(AES_ALGORITHM);
@@ -105,14 +104,14 @@ public class KeyHelper {
     return new String(cipher.doFinal(bytes), StandardCharsets.UTF_8);
   }
 
-  public static String decrypt(String bytes, Key key)
+  private static String decrypt(String bytes, Key key)
       throws IllegalBlockSizeException, InvalidKeyException, BadPaddingException,
           NoSuchAlgorithmException, NoSuchPaddingException {
 
     return decrypt(bytes.getBytes(StandardCharsets.ISO_8859_1), key);
   }
 
-  public static String encryptToString(String text, Key key)
+  private static String encryptToString(String text, Key key)
       throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
           BadPaddingException, IllegalBlockSizeException {
     return new String(encrypt(text, key), StandardCharsets.ISO_8859_1);
