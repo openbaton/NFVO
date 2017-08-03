@@ -1,6 +1,5 @@
 package org.openbaton.utils.key;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.text.RandomStringGenerator;
 import org.slf4j.Logger;
@@ -21,6 +20,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Base64;
 import java.util.Random;
 
 import javax.crypto.BadPaddingException;
@@ -77,7 +77,7 @@ public class KeyHelper {
     Cipher c = Cipher.getInstance(AES_ALGORITHM);
     c.init(Cipher.ENCRYPT_MODE, key);
     byte[] encValue = c.doFinal(valueToEnc.getBytes());
-    return Base64.encodeBase64String(encValue);
+    return Base64.getEncoder().encodeToString(encValue);
   }
 
   public static String decryptNew(String encryptedValue, String keyValue)
@@ -155,13 +155,13 @@ public class KeyHelper {
 
   public static byte[] parsePublicKey(String decodedKey) throws UnsupportedEncodingException {
     decodedKey = decodedKey.split(" ")[1];
-    return Base64.decodeBase64(decodedKey.getBytes("utf-8"));
+    return Base64.getDecoder().decode(decodedKey);
   }
 
   public static String parsePrivateKey(byte[] encodedKey) {
     StringBuilder sb = new StringBuilder();
     sb.append("-----BEGIN RSA PRIVATE KEY-----\n");
-    sb.append((new String(Base64.encodeBase64(encodedKey))).replaceAll("(.{72})", "$1\n"));
+    sb.append((new String(Base64.getEncoder().encode(encodedKey))).replaceAll("(.{72})", "$1\n"));
     sb.append("\n");
     sb.append("-----END RSA PRIVATE KEY-----\n");
     return sb.toString();
@@ -182,7 +182,11 @@ public class KeyHelper {
     data = m.toByteArray();
     encodeUInt32(data.length, out);
     out.write(data);
-    return "ssh-rsa " + Base64.encodeBase64String(out.toByteArray()) + " " + keyname;
+    return "ssh-rsa "
+        + Base64.getEncoder().encodeToString(out.toByteArray())
+        + " "
+        + keyname
+        + "@openbaton";
   }
 
   private void encodeUInt32(int value, OutputStream out) throws IOException {
