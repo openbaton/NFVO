@@ -17,8 +17,10 @@
 package org.openbaton.nfvo.api.runtime;
 
 import com.google.gson.JsonObject;
-import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrLogMessage;
+import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.core.interfaces.LogManagement;
 import org.slf4j.Logger;
@@ -50,7 +52,7 @@ public class RestLogs {
       @PathVariable("vnfrName") String vnfrName,
       @PathVariable("hostname") String hostname,
       @RequestBody(required = false) JsonObject request)
-      throws NotFoundException {
+      throws NotFoundException, InterruptedException, BadFormatException, ExecutionException {
 
     int lines = 0;
     if (request != null) {
@@ -59,15 +61,16 @@ public class RestLogs {
 
     log.debug("requesting last " + lines + " lines");
 
-    HashMap<String, List<String>> logs = logManager.getLog(nsrId, vnfrName, hostname);
-    log.debug("There are " + logs.get("error").size() + " lines for error logs");
-    log.debug("There are " + logs.get("output").size() + " lines for output logs");
-    if (lines > 0) {
-      logs.put(
-          "output",
-          logs.get("output")
-              .subList(logs.get("output").size() - lines - 1, logs.get("output").size() - 1));
+    VnfmOrLogMessage message = logManager.getLog(nsrId, vnfrName, hostname);
+    int errorLines = message.getErrorLog().size();
+    int outputLines = message.getOutputLog().size();
+    log.debug("There are " + errorLines + " lines for error logs");
+    log.debug("There are " + outputLines + " lines for output logs");
+    if (lines > 0 && outputLines > lines) {
+      return errorLines == 0
+          ? message.getOutputLog().subList(outputLines - lines, outputLines)
+          : message.getErrorLog();
     }
-    return logs.get("error").size() == 0 ? logs.get("output") : logs.get("error");
+    return errorLines == 0 ? message.getOutputLog() : message.getErrorLog();
   }
 }

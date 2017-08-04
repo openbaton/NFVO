@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
+import java.util.concurrent.ExecutionException;
 import jline.console.ConsoleReader;
 import jline.console.completer.ArgumentCompleter;
 import jline.console.completer.Completer;
@@ -36,6 +37,7 @@ import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.security.User;
+import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.EntityInUseException;
 import org.openbaton.exceptions.NotFoundException;
@@ -98,6 +100,9 @@ public class OpenbatonCLI implements CommandLineRunner {
 
   @Value("${spring.rabbitmq.password:openbaton}")
   private String password;
+
+  @Value("${spring.rabbitmq.virtual-host:/}")
+  private String virtualHost;
 
   @Value("${nfvo.rabbit.management.port:15672}")
   private int managementPort;
@@ -212,7 +217,11 @@ public class OpenbatonCLI implements CommandLineRunner {
         } else if (line.startsWith("listDescriptors")) {
           listDescriptors();
         } else if (line.startsWith("deleteRecord")) {
-          deleteRecord(line);
+          try {
+            deleteRecord(line);
+          } catch (BadFormatException e) {
+            e.printStackTrace();
+          }
         } else if (line.startsWith("deleteDescriptor")) {
           deleteDescriptor(line);
         } else if (line.startsWith("listPlugins")) {
@@ -243,7 +252,9 @@ public class OpenbatonCLI implements CommandLineRunner {
     nsdManagement.delete(id, nsdRepository.findFirstById(id).getProjectId());
   }
 
-  private void deleteRecord(String line) throws NotFoundException, WrongStatusException {
+  private void deleteRecord(String line)
+      throws NotFoundException, WrongStatusException, BadFormatException, ExecutionException,
+          InterruptedException {
     StringTokenizer stringTokenizer = new StringTokenizer(line, " ");
 
     if (stringTokenizer.countTokens() != 2) {
@@ -402,7 +413,8 @@ public class OpenbatonCLI implements CommandLineRunner {
     //      result += String.format("%40s", entry.getKey()) + "\n";
     //    }
 
-    for (String queue : RabbitManager.getQueues(brokerIp, username, password, managementPort)) {
+    for (String queue :
+        RabbitManager.getQueues(brokerIp, username, password, virtualHost, managementPort)) {
       if (queue.startsWith("vim-drivers") || queue.startsWith("monitoring")) {
         StringTokenizer stringTokenizer = new StringTokenizer(queue, ".");
 
@@ -474,6 +486,7 @@ public class OpenbatonCLI implements CommandLineRunner {
         consumers,
         username,
         password,
+        virtualHost,
         "" + managementPort,
         pluginLogPath,
         true);

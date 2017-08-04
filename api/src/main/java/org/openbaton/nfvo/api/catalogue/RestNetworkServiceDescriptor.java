@@ -33,6 +33,7 @@ import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.CyclicDependenciesException;
 import org.openbaton.exceptions.EntityInUseException;
+import org.openbaton.exceptions.EntityUnreachableException;
 import org.openbaton.exceptions.IncompatibleVNFPackage;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.openbaton.exceptions.NotFoundException;
@@ -84,7 +85,9 @@ public class RestNetworkServiceDescriptor {
       @RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor,
       @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
-          CyclicDependenciesException, EntityInUseException, BadRequestException {
+          CyclicDependenciesException, EntityInUseException, BadRequestException, IOException,
+          AlreadyExistingException, PluginException, IncompatibleVNFPackage, VimException,
+          InterruptedException, EntityUnreachableException {
     NetworkServiceDescriptor nsd;
     log.trace("Just Received: " + networkServiceDescriptor);
     nsd = networkServiceDescriptorManagement.onboard(networkServiceDescriptor, projectId);
@@ -112,7 +115,8 @@ public class RestNetworkServiceDescriptor {
       @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
       throws BadFormatException, CyclicDependenciesException, NetworkServiceIntegrityException,
           NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
-          AlreadyExistingException, EntityInUseException, BadRequestException {
+          AlreadyExistingException, EntityInUseException, BadRequestException, InterruptedException,
+          EntityUnreachableException {
 
     log.debug("LINK: " + link);
     if (!link.has("link"))
@@ -126,6 +130,44 @@ public class RestNetworkServiceDescriptor {
           "The provided link value is not a string. The request body has to look like this: {\"link\": \"http://replace-with-link-to-nsd\"}");
     }
     return networkServiceDescriptorManagement.onboardFromMarketplace(downloadlink, projectId);
+  }
+
+  /**
+   * This operation allows downloading and onboarding an NSD from the Package Repository
+   *
+   * @param link : link to the Network Service Descriptor to be created
+   * @return networkServiceDescriptor: the Network Service Descriptor filled with id and values from
+   *     core
+   */
+  @ApiOperation(
+    value = " Adding a NSD from the marketplace",
+    notes = "POST request with the a JSON object in the request body containing a field named link"
+  )
+  @RequestMapping(
+    value = "/package-repository-download",
+    method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ResponseStatus(HttpStatus.CREATED)
+  public NetworkServiceDescriptor packageRepositoryDownload(
+      @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
+      throws BadFormatException, CyclicDependenciesException, NetworkServiceIntegrityException,
+          NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
+          AlreadyExistingException, EntityInUseException, BadRequestException,
+          EntityUnreachableException, InterruptedException {
+
+    log.debug("Received request to download nsd from Package Repository from this link: " + link);
+    if (!link.has("link"))
+      throw new BadRequestException(
+          "The request body has to look like this: {\"link\": \"http://replace-with-link-to-nsd\"}");
+    String downloadlink = null;
+    try {
+      downloadlink = link.get("link").getAsString();
+    } catch (Exception e) {
+      throw new BadRequestException(
+          "The provided link value is not a string. The request body has to look like this: {\"link\": \"http://replace-with-link-to-nsd\"}");
+    }
+    return networkServiceDescriptorManagement.onboardFromPackageRepository(downloadlink, projectId);
   }
 
   /**

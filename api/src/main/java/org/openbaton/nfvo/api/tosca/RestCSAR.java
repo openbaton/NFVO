@@ -32,6 +32,7 @@ import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.CyclicDependenciesException;
 import org.openbaton.exceptions.EntityInUseException;
+import org.openbaton.exceptions.EntityUnreachableException;
 import org.openbaton.exceptions.IncompatibleVNFPackage;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.openbaton.exceptions.NotFoundException;
@@ -91,7 +92,7 @@ public class RestCSAR {
   public String onboardVNFD(
       @RequestParam("file") MultipartFile file,
       @RequestHeader(value = "project-id") String projectId)
-      throws Exception {
+      throws Exception, BadFormatException {
 
     log.debug("Onboarding");
     if (!file.isEmpty()) {
@@ -113,7 +114,8 @@ public class RestCSAR {
       @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
       throws IOException, PluginException, VimException, NotFoundException, IncompatibleVNFPackage,
           org.openbaton.tosca.exceptions.NotFoundException, BadRequestException,
-          AlreadyExistingException, BadFormatException {
+          AlreadyExistingException, BadFormatException, InterruptedException,
+          EntityUnreachableException {
     Gson gson = new Gson();
     JsonObject jsonObject = gson.fromJson(link, JsonObject.class);
     if (!jsonObject.has("link"))
@@ -169,7 +171,8 @@ public class RestCSAR {
       throws IOException, PluginException, VimException, NotFoundException, IncompatibleVNFPackage,
           NetworkServiceIntegrityException, BadFormatException, CyclicDependenciesException,
           EntityInUseException, org.openbaton.tosca.exceptions.NotFoundException,
-          BadRequestException, AlreadyExistingException {
+          BadRequestException, AlreadyExistingException, InterruptedException,
+          EntityUnreachableException {
     Gson gson = new Gson();
     JsonObject jsonObject = gson.fromJson(link, JsonObject.class);
     if (!jsonObject.has("link"))

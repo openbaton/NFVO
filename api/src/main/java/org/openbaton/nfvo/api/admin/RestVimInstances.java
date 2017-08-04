@@ -18,17 +18,18 @@ package org.openbaton.nfvo.api.admin;
 
 import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Set;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.validation.Valid;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.VimInstance;
-import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.EntityUnreachableException;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimException;
+import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.core.interfaces.VimManagement;
+import org.openbaton.nfvo.security.interfaces.ComponentManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -42,6 +43,7 @@ public class RestVimInstances {
   //	private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private VimManagement vimManagement;
+  @Autowired private ComponentManager componentManager;
 
   /**
    * Adds a new VNF software Image to the datacenter repository
@@ -95,11 +97,19 @@ public class RestVimInstances {
         "This method returns the list of all the VimInstances on-boarded in this project identified by the header project-id"
   )
   @RequestMapping(method = RequestMethod.GET)
-  public Iterable<VimInstance> findAll(@RequestHeader(value = "project-id") String projectId) {
+  public Iterable<VimInstance> findAll(
+      @RequestHeader(value = "project-id") String projectId,
+      @RequestHeader(value = "authorization") String token)
+      throws IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException,
+          NoSuchAlgorithmException, InvalidKeyException, BadFormatException {
+    String[] tokenArray = token.split(" ");
+    if (tokenArray.length < 2) throw new BadFormatException("The passed token has a wrong format.");
+    token = tokenArray[1];
     Iterable<VimInstance> vimInstances = vimManagement.queryByProjectId(projectId);
-    for (VimInstance vim : vimInstances) {
-      vim.setPassword("**********");
-    }
+    if (!componentManager.isService(token))
+      for (VimInstance vim : vimInstances) {
+        vim.setPassword("**********");
+      }
 
     return vimInstances;
   }
@@ -116,12 +126,15 @@ public class RestVimInstances {
   )
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
   public VimInstance findById(
-      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException {
+      @PathVariable("id") String id,
+      @RequestHeader(value = "project-id") String projectId,
+      @RequestHeader(value = "authorization") String token)
+      throws IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException,
+          NoSuchAlgorithmException, InvalidKeyException, NotFoundException {
     VimInstance vimInstance = vimManagement.query(id, projectId);
     if (vimInstance == null)
       throw new NotFoundException("VIM Instance with ID " + id + " not found.");
-    vimInstance.setPassword("**********");
+    if (!componentManager.isService(token)) vimInstance.setPassword("**********");
     return vimInstance;
   }
 

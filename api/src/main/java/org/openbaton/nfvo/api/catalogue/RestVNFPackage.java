@@ -22,6 +22,7 @@ import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import javax.validation.Valid;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Script;
@@ -54,6 +55,7 @@ public class RestVNFPackage {
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private VNFPackageManagement vnfPackageManagement;
+
   /** Adds a new VNFPackage to the VNFPackages repository */
   @ApiOperation(
     value = "Adding a VNFPackage",
@@ -68,16 +70,21 @@ public class RestVNFPackage {
       @RequestHeader(value = "project-id") String projectId)
       throws IOException, VimException, NotFoundException, SQLException, PluginException,
           IncompatibleVNFPackage, AlreadyExistingException, NetworkServiceIntegrityException,
-          BadRequestException, BadFormatException {
+          BadRequestException, BadFormatException, InterruptedException,
+          EntityUnreachableException {
 
     log.debug("Onboarding");
-    if (!file.isEmpty()) {
-      byte[] bytes = file.getBytes();
-      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
-          vnfPackageManagement.onboard(bytes, projectId);
-      //      return "{ \"id\": \"" + virtualNetworkFunctionDescriptor.getVnfPackageLocation() + "\"}";
-      return virtualNetworkFunctionDescriptor;
-    } else throw new BadRequestException("File is empty!");
+    if (file == null || file.isEmpty()) throw new BadRequestException("File is null or empty!");
+    byte[] bytes = file.getBytes();
+    VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = null;
+    try {
+      virtualNetworkFunctionDescriptor = vnfPackageManagement.add(bytes, false, projectId, false);
+    } catch (ExistingVNFPackage | DescriptorWrongFormat | VNFPackageFormatException e) {
+      if (log.isDebugEnabled()) log.error(e.getMessage(), e);
+      else log.error(e.getMessage());
+      throw new BadRequestException(e.getMessage());
+    }
+    return virtualNetworkFunctionDescriptor;
   }
 
   @ApiOperation(
@@ -94,7 +101,7 @@ public class RestVNFPackage {
       @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
       throws IOException, PluginException, VimException, NotFoundException, IncompatibleVNFPackage,
           AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException,
-          BadFormatException {
+          InterruptedException, EntityUnreachableException, BadFormatException {
     Gson gson = new Gson();
     JsonObject jsonObject = gson.fromJson(link, JsonObject.class);
     if (!jsonObject.has("link"))
@@ -109,6 +116,38 @@ public class RestVNFPackage {
     }
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
         vnfPackageManagement.onboardFromMarket(downloadlink, projectId);
+    return "{ \"id\": \"" + virtualNetworkFunctionDescriptor.getVnfPackageLocation() + "\"}";
+  }
+
+  @ApiOperation(
+    value = "Adding a VNFPackage from the Package Repository",
+    notes =
+        "The JSON object in the request body contains a field named link, which holds the URL to the package on the Open Baton Marketplace"
+  )
+  @RequestMapping(
+    value = "/package-repository-download",
+    method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  public String packageRepositoryDownload(
+      @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
+      throws IOException, PluginException, VimException, NotFoundException, IncompatibleVNFPackage,
+          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException,
+          EntityUnreachableException, InterruptedException {
+    Gson gson = new Gson();
+    JsonObject jsonObject = gson.fromJson(link, JsonObject.class);
+    if (!jsonObject.has("link"))
+      throw new BadRequestException("The sent Json has to contain a field named: link");
+
+    String downloadlink;
+    try {
+      downloadlink = jsonObject.getAsJsonPrimitive("link").getAsString();
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new BadRequestException("The provided link has to be a string.");
+    }
+    VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
+        vnfPackageManagement.onboardFromPackageRepository(downloadlink, projectId);
     return "{ \"id\": \"" + virtualNetworkFunctionDescriptor.getVnfPackageLocation() + "\"}";
   }
 
@@ -204,7 +243,7 @@ public class RestVNFPackage {
       @PathVariable("scriptId") String scriptId,
       @RequestBody String scriptNew,
       @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException {
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
     VNFPackage vnfPackage = vnfPackageManagement.query(vnfPackageId, projectId);
     if (vnfPackage == null)
       throw new NotFoundException("No VNFPackage found with ID " + vnfPackageId);

@@ -50,6 +50,7 @@ spring-*/src/main/java/META-INF/MANIFEST.MF
 *.iws
 .idea
 out
+src/main/dist/plugins
 test-output
 atlassian-ide-plugin.xml
 .gradletasknamecache

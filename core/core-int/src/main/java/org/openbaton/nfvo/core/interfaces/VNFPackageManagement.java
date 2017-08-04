@@ -18,11 +18,14 @@
 package org.openbaton.nfvo.core.interfaces;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
+import org.openbaton.catalogue.nfvo.VNFPackageMetadata;
 import org.openbaton.exceptions.*;
 
 /** Created by mpa on 05/05/15. */
@@ -32,7 +35,7 @@ public interface VNFPackageManagement {
   VirtualNetworkFunctionDescriptor onboard(byte[] pack, String projectId)
       throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage,
           AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException,
-          BadFormatException;
+          InterruptedException, EntityUnreachableException, BadFormatException;
 
   /** This operation allows submitting and validating the VNF Package from the marketplace. */
   /**
@@ -49,6 +52,13 @@ public interface VNFPackageManagement {
       Map<String, Object> imageDetails,
       NFVImage image)
       throws IncompatibleVNFPackage, BadFormatException;
+
+  VirtualNetworkFunctionDescriptor add(
+      byte[] pack, boolean isImageIncluded, String projectId, boolean fromMarketPlace)
+      throws IOException, VimException, NotFoundException, SQLException, PluginException,
+          ExistingVNFPackage, DescriptorWrongFormat, VNFPackageFormatException,
+          IncompatibleVNFPackage, BadRequestException, AlreadyExistingException,
+          NetworkServiceIntegrityException, EntityUnreachableException, InterruptedException;
 
   /**
    * This operation handles the data about the image of the vnf package
@@ -70,7 +80,7 @@ public interface VNFPackageManagement {
       Map<String, Object> imageDetails,
       String projectId)
       throws NotFoundException, PluginException, VimException, BadRequestException, IOException,
-          AlreadyExistingException;
+          AlreadyExistingException, InterruptedException, EntityUnreachableException;
 
   /**
    * This operation allows submitting and validating the VNF Package from the marketplace.
@@ -81,7 +91,18 @@ public interface VNFPackageManagement {
   VirtualNetworkFunctionDescriptor onboardFromMarket(String link, String projectId)
       throws IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
           NotFoundException, PluginException, NetworkServiceIntegrityException, BadRequestException,
-          BadFormatException;
+          InterruptedException, EntityUnreachableException, BadFormatException;
+
+  /**
+   * This operation allows submitting and validating the VNF Package from the Package Repository.
+   *
+   * @param link
+   * @param projectId
+   */
+  VirtualNetworkFunctionDescriptor onboardFromPackageRepository(String link, String projectId)
+      throws IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
+          NotFoundException, PluginException, NetworkServiceIntegrityException, BadRequestException,
+          InterruptedException, EntityUnreachableException;
 
   /**
    * This operation allows disabling the VNF Package, so that it is not possible to instantiate any
@@ -100,10 +121,24 @@ public interface VNFPackageManagement {
   /** This operation is used to query information on VNF Packages. */
   Iterable<VNFPackage> query();
 
+  /** This operation is used to query information on VNF Packages. */
+  Iterable<VNFPackageMetadata> query(
+      String name,
+      String vendor,
+      String version,
+      String nfvoVersion,
+      String vnfmType,
+      String osId,
+      String osVersion,
+      String osArchitecture,
+      String tag,
+      String projectId);
+
   /** This operation is used to remove a disabled VNF Package. */
   void delete(String id, String projectId) throws WrongAction;
 
-  Script updateScript(Script script, String vnfPackageId) throws NotFoundException;
+  Script updateScript(Script script, String vnfPackageId)
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 
   Iterable<VNFPackage> queryByProjectId(String projectId);
 }

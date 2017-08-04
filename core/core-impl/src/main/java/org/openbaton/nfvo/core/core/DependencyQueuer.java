@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
@@ -31,10 +32,12 @@ import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
+import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.VNFRDependencyRepository;
 import org.openbaton.nfvo.repositories.VNFRRepository;
 import org.openbaton.vnfm.interfaces.manager.VnfmManager;
+import org.openbaton.vnfm.interfaces.state.VnfStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,8 +55,8 @@ public class DependencyQueuer implements org.openbaton.nfvo.core.interfaces.Depe
   private VnfmManager vnfmManager;
 
   @Autowired private VNFRRepository vnfrRepository;
-
   @Autowired private VNFRDependencyRepository vnfrDependencyRepository;
+  @Autowired private VnfStateHandler vnfStateHandler;
 
   private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -80,7 +83,7 @@ public class DependencyQueuer implements org.openbaton.nfvo.core.interfaces.Depe
    */
   @Override
   public synchronized void releaseVNFR(String vnfrSourceName, NetworkServiceRecord nsrFather)
-      throws NotFoundException {
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
     List<String> dependencyIdToBeRemoved = new ArrayList<>();
     log.debug("Doing release for VNFR id: " + vnfrSourceName);
     for (Entry<String, Set<String>> entry : queues.entrySet()) {
@@ -113,7 +116,7 @@ public class DependencyQueuer implements org.openbaton.nfvo.core.interfaces.Depe
             OrVnfmGenericMessage orVnfmGenericMessage =
                 new OrVnfmGenericMessage(target, Action.MODIFY);
             orVnfmGenericMessage.setVnfrd(vnfRecordDependency);
-            vnfmManager.sendMessageToVNFR(target, orVnfmGenericMessage);
+            vnfStateHandler.sendMessageToVNFR(target, orVnfmGenericMessage);
             dependencyIdToBeRemoved.add(dependencyId);
           }
         }

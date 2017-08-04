@@ -17,6 +17,10 @@
 
 package org.openbaton.nfvo.core.utils;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -69,6 +73,12 @@ public class NSDUtils {
   @Value("${nfvo.integrity.nsd.checks:in-all-vims}")
   private String inAllVims;
 
+  @Value("${nfvo.marketplace.ip:marketplace.openbaton.org}")
+  private String marketIp;
+
+  @Value("${nfvo.marketplace.port:8082}")
+  private int marketPort;
+
   public String getOrdered() {
     return ordered;
   }
@@ -112,30 +122,86 @@ public class NSDUtils {
   }
 
   /** Fetching vnfd already existing in thr DB based on the id */
-  public void fetchExistingVnfd(NetworkServiceDescriptor networkServiceDescriptor)
+  public List<String> fetchExistingVnfd(
+      NetworkServiceDescriptor networkServiceDescriptor, String projectId)
       throws NotFoundException {
     Set<VirtualNetworkFunctionDescriptor> vnfd_add = new HashSet<>();
     Set<VirtualNetworkFunctionDescriptor> vnfd_remove = new HashSet<>();
+    List<String> marketIds = new ArrayList<>();
+
     for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
       if (vnfd.getId() != null) {
-        log.debug("VNFD to fetch is: " + vnfd.getId());
-        VirtualNetworkFunctionDescriptor vnfd_new = vnfdRepository.findFirstById(vnfd.getId());
-        log.trace("VNFD fetched: " + vnfd_new);
-        if (vnfd_new == null) {
-          throw new NotFoundException(
-              "Not found VNFD with ID: "
-                  + vnfd.getId()
-                  + ". Did you try to create a new VNFD instead of using an already existing one? In this case you should not have specified the VNFD's ID at all");
+        if (!vnfd.getId().contains("/")) {
+          // Looking for a vnfd with a real id
+          log.debug("VNFD to fetch is: " + vnfd.getId());
+          VirtualNetworkFunctionDescriptor vnfdNew = vnfdRepository.findFirstById(vnfd.getId());
+          log.trace("VNFD fetched: " + vnfdNew);
+          if (vnfdNew == null) {
+            throw new NotFoundException(
+                "Not found VNFD with ID: "
+                    + vnfd.getId()
+                    + ". Did you try to create a new VNFD instead of using an already existing one? In this case you should not have specified the VNFD's ID at all");
+          }
+          if (!log.isTraceEnabled()) {
+            log.debug("Fetched VNFD: " + vnfdNew.getName());
+          }
+          vnfd_add.add(vnfdNew);
+          vnfd_remove.add(vnfd);
+
+        } else {
+          String[] id_split = vnfd.getId().split("/");
+          if (id_split.length >= 3) {
+            log.debug("VNFD to fetch is: " + vnfd.getId());
+            VirtualNetworkFunctionDescriptor vnfdNew =
+                vnfdRepository.findFirstByProjectIdAndVendorAndNameAndVersion(
+                    projectId, id_split[0], id_split[1], id_split[2]);
+            log.trace("VNFD fetched: " + vnfdNew);
+            if (vnfdNew == null) {
+
+              int response = 404;
+              // Check if package is available on the marketplace
+              try {
+                URL u =
+                    new URL(
+                        "http://"
+                            + marketIp
+                            + ":"
+                            + marketPort
+                            + "/api/v1/vnf-packages/"
+                            + vnfd.getId());
+                HttpURLConnection huc = (HttpURLConnection) u.openConnection();
+                huc.setRequestMethod("GET");
+                huc.connect();
+                response = huc.getResponseCode();
+                huc.disconnect();
+              } catch (IOException e) {
+                log.warn("Marketplace could not be reached!");
+              }
+              if (response == 200) {
+                log.info("Package found on the marketplace. Downloading now.");
+                // Download package from marketplace!!!
+                marketIds.add(vnfd.getId());
+              } else
+                throw new NotFoundException(
+                    "Not found VNFD with ID: "
+                        + vnfd.getId()
+                        + ". Did you try to create a new VNFD instead of using an already existing one? In this case you should not have specified the VNFD's ID at all");
+            } else vnfd_add.add(vnfdNew);
+            if (!log.isTraceEnabled()) {
+              if (vnfdNew != null) {
+                log.debug("Fetched VNFD: " + vnfdNew.getName());
+              }
+            }
+            vnfd_remove.add(vnfd);
+          } else {
+            throw new NotFoundException("VNFD ID must be either in the format vendor/name/version");
+          }
         }
-        if (!log.isTraceEnabled()) {
-          log.debug("Fetched VNFD: " + vnfd_new.getName());
-        }
-        vnfd_add.add(vnfd_new);
-        vnfd_remove.add(vnfd);
       }
     }
     networkServiceDescriptor.getVnfd().removeAll(vnfd_remove);
     networkServiceDescriptor.getVnfd().addAll(vnfd_add);
+    return marketIds;
   }
 
   public void fetchVimInstances(NetworkServiceDescriptor networkServiceDescriptor, String projectId)

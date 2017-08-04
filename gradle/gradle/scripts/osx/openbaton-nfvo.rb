@@ -13,7 +13,7 @@ class OpenbatonNfvo < Formula
     system "./openbaton.sh", "compile"
     system "./gradlew", "installDist"
     # Change external path with /usr/local/etc instead /etc (due to brew internal directories)
-    inreplace "build/install/openbaton/bin/openbaton-nfvo", "CONFIG_FILE=/config/file/path", "CONFIG_FILE=#{etc}/openbaton/openbaton.properties"
+    inreplace "build/install/openbaton/bin/openbaton-nfvo", "^CONFIG_FILE=.*", "CONFIG_FILE=#{etc}/openbaton/openbaton.properties"
     # Change application path
     inreplace "build/install/openbaton/bin/openbaton-nfvo", /APP_HOME="`pwd -P`"/, %(APP_HOME="#{libexec}")
 

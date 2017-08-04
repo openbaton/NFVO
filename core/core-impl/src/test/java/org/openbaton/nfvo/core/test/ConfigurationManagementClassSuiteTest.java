@@ -37,6 +37,7 @@ import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.*;
+import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.core.api.ConfigurationManagement;
 import org.openbaton.nfvo.repositories.ConfigurationRepository;
 import org.slf4j.Logger;
@@ -66,7 +67,7 @@ public class ConfigurationManagementClassSuiteTest {
   }
 
   @Test
-  public void nfvImageManagementUpdateTest() {
+  public void nfvImageManagementUpdateTest() throws NotFoundException {
     Configuration configutation = createConfigutation();
     Configuration configuration2 = createConfigutation();
     configuration2.setName("UpdatedName");

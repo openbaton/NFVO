@@ -18,6 +18,7 @@
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
@@ -25,6 +26,7 @@ import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmStartStopMessage;
+import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.VNFCInstanceRepository;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
@@ -63,7 +65,7 @@ public class StartTask extends AbstractTask {
   }
 
   @Override
-  public NFVMessage doWork() throws Exception {
+  public NFVMessage doWork() throws Exception, BadFormatException {
     log.info("Started VNFR: " + virtualNetworkFunctionRecord.getName());
     VirtualNetworkFunctionRecord existing =
         vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
@@ -103,7 +105,7 @@ public class StartTask extends AbstractTask {
   }
 
   private void sendStart(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
-      throws NotFoundException {
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
     VnfmSender vnfmSender;
     vnfmSender =
         this.getVnfmSender(
@@ -111,9 +113,10 @@ public class StartTask extends AbstractTask {
     /*vnfmSender.sendCommand(
     new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.START),
     vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));*/
-    vnfmSender.sendCommand(
-        new OrVnfmStartStopMessage(virtualNetworkFunctionRecord, null, Action.START),
-        vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
+    vnfStateHandler.executeAction(
+        vnfmSender.sendCommand(
+            new OrVnfmStartStopMessage(virtualNetworkFunctionRecord, null, Action.START),
+            vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint())));
   }
 
   @Override

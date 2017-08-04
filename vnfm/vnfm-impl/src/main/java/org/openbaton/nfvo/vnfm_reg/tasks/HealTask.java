@@ -35,6 +35,7 @@ import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
+import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.core.interfaces.DependencyManagement;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
@@ -57,7 +58,7 @@ public class HealTask extends AbstractTask {
   @Autowired private VNFRecordDependencyRepository vnfRecordDependencyRepository;
 
   @Override
-  protected NFVMessage doWork() throws Exception {
+  protected NFVMessage doWork() throws Exception, BadFormatException {
 
     NetworkServiceRecord networkServiceRecord =
         nsrRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id());

@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.validation.Valid;
+import org.openbaton.catalogue.nfvo.ServiceMetadata;
 import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
 import org.openbaton.catalogue.security.User;
@@ -28,6 +29,7 @@ import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.EntityInUseException;
 import org.openbaton.exceptions.NotAllowedException;
 import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.nfvo.repositories.ServiceRepository;
 import org.openbaton.nfvo.security.interfaces.ProjectManagement;
 import org.openbaton.nfvo.security.interfaces.UserManagement;
 import org.slf4j.Logger;
@@ -53,6 +55,7 @@ public class RestProject {
 
   @Autowired private ProjectManagement projectManagement;
   @Autowired private UserManagement userManagement;
+  @Autowired private ServiceRepository serviceRepository;
 
   /**
    * Adds a new Project to the Projects repository
@@ -114,7 +117,9 @@ public class RestProject {
   public void multipleDelete(@RequestBody @Valid List<String> ids)
       throws NotAllowedException, NotFoundException, EntityInUseException, BadRequestException {
     if (isAdmin()) {
-      for (String id : ids) projectManagement.delete(projectManagement.query(id));
+      for (String id : ids) {
+        projectManagement.delete(projectManagement.query(id));
+      }
     } else {
       throw new NotAllowedException("Forbidden to delete projects " + ids);
     }
@@ -131,9 +136,13 @@ public class RestProject {
     log.trace("Finding all Projects");
     Set<Project> projects = new HashSet<>();
     if (isAdmin()) {
-      for (Project project : projectManagement.query()) projects.add(project);
+      for (Project project : projectManagement.query()) {
+        projects.add(project);
+      }
     } else {
-      for (Project project : projectManagement.query(getCurrentUser())) projects.add(project);
+      for (Project project : projectManagement.query(getCurrentUser())) {
+        projects.add(project);
+      }
     }
     return projects;
   }
@@ -150,7 +159,9 @@ public class RestProject {
       throws NotFoundException, NotAllowedException {
     log.trace("Finding Project with id " + id);
     Project project = projectManagement.query(id);
-    if (project == null) throw new NotFoundException("Not found project " + id);
+    if (project == null) {
+      throw new NotFoundException("Not found project " + id);
+    }
     log.trace("Found Project: " + project);
     if (isAdmin()) {
       return project;
@@ -190,21 +201,45 @@ public class RestProject {
     }
   }
 
+  private ServiceMetadata getCurrentService() throws NotFoundException {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication == null) {
+      throw new NotFoundException("authentication invalid");
+    }
+    String currentServiceName = authentication.getName();
+    ServiceMetadata serviceMetadata = serviceRepository.findByName(currentServiceName);
+    if (serviceMetadata != null) {
+      return serviceMetadata;
+    } else {
+      throw new NotFoundException("Service with name " + currentServiceName + " not found");
+    }
+  }
+
   private User getCurrentUser() throws NotFoundException {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication == null) throw new NotFoundException("authentication invalid");
+    if (authentication == null) {
+      throw new NotFoundException("authentication invalid");
+    }
     String currentUserName = authentication.getName();
     return userManagement.queryByName(currentUserName);
   }
 
   public boolean isAdmin() throws NotAllowedException, NotFoundException {
-    User currentUser = getCurrentUser();
-    log.trace("Check user if admin: " + currentUser.getUsername());
-    for (Role role : currentUser.getRoles()) {
-      if (role.getRole().ordinal() == Role.RoleEnum.ADMIN.ordinal()) {
+    try {
+      getCurrentService();
+    } catch (NotFoundException e) {
+      User currentUser = getCurrentUser();
+
+      if (serviceRepository.findByName(currentUser.getUsername()) != null) {
         return true;
       }
+      log.trace("Check user if admin: " + currentUser.getUsername());
+      for (Role role : currentUser.getRoles()) {
+        if (role.getRole().ordinal() == Role.RoleEnum.ADMIN.ordinal()) {
+          return true;
+        }
+      }
     }
-    return false;
+    return true;
   }
 }

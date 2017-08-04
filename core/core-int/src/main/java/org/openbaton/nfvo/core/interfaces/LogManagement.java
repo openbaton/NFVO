@@ -17,11 +17,27 @@
 
 package org.openbaton.nfvo.core.interfaces;
 
-import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrLogMessage;
+import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
 
 /** Created by lto on 17/05/16. */
 public interface LogManagement {
 
-  HashMap getLog(String nsrId, String vnfrName, String hostname) throws NotFoundException;
+  /**
+   * Return a VnfmOrLogMessage containing output and error logs related to a host specified by its
+   * NSR ID, VNFR name and hostname.
+   *
+   * @param nsrId
+   * @param vnfrName
+   * @param hostname
+   * @return
+   * @throws NotFoundException
+   * @throws InterruptedException
+   * @throws BadFormatException
+   * @throws ExecutionException
+   */
+  VnfmOrLogMessage getLog(String nsrId, String vnfrName, String hostname)
+      throws NotFoundException, InterruptedException, BadFormatException, ExecutionException;
 }

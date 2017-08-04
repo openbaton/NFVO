@@ -23,7 +23,12 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -33,6 +38,7 @@ import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.api.admin.RestVimInstances;
 import org.openbaton.nfvo.core.interfaces.VimManagement;
+import org.openbaton.nfvo.security.components.ComponentManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +47,7 @@ public class ApiRestVimInstancesTest {
   @InjectMocks RestVimInstances restVimInstances;
   private Logger log = LoggerFactory.getLogger(this.getClass());
   @Mock private VimManagement mock;
+  @Mock private ComponentManager componentManager;
 
   @Before
   public void init() {
@@ -48,9 +55,11 @@ public class ApiRestVimInstancesTest {
   }
 
   @Test
-  public void findAllVimInstances() {
+  public void findAllVimInstances()
+      throws NoSuchAlgorithmException, InvalidKeyException, BadPaddingException,
+          NoSuchPaddingException, IllegalBlockSizeException {
     when(mock.queryByProjectId("pi")).thenReturn(new ArrayList<VimInstance>());
-    assertEquals(mock.queryByProjectId("pi"), restVimInstances.findAll("pi"));
+    assertEquals(mock.queryByProjectId("pi"), restVimInstances.findAll("pi", "Bearer token"));
   }
 
   @Test
@@ -72,14 +81,16 @@ public class ApiRestVimInstancesTest {
   }
 
   @Test
-  public void findByIdVimInstance() throws NotFoundException {
+  public void findByIdVimInstance()
+      throws NoSuchAlgorithmException, InvalidKeyException, BadPaddingException,
+          NoSuchPaddingException, IllegalBlockSizeException, NotFoundException {
     VimInstance datacenter = new VimInstance();
     datacenter.setId("123");
     datacenter.setName("DC-1");
     datacenter.setType("OpenStack");
     datacenter.setName("datacenter_test");
     when(mock.query(anyString(), anyString())).thenReturn(datacenter);
-    assertEquals(datacenter, restVimInstances.findById(datacenter.getId(), "pi"));
+    assertEquals(datacenter, restVimInstances.findById(datacenter.getId(), "pi", "Bearer token"));
   }
 
   @Test

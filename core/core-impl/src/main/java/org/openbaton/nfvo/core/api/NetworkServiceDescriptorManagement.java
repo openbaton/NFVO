@@ -31,33 +31,14 @@ import java.util.Date;
 import java.util.List;
 import javax.persistence.NoResultException;
 import org.openbaton.catalogue.mano.common.Security;
-import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
-import org.openbaton.catalogue.mano.descriptor.VNFDependency;
-import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
-import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
+import org.openbaton.catalogue.nfvo.VNFPackageMetadata;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
-import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.exceptions.BadFormatException;
-import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.CyclicDependenciesException;
-import org.openbaton.exceptions.EntityInUseException;
-import org.openbaton.exceptions.IncompatibleVNFPackage;
-import org.openbaton.exceptions.NetworkServiceIntegrityException;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimException;
-import org.openbaton.exceptions.WrongStatusException;
+import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.core.utils.NSDUtils;
-import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
-import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
-import org.openbaton.nfvo.repositories.PhysicalNetworkFunctionDescriptorRepository;
-import org.openbaton.nfvo.repositories.VNFDRepository;
-import org.openbaton.nfvo.repositories.VNFDependencyRepository;
-import org.openbaton.nfvo.repositories.VnfPackageRepository;
-import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
+import org.openbaton.nfvo.repositories.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +62,12 @@ public class NetworkServiceDescriptorManagement
 
   @Value("${nfvo.marketplace.ip:marketplace.openbaton.org}")
   private String marketIp;
+
+  @Value("${nfvo.package-repository.ip:localhost}")
+  private String packageRepositoryIp;
+
+  @Value("${nfvo.package-repository.port:8082}")
+  private String packageRepositoryPort;
 
   @Value("${nfvo.marketplace.port:8082}")
   private int marketPort;
@@ -112,8 +99,10 @@ public class NetworkServiceDescriptorManagement
   @Override
   public NetworkServiceDescriptor onboard(
       NetworkServiceDescriptor networkServiceDescriptor, String projectId)
-      throws NotFoundException, BadFormatException, NetworkServiceIntegrityException,
-          CyclicDependenciesException, EntityInUseException, BadRequestException {
+      throws NotFoundException, NetworkServiceIntegrityException, CyclicDependenciesException,
+          BadFormatException, EntityInUseException, BadRequestException, PluginException,
+          IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
+          EntityUnreachableException, InterruptedException {
     SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
     networkServiceDescriptor.setProjectId(projectId);
     log.info("Starting onboarding process for NSD: " + networkServiceDescriptor.getName());
@@ -121,8 +110,14 @@ public class NetworkServiceDescriptorManagement
     if (networkServiceDescriptor.getVnfd().size() == 0)
       throw new BadRequestException(
           "The Network Service Descriptor has to have at least one VNFD.");
-
-    nsdUtils.fetchExistingVnfd(networkServiceDescriptor);
+    List<String> marketIds = nsdUtils.fetchExistingVnfd(networkServiceDescriptor, projectId);
+    for (String marketId : marketIds) {
+      String link =
+          "http://" + marketIp + ":" + marketPort + "/api/v1/vnf-packages/" + marketId + "/tar";
+      VirtualNetworkFunctionDescriptor vnfd =
+          vnfPackageManagement.onboardFromMarket(link, projectId);
+      networkServiceDescriptor.getVnfd().add(vnfd);
+    }
 
     if (networkServiceDescriptor.getVld() != null) {
       for (VirtualLinkDescriptor vld : networkServiceDescriptor.getVld()) {
@@ -172,7 +167,8 @@ public class NetworkServiceDescriptorManagement
   public NetworkServiceDescriptor onboardFromMarketplace(String link, String projectId)
       throws BadFormatException, CyclicDependenciesException, NetworkServiceIntegrityException,
           NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
-          AlreadyExistingException, EntityInUseException, BadRequestException {
+          AlreadyExistingException, EntityInUseException, BadRequestException, InterruptedException,
+          EntityUnreachableException {
 
     URL linkUrl = null;
     try {
@@ -213,26 +209,13 @@ public class NetworkServiceDescriptorManagement
               + link
               + ") to a Network Service Descriptor.");
     }
-
-    List<String> market_ids = new ArrayList<>();
-    for (VirtualNetworkFunctionDescriptor vnfd : nsd.getVnfd()) {
-      market_ids.add(vnfd.getId());
-    }
-    nsd.getVnfd().clear();
-    List<String> vnfd_ids = getIds(market_ids, projectId);
-    log.debug("Catalogue ids of VNFD are: " + vnfd_ids);
-    for (String vnfd_id : vnfd_ids) {
-      VirtualNetworkFunctionDescriptor vnfd = new VirtualNetworkFunctionDescriptor();
-      vnfd.setId(vnfd_id);
-      nsd.getVnfd().add(vnfd);
-    }
     return onboard(nsd, projectId);
   }
 
   private List<String> getIds(List<String> market_ids, String project_id)
       throws NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
           AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException,
-          BadFormatException {
+          InterruptedException, EntityUnreachableException, BadFormatException {
     List<String> not_found_ids = new ArrayList<>();
     not_found_ids.addAll(market_ids);
     List<String> vnfdIds = new ArrayList<>();
@@ -511,6 +494,116 @@ public class NetworkServiceDescriptorManagement
   @Override
   public Iterable<NetworkServiceDescriptor> queryByProjectId(String projectId) {
     return nsdRepository.findByProjectId(projectId);
+  }
+
+  private String getStringFromRemoteLink(String remoteLink) throws IOException {
+    try (InputStream in = new BufferedInputStream(new URL(remoteLink).openStream());
+        ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+      byte[] bytes = new byte[1024];
+      int n;
+      while (-1 != (n = in.read(bytes))) {
+        out.write(bytes, 0, n);
+      }
+      return out.toString();
+    }
+  }
+
+  @Override
+  public NetworkServiceDescriptor onboardFromPackageRepository(
+      String downloadlink, String projectId)
+      throws IOException, BadFormatException, CyclicDependenciesException,
+          NetworkServiceIntegrityException, EntityInUseException, NotFoundException,
+          AlreadyExistingException, IncompatibleVNFPackage, BadRequestException, VimException,
+          PluginException, InterruptedException, EntityUnreachableException {
+
+    String nsdJson = getStringFromRemoteLink(downloadlink);
+
+    NetworkServiceDescriptor nsd = gson.fromJson(nsdJson, NetworkServiceDescriptor.class);
+
+    List<String> packageRepositoryIds = new ArrayList<>();
+    for (VirtualNetworkFunctionDescriptor vnfd : nsd.getVnfd()) {
+      packageRepositoryIds.add(vnfd.getId());
+    }
+    nsd.getVnfd().clear();
+    List<String> vnfd_ids = getVNFDIdsFromPackageRepository(packageRepositoryIds, projectId);
+    log.debug("Catalogue ids of VNFD are: " + vnfd_ids);
+    for (String vnfd_id : vnfd_ids) {
+      VirtualNetworkFunctionDescriptor vnfd = new VirtualNetworkFunctionDescriptor();
+      vnfd.setId(vnfd_id);
+      nsd.getVnfd().add(vnfd);
+    }
+    return onboard(nsd, projectId);
+  }
+
+  private List<String> getVNFDIdsFromPackageRepository(
+      List<String> packageRepositoryIds, String projectId)
+      throws IOException, BadRequestException, PluginException, AlreadyExistingException,
+          NetworkServiceIntegrityException, IncompatibleVNFPackage, NotFoundException, VimException,
+          EntityUnreachableException, InterruptedException {
+    List<String> vnfdIds = new ArrayList<>();
+    for (String packageRepositorySymbolicId : packageRepositoryIds) {
+      String link =
+          "http://"
+              + packageRepositoryIp
+              + ":"
+              + packageRepositoryPort
+              + "/api/v1/vnf-packages/"
+              + packageRepositorySymbolicId
+              + "/default";
+
+      String vnfPackageMetadataJson = getStringFromRemoteLink(link);
+
+      VNFPackageMetadata vnfPackageMetadata =
+          gson.fromJson(vnfPackageMetadataJson, VNFPackageMetadata.class);
+
+      Iterable<VNFPackageMetadata> vnfPackageMetadataIterable =
+          vnfPackageManagement.query(
+              vnfPackageMetadata.getName(),
+              vnfPackageMetadata.getVendor(),
+              vnfPackageMetadata.getVersion(),
+              vnfPackageMetadata.getNfvoVersion(),
+              vnfPackageMetadata.getVnfmType(),
+              vnfPackageMetadata.getOsId(),
+              vnfPackageMetadata.getOsVersion(),
+              vnfPackageMetadata.getOsArchitecture(),
+              vnfPackageMetadata.getTag(),
+              projectId);
+      if (vnfPackageMetadataIterable != null && vnfPackageMetadataIterable.iterator().hasNext()) {
+        log.info(
+            "The vnfd "
+                + packageRepositorySymbolicId
+                + " was found onboarded on the same project.");
+        String vnfPackageFatherId =
+            vnfPackageMetadataIterable.iterator().next().getVnfPackageFatherId();
+        String vnfId =
+            vnfdRepository
+                .findByVnfPackageLocationAndProjectId(vnfPackageFatherId, projectId)
+                .getId();
+        vnfdIds.add(vnfId);
+      } else {
+        log.info(
+            "The vnfd "
+                + packageRepositorySymbolicId
+                + " not found, onboarding from Package Repository..");
+        String linkToDownloadVNFPackage =
+            "http://"
+                + packageRepositoryIp
+                + ":"
+                + packageRepositoryPort
+                + "/api/v1/vnf-packages/"
+                + vnfPackageMetadata.getId()
+                + "/tar";
+        VirtualNetworkFunctionDescriptor vnfd =
+            vnfPackageManagement.onboardFromPackageRepository(linkToDownloadVNFPackage, projectId);
+        vnfdIds.add(vnfd.getId());
+        log.info(
+            "Onboarded from Package Repository VNFD "
+                + vnfd.getName()
+                + " local id is: "
+                + vnfd.getId());
+      }
+    }
+    return vnfdIds;
   }
 
   /**

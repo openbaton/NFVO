@@ -154,6 +154,7 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
   public User queryByName(String username) throws NotFoundException {
     log.trace("Get user: " + username);
     User user = userRepository.findFirstByUsername(username);
+
     if (user == null) {
       throw new NotFoundException("Not found user " + username);
     }

@@ -70,7 +70,7 @@ public class HistoryManagement implements org.openbaton.nfvo.core.interfaces.His
       try {
         user = userManagement.getCurrentUser();
       } catch (org.openbaton.exceptions.NotFoundException ex) {
-        log.warn("Not storing requests from anonymousUser");
+        //log.warn("Not storing requests from anonymousUser");
         return;
       }
 

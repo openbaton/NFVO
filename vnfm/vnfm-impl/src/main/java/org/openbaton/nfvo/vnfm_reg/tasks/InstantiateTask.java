@@ -18,6 +18,7 @@
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
@@ -25,6 +26,7 @@ import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmStartStopMessage;
+import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.core.interfaces.DependencyManagement;
 import org.openbaton.nfvo.core.interfaces.DependencyQueuer;
@@ -55,7 +57,7 @@ public class InstantiateTask extends AbstractTask {
   }
 
   @Override
-  protected NFVMessage doWork() throws Exception {
+  protected NFVMessage doWork() throws Exception, BadFormatException {
     log.info(
         "Start INSTANTIATE task for vnfr: "
             + virtualNetworkFunctionRecord.getName()
@@ -98,7 +100,8 @@ public class InstantiateTask extends AbstractTask {
 
     if (ordered != null && Boolean.parseBoolean(ordered)) {
       log.debug(
-          "Ordered deployments of VNF is enabled in the openbaton.properties file, in case you want to speed up the deployment, please disable it");
+          "Ordered deployments of VNF is enabled in the openbaton.properties file, in case you want to speed up the "
+              + "deployment, please disable it");
       if (dep == 0) {
         virtualNetworkFunctionRecord.setStatus(Status.INACTIVE);
         saveVirtualNetworkFunctionRecord();
@@ -137,7 +140,7 @@ public class InstantiateTask extends AbstractTask {
   }
 
   private void sendStart(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
-      throws NotFoundException {
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
     VnfmSender vnfmSender;
     vnfmSender =
         this.getVnfmSender(
@@ -154,9 +157,10 @@ public class InstantiateTask extends AbstractTask {
     /*vnfmSender.sendCommand(
     new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.START),
     vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));*/
-    vnfmSender.sendCommand(
-        new OrVnfmStartStopMessage(virtualNetworkFunctionRecord, null, Action.START),
-        vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));
+    vnfStateHandler.executeAction(
+        vnfmSender.sendCommand(
+            new OrVnfmStartStopMessage(virtualNetworkFunctionRecord, null, Action.START),
+            vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint())));
   }
 
   @Override

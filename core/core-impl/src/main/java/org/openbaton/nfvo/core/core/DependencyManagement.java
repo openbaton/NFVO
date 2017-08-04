@@ -17,8 +17,13 @@
 
 package org.openbaton.nfvo.core.core;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import javax.persistence.NoResultException;
 import org.hibernate.StaleObjectStateException;
 import org.openbaton.catalogue.mano.common.Ip;
@@ -33,10 +38,12 @@ import org.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.openbaton.catalogue.nfvo.DependencyParameters;
 import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
+import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.VNFRDependencyRepository;
 import org.openbaton.vnfm.interfaces.manager.VnfmManager;
+import org.openbaton.vnfm.interfaces.state.VnfStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +62,7 @@ public class DependencyManagement
   @Qualifier("vnfmManager")
   private VnfmManager vnfmManager;
 
+  @Autowired private VnfStateHandler vnfStateHandler;
   @Autowired private org.openbaton.nfvo.core.interfaces.DependencyQueuer dependencyQueuer;
 
   private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -71,7 +79,8 @@ public class DependencyManagement
    */
   @Override
   public int provisionDependencies(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
-      throws NoResultException, NotFoundException {
+      throws NoResultException, NotFoundException, BadFormatException, ExecutionException,
+          InterruptedException {
     log.debug("Provision dependencies for " + virtualNetworkFunctionRecord.getName());
     NetworkServiceRecord nsr =
         nsrRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id());
@@ -106,7 +115,7 @@ public class DependencyManagement
             OrVnfmGenericMessage orVnfmGenericMessage =
                 new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.MODIFY);
             orVnfmGenericMessage.setVnfrd(vnfRecordDependency);
-            vnfmManager.sendMessageToVNFR(virtualNetworkFunctionRecord, orVnfmGenericMessage);
+            vnfStateHandler.sendMessageToVNFR(virtualNetworkFunctionRecord, orVnfmGenericMessage);
           } else return -1;
         }
         return dep;

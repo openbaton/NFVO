@@ -145,16 +145,16 @@ function start {
     screen_exists=$(screen -ls | grep openbaton | wc -l);
     if [ "${screen_exists}" -eq "0" ]; then
     	echo "Starting the NFVO in a new screen session (attach to the screen with screen -x openbaton)"
-	    screen -c screenrc -d -m -S openbaton -t ${_screen_name} java -jar "build/libs/openbaton-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
+	    screen -c screenrc -d -m -S openbaton -t ${_screen_name} java -jar "build/libs/openbaton-nfvo-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
     else
         echo "Starting the NFVO in the existing screen session (attach to the screen with screen -x openbaton)"
-        screen -S openbaton -X screen -t ${_screen_name} java -jar "build/libs/openbaton-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
+        screen -S openbaton -X screen -t ${_screen_name} java -jar "build/libs/openbaton-nfvo-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
     fi
 }
 
 function start_fg {
     start_checks
-    java -jar "build/libs/openbaton-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
+    java -jar "build/libs/openbaton-nfvo-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
 }
 
 

@@ -28,18 +28,15 @@ import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.EndpointType;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.springframework.scheduling.annotation.Async;
 
 /** Created by lto on 26/05/15. */
 public interface VnfmManager {
   Map<String, Map<String, Integer>> getVnfrNames();
-
-  void init();
 
   Future<Void> deploy(
       NetworkServiceDescriptor networkServiceDescriptor,
@@ -47,19 +44,21 @@ public interface VnfmManager {
       DeployNSRBody body,
       Map<String, List<String>> vduVimInstances,
       String monitoringIp)
-      throws NotFoundException;
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 
-  VnfmSender getVnfmSender(EndpointType endpointType);
+  //  Future<String> executeAction(NFVMessage message) throws ExecutionException, InterruptedException;
 
-  String executeAction(NFVMessage message) throws ExecutionException, InterruptedException;
-
-  @Async
-  Future<Void> sendMessageToVNFR(
-      VirtualNetworkFunctionRecord virtualNetworkFunctionRecordDest, NFVMessage nfvMessage)
-      throws NotFoundException;
+  //  @Async
+  //  Future<Void> sendMessageToVNFR(
+  //      VirtualNetworkFunctionRecord virtualNetworkFunctionRecordDest, NFVMessage nfvMessage)
+  //      throws NotFoundException, BadFormatException;
 
   Future<Void> release(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
-      throws NotFoundException;
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
+
+  @Async
+  Future<NFVMessage> requestLog(VirtualNetworkFunctionRecord vnfr, String hostname)
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 
   @Async
   Future<Void> addVnfc(
@@ -68,17 +67,16 @@ public interface VnfmManager {
       VNFRecordDependency dependency,
       String mode,
       List<String> vimInstanceNames)
-      throws NotFoundException;
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 
   Future<Void> removeVnfcDependency(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFCInstance vnfcInstance)
-      throws NotFoundException;
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 
   void findAndSetNSRStatus(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
   void removeVnfrName(String nsdId, String vnfrName);
 
-  void terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
-
-  void updateScript(Script script, String vnfPackageId) throws NotFoundException;
+  void updateScript(Script script, String vnfPackageId)
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 }

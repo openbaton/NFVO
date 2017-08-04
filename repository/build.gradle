@@ -21,7 +21,7 @@ dependencies {
 
 
     compile 'commons-dbcp:commons-dbcp:1.4'
-    compile 'mysql:mysql-connector-java:5.1.40'
+//    compile 'mysql:mysql-connector-java:5.1.40'
 
     // CrudRepository
     compile 'org.springframework.data:spring-data-jpa:1.10.6.RELEASE'
