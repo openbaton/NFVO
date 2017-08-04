@@ -1,7 +1,7 @@
 language: java
 jdk:
- - oraclejdk7
- - openjdk7
+ - oraclejdk8
+# - openjdk8
 before_install:
  - chmod +x gradlew
 notifications:
@@ -11,6 +11,7 @@ notifications:
 cache:
   directories:
   - $HOME/.m2
+  - $HOME/.gradle/wrapper/
 script: 
  - ./gradlew build
 after_success:
