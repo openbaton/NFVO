@@ -175,9 +175,6 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
       }
     } catch (Exception e) {
       genericExceptionHandling(e);
-    } catch (BadFormatException e) {
-      e.printStackTrace();
-      //TODO fix this
     }
     /** Send event finish */
     if (result == null) {
