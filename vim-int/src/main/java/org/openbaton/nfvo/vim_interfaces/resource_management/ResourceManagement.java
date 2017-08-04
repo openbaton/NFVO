@@ -31,11 +31,22 @@ import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.VimException;
 
-/** Created by mpa on 30/04/15. */
 public interface ResourceManagement {
+
   /**
    * This operation allows requesting the instantiation and assignment of a virtualised resource to
    * the VNF, as indicated by the consumer functional block.
+   *
+   * @param vimInstance the {@link VimInstance} on which allocate the resource
+   * @param vdu the {@link VirtualDeploymentUnit}
+   * @param virtualNetworkFunctionRecord the {@link VirtualNetworkFunctionRecord}
+   * @param vnfComponent the {@link VNFComponent}
+   * @param userdata the UserData to inject in the cloud init
+   * @param floatingIps A map containing the network name as key and a string "random" or the static
+   *     floating ip as string as value
+   * @param keys the set of {@link Key} to add to the VM
+   * @return the future containing the {@link VNFCInstance} deployed
+   * @throws VimException in case of exception
    */
   Future<VNFCInstance> allocate(
       VimInstance vimInstance,
@@ -51,7 +62,9 @@ public interface ResourceManagement {
    * This operation allows querying a virtualised resource, i.e. retrieve information about an
    * instantiated virtualised resource.
    *
-   * @param vimInstance
+   * @param vimInstance the {@link VimInstance} on which query the list of {@link Server}s
+   * @return the list of deplyed {@link Server}s
+   * @throws VimException in case of exception
    */
   List<Server> queryResources(VimInstance vimInstance) throws VimException;
 
@@ -59,7 +72,7 @@ public interface ResourceManagement {
    * This operation allows updating the configuration and/or parameterization of an instantiated
    * virtualised resource.
    *
-   * @param vdu
+   * @param vdu the {@link VirtualDeploymentUnit} to update
    */
   void update(VirtualDeploymentUnit vdu);
 
@@ -67,7 +80,7 @@ public interface ResourceManagement {
    * This operation allows scaling a virtualised resource by adding or removing capacity, e.g.
    * adding vCPUs to a virtual machine.
    *
-   * @param vdu
+   * @param vdu the {@link VirtualDeploymentUnit} to scale
    */
   void scale(VirtualDeploymentUnit vdu);
 
@@ -76,7 +89,7 @@ public interface ResourceManagement {
    * operation performs the migration of a computing resource from one host to another host; while
    * for a storage resource, it migrates the resource from one storage location to another.
    *
-   * @param vdu
+   * @param vdu the {@link VirtualDeploymentUnit} to migrate
    */
   void migrate(VirtualDeploymentUnit vdu);
 
@@ -85,8 +98,8 @@ public interface ResourceManagement {
    * Examples on compute resources can include (but not limited to): start, stop, pause, suspend,
    * capture snapshot, etc.
    *
-   * @param vdu
-   * @param operation
+   * @param vdu the {@link VirtualDeploymentUnit} on which execute the operation
+   * @param operation the operation to execute
    */
   void operate(VirtualDeploymentUnit vdu, String operation);
 
@@ -94,8 +107,10 @@ public interface ResourceManagement {
    * This operation allows de-allocating and terminating an instantiated virtualised resource. This
    * operation frees resources and returns them to the NFVI resource pool.
    *
-   * @param vnfcInstance
-   * @param vimInstance
+   * @param vnfcInstance the {@link VNFCInstance} to deallocate
+   * @param vimInstance the {@link VimInstance} on which deallocate the resource
+   * @return Future of {@link Void}
+   * @throws VimException in case of exception
    */
   Future<Void> release(VNFCInstance vnfcInstance, VimInstance vimInstance) throws VimException;
 
@@ -103,7 +118,7 @@ public interface ResourceManagement {
    * This operation allows requesting the reservation of a set of virtualised resources to a
    * consumer functional block without performing the steps of "Allocate Resource".
    *
-   * @param vdu
+   * @param vdu the {@link VirtualDeploymentUnit} to reserve
    */
   void createReservation(VirtualDeploymentUnit vdu);
 
@@ -118,7 +133,7 @@ public interface ResourceManagement {
    * This operation allows updating an issued resources reservation to increase or decrease the
    * amount of virtualised resources in the reserved resources pool.
    *
-   * @param vdu
+   * @param vdu the {@link VirtualDeploymentUnit} to update the reservation
    */
   void updateReservation(VirtualDeploymentUnit vdu);
 
@@ -126,14 +141,16 @@ public interface ResourceManagement {
    * This operation allows releasing an issued resources reservation, hence freeing the reserved
    * virtualised resources.
    *
-   * @param vdu
+   * @param vdu the the {@link VirtualDeploymentUnit} to which the reservation to release was made
    */
   void releaseReservation(VirtualDeploymentUnit vdu);
 
   /**
    * This operations return the maximal Quotas allowed to allocate.
    *
-   * @return quota
+   * @param vimInstance the {@link VimInstance} on which requesting the quota
+   * @return quota the {@link Quota} for that specific {@link VimInstance}
+   * @throws VimException in case of exception
    */
   Quota getQuota(VimInstance vimInstance) throws VimException;
 }

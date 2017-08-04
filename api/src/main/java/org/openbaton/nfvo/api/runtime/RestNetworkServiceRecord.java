@@ -22,8 +22,14 @@ import com.google.gson.reflect.TypeToken;
 import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import javax.validation.Valid;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
@@ -447,6 +453,7 @@ public class RestNetworkServiceRecord {
     consumes = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.CREATED)
+  @SuppressWarnings("unchecked")
   public void postVNFCInstance(
       @RequestBody @Valid JsonObject body,
       @PathVariable("id") String id,
@@ -477,6 +484,7 @@ public class RestNetworkServiceRecord {
     consumes = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.CREATED)
+  @SuppressWarnings("unchecked")
   public void postVNFCInstance(
       @RequestBody @Valid JsonObject body,
       @PathVariable("id") String id,
@@ -524,6 +532,7 @@ public class RestNetworkServiceRecord {
    *     "vimInstanceNames":{...}}
    * @return the extracted list of VimInstance names
    */
+  @SuppressWarnings("unchecked")
   private List<String> retrieveVimInstanceNamesFromRequest(JsonObject body)
       throws BadRequestException {
     List<String> vimInstanceNames = new LinkedList<>();
@@ -588,6 +597,7 @@ public class RestNetworkServiceRecord {
     consumes = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.CREATED)
+  @SuppressWarnings("unchecked")
   public void postStandByVNFCInstance(
       @RequestBody @Valid JsonObject body,
       @PathVariable("id") String id,

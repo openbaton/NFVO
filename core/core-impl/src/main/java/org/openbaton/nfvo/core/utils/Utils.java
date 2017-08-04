@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.util.Map;
 import org.yaml.snakeyaml.Yaml;
 
-/** Created by mob on 12.05.17. */
+@SuppressWarnings({"unsafe", "unchecked"})
 public class Utils {
 
   public static Map<String, Object> getMapFromYamlFile(byte[] file) throws IOException {

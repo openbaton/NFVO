@@ -30,6 +30,7 @@ public class VNFNodeTemplate {
   private VNFInterfaces interfaces = null;
   private VNFRequirements requirements = null;
 
+  @SuppressWarnings({"unsafe", "unchecked"})
   public VNFNodeTemplate(NodeTemplate nodeTemplate, String nodeName) throws NotFoundException {
 
     this.name = nodeName;

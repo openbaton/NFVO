@@ -106,6 +106,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @org.springframework.context.annotation.Configuration
 @ContextConfiguration(classes = NetworkServiceRecordManagementClassSuiteTest.class)
+@SuppressWarnings({"unsafe", "unchecked"})
 public class NetworkServiceRecordManagementClassSuiteTest {
 
   private static final String projectId = "project-id";

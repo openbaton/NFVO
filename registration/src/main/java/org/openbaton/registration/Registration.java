@@ -51,7 +51,12 @@ public class Registration {
    * is injected into the RabbitTemplate so that it can send requests to the queue dedicated to the
    * specific Vnfm possessing the RabbitTemplate object.
    *
-   * @param rabbitTemplate
+   * @param rabbitTemplate The spring RabbitTemplate @see
+   *     org.springframework.amqp.rabbit.core.RabbitTemplate
+   * @param endpoint The VNFM Endpoint to register @see
+   *     org.openbaton.catalogue.nfvo.VnfmManagerEndpoint
+   * @return new username and password for rabbitmq for specific vnfm endpoint
+   * @throws InterruptedException in case of InterruptedException
    */
   public String[] registerVnfmToNfvo(RabbitTemplate rabbitTemplate, VnfmManagerEndpoint endpoint)
       throws InterruptedException {
@@ -101,7 +106,10 @@ public class Registration {
    * queue using the given RabbitTemplate. The rabbitTemplate object should be obtained from the
    * Vnfm's VnfmSpringHelperRabbit object.
    *
-   * @param rabbitTemplate
+   * @param rabbitTemplate The spring rabbit template @see
+   *     org.springframework.amqp.rabbit.core.RabbitTemplate
+   * @param endpoint the VNfm Endpoint to remove @see
+   *     org.openbaton.catalogue.nfvo.VnfmManagerEndpoint
    */
   public void deregisterVnfmFromNfvo(RabbitTemplate rabbitTemplate, VnfmManagerEndpoint endpoint) {
     JsonObject message = new JsonObject();
@@ -117,14 +125,16 @@ public class Registration {
    * Sends a registration message to the NFVO and returns a managerCredentials object from which the
    * rabbitmq username and password can be obtained.
    *
-   * @param brokerIp
-   * @param port
-   * @param username
-   * @param password
-   * @param pluginName
-   * @return
-   * @throws IOException
-   * @throws TimeoutException
+   * @param brokerIp the rabbitmq broker ip
+   * @param port the port of rabbitmq
+   * @param username the username to connect with
+   * @param password the password to connect with
+   * @param virtualHost the virtual host of rabbitmq
+   * @param pluginName the name of the plugin
+   * @return the new ManagerCredentials @see org.openbaton.catalogue.nfvo.ManagerCredentials
+   * @throws IOException In case of InterruptedException
+   * @throws TimeoutException in case of TimeoutException
+   * @throws InterruptedException in case of InterruptedException
    */
   public ManagerCredentials registerPluginToNfvo(
       String brokerIp,
@@ -188,6 +198,19 @@ public class Registration {
     return managerCredentials;
   }
 
+  /**
+   * Sends a deregistration message to the NFVO
+   *
+   * @param brokerIp the rabbitmq broker ip
+   * @param port the port of rabbitmq
+   * @param username the username to connect with
+   * @param password the password to connect with
+   * @param virtualHost the virtualHost
+   * @param managerCredentialUsername the username to remove
+   * @param managerCredentialPassword the password to remove
+   * @throws IOException In case of InterruptedException
+   * @throws TimeoutException in case of TimeoutException
+   */
   public void deregisterPluginFromNfvo(
       String brokerIp,
       int port,

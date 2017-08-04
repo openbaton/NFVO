@@ -17,7 +17,11 @@
 
 package org.openbaton.tosca.templates.TopologyTemplate.Nodes.VNF;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.openbaton.tosca.exceptions.NotFoundException;
 
@@ -37,6 +41,7 @@ public class VNFProperties {
 
   public VNFProperties() {}
 
+  @SuppressWarnings({"unsafe", "unchecked"})
   public VNFProperties(Object properties) {
 
     Map<String, Object> propertiesMap = (Map<String, Object>) properties;

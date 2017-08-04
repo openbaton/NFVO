@@ -27,6 +27,7 @@ public class VDUProperties {
   private ArrayList<String> vim_instance_name;
   private VDUFaultManagement fault_management_policy = null;
 
+  @SuppressWarnings({"unsafe", "unchecked"})
   public VDUProperties(Object vduProp) {
 
     Map<String, Object> vduPropMap = (Map<String, Object>) vduProp;

@@ -25,6 +25,7 @@ public class VDUArtifact {
   private String type;
   private String file;
 
+  @SuppressWarnings({"unsafe", "unchecked"})
   public VDUArtifact(Object artifact) {
 
     Map<String, String> artifactMap = (Map<String, String>) artifact;

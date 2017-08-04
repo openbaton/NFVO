@@ -15,7 +15,7 @@ import org.openbaton.exceptions.VNFPackageFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Created by mob on 05/04/2017. */
+@SuppressWarnings({"unsafe", "unchecked"})
 public class CheckVNFPackage {
   // Identification required keys
   private static final String[] REQUIRED_VNF_PACKAGE_IDENTIFIER_KEYS = new String[] {"name"};

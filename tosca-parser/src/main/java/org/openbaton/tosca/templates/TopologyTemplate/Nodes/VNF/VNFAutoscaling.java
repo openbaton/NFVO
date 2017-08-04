@@ -20,13 +20,19 @@ package org.openbaton.tosca.templates.TopologyTemplate.Nodes.VNF;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import org.openbaton.catalogue.mano.common.*;
+import org.openbaton.catalogue.mano.common.AutoScalePolicy;
+import org.openbaton.catalogue.mano.common.ScalingAction;
+import org.openbaton.catalogue.mano.common.ScalingActionType;
+import org.openbaton.catalogue.mano.common.ScalingAlarm;
+import org.openbaton.catalogue.mano.common.ScalingMode;
+import org.openbaton.catalogue.mano.common.ScalingType;
 
 /** Created by rvl on 15.09.16. */
 public class VNFAutoscaling {
 
   private Set<AutoScalePolicy> autoScalePolicySet;
 
+  @SuppressWarnings({"unsafe", "unchecked"})
   public VNFAutoscaling(Object o) {
 
     autoScalePolicySet = new HashSet<>();

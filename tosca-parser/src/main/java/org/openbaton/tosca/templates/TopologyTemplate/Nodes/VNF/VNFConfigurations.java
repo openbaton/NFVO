@@ -29,6 +29,7 @@ public class VNFConfigurations {
 
   public VNFConfigurations() {}
 
+  @SuppressWarnings({"unsafe", "unchecked"})
   public VNFConfigurations(Object config) {
 
     Map<String, Object> configMap = (Map<String, Object>) config;

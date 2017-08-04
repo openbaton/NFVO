@@ -87,6 +87,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 @ContextConfiguration(classes = {ApplicationTest.class})
 @TestPropertySource(properties = {"mocked_id=1234567890", "port: 4242"})
 @PrepareForTest({Vim.class})
+@SuppressWarnings({"unsafe", "unchecked"})
 public class VimTestSuiteClass {
 
   @Rule public ExpectedException exception = ExpectedException.none();

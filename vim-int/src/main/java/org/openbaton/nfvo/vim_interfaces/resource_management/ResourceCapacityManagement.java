@@ -24,9 +24,16 @@ public interface ResourceCapacityManagement {
    * This operation allows querying the capacity usage of an NFVI-PoP. The operation can be used to
    * gather information at different levels, from specific virtualised partition capacity usage, to
    * total capacity availability in the NFVI-PoP.
+   *
+   * @param pop the PoP to query
+   * @return the capacity information queried
    */
   String query(String pop);
 
-  /** This operation allows notifying about capacity changes in the NFVI-PoP. */
+  /**
+   * This operation allows notifying about capacity changes in the NFVI-PoP.
+   *
+   * @param notification the notification to fire
+   */
   void notifyChanges(String notification);
 }

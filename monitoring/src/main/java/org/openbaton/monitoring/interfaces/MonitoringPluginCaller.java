@@ -47,9 +47,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-/** Created by lto on 25/11/15. */
 @Service
 @Scope("prototype")
+@SuppressWarnings({"unsafe", "unchecked"})
 public class MonitoringPluginCaller extends MonitoringPlugin {
 
   private PluginCaller pluginCaller;

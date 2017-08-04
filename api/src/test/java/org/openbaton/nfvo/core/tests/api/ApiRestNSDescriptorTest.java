@@ -58,9 +58,9 @@ public class ApiRestNSDescriptorTest {
 
   @Rule public ExpectedException exception = ExpectedException.none();
 
-  @InjectMocks RestNetworkServiceDescriptor restNetworkService;
+  @InjectMocks private RestNetworkServiceDescriptor restNetworkService;
 
-  @Mock NetworkServiceDescriptorManagement nsdManagement;
+  @Mock private NetworkServiceDescriptorManagement nsdManagement;
 
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -164,6 +164,7 @@ public class ApiRestNSDescriptorTest {
   }
 
   @Test
+  @SuppressWarnings({"unsafe", "unchecked"})
   public void VNFDNotFoundException() throws NotFoundException {
     exception.expect(NotFoundException.class);
     when(nsdManagement.getVirtualNetworkFunctionDescriptor(anyString(), anyString(), anyString()))
@@ -230,6 +231,7 @@ public class ApiRestNSDescriptorTest {
   }
 
   @Test
+  @SuppressWarnings({"unsafe", "unchecked"})
   public void VNFDependencyNotFoundException() throws NotFoundException {
     exception.expect(NotFoundException.class);
     when(nsdManagement.getVnfDependency(anyString(), anyString(), anyString()))
@@ -312,6 +314,7 @@ public class ApiRestNSDescriptorTest {
   }
 
   @Test
+  @SuppressWarnings({"unsafe", "unchecked"})
   public void PNFDNotFoundException() throws NotFoundException {
     exception.expect(NotFoundException.class);
     when(nsdManagement.getPhysicalNetworkFunctionDescriptor(anyString(), anyString(), anyString()))

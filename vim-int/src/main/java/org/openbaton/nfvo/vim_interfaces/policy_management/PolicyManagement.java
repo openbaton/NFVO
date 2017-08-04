@@ -23,10 +23,18 @@ import org.openbaton.catalogue.mano.descriptor.Policy;
 /** Created by mpa on 30/04/15. */
 public interface PolicyManagement {
 
-  /** This operation allows defining policy rules include conditions and actions. */
+  /**
+   * This operation allows defining policy rules include conditions and actions.
+   *
+   * @return the {@link Policy} created
+   */
   Policy create();
 
-  /** This operation allows updating an existing policy. */
+  /**
+   * This operation allows updating an existing policy.
+   *
+   * @return the {@link Policy} updated
+   */
   Policy update();
 
   /** This operation allows delete policy after being created. */
@@ -35,6 +43,8 @@ public interface PolicyManagement {
   /**
    * This operation allows querying about a particular policy or a querying the list of available
    * policies.
+   *
+   * @return the List of available {@link Policy}
    */
   List<Policy> query();
 

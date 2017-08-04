@@ -28,34 +28,41 @@ public interface ImageManagement {
   /**
    * This operation allows adding new VNF software images to the image repository.
    *
-   * @param vimInstance
-   * @param image
-   * @param imageFile
+   * @param vimInstance the {@link VimInstance} to which add the {@link NFVImage}
+   * @param image the {@link NFVImage} to add
+   * @param imageFile the bytearray containing the image
+   * @return the added image @see {@link NFVImage}
+   * @throws VimException in case of exception
    */
   NFVImage add(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException;
 
   /**
    * This operation allows adding new VNF software images to the image repository.
    *
-   * @param vimInstance
-   * @param image
-   * @param image_url
+   * @param vimInstance the {@link VimInstance} to which add the {@link NFVImage}
+   * @param image the {@link NFVImage} to add
+   * @param image_url the link hosting the image
+   * @return the added image @see {@link NFVImage}
+   * @throws VimException in case of exception
    */
   NFVImage add(VimInstance vimInstance, NFVImage image, String image_url) throws VimException;
 
   /**
    * This operation allows deleting in the VNF software images from the image repository.
    *
-   * @param vimInstance
-   * @param image
+   * @param vimInstance the {@link VimInstance} to which remove the {@link NFVImage}
+   * @param image the {@link NFVImage} to remove
+   * @throws VimException in case of exception
    */
   void delete(VimInstance vimInstance, NFVImage image) throws VimException;
 
   /**
    * This operation allows updating the VNF software images in the image repository.
    *
-   * @param vimInstance
-   * @param image
+   * @param vimInstance the {@link VimInstance} where update the {@link NFVImage}
+   * @param image the {@link NFVImage} to update
+   * @return the updated {@link NFVImage}
+   * @throws VimException in case of exception
    */
   NFVImage update(VimInstance vimInstance, NFVImage image) throws VimException;
 
@@ -63,16 +70,19 @@ public interface ImageManagement {
    * This operation allows querying the information of the VNF software images in the image
    * repository.
    *
-   * @param vimInstance
+   * @param vimInstance the {@link VimInstance} to which request the list of images
+   * @return the list of available images
+   * @throws VimException in case of exception
    */
   List<NFVImage> queryImages(VimInstance vimInstance) throws VimException;
 
   /**
    * This operation allows copying images from a VIM to another.
    *
-   * @param vimInstance
-   * @param image
-   * @param imageFile
+   * @param vimInstance the {@link VimInstance} to which copy the image
+   * @param image the {@link NFVImage} to be copied
+   * @param imageFile the bytearray containing the image
+   * @throws VimException in case of exception
    */
   void copy(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException;
 }

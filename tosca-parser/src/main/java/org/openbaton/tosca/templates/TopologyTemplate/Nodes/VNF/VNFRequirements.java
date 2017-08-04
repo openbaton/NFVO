@@ -26,6 +26,7 @@ public class VNFRequirements {
   private ArrayList<String> virtualLinks = new ArrayList<>();
   private ArrayList<String> vdus = new ArrayList<>();
 
+  @SuppressWarnings({"unsafe", "unchecked"})
   public VNFRequirements(Object reqs) {
 
     ArrayList<LinkedHashMap<String, String>> resMap =

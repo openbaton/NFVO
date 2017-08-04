@@ -22,44 +22,53 @@ import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.VimException;
 
-/** Created by mpa on 30/04/15. */
 public interface NetworkManagement {
 
   /**
    * This operation allows adding new Network to the network repository.
    *
-   * @param vimInstance
-   * @param network
+   * @param vimInstance the {@link VimInstance} to which add the network
+   * @param network the {@link Network} to add
+   * @return the {@link Network} added
+   * @throws VimException in case of exception
    */
   Network add(VimInstance vimInstance, Network network) throws VimException;
 
   /**
    * This operation allows deleting in the Networks from the network repository.
    *
-   * @param vimInstance
-   * @param network
+   * @param vimInstance the {@link VimInstance} in which delete the network
+   * @param network the {@link Network} to delete
+   * @throws VimException in case of exception
    */
   void delete(VimInstance vimInstance, Network network) throws VimException;
 
   /**
    * This operation allows updating the Network in the network repository.
    *
-   * @param vimInstance
-   * @param updatingNetwork
+   * @param vimInstance the {@link VimInstance} in which update the network
+   * @param updatingNetwork the {@link Network} to update
+   * @return the {@link Network} updated
+   * @throws VimException in case of exception
    */
   Network update(VimInstance vimInstance, Network updatingNetwork) throws VimException;
 
   /**
    * This operation allows querying the information of the Networks in the network repository.
    *
-   * @param vimInstance
+   * @param vimInstance the {@link VimInstance} to which query the networks
+   * @return the list of all networks available
+   * @throws VimException in case of exception
    */
   List<Network> queryNetwork(VimInstance vimInstance) throws VimException;
 
   /**
    * This operation allows querying the information of the Networks in the network repository.
    *
-   * @param vimInstance
+   * @param vimInstance the {@link VimInstance} to which query the network
+   * @param extId the external id of the Network to query
+   * @return the {@link Network} queried
+   * @throws VimException in case of exception
    */
   Network query(VimInstance vimInstance, String extId) throws VimException;
 }

@@ -26,6 +26,7 @@ public class CPRequirements {
   private ArrayList<String> virtualLink = new ArrayList<>();
   private ArrayList<String> virtualBinding = new ArrayList<>();
 
+  @SuppressWarnings({"unsafe", "unchecked"})
   public CPRequirements(Object reqs) {
 
     ArrayList<LinkedHashMap<String, String>> resMap =

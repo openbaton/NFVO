@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import org.openbaton.tosca.templates.TopologyTemplate.Nodes.NodeTemplate;
 
-/** Created by rvl on 19.08.16. */
+@SuppressWarnings({"unsafe", "unchecked"})
 public class VLNodeTemplate {
 
   private String type = "";

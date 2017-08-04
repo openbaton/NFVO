@@ -14,6 +14,7 @@ public class VDUFaultManagement {
 
   private Set<VRFaultManagementPolicy> faultManagementPolicies;
 
+  @SuppressWarnings({"unsafe", "unchecked"})
   public VDUFaultManagement(Object o) {
     faultManagementPolicies = new HashSet<>();
 

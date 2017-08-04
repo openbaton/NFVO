@@ -33,6 +33,7 @@ public class VNFInterfaces {
     return lifecycle;
   }
 
+  @SuppressWarnings({"unsafe", "unchecked"})
   public Set<LifecycleEvent> getOpLifecycle() {
 
     Map<String, Object> lifecycleMap = (Map<String, Object>) lifecycle;

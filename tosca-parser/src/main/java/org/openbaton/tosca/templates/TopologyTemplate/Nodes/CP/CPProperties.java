@@ -26,6 +26,7 @@ public class CPProperties {
   private String floatingIP = null;
   private int interfaceId = 0;
 
+  @SuppressWarnings({"unsafe", "unchecked"})
   public CPProperties(Object properties) {
     Map<String, Object> propertiesMap = (Map<String, Object>) properties;
 

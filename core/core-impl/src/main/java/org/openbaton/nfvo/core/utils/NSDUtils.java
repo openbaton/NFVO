@@ -63,6 +63,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Scope("prototype")
 @ConfigurationProperties(prefix = "nfvo.start")
+@SuppressWarnings({"unsafe", "unchecked"})
 public class NSDUtils {
 
   @Autowired private VimRepository vimRepository;
@@ -206,7 +207,7 @@ public class NSDUtils {
 
   public void fetchVimInstances(NetworkServiceDescriptor networkServiceDescriptor, String projectId)
       throws NotFoundException {
-    /** Fetching VimInstances */
+    /* Fetching VimInstances */
     for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
       fetchVimInstances(vnfd, projectId);
     }
@@ -252,7 +253,7 @@ public class NSDUtils {
   public void fetchDependencies(NetworkServiceDescriptor networkServiceDescriptor)
       throws NotFoundException, BadFormatException, CyclicDependenciesException,
           NetworkServiceIntegrityException {
-    /** Fetching dependencies */
+    /* Fetching dependencies */
     DirectedPseudograph<String, DefaultEdge> g = new DirectedPseudograph<>(DefaultEdge.class);
 
     //Add a vertex to the graph for each vnfd
@@ -418,7 +419,7 @@ public class NSDUtils {
 
   public void checkIntegrity(NetworkServiceDescriptor networkServiceDescriptor)
       throws NetworkServiceIntegrityException {
-    /** check names */
+    /* check names */
     Set<String> names = new HashSet<>();
     for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
         networkServiceDescriptor.getVnfd()) {
@@ -447,7 +448,7 @@ public class NSDUtils {
       throws NetworkServiceIntegrityException {
     UrlValidator urlValidator = new UrlValidator();
 
-    /** check flavours and images */
+    /* check flavours and images */
     Set<String> flavors = new HashSet<>();
     Set<String> imageNames = new HashSet<>();
     Set<String> imageIds = new HashSet<>();

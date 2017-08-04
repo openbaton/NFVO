@@ -38,6 +38,10 @@ public interface ResourceFaultManagement {
    */
   void notifyInformation();
 
-  /** This operation enables the NFVOs to query for active alarms from the VIM. */
+  /**
+   * This operation enables the NFVOs to query for active alarms from the VIM.
+   *
+   * @return the list of available {@link Alarm}
+   */
   List<Alarm> getAlarmList();
 }

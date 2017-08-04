@@ -55,7 +55,7 @@ import org.openbaton.nfvo.repositories.VirtualLinkRecordRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Created by lto on 20/04/15. */
+@SuppressWarnings({"unsafe", "unchecked"})
 public class VirtualLinkManagementClassSuiteTest {
 
   @Rule public ExpectedException exception = ExpectedException.none();
