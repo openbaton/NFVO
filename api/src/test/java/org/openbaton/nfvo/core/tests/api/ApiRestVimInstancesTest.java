@@ -57,7 +57,7 @@ public class ApiRestVimInstancesTest {
   @Test
   public void findAllVimInstances()
       throws NoSuchAlgorithmException, InvalidKeyException, BadPaddingException,
-          NoSuchPaddingException, IllegalBlockSizeException {
+          NoSuchPaddingException, IllegalBlockSizeException, BadFormatException {
     when(mock.queryByProjectId("pi")).thenReturn(new ArrayList<VimInstance>());
     assertEquals(mock.queryByProjectId("pi"), restVimInstances.findAll("pi", "Bearer token"));
   }

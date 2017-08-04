@@ -105,7 +105,8 @@ public class VimManagementClassSuiteTest {
           BadRequestException, AlreadyExistingException, NotFoundException {
     initMocks();
     VimInstance vimInstance_exp = createVimInstance();
-    when(vimRepository.findFirstById(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
+    when(vimRepository.findFirstByIdAndProjectId(vimInstance_exp.getId(), projectId))
+        .thenReturn(vimInstance_exp);
     when(vimRepository.save(vimInstance_exp)).thenReturn(vimInstance_exp);
     VimInstance vimInstance_new = createVimInstance();
     vimInstance_new.setName("UpdatedName");
@@ -198,7 +199,8 @@ public class VimManagementClassSuiteTest {
 
     VimInstance vimInstance_exp = createVimInstance();
     when(vimRepository.findOne(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
-    when(vimRepository.findFirstById(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
+    when(vimRepository.findFirstByIdAndProjectId(vimInstance_exp.getId(), projectId))
+        .thenReturn(vimInstance_exp);
     VimInstance vimInstance_new = vimManagement.query(vimInstance_exp.getId(), projectId);
     Assert.assertEquals(vimInstance_exp.getId(), vimInstance_new.getId());
     Assert.assertEquals(vimInstance_exp.getName(), vimInstance_new.getName());
@@ -211,10 +213,12 @@ public class VimManagementClassSuiteTest {
   public void nfvImageManagementDeleteTest() throws NotFoundException, BadRequestException {
     VimInstance vimInstance_exp = createVimInstance();
     when(vimRepository.findOne(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
-    when(vimRepository.findFirstById(vimInstance_exp.getId())).thenReturn(vimInstance_exp);
+    when(vimRepository.findFirstByIdAndProjectId(vimInstance_exp.getId(), projectId))
+        .thenReturn(vimInstance_exp);
     vimManagement.delete(vimInstance_exp.getId(), projectId);
     when(vimRepository.findOne(vimInstance_exp.getId())).thenReturn(null);
-    when(vimRepository.findFirstById(vimInstance_exp.getId())).thenReturn(null);
+    when(vimRepository.findFirstByIdAndProjectId(vimInstance_exp.getId(), projectId))
+        .thenReturn(null);
     VimInstance vimInstance_new = vimManagement.query(vimInstance_exp.getId(), projectId);
     Assert.assertNull(vimInstance_new);
   }
