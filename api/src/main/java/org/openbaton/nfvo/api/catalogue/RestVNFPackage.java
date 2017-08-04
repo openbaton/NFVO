@@ -70,10 +70,11 @@ public class RestVNFPackage {
       @RequestHeader(value = "project-id") String projectId)
       throws IOException, VimException, NotFoundException, SQLException, PluginException,
           IncompatibleVNFPackage, AlreadyExistingException, NetworkServiceIntegrityException,
-          BadRequestException, InterruptedException, EntityUnreachableException {
+          BadRequestException, BadFormatException, InterruptedException,
+          EntityUnreachableException {
 
     log.debug("Onboarding");
-    if (file == null || file.isEmpty()) throw new NullPointerException("File is null or empty!");
+    if (file == null || file.isEmpty()) throw new BadRequestException("File is null or empty!");
     byte[] bytes = file.getBytes();
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = null;
     try {
@@ -100,10 +101,19 @@ public class RestVNFPackage {
       @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
       throws IOException, PluginException, VimException, NotFoundException, IncompatibleVNFPackage,
           AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException,
-          InterruptedException, EntityUnreachableException {
+          InterruptedException, EntityUnreachableException, BadFormatException {
     Gson gson = new Gson();
     JsonObject jsonObject = gson.fromJson(link, JsonObject.class);
-    String downloadlink = jsonObject.getAsJsonPrimitive("link").getAsString();
+    if (!jsonObject.has("link"))
+      throw new BadRequestException("The sent Json has to contain a field named: link");
+
+    String downloadlink;
+    try {
+      downloadlink = jsonObject.getAsJsonPrimitive("link").getAsString();
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new BadRequestException("The provided link has to be a string.");
+    }
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
         vnfPackageManagement.onboardFromMarket(downloadlink, projectId);
     return "{ \"id\": \"" + virtualNetworkFunctionDescriptor.getVnfPackageLocation() + "\"}";
@@ -126,7 +136,16 @@ public class RestVNFPackage {
           EntityUnreachableException, InterruptedException {
     Gson gson = new Gson();
     JsonObject jsonObject = gson.fromJson(link, JsonObject.class);
-    String downloadlink = jsonObject.getAsJsonPrimitive("link").getAsString();
+    if (!jsonObject.has("link"))
+      throw new BadRequestException("The sent Json has to contain a field named: link");
+
+    String downloadlink;
+    try {
+      downloadlink = jsonObject.getAsJsonPrimitive("link").getAsString();
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new BadRequestException("The provided link has to be a string.");
+    }
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
         vnfPackageManagement.onboardFromPackageRepository(downloadlink, projectId);
     return "{ \"id\": \"" + virtualNetworkFunctionDescriptor.getVnfPackageLocation() + "\"}";
@@ -199,6 +218,7 @@ public class RestVNFPackage {
       @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException {
     VNFPackage vnfPackage = vnfPackageManagement.query(id, projectId);
+    if (vnfPackage == null) throw new NotFoundException("No VNFPackage found with ID " + id);
     for (Script script : vnfPackage.getScripts()) {
       if (script.getId().equals(scriptId)) {
         return new String(script.getPayload());
@@ -225,6 +245,8 @@ public class RestVNFPackage {
       @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
     VNFPackage vnfPackage = vnfPackageManagement.query(vnfPackageId, projectId);
+    if (vnfPackage == null)
+      throw new NotFoundException("No VNFPackage found with ID " + vnfPackageId);
     for (Script script : vnfPackage.getScripts()) {
       if (script.getId().equals(scriptId)) {
         script.setPayload(scriptNew.getBytes());
@@ -248,8 +270,11 @@ public class RestVNFPackage {
   )
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
   public VNFPackage findById(
-      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
-    return vnfPackageManagement.query(id, projectId);
+      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
+    VNFPackage vnfPackage = vnfPackageManagement.query(id, projectId);
+    if (vnfPackage == null) throw new NotFoundException("No VNFPackage found with ID " + id);
+    return vnfPackage;
   }
 
   /**
@@ -273,7 +298,8 @@ public class RestVNFPackage {
   public VNFPackage update(
       @RequestBody @Valid VNFPackage vnfPackage_new,
       @PathVariable("id") String id,
-      @RequestHeader(value = "project-id") String projectId) {
+      @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
     return vnfPackageManagement.update(id, vnfPackage_new, projectId);
   }
 }

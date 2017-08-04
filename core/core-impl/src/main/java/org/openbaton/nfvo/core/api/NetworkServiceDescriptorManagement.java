@@ -22,7 +22,9 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -105,6 +107,9 @@ public class NetworkServiceDescriptorManagement
     networkServiceDescriptor.setProjectId(projectId);
     log.info("Starting onboarding process for NSD: " + networkServiceDescriptor.getName());
 
+    if (networkServiceDescriptor.getVnfd().size() == 0)
+      throw new BadRequestException(
+          "The Network Service Descriptor has to have at least one VNFD.");
     List<String> marketIds = nsdUtils.fetchExistingVnfd(networkServiceDescriptor, projectId);
     for (String marketId : marketIds) {
       String link =
@@ -165,7 +170,22 @@ public class NetworkServiceDescriptorManagement
           AlreadyExistingException, EntityInUseException, BadRequestException, InterruptedException,
           EntityUnreachableException {
 
-    InputStream in = new BufferedInputStream(new URL(link).openStream());
+    URL linkUrl = null;
+    try {
+      linkUrl = new URL(link);
+    } catch (MalformedURLException e) {
+      log.error("Malformed URL: " + link);
+      e.printStackTrace();
+      throw new BadRequestException("Malformed URL: " + link);
+    }
+    InputStream in = null;
+    try {
+      in = new BufferedInputStream(linkUrl.openStream());
+    } catch (UnknownHostException e) {
+      log.error("Link points to unknown host: " + link);
+      e.printStackTrace();
+      throw new BadRequestException("Link points to unknown host: " + link);
+    }
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     byte[] bytes = new byte[1024];
     int n = 0;
@@ -175,14 +195,27 @@ public class NetworkServiceDescriptorManagement
     out.close();
     in.close();
     String json = out.toString();
-    NetworkServiceDescriptor nsd = gson.fromJson(json, NetworkServiceDescriptor.class);
+    NetworkServiceDescriptor nsd = null;
+    try {
+      nsd = gson.fromJson(json, NetworkServiceDescriptor.class);
+    } catch (Exception e) {
+      log.error(
+          "Could not parse the content of the link ("
+              + link
+              + ") to a Network Service Descriptor.");
+      e.printStackTrace();
+      throw new BadRequestException(
+          "Could not parse the content of the link ("
+              + link
+              + ") to a Network Service Descriptor.");
+    }
     return onboard(nsd, projectId);
   }
 
   private List<String> getIds(List<String> market_ids, String project_id)
       throws NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
           AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException,
-          InterruptedException, EntityUnreachableException {
+          InterruptedException, EntityUnreachableException, BadFormatException {
     List<String> not_found_ids = new ArrayList<>();
     not_found_ids.addAll(market_ids);
     List<String> vnfdIds = new ArrayList<>();
@@ -254,12 +287,11 @@ public class NetworkServiceDescriptorManagement
     if (newNsd.getId() == null || newNsd.getId().isEmpty()) {
       throw new BadRequestException("No id found in the passed NSD");
     }
-    NetworkServiceDescriptor updatingNsd = nsdRepository.findFirstById(newNsd.getId());
+    NetworkServiceDescriptor updatingNsd =
+        nsdRepository.findFirstByIdAndProjectId(newNsd.getId(), projectId);
     if (updatingNsd == null) {
-      throw new NotFoundException("Not found NSD with id " + newNsd.getId());
-    } else if (!newNsd.getProjectId().equals(projectId)) {
-      throw new UnauthorizedUserException(
-          "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+      throw new NotFoundException(
+          "Did not find a Network Service Descriptor with ID " + newNsd.getId());
     }
     updatingNsd.setUpdatedAt(format.format(new Date()));
     updatingNsd.setName(newNsd.getName());
@@ -278,11 +310,10 @@ public class NetworkServiceDescriptorManagement
    * @return the persisted VirtualNetworkFunctionDescriptor
    */
   public VirtualNetworkFunctionDescriptor addVnfd(
-      VirtualNetworkFunctionDescriptor vnfd, String id, String projectId) {
-    if (vnfdRepository.findFirstById(vnfd.getId()).getProjectId().equals(projectId))
-      return nsdRepository.addVnfd(vnfd, id);
-    throw new UnauthorizedUserException(
-        "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+      VirtualNetworkFunctionDescriptor vnfd, String id, String projectId) throws NotFoundException {
+    if (nsdRepository.findFirstByIdAndProjectId(id, projectId) == null)
+      throw new NotFoundException("No NSD found with ID " + id);
+    return nsdRepository.addVnfd(vnfd, id);
   }
 
   /**
@@ -293,24 +324,24 @@ public class NetworkServiceDescriptorManagement
    */
   @Override
   public void deleteVnfDescriptor(String idNsd, String idVnfd, String projectId)
-      throws EntityInUseException {
-    log.debug("Is there a NSD referencing it? " + nsdRepository.exists(idNsd));
+      throws EntityInUseException, NotFoundException {
+    log.debug("Is there an NSD referencing it? " + nsdRepository.exists(idNsd));
     if (nsdRepository.exists(idNsd)) {
       throw new EntityInUseException(
           "NSD with id: " + idNsd + " is still onboarded and referencing this VNFD");
     }
     log.info("Removing VnfDescriptor with id: " + idVnfd + " from NSD with id: " + idNsd);
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
-        vnfdRepository.findFirstById(idVnfd);
-    if (!virtualNetworkFunctionDescriptor.getProjectId().equals(projectId))
-      throw new UnauthorizedUserException(
-          "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+        vnfdRepository.findFirstByIdAndProjectId(idVnfd, projectId);
+    if (virtualNetworkFunctionDescriptor == null)
+      throw new NotFoundException("No VNFD found with ID " + idVnfd);
     nsdRepository.deleteVnfd(idNsd, idVnfd);
     vnfPackageRepository.delete(virtualNetworkFunctionDescriptor.getVnfPackageLocation());
   }
 
   /**
-   * Returns the VirtualNetworkFunctionDescriptor selected by idVnfd into NSD with idNsd
+   * Returns the VirtualNetworkFunctionDescriptor with the ID idVnfd from the Network Service
+   * Descriptor with ID idNsd.
    *
    * @param idNsd of NSD
    * @param idVnfd of VirtualNetworkFunctionDescriptor
@@ -318,19 +349,19 @@ public class NetworkServiceDescriptorManagement
   @Override
   public VirtualNetworkFunctionDescriptor getVirtualNetworkFunctionDescriptor(
       String idNsd, String idVnfd, String projectId) throws NotFoundException {
-    nsdRepository.exists(idNsd);
-    VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
-        vnfdRepository.findFirstById(idVnfd);
-
-    if (virtualNetworkFunctionDescriptor == null)
-      throw new NotFoundException(
-          "VirtualNetworkFunctionDescriptor with id " + idVnfd + " doesn't exist");
-
-    if (!virtualNetworkFunctionDescriptor.getProjectId().equals(projectId))
-      throw new UnauthorizedUserException(
-          "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
-
-    return virtualNetworkFunctionDescriptor;
+    NetworkServiceDescriptor nsd = nsdRepository.findFirstByIdAndProjectId(idNsd, projectId);
+    if (nsd == null)
+      throw new NotFoundException("Did not find a Network Service Descriptor with ID " + idNsd);
+    for (VirtualNetworkFunctionDescriptor vnfd : nsd.getVnfd()) {
+      if (vnfd.getId().equals(idVnfd)) {
+        if (!vnfd.getProjectId().equals(projectId))
+          throw new UnauthorizedUserException(
+              "VNFD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+        return vnfd;
+      }
+    }
+    throw new NotFoundException(
+        "The NSD with ID " + idNsd + " does not contain a VNFD with ID " + idVnfd);
   }
 
   /**
@@ -340,14 +371,12 @@ public class NetworkServiceDescriptorManagement
    */
   @Override
   public VirtualNetworkFunctionDescriptor updateVNF(
-      String idNsd,
-      String idVfn,
-      VirtualNetworkFunctionDescriptor vnfDescriptor,
-      String projectId) {
-    nsdRepository.exists(idNsd);
-    if (!vnfdRepository.findFirstById(vnfDescriptor.getId()).getProjectId().equals(projectId))
-      throw new UnauthorizedUserException(
-          "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+      String idNsd, String idVfn, VirtualNetworkFunctionDescriptor vnfDescriptor, String projectId)
+      throws NotFoundException {
+    if (nsdRepository.findFirstByIdAndProjectId(idNsd, projectId) == null)
+      throw new NotFoundException("No NSD found with ID " + idNsd);
+    if (vnfdRepository.findFirstByIdAndProjectId(vnfDescriptor.getId(), projectId) == null)
+      throw new NotFoundException("No VNFD found with ID " + vnfDescriptor.getId());
     nsdRepository.addVnfd(vnfDescriptor, idNsd);
     return vnfDescriptor;
   }
@@ -358,11 +387,11 @@ public class NetworkServiceDescriptorManagement
    * @return VNFDependency
    */
   @Override
-  public VNFDependency getVnfDependency(String idNsd, String idVnfd, String projectId) {
-    if (nsdRepository.findFirstById(idNsd).getProjectId().equals(projectId))
-      return vnfDependencyRepository.findOne(idVnfd);
-    throw new UnauthorizedUserException(
-        "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+  public VNFDependency getVnfDependency(String idNsd, String idVnfd, String projectId)
+      throws NotFoundException {
+    if (nsdRepository.findFirstByIdAndProjectId(idNsd, projectId) == null)
+      throw new NotFoundException("No NSD found with ID " + idNsd);
+    return vnfDependencyRepository.findOne(idVnfd);
   }
 
   /**
@@ -372,14 +401,13 @@ public class NetworkServiceDescriptorManagement
    * @param idVnfd of VNFD
    */
   @Override
-  public void deleteVNFDependency(String idNsd, String idVnfd, String projectId) {
+  public void deleteVNFDependency(String idNsd, String idVnfd, String projectId)
+      throws NotFoundException {
     log.debug("Removing VNFDependency with id: " + idVnfd + " from NSD with id: " + idNsd);
-    if (nsdRepository.findFirstById(idNsd).getProjectId().equals(projectId)) {
-      nsdRepository.deleteVNFDependency(idNsd, idVnfd);
-      return;
-    }
-    throw new UnauthorizedUserException(
-        "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+    if (nsdRepository.findFirstByIdAndProjectId(idNsd, projectId) == null)
+      throw new NotFoundException("No NSD found with ID " + idNsd);
+    nsdRepository.deleteVNFDependency(idNsd, idVnfd);
+    return;
   }
 
   /**
@@ -389,13 +417,11 @@ public class NetworkServiceDescriptorManagement
    */
   @Override
   public VNFDependency saveVNFDependency(
-      String idNsd, VNFDependency vnfDependency, String projectId) {
-    if (nsdRepository.findFirstById(idNsd).getProjectId().equals(projectId)) {
-      nsdRepository.addVnfDependency(vnfDependency, idNsd);
-      return vnfDependency;
-    }
-    throw new UnauthorizedUserException(
-        "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+      String idNsd, VNFDependency vnfDependency, String projectId) throws NotFoundException {
+    if (nsdRepository.findFirstByIdAndProjectId(idNsd, projectId) == null)
+      throw new NotFoundException("No NSD found with ID " + idNsd);
+    nsdRepository.addVnfDependency(vnfDependency, idNsd);
+    return vnfDependency;
   }
 
   /**
@@ -405,12 +431,11 @@ public class NetworkServiceDescriptorManagement
    * @param idPnf of PhysicalNetworkFunctionDescriptor
    */
   @Override
-  public void deletePhysicalNetworkFunctionDescriptor(
-      String idNsd, String idPnf, String projectId) {
-    if (nsdRepository.findFirstById(idNsd).getProjectId().equals(projectId))
-      nsdRepository.deletePhysicalNetworkFunctionDescriptor(idNsd, idPnf);
-    throw new UnauthorizedUserException(
-        "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+  public void deletePhysicalNetworkFunctionDescriptor(String idNsd, String idPnf, String projectId)
+      throws NotFoundException {
+    if (nsdRepository.findFirstByIdAndProjectId(idNsd, projectId) == null)
+      throw new NotFoundException("No NSD found with ID " + idNsd);
+    nsdRepository.deletePhysicalNetworkFunctionDescriptor(idNsd, idPnf);
   }
 
   /**
@@ -421,16 +446,14 @@ public class NetworkServiceDescriptorManagement
   @Override
   public PhysicalNetworkFunctionDescriptor getPhysicalNetworkFunctionDescriptor(
       String idNsd, String idPnf, String projectId) throws NotFoundException {
-    if (nsdRepository.findFirstById(idNsd).getProjectId().equals(projectId)) {
-      PhysicalNetworkFunctionDescriptor physicalNetworkFunctionDescriptor =
-          pnfDescriptorRepository.findOne(idPnf);
-      if (physicalNetworkFunctionDescriptor == null)
-        throw new NotFoundException(
-            "PhysicalNetworkFunctionDescriptor with id " + idPnf + " doesn't exist");
-      return physicalNetworkFunctionDescriptor;
-    }
-    throw new UnauthorizedUserException(
-        "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+    if (nsdRepository.findFirstByIdAndProjectId(idNsd, projectId) == null)
+      throw new NotFoundException("No NSD found with ID " + idNsd);
+    PhysicalNetworkFunctionDescriptor physicalNetworkFunctionDescriptor =
+        pnfDescriptorRepository.findOne(idPnf);
+    if (physicalNetworkFunctionDescriptor == null)
+      throw new NotFoundException(
+          "PhysicalNetworkFunctionDescriptor with id " + idPnf + " doesn't exist");
+    return physicalNetworkFunctionDescriptor;
   }
 
   /**
@@ -440,12 +463,11 @@ public class NetworkServiceDescriptorManagement
    */
   @Override
   public PhysicalNetworkFunctionDescriptor addPnfDescriptor(
-      PhysicalNetworkFunctionDescriptor pDescriptor, String idNsd, String projectId) {
-    if (nsdRepository.findFirstById(idNsd).getProjectId().equals(projectId)) {
-      return nsdRepository.addPnfDescriptor(pDescriptor, idNsd);
-    }
-    throw new UnauthorizedUserException(
-        "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+      PhysicalNetworkFunctionDescriptor pDescriptor, String idNsd, String projectId)
+      throws NotFoundException {
+    if (nsdRepository.findFirstByIdAndProjectId(idNsd, projectId) == null)
+      throw new NotFoundException("No NSD found with ID " + idNsd);
+    return nsdRepository.addPnfDescriptor(pDescriptor, idNsd);
   }
 
   /**
@@ -454,22 +476,19 @@ public class NetworkServiceDescriptorManagement
    * @return Security
    */
   @Override
-  public Security addSecurity(String id, Security security, String projectId) {
-    if (nsdRepository.findFirstById(id).getProjectId().equals(projectId)) {
-      return nsdRepository.addSecurity(id, security);
-    }
-    throw new UnauthorizedUserException(
-        "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+  public Security addSecurity(String id, Security security, String projectId)
+      throws NotFoundException {
+    if (nsdRepository.findFirstByIdAndProjectId(id, projectId) == null)
+      throw new NotFoundException("No NSD found with ID " + id);
+    return nsdRepository.addSecurity(id, security);
   }
 
   /** Removes the Security with idS from NSD with id */
   @Override
-  public void deleteSecurty(String idNsd, String idS, String projectId) {
-    if (nsdRepository.findFirstById(idNsd).getProjectId().equals(projectId)) {
-      nsdRepository.deleteSecurity(idNsd, idS);
-    }
-    throw new UnauthorizedUserException(
-        "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+  public void deleteSecurty(String idNsd, String idS, String projectId) throws NotFoundException {
+    if (nsdRepository.findFirstByIdAndProjectId(idNsd, projectId) == null)
+      throw new NotFoundException("No NSD found with ID " + idNsd);
+    nsdRepository.deleteSecurity(idNsd, idS);
   }
 
   @Override
@@ -601,22 +620,19 @@ public class NetworkServiceDescriptorManagement
    * including any related VNFFGD and VLD.
    */
   @Override
-  public NetworkServiceDescriptor query(String id, String projectId) throws NoResultException {
-    NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findFirstById(id);
-    if (networkServiceDescriptor.getProjectId().equals(projectId)) return networkServiceDescriptor;
-    throw new UnauthorizedUserException(
-        "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+  public NetworkServiceDescriptor query(String id, String projectId) {
+    return nsdRepository.findFirstByIdAndProjectId(id, projectId);
   }
 
   /** This operation is used to remove a disabled Network Service Descriptor. */
   @Override
   public void delete(String id, String projectId)
-      throws WrongStatusException, EntityInUseException {
+      throws WrongStatusException, EntityInUseException, BadRequestException, NotFoundException {
     log.info("Removing NetworkServiceDescriptor with id " + id);
-    NetworkServiceDescriptor networkServiceDescriptor = nsdRepository.findFirstById(id);
-    if (!networkServiceDescriptor.getProjectId().equals(projectId))
-      throw new UnauthorizedUserException(
-          "NSD not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+    NetworkServiceDescriptor networkServiceDescriptor =
+        nsdRepository.findFirstByIdAndProjectId(id, projectId);
+    if (networkServiceDescriptor == null)
+      throw new BadRequestException("Did not find a Network Service Descriptor with ID " + id);
 
     for (NetworkServiceRecord nsr : nsrRepository.findAll()) {
       if (nsr.getDescriptor_reference().equals(id)) {

@@ -24,6 +24,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import org.openbaton.catalogue.security.Key;
+import org.openbaton.exceptions.AlreadyExistingException;
+import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.KeyRepository;
 import org.openbaton.utils.key.KeyHelper;
@@ -31,7 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
 /** Created by lto on 13/05/15. */
@@ -50,14 +51,7 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
 
   @Override
   public Key queryById(String projectId, String id) throws NotFoundException {
-    Key key = keyRepository.findFirstById(id);
-    if (key == null) {
-      throw new NotFoundException("Not found key with id " + id);
-    }
-    if (!key.getProjectId().equals(projectId)) {
-      throw new UnauthorizedUserException("Forbidden to query this project");
-    }
-    return key;
+    return keyRepository.findFirstByIdAndProjectId(id, projectId);
   }
 
   @Override
@@ -67,20 +61,19 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
 
   @Override
   public void delete(String projectId, String id) throws NotFoundException {
-    Key keyToDelete = keyRepository.findFirstById(id);
+    Key keyToDelete = keyRepository.findFirstByIdAndProjectId(id, projectId);
     if (keyToDelete == null) {
       throw new NotFoundException("Not found key with id " + id);
-    }
-    if (!keyToDelete.getProjectId().equals(projectId)) {
-      throw new UnauthorizedUserException("Forbidden to delete this project");
     }
     keyRepository.delete(id);
   }
 
   @Override
   public String generateKey(String projectId, String name)
-      throws IOException, NoSuchAlgorithmException {
+      throws IOException, NoSuchAlgorithmException, AlreadyExistingException {
     log.debug("Generating keypair");
+    if (keyRepository.findKey(projectId, name) != null)
+      throw new AlreadyExistingException("A key with the name " + name + " exists already.");
     KeyPair keyPair = KeyHelper.generateRSAKey();
     RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
     RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
@@ -98,7 +91,10 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
 
   @Override
   public Key addKey(String projectId, String name, String key)
-      throws UnsupportedEncodingException, NoSuchAlgorithmException {
+      throws UnsupportedEncodingException, NoSuchAlgorithmException, BadFormatException,
+          AlreadyExistingException {
+    if (keyRepository.findKey(projectId, name) != null)
+      throw new AlreadyExistingException("A key with the name " + name + " exists already.");
     Key keyToAdd = new Key();
     keyToAdd.setName(name);
     keyToAdd.setProjectId(projectId);

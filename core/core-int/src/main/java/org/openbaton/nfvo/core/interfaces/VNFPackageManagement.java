@@ -35,7 +35,7 @@ public interface VNFPackageManagement {
   VirtualNetworkFunctionDescriptor onboard(byte[] pack, String projectId)
       throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage,
           AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException,
-          InterruptedException, EntityUnreachableException;
+          InterruptedException, EntityUnreachableException, BadFormatException;
 
   /** This operation allows submitting and validating the VNF Package from the marketplace. */
   /**
@@ -51,7 +51,7 @@ public interface VNFPackageManagement {
       VNFPackage vnfPackage,
       Map<String, Object> imageDetails,
       NFVImage image)
-      throws IncompatibleVNFPackage, NotFoundException;
+      throws IncompatibleVNFPackage, BadFormatException;
 
   VirtualNetworkFunctionDescriptor add(
       byte[] pack, boolean isImageIncluded, String projectId, boolean fromMarketPlace)
@@ -91,7 +91,7 @@ public interface VNFPackageManagement {
   VirtualNetworkFunctionDescriptor onboardFromMarket(String link, String projectId)
       throws IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
           NotFoundException, PluginException, NetworkServiceIntegrityException, BadRequestException,
-          InterruptedException, EntityUnreachableException;
+          InterruptedException, EntityUnreachableException, BadFormatException;
 
   /**
    * This operation allows submitting and validating the VNF Package from the Package Repository.
@@ -114,9 +114,9 @@ public interface VNFPackageManagement {
   void enable();
 
   /** This operation allows updating the VNF Package. */
-  VNFPackage update(String id, VNFPackage pack_new, String projectId);
+  VNFPackage update(String id, VNFPackage pack_new, String projectId) throws NotFoundException;
 
-  VNFPackage query(String id, String projectId);
+  VNFPackage query(String id, String projectId) throws NotFoundException;
 
   /** This operation is used to query information on VNF Packages. */
   Iterable<VNFPackage> query();

@@ -23,6 +23,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
@@ -82,7 +83,7 @@ public class RestCSAR {
 
       NetworkServiceDescriptor nsd = csarParser.onboardNSD(bytes, projectId);
       return networkServiceDescriptorManagement.onboard(nsd, projectId);
-    } else throw new IOException("File is empty!");
+    } else throw new BadRequestException("File is empty!");
   }
 
   @ApiOperation(value = "", notes = "", hidden = true)
@@ -91,7 +92,7 @@ public class RestCSAR {
   public String onboardVNFD(
       @RequestParam("file") MultipartFile file,
       @RequestHeader(value = "project-id") String projectId)
-      throws Exception {
+      throws Exception, BadFormatException {
 
     log.debug("Onboarding");
     if (!file.isEmpty()) {
@@ -100,7 +101,7 @@ public class RestCSAR {
       VirtualNetworkFunctionDescriptor vnfd = csarParser.onboardVNFD(bytes, projectId);
 
       return "{ \"id\": \"" + vnfd.getVnfPackageLocation() + "\"}";
-    } else throw new IOException("File is empty!");
+    } else throw new BadRequestException("File is empty!");
   }
 
   @ApiOperation(value = "", notes = "", hidden = true)
@@ -113,12 +114,28 @@ public class RestCSAR {
       @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
       throws IOException, PluginException, VimException, NotFoundException, IncompatibleVNFPackage,
           org.openbaton.tosca.exceptions.NotFoundException, BadRequestException,
-          AlreadyExistingException, InterruptedException, EntityUnreachableException {
+          AlreadyExistingException, BadFormatException, InterruptedException,
+          EntityUnreachableException {
     Gson gson = new Gson();
     JsonObject jsonObject = gson.fromJson(link, JsonObject.class);
-    String downloadlink = jsonObject.getAsJsonPrimitive("link").getAsString();
-    log.debug("This is download link" + downloadlink);
-    URL packageLink = new URL(downloadlink);
+    if (!jsonObject.has("link"))
+      throw new BadRequestException("The sent Json has to contain a field named: link");
+
+    String downloadlink;
+    try {
+      downloadlink = jsonObject.getAsJsonPrimitive("link").getAsString();
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new BadRequestException("The provided link has to be a string.");
+    }
+    log.debug("This is the download link" + downloadlink);
+    URL packageLink;
+    try {
+      packageLink = new URL(downloadlink);
+    } catch (MalformedURLException e) {
+      e.printStackTrace();
+      throw new BadFormatException("The provided link " + link + " is not a valid URL.");
+    }
 
     InputStream in = new BufferedInputStream(packageLink.openStream());
     ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -158,9 +175,24 @@ public class RestCSAR {
           EntityUnreachableException {
     Gson gson = new Gson();
     JsonObject jsonObject = gson.fromJson(link, JsonObject.class);
-    String downloadlink = jsonObject.getAsJsonPrimitive("link").getAsString();
-    log.debug("This is download link" + downloadlink);
-    URL packageLink = new URL(downloadlink);
+    if (!jsonObject.has("link"))
+      throw new BadRequestException("The sent Json has to contain a field named: link");
+
+    String downloadlink;
+    try {
+      downloadlink = jsonObject.getAsJsonPrimitive("link").getAsString();
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new BadRequestException("The provided link has to be a string.");
+    }
+    log.debug("This is the download link" + downloadlink);
+    URL packageLink;
+    try {
+      packageLink = new URL(downloadlink);
+    } catch (MalformedURLException e) {
+      e.printStackTrace();
+      throw new BadFormatException("The provided link " + link + " is not a valid URL.");
+    }
 
     InputStream in = new BufferedInputStream(packageLink.openStream());
     ByteArrayOutputStream out = new ByteArrayOutputStream();

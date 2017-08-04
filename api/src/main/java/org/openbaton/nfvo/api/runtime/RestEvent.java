@@ -113,7 +113,8 @@ public class RestEvent {
     produces = MediaType.APPLICATION_JSON_VALUE
   )
   public EventEndpoint getEventEndpoint(
-      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
+      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException {
     return eventManagement.query(id, projectId);
   }
 

@@ -57,7 +57,7 @@ public class ApiRestVimInstancesTest {
   @Test
   public void findAllVimInstances()
       throws NoSuchAlgorithmException, InvalidKeyException, BadPaddingException,
-          NoSuchPaddingException, IllegalBlockSizeException {
+          NoSuchPaddingException, IllegalBlockSizeException, BadFormatException {
     when(mock.queryByProjectId("pi")).thenReturn(new ArrayList<VimInstance>());
     assertEquals(mock.queryByProjectId("pi"), restVimInstances.findAll("pi", "Bearer token"));
   }
@@ -83,7 +83,7 @@ public class ApiRestVimInstancesTest {
   @Test
   public void findByIdVimInstance()
       throws NoSuchAlgorithmException, InvalidKeyException, BadPaddingException,
-          NoSuchPaddingException, IllegalBlockSizeException {
+          NoSuchPaddingException, IllegalBlockSizeException, NotFoundException {
     VimInstance datacenter = new VimInstance();
     datacenter.setId("123");
     datacenter.setName("DC-1");
@@ -96,7 +96,7 @@ public class ApiRestVimInstancesTest {
   @Test
   public void updateVimInstance()
       throws VimException, PluginException, IOException, EntityUnreachableException,
-          BadRequestException, AlreadyExistingException {
+          BadRequestException, AlreadyExistingException, NotFoundException {
     VimInstance datacenter = new VimInstance();
     datacenter.setId("123");
     datacenter.setName("DC-1");

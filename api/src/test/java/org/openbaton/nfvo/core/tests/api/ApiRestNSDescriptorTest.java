@@ -105,7 +105,7 @@ public class ApiRestNSDescriptorTest {
   }
 
   @Test
-  public void NSDFindBy() {
+  public void NSDFindBy() throws NotFoundException {
     when(nsdManagement.query(anyString(), anyString())).thenReturn(networkServiceDescriptor);
     assertEquals(
         networkServiceDescriptor,
@@ -123,12 +123,13 @@ public class ApiRestNSDescriptorTest {
   }
 
   @Test
-  public void NSDDelete() throws WrongStatusException, EntityInUseException {
+  public void NSDDelete()
+      throws WrongStatusException, EntityInUseException, BadRequestException, NotFoundException {
     restNetworkService.delete("id", "project-id");
   }
 
   @Test
-  public void postVNFD() {
+  public void postVNFD() throws NotFoundException {
     VirtualNetworkFunctionDescriptor vnfd = new VirtualNetworkFunctionDescriptor();
     vnfd.setName("test_VNFD");
     Set<VirtualNetworkFunctionDescriptor> list = new HashSet<>();
@@ -153,7 +154,7 @@ public class ApiRestNSDescriptorTest {
   }
 
   @Test
-  public void getVNFDs() {
+  public void getVNFDs() throws NotFoundException {
     when(nsdManagement.query(anyString(), anyString())).thenReturn(networkServiceDescriptor);
     Set<VirtualNetworkFunctionDescriptor> vnfds = networkServiceDescriptor.getVnfd();
     assertEquals(
@@ -172,7 +173,7 @@ public class ApiRestNSDescriptorTest {
   }
 
   @Test
-  public void updateVNF() {
+  public void updateVNF() throws NotFoundException {
     VirtualNetworkFunctionDescriptor vnfd = new VirtualNetworkFunctionDescriptor();
     vnfd.setVendor("FOKUS");
 
@@ -196,7 +197,7 @@ public class ApiRestNSDescriptorTest {
 
   // XXX FROM VNFDependency
   @Test
-  public void postVNFDependency() {
+  public void postVNFDependency() throws NotFoundException {
 
     VNFDependency vnfd = new VNFDependency();
     Set<VNFDependency> list = new HashSet<>();
@@ -221,7 +222,7 @@ public class ApiRestNSDescriptorTest {
   }
 
   @Test
-  public void getVNFDependencies() {
+  public void getVNFDependencies() throws NotFoundException {
     when(nsdManagement.query(anyString(), anyString())).thenReturn(networkServiceDescriptor);
     Set<VNFDependency> vnfds = networkServiceDescriptor.getVnf_dependency();
     assertEquals(
@@ -237,7 +238,7 @@ public class ApiRestNSDescriptorTest {
   }
 
   @Test
-  public void updateVNFDependency() {
+  public void updateVNFDependency() throws NotFoundException {
     when(nsdManagement.query(anyString(), anyString())).thenReturn(networkServiceDescriptor);
     VNFDependency vnfd = new VNFDependency();
 
@@ -264,7 +265,7 @@ public class ApiRestNSDescriptorTest {
 
   // XXX FROM PhysicalNetworkFunctionDescriptor
   @Test
-  public void postPNFD() {
+  public void postPNFD() throws NotFoundException {
 
     Set<PhysicalNetworkFunctionDescriptor> list = new HashSet<>();
     networkServiceDescriptor.setPnfd(list);
@@ -301,7 +302,7 @@ public class ApiRestNSDescriptorTest {
   }
 
   @Test
-  public void getPNFDs() {
+  public void getPNFDs() throws NotFoundException {
     when(nsdManagement.query(anyString(), anyString())).thenReturn(networkServiceDescriptor);
     Set<PhysicalNetworkFunctionDescriptor> pnfds = networkServiceDescriptor.getPnfd();
     assertEquals(
@@ -340,7 +341,7 @@ public class ApiRestNSDescriptorTest {
 
   // XXX FROM Security
   @Test
-  public void postSecurity() {
+  public void postSecurity() throws NotFoundException {
     Security security = new Security();
     when(nsdManagement.addSecurity(anyString(), any(security.getClass()), anyString()))
         .thenReturn(security);
@@ -359,7 +360,7 @@ public class ApiRestNSDescriptorTest {
   }
 
   @Test
-  public void getSecurities() {
+  public void getSecurities() throws NotFoundException {
     when(nsdManagement.query(anyString(), anyString())).thenReturn(networkServiceDescriptor);
     Security security = networkServiceDescriptor.getNsd_security();
     assertEquals(security, restNetworkService.getSecurity(networkServiceDescriptor.getId(), "pi"));
@@ -383,7 +384,7 @@ public class ApiRestNSDescriptorTest {
   }
 
   @Test
-  public void deleteSecurity() {
+  public void deleteSecurity() throws NotFoundException {
     when(nsdManagement.query(anyString(), anyString())).thenReturn(networkServiceDescriptor);
     Security security = networkServiceDescriptor.getNsd_security();
     restNetworkService.deleteSecurity(networkServiceDescriptor.getId(), security.getId(), "pi");

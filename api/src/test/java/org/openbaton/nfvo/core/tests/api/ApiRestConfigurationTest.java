@@ -30,6 +30,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.ConfigurationParameter;
+import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.api.admin.RestConfiguration;
 import org.openbaton.nfvo.core.interfaces.ConfigurationManagement;
 import org.slf4j.Logger;
@@ -87,7 +88,7 @@ public class ApiRestConfigurationTest {
   }
 
   @Test
-  public void configurationUpdate() {
+  public void configurationUpdate() throws NotFoundException {
     Configuration configuration = new Configuration();
     configuration.setId("123");
     ConfigurationParameter parameters = new ConfigurationParameter();

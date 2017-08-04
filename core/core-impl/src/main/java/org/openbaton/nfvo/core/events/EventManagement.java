@@ -25,6 +25,7 @@ import java.net.URL;
 import java.util.concurrent.Future;
 import org.openbaton.catalogue.nfvo.EndpointType;
 import org.openbaton.catalogue.nfvo.EventEndpoint;
+import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.EventEndpointRepository;
 import org.openbaton.utils.rabbit.RabbitManager;
 import org.slf4j.Logger;
@@ -35,7 +36,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
-import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
 /** Created by lto on 10/03/16. */
@@ -111,11 +111,10 @@ public class EventManagement implements org.openbaton.nfvo.core.interfaces.Event
   }
 
   @Override
-  public EventEndpoint query(String id, String projectId) {
-    EventEndpoint endpoint = eventEndpointRepository.findFirstById(id);
-    if (endpoint.getProjectId().equals(projectId)) return endpoint;
-    throw new UnauthorizedUserException(
-        "Event not under the project chosen, are you trying to hack us? Just kidding, it's a bug :)");
+  public EventEndpoint query(String id, String projectId) throws NotFoundException {
+    EventEndpoint endpoint = eventEndpointRepository.findFirstByIdAndProjectId(id, projectId);
+    if (endpoint == null) throw new NotFoundException("No Event found with ID " + id);
+    return endpoint;
   }
 
   @Override

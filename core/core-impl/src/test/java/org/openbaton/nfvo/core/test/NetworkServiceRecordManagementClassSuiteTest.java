@@ -17,10 +17,7 @@
 
 package org.openbaton.nfvo.core.test;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyMap;
-import static org.mockito.Matchers.anySet;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -226,7 +223,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     NetworkServiceRecord nsd_exp = createNetworkServiceRecord();
     when(resourceManagement.release(any(VirtualDeploymentUnit.class), any(VNFCInstance.class)))
         .thenReturn(new AsyncResult<Void>(null));
-    when(nsrRepository.findFirstById(nsd_exp.getId())).thenReturn(nsd_exp);
+    when(nsrRepository.findFirstByIdAndProjectId(nsd_exp.getId(), projectId)).thenReturn(nsd_exp);
     Configuration system = new Configuration();
     system.setConfigurationParameters(new HashSet<ConfigurationParameter>());
     ConfigurationParameter configurationParameter = new ConfigurationParameter();
@@ -323,7 +320,8 @@ public class NetworkServiceRecordManagementClassSuiteTest {
                 add(vnfmManagerEndpoint);
               }
             });
-    when(nsdRepository.findFirstById(anyString())).thenReturn(networkServiceDescriptor);
+    when(nsdRepository.findFirstByIdAndProjectId(anyString(), eq(projectId)))
+        .thenReturn(networkServiceDescriptor);
     when(vimRepository.findAll())
         .thenReturn(
             new ArrayList<VimInstance>() {
@@ -359,7 +357,8 @@ public class NetworkServiceRecordManagementClassSuiteTest {
               }
             });
     NetworkServiceDescriptor networkServiceDescriptor = createNetworkServiceDescriptor();
-    when(nsdRepository.findFirstById(anyString())).thenReturn(networkServiceDescriptor);
+    when(nsdRepository.findFirstByIdAndProjectId(anyString(), eq(projectId)))
+        .thenReturn(networkServiceDescriptor);
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
         networkServiceDescriptor.getVnfd().iterator().next();
     LifecycleEvent event = new LifecycleEvent();
@@ -403,7 +402,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
   public void nsrManagementUpdateTest() throws NotFoundException {
     final NetworkServiceRecord nsd_exp = createNetworkServiceRecord();
     when(nsrRepository.findOne(nsd_exp.getId())).thenReturn(nsd_exp);
-    when(nsrRepository.findFirstById(nsd_exp.getId())).thenReturn(nsd_exp);
+    when(nsrRepository.findFirstByIdAndProjectId(nsd_exp.getId(), projectId)).thenReturn(nsd_exp);
     NetworkServiceRecord new_nsr = createNetworkServiceRecord();
     new_nsr.setName("UpdatedName");
     nsrManagement.update(new_nsr, nsd_exp.getId(), projectId);
@@ -413,7 +412,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 
   private void assertEqualsNSR(NetworkServiceRecord nsr_exp)
       throws NoResultException, NotFoundException {
-    when(nsrRepository.findFirstById(nsr_exp.getId())).thenReturn(nsr_exp);
+    when(nsrRepository.findFirstByIdAndProjectId(nsr_exp.getId(), projectId)).thenReturn(nsr_exp);
     NetworkServiceRecord networkServiceRecord = nsrManagement.query(nsr_exp.getId(), projectId);
     Assert.assertEquals(nsr_exp.getId(), networkServiceRecord.getId());
     Assert.assertEquals(nsr_exp.getName(), networkServiceRecord.getName());

@@ -19,6 +19,7 @@ package org.openbaton.nfvo.core.test;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -132,6 +133,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
             });
 
     nsdManagement.onboard(nsd_exp, projectId);
+    when(nsdRepository.findFirstByIdAndProjectId(anyString(), eq(projectId))).thenReturn(nsd_exp);
     when(nsdRepository.findFirstById(anyString())).thenReturn(nsd_exp);
     Assert.assertTrue(nsdManagement.enable(nsd_exp.getId()));
     Assert.assertTrue(nsd_exp.isEnabled());
@@ -170,13 +172,15 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
 
     nsdManagement.onboard(nsd_exp, projectId);
     when(nsdRepository.findFirstById(anyString())).thenReturn(nsd_exp);
+    when(nsdRepository.findFirstByIdAndProjectId(anyString(), eq(projectId))).thenReturn(nsd_exp);
     Assert.assertFalse(nsdManagement.disable(nsd_exp.getId()));
     Assert.assertFalse(nsd_exp.isEnabled());
     nsdManagement.delete(nsd_exp.getId(), projectId);
   }
 
   @Test
-  public void nsdManagementQueryTest() throws WrongStatusException, EntityInUseException {
+  public void nsdManagementQueryTest()
+      throws WrongStatusException, EntityInUseException, BadRequestException, NotFoundException {
     when(nsdRepository.findAll()).thenReturn(new ArrayList<NetworkServiceDescriptor>());
     when(nsdRepository.findByProjectId(anyString()))
         .thenReturn(new ArrayList<NetworkServiceDescriptor>());
@@ -200,7 +204,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
     nsds = nsdManagement.query();
     when(nsrRepository.findAll()).thenReturn(new ArrayList<NetworkServiceRecord>());
     Assert.assertEquals(nsds.iterator().hasNext(), true);
-    when(nsdRepository.findFirstById(anyString())).thenReturn(nsd_exp);
+    when(nsdRepository.findFirstByIdAndProjectId(anyString(), eq(projectId))).thenReturn(nsd_exp);
     nsdManagement.delete(nsd_exp.getId(), projectId);
   }
 
@@ -253,6 +257,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
           IncompatibleVNFPackage, PluginException, InterruptedException,
           EntityUnreachableException {
     when(nsdRepository.findAll()).thenReturn(new ArrayList<NetworkServiceDescriptor>());
+
     when(nsdRepository.findByProjectId(anyString()))
         .thenReturn(new ArrayList<NetworkServiceDescriptor>());
     NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
@@ -267,7 +272,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
 
     nsdManagement.onboard(nsd_exp, projectId);
     when(nsdRepository.findOne(nsd_exp.getId())).thenReturn(nsd_exp);
-    when(nsdRepository.findFirstById(nsd_exp.getId())).thenReturn(nsd_exp);
+    when(nsdRepository.findFirstByIdAndProjectId(nsd_exp.getId(), projectId)).thenReturn(nsd_exp);
 
     NetworkServiceDescriptor new_nsd = createNetworkServiceDescriptor();
     new_nsd.setName("UpdatedName");
@@ -282,7 +287,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
   }
 
   private void assertEqualsNSD(NetworkServiceDescriptor nsd_exp) throws NoResultException {
-    when(nsdRepository.findFirstById(nsd_exp.getId())).thenReturn(nsd_exp);
+    when(nsdRepository.findFirstByIdAndProjectId(nsd_exp.getId(), projectId)).thenReturn(nsd_exp);
     NetworkServiceDescriptor nsd = nsdManagement.query(nsd_exp.getId(), projectId);
     Assert.assertEquals(nsd_exp.getId(), nsd.getId());
     Assert.assertEquals(nsd_exp.getName(), nsd.getName());

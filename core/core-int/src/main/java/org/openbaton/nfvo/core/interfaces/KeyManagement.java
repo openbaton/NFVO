@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import org.openbaton.catalogue.security.Key;
+import org.openbaton.exceptions.AlreadyExistingException;
+import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
 
 /** Created by lto on 10/03/16. */
@@ -34,8 +36,10 @@ public interface KeyManagement {
 
   void delete(String projectId, String id) throws NotFoundException;
 
-  String generateKey(String projectId, String name) throws NoSuchAlgorithmException, IOException;
+  String generateKey(String projectId, String name)
+      throws NoSuchAlgorithmException, IOException, AlreadyExistingException;
 
   Key addKey(String projectId, String name, String key)
-      throws UnsupportedEncodingException, NoSuchAlgorithmException;
+      throws UnsupportedEncodingException, NoSuchAlgorithmException, BadFormatException,
+          AlreadyExistingException;
 }

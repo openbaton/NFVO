@@ -26,6 +26,8 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 import javax.validation.Valid;
 import org.openbaton.catalogue.security.Key;
+import org.openbaton.exceptions.AlreadyExistingException;
+import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.core.interfaces.KeyManagement;
 import org.slf4j.Logger;
@@ -68,7 +70,8 @@ public class RestKeys {
   @ResponseStatus(HttpStatus.CREATED)
   public Key importKey(
       @RequestHeader(value = "project-id") String projectId, @RequestBody @Valid Key key)
-      throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeySpecException {
+      throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeySpecException,
+          BadFormatException, AlreadyExistingException {
     return keyManagement.addKey(projectId, key.getName(), key.getPublicKey());
   }
 
@@ -91,7 +94,7 @@ public class RestKeys {
   public String generateKey(
       @RequestHeader(value = "project-id") String projectId, @RequestBody String name)
       throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeySpecException,
-          IOException {
+          IOException, AlreadyExistingException {
     log.debug("Generating key with name: " + name);
     return keyManagement.generateKey(projectId, name);
   }
@@ -153,6 +156,8 @@ public class RestKeys {
   public Key findById(
       @RequestHeader(value = "project-id") String projectId, @PathVariable("id") String id)
       throws NotFoundException {
-    return keyManagement.queryById(projectId, id);
+    Key key = keyManagement.queryById(projectId, id);
+    if (key == null) throw new NotFoundException("No key found with ID " + id);
+    return key;
   }
 }

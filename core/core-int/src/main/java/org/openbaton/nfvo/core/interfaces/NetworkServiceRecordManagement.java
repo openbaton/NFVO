@@ -121,7 +121,7 @@ public interface NetworkServiceRecordManagement {
    * @param idNsr of NSR
    * @param idVnfd of VNFDependency
    */
-  void deleteVNFDependency(String idNsr, String idVnfd, String projectId);
+  void deleteVNFDependency(String idNsr, String idVnfd, String projectId) throws NotFoundException;
 
   /**
    * This method will add a {@Link VNFCInstance} into a NetworkServiceRecord to a specific

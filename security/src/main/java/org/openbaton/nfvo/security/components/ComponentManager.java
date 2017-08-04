@@ -254,7 +254,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
         } else {
           managerCredentials = new ManagerCredentials();
           if (vnfmManagerEndpoint != null)
-            endpoint = gson.fromJson(vnfmManagerEndpoint.getAsString(), VnfmManagerEndpoint.class);
+            endpoint = gson.fromJson(vnfmManagerEndpoint, VnfmManagerEndpoint.class);
         }
 
         //          String regexOpenbaton = "(^nfvo)";

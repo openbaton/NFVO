@@ -18,7 +18,7 @@
 package org.openbaton.exceptions;
 
 /** Created by lto on 08/06/15. */
-public class BadFormatException extends Throwable {
+public class BadFormatException extends Exception {
   public BadFormatException(String s) {
     super(s);
   }

@@ -25,5 +25,7 @@ import org.springframework.data.repository.CrudRepository;
 public interface EventEndpointRepository extends CrudRepository<EventEndpoint, String> {
   EventEndpoint findFirstById(String id);
 
+  EventEndpoint findFirstByIdAndProjectId(String id, String projectId);
+
   List<EventEndpoint> findByProjectId(String projectId);
 }

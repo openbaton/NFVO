@@ -19,6 +19,7 @@ package org.openbaton.nfvo.core.interfaces;
 
 import java.util.concurrent.Future;
 import org.openbaton.catalogue.nfvo.EventEndpoint;
+import org.openbaton.exceptions.NotFoundException;
 import org.springframework.scheduling.annotation.Async;
 
 /** Created by lto on 10/03/16. */
@@ -28,7 +29,7 @@ public interface EventManagement {
 
   Iterable<EventEndpoint> query(String projectId);
 
-  EventEndpoint query(String id, String projectId);
+  EventEndpoint query(String id, String projectId) throws NotFoundException;
 
   Iterable<EventEndpoint> queryByProjectId(String projectId);
 }

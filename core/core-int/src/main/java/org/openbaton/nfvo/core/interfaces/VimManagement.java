@@ -42,7 +42,7 @@ public interface VimManagement {
   /** This operation allows updating the datacenter in the datacenter repository. */
   VimInstance update(VimInstance new_vimInstance, String id, String projectId)
       throws VimException, PluginException, IOException, BadRequestException,
-          AlreadyExistingException;
+          AlreadyExistingException, NotFoundException;
 
   /**
    * This operation allows querying the information of the datacenter in the datacenter repository.
@@ -62,7 +62,7 @@ public interface VimManagement {
    */
   NFVImage addImage(String id, NFVImage image, String projectId)
       throws VimException, PluginException, EntityUnreachableException, IOException,
-          BadRequestException, AlreadyExistingException;
+          BadRequestException, AlreadyExistingException, NotFoundException;
 
   /**
    * Returns the NFVImage with idImage from VimInstance with idVim
@@ -70,12 +70,12 @@ public interface VimManagement {
    * @return NFVImage
    */
   NFVImage queryImage(String idVim, String idImage, String projectId)
-      throws EntityUnreachableException;
+      throws EntityUnreachableException, NotFoundException;
 
   /** Removes the NFVImage with idImage from VimInstance with idVim */
   void deleteImage(String idVim, String idImage, String projectId)
       throws VimException, PluginException, EntityUnreachableException, IOException,
-          BadRequestException, AlreadyExistingException;
+          BadRequestException, AlreadyExistingException, NotFoundException;
 
   Iterable<VimInstance> queryByProjectId(String projectId);
 
