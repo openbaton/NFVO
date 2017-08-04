@@ -11,6 +11,7 @@ notifications:
 cache:
   directories:
   - $HOME/.m2
+  - $HOME/.gradle/wrapper/
 script: 
  - ./gradlew build
 after_success:
