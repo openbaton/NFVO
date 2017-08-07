@@ -17,12 +17,6 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks.abstracts;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
@@ -61,6 +55,13 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
 
 /** Created by lto on 06/08/15. */
 
@@ -187,7 +188,7 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
               action, virtualNetworkFunctionRecord, virtualNetworkFunctionRecord.getProjectId());
       EventNFVO eventNFVO = new EventNFVO(this);
       eventNFVO.setEventNFVO(eventPublic);
-      log.debug("Publishing event: " + eventPublic);
+      log.trace("Publishing event: " + eventPublic);
       publisher.publishEvent(eventNFVO);
       return null;
     } else {

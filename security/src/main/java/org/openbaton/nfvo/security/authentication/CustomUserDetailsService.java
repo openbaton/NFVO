@@ -17,10 +17,6 @@
 
 package org.openbaton.nfvo.security.authentication;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.StringTokenizer;
-import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
 import org.openbaton.catalogue.security.Role.RoleEnum;
@@ -44,6 +40,12 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Component;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.StringTokenizer;
+
+import javax.annotation.PostConstruct;
 
 @Component
 public class CustomUserDetailsService implements CommandLineRunner, UserDetailsManager {
@@ -158,27 +160,7 @@ public class CustomUserDetailsService implements CommandLineRunner, UserDetailsM
   @Override
   public void updateUser(UserDetails user) {
     inMemManager.updateUser(user);
-    User userToUpdate = userRepository.findFirstByUsername(user.getUsername());
-    userToUpdate.setPassword(user.getPassword());
-    for (GrantedAuthority authority : user.getAuthorities()) {
-      StringTokenizer stringTokenizer = new StringTokenizer(authority.getAuthority(), ":");
-      String rl = stringTokenizer.nextToken();
-      String pj = stringTokenizer.nextToken();
-      boolean found = false;
-      for (Role role : userToUpdate.getRoles()) {
-        if (role.getProject().equals(pj)) {
-          role.setRole(RoleEnum.valueOf(rl));
-          found = true;
-        }
-      }
-      if (!found) {
-        Role role = new Role();
-        role.setRole(RoleEnum.valueOf(rl));
-        role.setProject(pj);
-        userToUpdate.getRoles().add(role);
-      }
-    }
-    userRepository.save(userToUpdate);
+
   }
 
   @Override
