@@ -1,12 +1,11 @@
-package org.openbaton.catalogue.nfvo;
+package org.openbaton.catalogue.security;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by lto on 04/04/2017. */
 @Entity
-public class ServiceMetadata extends BaseEntity {
+public class ServiceMetadata extends BaseUser {
 
   private String keyValue;
 

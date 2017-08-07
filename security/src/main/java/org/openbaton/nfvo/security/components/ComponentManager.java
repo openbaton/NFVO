@@ -1,24 +1,18 @@
 package org.openbaton.nfvo.security.components;
 
-import static org.openbaton.utils.rabbit.RabbitManager.createRabbitMqUser;
-import static org.openbaton.utils.rabbit.RabbitManager.removeRabbitMqUser;
-import static org.openbaton.utils.rabbit.RabbitManager.setRabbitMqUserPermissions;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Date;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
+
 import org.openbaton.catalogue.nfvo.ManagerCredentials;
-import org.openbaton.catalogue.nfvo.ServiceMetadata;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.catalogue.security.Project;
+import org.openbaton.catalogue.security.Role;
+import org.openbaton.catalogue.security.ServiceMetadata;
+import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.ManagerCredentialsRepository;
+import org.openbaton.nfvo.repositories.ProjectRepository;
 import org.openbaton.nfvo.repositories.ServiceRepository;
 import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
 import org.openbaton.nfvo.security.authentication.OAuth2AuthorizationServerConfig;
@@ -31,6 +25,21 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
+import static org.openbaton.utils.rabbit.RabbitManager.createRabbitMqUser;
+import static org.openbaton.utils.rabbit.RabbitManager.removeRabbitMqUser;
+import static org.openbaton.utils.rabbit.RabbitManager.setRabbitMqUserPermissions;
 
 //import java.util.Base64;
 
@@ -68,6 +77,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
   private String vhost;
 
   @Autowired private VnfmEndpointRepository vnfmManagerEndpointRepository;
+  @Autowired private ProjectRepository projectRepository;
 
   /*
    * Service related operations
@@ -159,8 +169,8 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
   }
 
   @Override
-  public String createService(String serviceName, String projectId)
-      throws NoSuchAlgorithmException, IOException {
+  public String createService(String serviceName, String projectId, List<String> projects)
+      throws NoSuchAlgorithmException, IOException, NotFoundException, MissingParameterException {
     for (ServiceMetadata serviceMetadata : serviceRepository.findAll()) {
       if (serviceMetadata.getName().equals(serviceName)) {
         log.debug("Service " + serviceName + " already exists.");
@@ -168,6 +178,33 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
       }
     }
     ServiceMetadata serviceMetadata = new ServiceMetadata();
+    serviceMetadata.setRoles(new HashSet<>());
+
+    if (projects.isEmpty()) {
+      throw new MissingParameterException("Project list must not be empty");
+    }
+
+    if (projects.size() == 1 && projects.get(0).equals("*")) {
+      Role r = new Role();
+      r.setRole(Role.RoleEnum.ADMIN);
+      r.setProject("*");
+      serviceMetadata.getRoles().add(r);
+    } else {
+
+      for (String project : projects) {
+        Role r = new Role();
+        r.setRole(Role.RoleEnum.USER);
+        Project pr = projectRepository.findFirstById(project);
+        pr = pr == null ? projectRepository.findFirstByName(project) : pr;
+        if (pr == null) {
+          log.error("Project with id or name " + project + " not found");
+          throw new NotFoundException("Project with id or name " + project + " not found");
+        }
+        r.setProject(pr.getName());
+        serviceMetadata.getRoles().add(r);
+      }
+    }
+
     serviceMetadata.setName(serviceName);
     serviceMetadata.setKeyValue(KeyHelper.genKey());
     log.debug("Saving ServiceMetadata: " + serviceMetadata);

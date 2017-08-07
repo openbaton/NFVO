@@ -17,10 +17,15 @@
 
 package org.openbaton.nfvo.security.authorization;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import org.openbaton.catalogue.security.BaseUser;
 import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
 import org.openbaton.catalogue.security.Role.RoleEnum;
+import org.openbaton.catalogue.security.ServiceMetadata;
 import org.openbaton.catalogue.security.User;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.EntityInUseException;
@@ -29,6 +34,7 @@ import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.ProjectRepository;
+import org.openbaton.nfvo.repositories.ServiceRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
 import org.openbaton.nfvo.security.interfaces.UserManagement;
@@ -49,6 +55,7 @@ public class ProjectManagement implements org.openbaton.nfvo.security.interfaces
   @Autowired private NetworkServiceRecordRepository networkServiceRecordRepository;
   @Autowired private VnfPackageRepository vnfPackageRepository;
   private Logger log = LoggerFactory.getLogger(this.getClass());
+  @Autowired private ServiceRepository serviceRepository;
 
   @Override
   public Project add(Project project) {
@@ -83,6 +90,19 @@ public class ProjectManagement implements org.openbaton.nfvo.security.interfaces
       if (!rolesToRemove.isEmpty()) {
         user.getRoles().removeAll(rolesToRemove);
         userManagement.update(user);
+      }
+    }
+
+    for (ServiceMetadata service : serviceRepository.findAll()) {
+      Set<Role> rolesToRemove = new HashSet<>();
+      for (Role role : service.getRoles()) {
+        if (role.getProject().equals(projectToDelete.getName())) {
+          rolesToRemove.add(role);
+        }
+      }
+      if (!rolesToRemove.isEmpty()) {
+        service.getRoles().removeAll(rolesToRemove);
+        serviceRepository.save(service);
       }
     }
     projectRepository.delete(projectToDelete);
@@ -131,7 +151,7 @@ public class ProjectManagement implements org.openbaton.nfvo.security.interfaces
    * @return all Projects assigned to the User
    */
   @Override
-  public Iterable<Project> query(User user) {
+  public Iterable<Project> query(BaseUser user) {
     List<Project> projects = new ArrayList<>();
     for (Role role : user.getRoles()) {
       // if the User is admin return all Projects

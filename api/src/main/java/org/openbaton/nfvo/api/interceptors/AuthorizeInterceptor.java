@@ -18,10 +18,9 @@ package org.openbaton.nfvo.api.interceptors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.openbaton.catalogue.nfvo.ServiceMetadata;
+import org.openbaton.catalogue.security.BaseUser;
 import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
-import org.openbaton.catalogue.security.User;
 import org.openbaton.exceptions.NotAllowedException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.ServiceRepository;
@@ -95,17 +94,17 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
     log.trace("projectId: \"" + project + "\"");
     log.trace(request.getMethod() + " on URI: " + request.getRequestURI());
     log.trace("UserManagement: " + userManagement);
-    User user = null;
+    BaseUser baseUser = null;
     try {
-      user = userManagement.queryByName(currentUserName);
+      baseUser = userManagement.queryByName(currentUserName);
     } catch (NotFoundException e) {
       log.trace("User not found for name: " + currentUserName + " maybe a service?");
-      ServiceMetadata serviceMetadata = serviceRepository.findByName(currentUserName);
-      if (serviceMetadata != null) {
+      baseUser = serviceRepository.findByName(currentUserName);
+      if (baseUser != null) {
         log.trace(currentUserName + " is a service");
-        return true;
+      } else {
+        throw e;
       }
-      throw e;
     }
 
     if (project != null && !project.isEmpty()) {
@@ -113,12 +112,12 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
       if (projectIsNecessary(request) && !projectManagement.exist(project)) {
         throw new NotFoundException("Project with id " + project + " was not found");
       }
-      for (Role role : user.getRoles()) {
+      for (Role role : baseUser.getRoles()) {
         if (role.getRole().ordinal() == Role.RoleEnum.ADMIN.ordinal()) {
           return true;
         }
       }
-      for (Role role : user.getRoles()) {
+      for (Role role : baseUser.getRoles()) {
         String pjName = projectManagement.query(project).getName();
         log.trace(role.getProject() + " == " + pjName);
         if (role.getProject().equals(pjName)) {
@@ -132,7 +131,7 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
         }
       }
     } else {
-      Iterable<Project> userProjects = projectManagement.query(user);
+      Iterable<Project> userProjects = projectManagement.query(baseUser);
       if (userProjects.iterator().hasNext()) {
         return checkAuthorization(userProjects.iterator().next().getId(), request, currentUserName);
       } else {

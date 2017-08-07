@@ -17,34 +17,22 @@
 
 package org.openbaton.catalogue.security;
 
-import java.io.Serializable;
-import java.util.Set;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.PrePersist;
 import javax.persistence.Table;
-import org.openbaton.catalogue.util.IdGenerator;
 
 @Entity
 @Table(name = "USERS")
-public class User implements Serializable {
-
-  @Id private String id;
+public class User extends BaseUser {
 
   @Column(unique = true)
   private String username;
 
   private String password;
+
   private boolean enabled;
 
   private String email;
-
-  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-  private Set<Role> roles;
 
   public boolean isEnabled() {
     return enabled;
@@ -52,49 +40,6 @@ public class User implements Serializable {
 
   public void setEnabled(boolean enabled) {
     this.enabled = enabled;
-  }
-
-  @Override
-  public String toString() {
-    return "User{"
-        + "id='"
-        + id
-        + '\''
-        + ", username='"
-        + username
-        + '\''
-        + ", password='"
-        + password
-        + '\''
-        + ", enabled="
-        + enabled
-        + ", email='"
-        + email
-        + '\''
-        + ", roles="
-        + roles
-        + '}';
-  }
-
-  public Set<Role> getRoles() {
-    return roles;
-  }
-
-  public void setRoles(Set<Role> roles) {
-    this.roles = roles;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
   }
 
   public String getUsername() {
@@ -119,5 +64,23 @@ public class User implements Serializable {
 
   public void setEmail(String email) {
     this.email = email;
+  }
+
+  @Override
+  public String toString() {
+    return "User{"
+        + "username='"
+        + username
+        + '\''
+        + ", password='"
+        + password
+        + '\''
+        + ", enabled="
+        + enabled
+        + ", email='"
+        + email
+        + '\''
+        + "} "
+        + super.toString();
   }
 }

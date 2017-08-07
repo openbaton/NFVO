@@ -24,9 +24,32 @@ import java.io.Serializable;
 /** The internal Event containing the action that triggered this and the payload of the event */
 public class ApplicationEventNFVO {
   private Action action;
+
+  @Override
+  public String toString() {
+    return "ApplicationEventNFVO{"
+        + "action="
+        + action
+        + ", projectId='"
+        + projectId
+        + '\''
+        + ", payload="
+        + payload
+        + '}';
+  }
+
+  public String getProjectId() {
+    return projectId;
+  }
+
+  public void setProjectId(String projectId) {
+    this.projectId = projectId;
+  }
+
+  private String projectId;
   private Serializable payload;
 
-  public ApplicationEventNFVO(Action action, Serializable payload) {
+  public ApplicationEventNFVO(Action action, Serializable payload, String projectId) {
     this.action = action;
     this.payload = payload;
   }
@@ -47,15 +70,5 @@ public class ApplicationEventNFVO {
 
   public void setAction(Action action) {
     this.action = action;
-  }
-
-  @Override
-  public String toString() {
-    return "ApplicationEventNFVO{"
-        + "action="
-        + action
-        + ", payload="
-        + payload.getClass().getSimpleName()
-        + '}';
   }
 }

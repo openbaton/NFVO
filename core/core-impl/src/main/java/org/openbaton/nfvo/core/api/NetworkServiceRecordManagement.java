@@ -1071,7 +1071,10 @@ public class NetworkServiceRecordManagement
     }
 
     ApplicationEventNFVO event =
-        new ApplicationEventNFVO(Action.SCALE_IN, virtualNetworkFunctionRecord);
+        new ApplicationEventNFVO(
+            Action.SCALE_IN,
+            virtualNetworkFunctionRecord,
+            virtualNetworkFunctionRecord.getProjectId());
     EventNFVO eventNFVO = new EventNFVO(this);
     eventNFVO.setEventNFVO(event);
     log.debug("Publishing event: " + event);

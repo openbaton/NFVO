@@ -183,7 +183,8 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
         vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
       }
       ApplicationEventNFVO eventPublic =
-          new ApplicationEventNFVO(action, virtualNetworkFunctionRecord);
+          new ApplicationEventNFVO(
+              action, virtualNetworkFunctionRecord, virtualNetworkFunctionRecord.getProjectId());
       EventNFVO eventNFVO = new EventNFVO(this);
       eventNFVO.setEventNFVO(eventPublic);
       log.debug("Publishing event: " + eventPublic);

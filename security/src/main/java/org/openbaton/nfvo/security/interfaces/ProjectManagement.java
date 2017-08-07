@@ -17,8 +17,8 @@
 
 package org.openbaton.nfvo.security.interfaces;
 
+import org.openbaton.catalogue.security.BaseUser;
 import org.openbaton.catalogue.security.Project;
-import org.openbaton.catalogue.security.User;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.EntityInUseException;
 import org.openbaton.exceptions.NotAllowedException;
@@ -52,7 +52,7 @@ public interface ProjectManagement {
    * @param user
    * @return all Projects assigned to the User
    */
-  Iterable<Project> query(User user);
+  Iterable<Project> query(BaseUser user);
 
   boolean exist(String project);
 }

@@ -16,18 +16,14 @@
 
 package org.openbaton.nfvo.api.admin;
 
-import com.google.gson.JsonObject;
 import io.swagger.annotations.ApiOperation;
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.validation.Valid;
-import org.openbaton.catalogue.nfvo.ServiceMetadata;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+import org.openbaton.catalogue.security.ServiceMetadata;
 import org.openbaton.exceptions.BadRequestException;
+import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.security.interfaces.ComponentManager;
 import org.slf4j.Logger;
@@ -43,6 +39,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.util.List;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/api/v1/components")
 public class RestComponents {
@@ -50,6 +58,7 @@ public class RestComponents {
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private ComponentManager componentManager;
+  @Autowired private Gson gson;
 
   /**
    * Create a new Service. This generates a new AES Key that can be used for registering the
@@ -77,23 +86,38 @@ public class RestComponents {
   public String createService(
       @RequestHeader(value = "project-id") String projectId,
       @RequestBody @Valid JsonObject serviceCreateBody)
-      throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, BadRequestException {
+      throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, BadRequestException,
+          NotFoundException, MissingParameterException {
 
     if (!serviceCreateBody.has("name"))
       throw new BadRequestException("The request's json body has to contain a name property.");
+    if (!serviceCreateBody.has("roles")) {
+      throw new BadRequestException(
+          "The request's json body has to contain a roles property as a list of project ids or names.");
+    }
 
     String serviceName = null;
     try {
       serviceName = serviceCreateBody.getAsJsonPrimitive("name").getAsString();
     } catch (ClassCastException e1) {
       throw new BadRequestException(
-          "The request's json body has to have this form: {'name':'examplename'}");
+          "The request's json body has to have this form: {'name':'examplename', 'roles':['project1', 'project2'] }");
     } catch (IllegalStateException e2) {
       throw new BadRequestException(
-          "The request's json body has to have this form: {'name':'examplename'}");
+          "The request's json body has to have this form: {'name':'examplename', 'roles':['project1', 'project2'] }");
     }
-
-    return componentManager.createService(serviceName, projectId);
+    Type baseType = new TypeToken<List<String>>() {}.getType();
+    List<String> projects;
+    try {
+      projects = gson.fromJson(serviceCreateBody.get("roles").getAsJsonArray(), baseType);
+    } catch (ClassCastException e1) {
+      throw new BadRequestException(
+          "The request's json body has to have this form: {'name':'examplename', 'roles':['project1', 'project2'] }");
+    } catch (IllegalStateException e2) {
+      throw new BadRequestException(
+          "The request's json body has to have this form: {'name':'examplename', 'roles':['project1', 'project2'] }");
+    }
+    return componentManager.createService(serviceName, projectId, projects);
   }
 
   /**

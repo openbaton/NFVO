@@ -17,13 +17,11 @@
 package org.openbaton.nfvo.api.admin;
 
 import io.swagger.annotations.ApiOperation;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import javax.validation.Valid;
-import org.openbaton.catalogue.nfvo.ServiceMetadata;
+
+import org.openbaton.catalogue.security.BaseUser;
 import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
+import org.openbaton.catalogue.security.ServiceMetadata;
 import org.openbaton.catalogue.security.User;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.EntityInUseException;
@@ -46,6 +44,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.validation.Valid;
 
 /** Created by lto on 25/05/16. */
 @RestController
@@ -215,31 +219,30 @@ public class RestProject {
     }
   }
 
-  private User getCurrentUser() throws NotFoundException {
+  private BaseUser getCurrentUser() throws NotFoundException {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication == null) {
       throw new NotFoundException("authentication invalid");
     }
     String currentUserName = authentication.getName();
-    return userManagement.queryByName(currentUserName);
+    User user;
+    try {
+      user = userManagement.queryByName(currentUserName);
+    } catch (NotFoundException e) {
+      return serviceRepository.findByName(currentUserName);
+    }
+    return user;
   }
 
   public boolean isAdmin() throws NotAllowedException, NotFoundException {
-    try {
-      getCurrentService();
-    } catch (NotFoundException e) {
-      User currentUser = getCurrentUser();
+    BaseUser currentUser = getCurrentUser();
 
-      if (serviceRepository.findByName(currentUser.getUsername()) != null) {
+    log.trace("Check user if admin: " + currentUser.getId());
+    for (Role role : currentUser.getRoles()) {
+      if (role.getRole().ordinal() == Role.RoleEnum.ADMIN.ordinal()) {
         return true;
       }
-      log.trace("Check user if admin: " + currentUser.getUsername());
-      for (Role role : currentUser.getRoles()) {
-        if (role.getRole().ordinal() == Role.RoleEnum.ADMIN.ordinal()) {
-          return true;
-        }
-      }
     }
-    return true;
+    return false;
   }
 }

@@ -55,7 +55,12 @@ import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.common.internal.model.EventFinishNFVO;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
-import org.openbaton.nfvo.repositories.*;
+import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
+import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
+import org.openbaton.nfvo.repositories.VNFDRepository;
+import org.openbaton.nfvo.repositories.VNFRRepository;
+import org.openbaton.nfvo.repositories.VimRepository;
+import org.openbaton.nfvo.repositories.VnfPackageRepository;
 import org.openbaton.vnfm.interfaces.manager.MessageGenerator;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.openbaton.vnfm.interfaces.state.VnfStateHandler;
@@ -294,22 +299,27 @@ public class VnfmManager
               networkServiceRecord.setTask("Scaled in");
               networkServiceRecord.setUpdatedAt(format.format(new Date()));
               networkServiceRecord = nsrRepository.save(networkServiceRecord);
-              publishEvent(Action.SCALE_IN, networkServiceRecord);
+              publishEvent(
+                  Action.SCALE_IN, networkServiceRecord, networkServiceRecord.getProjectId());
             } else if (networkServiceRecord.getTask().contains("Scaling out")) {
               networkServiceRecord.setTask("Scaled out");
               networkServiceRecord.setUpdatedAt(format.format(new Date()));
               networkServiceRecord = nsrRepository.save(networkServiceRecord);
-              publishEvent(Action.SCALE_OUT, networkServiceRecord);
+              publishEvent(
+                  Action.SCALE_OUT, networkServiceRecord, networkServiceRecord.getProjectId());
             } else if (networkServiceRecord.getTask().contains("Healing")) {
               networkServiceRecord.setTask("Healed");
               networkServiceRecord.setUpdatedAt(format.format(new Date()));
               networkServiceRecord = nsrRepository.save(networkServiceRecord);
-              publishEvent(Action.HEAL, networkServiceRecord);
+              publishEvent(Action.HEAL, networkServiceRecord, networkServiceRecord.getProjectId());
             } else {
               networkServiceRecord.setTask("Onboarded");
               networkServiceRecord.setUpdatedAt(format.format(new Date()));
               networkServiceRecord = nsrRepository.save(networkServiceRecord);
-              publishEvent(Action.INSTANTIATE_FINISH, networkServiceRecord);
+              publishEvent(
+                  Action.INSTANTIATE_FINISH,
+                  networkServiceRecord,
+                  networkServiceRecord.getProjectId());
             }
           } catch (OptimisticLockingFailureException e) {
             log.error(
@@ -322,7 +332,10 @@ public class VnfmManager
         }
       } while (!savedNsr);
     } else if (status.ordinal() == Status.TERMINATED.ordinal()) {
-      publishEvent(Action.RELEASE_RESOURCES_FINISH, networkServiceRecord);
+      publishEvent(
+          Action.RELEASE_RESOURCES_FINISH,
+          networkServiceRecord,
+          networkServiceRecord.getProjectId());
       nsrRepository.delete(networkServiceRecord);
     }
 
@@ -347,8 +360,8 @@ public class VnfmManager
     return networkServiceRecord;
   }
 
-  private void publishEvent(Action action, Serializable payload) {
-    ApplicationEventNFVO event = new ApplicationEventNFVO(action, payload);
+  private void publishEvent(Action action, Serializable payload, String projectId) {
+    ApplicationEventNFVO event = new ApplicationEventNFVO(action, payload, projectId);
     EventNFVO eventNFVO = new EventNFVO(this);
     eventNFVO.setEventNFVO(event);
     log.debug("Publishing event: " + event);
@@ -499,7 +512,10 @@ public class VnfmManager
   public synchronized void onApplicationEvent(EventFinishNFVO event) {
     VirtualNetworkFunctionRecord virtualNetworkFunctionRecord =
         event.getEventNFVO().getVirtualNetworkFunctionRecord();
-    publishEvent(event.getEventNFVO().getAction(), virtualNetworkFunctionRecord);
+    publishEvent(
+        event.getEventNFVO().getAction(),
+        virtualNetworkFunctionRecord,
+        virtualNetworkFunctionRecord.getProjectId());
     if ((event.getEventNFVO().getAction().ordinal() != Action.ALLOCATE_RESOURCES.ordinal())
         && (event.getEventNFVO().getAction().ordinal() != Action.GRANT_OPERATION.ordinal())) {
       findAndSetNSRStatus(virtualNetworkFunctionRecord);
