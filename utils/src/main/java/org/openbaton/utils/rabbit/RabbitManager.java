@@ -24,12 +24,7 @@ import com.google.gson.JsonElement;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.TimeoutException;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -48,6 +43,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 /** Created by lto on 25/11/15. */
 @Service
@@ -115,7 +117,7 @@ public class RabbitManager {
     map.put("tags", "administrator");
     map.put("vhost", vHost);
     String pass = gson.toJson(map);
-    log.debug("Body is: " + pass);
+    log.trace("Body is: " + pass);
     org.apache.http.HttpEntity requestEntity = new StringEntity(pass, ContentType.APPLICATION_JSON);
     HttpPut put = new HttpPut(uri);
     String authStr = rabbitUsername + ":" + rabbitPassword;
@@ -125,11 +127,11 @@ public class RabbitManager {
     put.setHeader(new BasicHeader("Content-type", "application/json"));
     put.setEntity(requestEntity);
 
-    log.debug("Executing request: " + put.getMethod() + " on " + uri);
+    log.trace("Executing request: " + put.getMethod() + " on " + uri);
 
     CloseableHttpResponse response = httpclient.execute(put);
-    log.debug(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
-    log.debug("Received status: " + response.getStatusLine().getStatusCode());
+    log.trace(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
+    log.trace("Received status: " + response.getStatusLine().getStatusCode());
     if (response.getStatusLine().getStatusCode() != 204 // already exists
         && response.getStatusLine().getStatusCode() != 201) { // create new one
       httpclient.close();
@@ -176,7 +178,7 @@ public class RabbitManager {
     map.put("read", readPermission);
     String stringEntity = gson.toJson(map);
 
-    log.debug("Body is: " + stringEntity);
+    log.trace("Body is: " + stringEntity);
     String authStr = rabbitUsername + ":" + rabbitPassword;
     String encoding = Base64.encodeBase64String(authStr.getBytes());
     put.setHeader("Authorization", "Basic " + encoding);
@@ -186,10 +188,10 @@ public class RabbitManager {
 
     // TODO switch to SSL if possible
     CloseableHttpClient httpclient = HttpClients.createDefault();
-    log.debug("Executing request: " + put.getMethod() + " on " + uri);
+    log.trace("Executing request: " + put.getMethod() + " on " + uri);
     httpclient.execute(put);
     CloseableHttpResponse response = httpclient.execute(put);
-    log.debug(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
+    log.trace(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
     if (response.getStatusLine().getStatusCode() != 204) {
       httpclient.close();
       throw new WrongStatusException(
@@ -220,10 +222,10 @@ public class RabbitManager {
     delete.setHeader(new BasicHeader("Accept", "application/json"));
     //        delete.setHeader(new BasicHeader("Content-type", "application/json"));
 
-    log.debug("Executing request: " + delete.getMethod() + " on " + uri);
+    log.trace("Executing request: " + delete.getMethod() + " on " + uri);
 
     CloseableHttpResponse response = httpclient.execute(delete);
-    log.debug(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
+    log.trace(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
     if (response.getStatusLine().getStatusCode() != 204) {
       throw new WrongStatusException(
           "Error removing RabbitMQ user " + userToRemove + ": " + response.getStatusLine());

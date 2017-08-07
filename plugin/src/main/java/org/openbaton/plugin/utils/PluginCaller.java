@@ -32,15 +32,9 @@ import com.rabbitmq.client.AMQP.BasicProperties.Builder;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.QueueingConsumer;
-import com.rabbitmq.client.QueueingConsumer.Delivery;
-import java.io.IOException;
-import java.io.Serializable;
-import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.TimeoutException;
+import com.rabbitmq.client.DefaultConsumer;
+import com.rabbitmq.client.Envelope;
+
 import org.apache.commons.codec.binary.Base64;
 import org.openbaton.catalogue.nfvo.PluginMessage;
 import org.openbaton.exceptions.NotFoundException;
@@ -49,6 +43,16 @@ import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.utils.rabbit.RabbitManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeoutException;
 
 public class PluginCaller {
 
@@ -113,13 +117,24 @@ public class PluginCaller {
     this.timeout = timeout;
     factory = new ConnectionFactory();
     factory.setHost(brokerIp);
-    if (username != null) factory.setUsername(username);
-    else factory.setUsername("admin");
-    if (password != null) factory.setPassword(password);
-    else factory.setPassword("openbaton");
-    if (port > 1024) factory.setPort(port);
-    else factory.setPort(5672);
-    if (virtualHost != null && !"".equals(virtualHost)) factory.setVirtualHost(virtualHost);
+    if (username != null) {
+      factory.setUsername(username);
+    } else {
+      factory.setUsername("admin");
+    }
+    if (password != null) {
+      factory.setPassword(password);
+    } else {
+      factory.setPassword("openbaton");
+    }
+    if (port > 1024) {
+      factory.setPort(port);
+    } else {
+      factory.setPort(5672);
+    }
+    if (virtualHost != null && !"".equals(virtualHost)) {
+      factory.setVirtualHost(virtualHost);
+    }
     //connection = factory.newConnection();
 
     //        replyQueueName = channel.queueDeclare().getQueue();
@@ -142,7 +157,9 @@ public class PluginCaller {
       throws IOException, NotFoundException {
     List<String> queues = RabbitManager.getQueues(brokerIp, username, password, virtualHost, port);
     for (String queue : queues) {
-      if (queue.startsWith(pluginId)) return queue;
+      if (queue.startsWith(pluginId)) {
+        return queue;
+      }
     }
     throw new NotFoundException(
         "no plugin found with name: " + pluginId + " into queues: " + queues);
@@ -160,8 +177,33 @@ public class PluginCaller {
     String replyQueueName = channel.queueDeclare().getQueue();
     String exchange = "openbaton-exchange";
     channel.queueBind(replyQueueName, exchange, replyQueueName);
-    QueueingConsumer consumer = new QueueingConsumer(channel);
-    String consumerTag = channel.basicConsume(replyQueueName, true, consumer);
+    String corrId = UUID.randomUUID().toString();
+    BasicProperties props = new Builder().correlationId(corrId).replyTo(replyQueueName).build();
+
+    PluginMessage pluginMessage = new PluginMessage();
+    pluginMessage.setMethodName(methodName);
+    pluginMessage.setParameters(args);
+
+    String message = gson.toJson(pluginMessage);
+    channel.basicPublish(exchange, pluginId, props, message.getBytes());
+
+    final BlockingQueue<String> response = new ArrayBlockingQueue<String>(1);
+
+    //    QueueingConsumer consumer = new QueueingConsumer(channel);
+    String consumerTag =
+        channel.basicConsume(
+            replyQueueName,
+            true,
+            new DefaultConsumer(channel) {
+              @Override
+              public void handleDelivery(
+                  String consumerTag, Envelope envelope, BasicProperties properties, byte[] body)
+                  throws IOException {
+                if (properties.getCorrelationId().equals(corrId)) {
+                  response.offer(new String(body, "UTF-8"));
+                }
+              }
+            });
 
     //Check if plugin is still up
     if (!RabbitManager.getQueues(brokerIp, username, password, virtualHost, managementPort)
@@ -169,67 +211,22 @@ public class PluginCaller {
       connection.close();
       throw new PluginException("Plugin with id: " + pluginId + " not existing anymore...");
     }
-
-    String response;
-    String corrId = UUID.randomUUID().toString();
-    PluginMessage pluginMessage = new PluginMessage();
-    pluginMessage.setMethodName(methodName);
-    pluginMessage.setParameters(args);
-    String message = gson.toJson(pluginMessage);
-
-    BasicProperties props = new Builder().correlationId(corrId).replyTo(replyQueueName).build();
-
-    channel.basicPublish(exchange, pluginId, props, message.getBytes());
-
     if (returnType != null) {
-
-      while (true) {
-        Delivery delivery = consumer.nextDelivery(timeout);
-        if (delivery != null) {
-          if (delivery.getProperties().getCorrelationId().equals(corrId)) {
-            response = new String(delivery.getBody());
-            log.trace("received: " + response);
-            break;
-          } else {
-            log.error("Received Message with wrong correlation id");
-            channel.queueDelete(replyQueueName);
-            connection.close();
-            throw new PluginException(
-                "Received Message with wrong correlation id. This should not happen, if it does please call us.");
-          }
-        } else {
-          log.error(
-              "Timeout of "
-                  + timeout / 1000
-                  + " second is reached and no answer was received, supposing that the plugin crashed");
-          channel.queueDelete(replyQueueName);
-          connection.close();
-          throw new PluginException(
-              "Timeout of "
-                  + timeout / 1000
-                  + " second is reached and no answer was received, supposing that the plugin crashed");
-        }
-      }
-
-      channel.queueDelete(replyQueueName);
-      try {
-        channel.close();
-      } catch (TimeoutException e) {
-        e.printStackTrace();
-      }
-      JsonObject jsonObject = gson.fromJson(response, JsonObject.class);
+      JsonObject jsonObject = gson.fromJson(response.take(), JsonObject.class);
 
       JsonElement exceptionJson = jsonObject.get("exception");
       if (exceptionJson == null) {
         JsonElement answerJson = jsonObject.get("answer");
 
-        Serializable ret = null;
+        Serializable ret;
 
         if (answerJson.isJsonPrimitive()) {
           ret = gson.fromJson(answerJson.getAsJsonPrimitive(), returnType);
         } else if (answerJson.isJsonArray()) {
           ret = gson.fromJson(answerJson.getAsJsonArray(), returnType);
-        } else ret = gson.fromJson(answerJson.getAsJsonObject(), returnType);
+        } else {
+          ret = gson.fromJson(answerJson.getAsJsonObject(), returnType);
+        }
 
         log.trace("answer is: " + ret);
         connection.close();
