@@ -128,21 +128,32 @@ class EventDispatcher
         if (endpoint.getVirtualNetworkFunctionId() != null
             && !endpoint.getVirtualNetworkFunctionId().equals("")) {
           if (event.getEventNFVO().getPayload() instanceof VirtualNetworkFunctionRecord) {
-            if (((VirtualNetworkFunctionRecord) event.getEventNFVO().getPayload())
-                .getId()
-                .equals(endpoint.getVirtualNetworkFunctionId())) {
-              log.debug("dispatching event to: " + endpoint);
-              sendEvent(endpoint, event.getEventNFVO());
+            if (endpoint
+                .getProjectId()
+                .equals(
+                    ((VirtualNetworkFunctionRecord) event.getEventNFVO().getPayload())
+                        .getProjectId())) {
+              if (((VirtualNetworkFunctionRecord) event.getEventNFVO().getPayload())
+                  .getId()
+                  .equals(endpoint.getVirtualNetworkFunctionId())) {
+                log.debug("dispatching event to: " + endpoint);
+                sendEvent(endpoint, event.getEventNFVO());
+              }
             }
           }
         } else if (endpoint.getNetworkServiceId() != null
             && !endpoint.getNetworkServiceId().equals("")) {
           if (event.getEventNFVO().getPayload() instanceof NetworkServiceRecord) {
-            if (((NetworkServiceRecord) event.getEventNFVO().getPayload())
-                .getId()
-                .equals(endpoint.getNetworkServiceId())) {
-              log.debug("dispatching event to: " + endpoint);
-              sendEvent(endpoint, event.getEventNFVO());
+            if (endpoint
+                .getProjectId()
+                .equals(
+                    ((NetworkServiceRecord) event.getEventNFVO().getPayload()).getProjectId())) {
+              if (((NetworkServiceRecord) event.getEventNFVO().getPayload())
+                  .getId()
+                  .equals(endpoint.getNetworkServiceId())) {
+                log.debug("dispatching event to: " + endpoint);
+                sendEvent(endpoint, event.getEventNFVO());
+              }
             }
           }
         } else {
