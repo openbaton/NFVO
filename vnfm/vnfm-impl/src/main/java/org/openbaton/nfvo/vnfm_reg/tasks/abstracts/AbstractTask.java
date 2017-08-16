@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.locks.ReentrantLock;
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
@@ -60,7 +61,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /** Created by lto on 06/08/15. */
 
@@ -70,6 +70,7 @@ import org.springframework.transaction.annotation.Transactional;
 public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.tasks.AbstractTask {
   protected Logger log = LoggerFactory.getLogger(AbstractTask.class);
   private Action action;
+  private static ReentrantLock lock = new ReentrantLock();
 
   protected abstract void setEvent();
 
@@ -93,21 +94,25 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
   @Autowired private ConfigurableApplicationContext context;
   private ApplicationEventPublisher publisher;
 
-  @Transactional
-  protected synchronized void saveVirtualNetworkFunctionRecord() {
-    log.trace(
-        "ACTION is: " + action + " and the VNFR id is: " + virtualNetworkFunctionRecord.getId());
-    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
-    if (virtualNetworkFunctionRecord.getId() == null
-        || virtualNetworkFunctionRecord.getId().isEmpty()) {
-      virtualNetworkFunctionRecord.setCreatedAt(format.format(new Date()));
-      virtualNetworkFunctionRecord.setUpdatedAt(format.format(new Date()));
-      virtualNetworkFunctionRecord =
-          networkServiceRecordRepository.addVnfr(
-              virtualNetworkFunctionRecord, virtualNetworkFunctionRecord.getParent_ns_id());
-    } else {
-      virtualNetworkFunctionRecord.setUpdatedAt(format.format(new Date()));
-      virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
+  protected void saveVirtualNetworkFunctionRecord() {
+    lock.lock();
+    try {
+      log.trace(
+          "ACTION is: " + action + " and the VNFR id is: " + virtualNetworkFunctionRecord.getId());
+      SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+      if (virtualNetworkFunctionRecord.getId() == null
+          || virtualNetworkFunctionRecord.getId().isEmpty()) {
+        virtualNetworkFunctionRecord.setCreatedAt(format.format(new Date()));
+        virtualNetworkFunctionRecord.setUpdatedAt(format.format(new Date()));
+        virtualNetworkFunctionRecord =
+            networkServiceRecordRepository.addVnfr(
+                virtualNetworkFunctionRecord, virtualNetworkFunctionRecord.getParent_ns_id());
+      } else {
+        virtualNetworkFunctionRecord.setUpdatedAt(format.format(new Date()));
+        virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
+      }
+    } finally {
+      lock.unlock();
     }
   }
 
