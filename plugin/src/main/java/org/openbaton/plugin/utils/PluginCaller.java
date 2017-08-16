@@ -210,14 +210,19 @@ public class PluginCaller {
       throw new PluginException("Plugin with id: " + pluginId + " not existing anymore...");
     }
     if (returnType != null) {
-      JsonObject jsonObject = gson.fromJson(response.take(), JsonObject.class);
+      String res = response.take();
+      JsonObject jsonObject = gson.fromJson(res, JsonObject.class);
 
       JsonElement exceptionJson = jsonObject.get("exception");
       if (exceptionJson == null) {
         JsonElement answerJson = jsonObject.get("answer");
 
         Serializable ret;
-
+        if (answerJson == null) {
+          throw new PluginException(
+              "Plugin return null without throwing exception... It is hard to understand for me what went wrong, i am"
+                  + " only a (free) sofware...");
+        }
         if (answerJson.isJsonPrimitive()) {
           ret = gson.fromJson(answerJson.getAsJsonPrimitive(), returnType);
         } else if (answerJson.isJsonArray()) {
