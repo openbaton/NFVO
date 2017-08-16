@@ -51,7 +51,7 @@ public class PluginMessage implements Serializable {
         + methodName
         + '\''
         + ", interfaceClass="
-        + interfaceClass.getSimpleName()
+        + (interfaceClass != null ? interfaceClass.getSimpleName() : "null")
         + ", parameters="
         + parameters
         + '}';
