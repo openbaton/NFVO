@@ -17,6 +17,9 @@
 
 package org.openbaton.nfvo.security.authentication;
 
+import java.util.HashSet;
+import java.util.Set;
+import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
 import org.openbaton.catalogue.security.Role.RoleEnum;
@@ -31,7 +34,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -40,12 +42,6 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Component;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.StringTokenizer;
-
-import javax.annotation.PostConstruct;
 
 @Component
 public class CustomUserDetailsService implements CommandLineRunner, UserDetailsManager {
@@ -160,7 +156,6 @@ public class CustomUserDetailsService implements CommandLineRunner, UserDetailsM
   @Override
   public void updateUser(UserDetails user) {
     inMemManager.updateUser(user);
-
   }
 
   @Override

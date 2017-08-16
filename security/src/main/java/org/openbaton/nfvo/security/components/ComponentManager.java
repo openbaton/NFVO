@@ -100,38 +100,21 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
     for (ServiceMetadata serviceMetadata : serviceRepository.findAll()) {
       try {
         unencryptedBody = KeyHelper.decryptNew(body, serviceMetadata.getKeyValue());
-      } catch (NoSuchPaddingException e) {
-        e.printStackTrace();
-        continue;
-      } catch (NoSuchAlgorithmException e) {
-        e.printStackTrace();
-        continue;
-      } catch (InvalidKeyException e) {
-        e.printStackTrace();
-        continue;
-      } catch (BadPaddingException e) {
-        e.printStackTrace();
-        continue;
-      } catch (IllegalBlockSizeException e) {
-        e.printStackTrace();
-        continue;
-      } catch (IOException e) {
+      } catch (NoSuchPaddingException
+          | NoSuchAlgorithmException
+          | InvalidKeyException
+          | BadPaddingException
+          | IOException
+          | IllegalBlockSizeException e) {
         e.printStackTrace();
         continue;
       }
 
-      if (unencryptedBody == null)
-        throw new NotFoundException("Could not decrypt the body, did you enabled the service?");
-
       service = serviceMetadata;
       break;
     }
-
-    if (service == null) {
-      log.error("Please create your Service first in order to get the super duper secret key");
-      throw new NotFoundException(
-          "No Service found. Please create your Service before registering it.");
-    }
+    if (unencryptedBody == null)
+      throw new NotFoundException("Could not decrypt the body, did you enabled the service?");
 
     JsonObject bodyJson = gson.fromJson(unencryptedBody, JsonObject.class);
 
@@ -283,19 +266,23 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
             managerCredentialsRepository.findFirstByRabbitUsername(username);
         VnfmManagerEndpoint endpoint = null;
         if (managerCredentials != null) {
-          log.error("Manager already registered.");
+          log.warn("Manager already registered.");
           return gson.toJson(managerCredentials);
         } else {
           managerCredentials = new ManagerCredentials();
           if (vnfmManagerEndpoint != null)
-            endpoint = gson.fromJson(vnfmManagerEndpoint, VnfmManagerEndpoint.class);
+            if (vnfmManagerEndpoint.isJsonPrimitive())
+              endpoint =
+                  gson.fromJson(vnfmManagerEndpoint.getAsString(), VnfmManagerEndpoint.class);
+            else endpoint = gson.fromJson(vnfmManagerEndpoint, VnfmManagerEndpoint.class);
         }
 
         //          String regexOpenbaton = "(^nfvo)";
         //          String regexManager = "(^" + username + ")|(openbaton-exchange)";
         //          String regexBoth = regexOpenbaton + "|" + regexManager;
 
-        String configurePermissions = "(" + username + ")|(nfvo." + username + ".actions)";
+        String configurePermissions =
+            "^amq\\.gen.*|amq\\.default$|(" + username + ")|(nfvo." + username + ".actions)";
         String writePermissions =
             "^amq\\.gen.*|amq\\.default$|("
                 + username
@@ -303,7 +290,11 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
                 + username
                 + ".actions)|(openbaton-exchange)";
         String readPermissions =
-            "(nfvo." + username + ".actions)|(" + username + ")|(openbaton-exchange)";
+            "^amq\\.gen.*|amq\\.default$|(nfvo."
+                + username
+                + ".actions)|("
+                + username
+                + ")|(openbaton-exchange)";
 
         createRabbitMqUser(
             rabbitUsername, rabbitPassword, brokerIp, managementPort, username, password, vhost);
@@ -358,6 +349,9 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
             vnfmRegister.unregister(gson.fromJson(vnfmManagerEndpoint, VnfmManagerEndpoint.class));
 
           removeRabbitMqUser(rabbitUsername, rabbitPassword, brokerIp, managementPort, username);
+        } else {
+          log.warn(
+              "Some manager tried to unregister with a wrong password! or maybe i have an inconsistent DB...most probably... ;( ");
         }
         return null;
       } else return null;

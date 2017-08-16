@@ -17,6 +17,9 @@
 
 package org.openbaton.nfvo.security.authorization;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Pattern;
 import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
 import org.openbaton.catalogue.security.User;
@@ -40,18 +43,13 @@ import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserExc
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.Pattern;
-
-/**
- * Created by lto on 25/02/16.
- */
+/** Created by lto on 25/02/16. */
 @Service
 @ConfigurationProperties
 public class UserManagement implements org.openbaton.nfvo.security.interfaces.UserManagement {
 
-  @Value("${nfvo.users.password.strength:true}") private boolean checkStrength;
+  @Value("${nfvo.users.password.strength:true}")
+  private boolean checkStrength;
 
   @Autowired private UserRepository userRepository;
 
@@ -64,7 +62,8 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Override
-  public User add(User user) throws PasswordWeakException, NotAllowedException, BadRequestException, NotFoundException {
+  public User add(User user)
+      throws PasswordWeakException, NotAllowedException, BadRequestException, NotFoundException {
     log.debug("Adding new user: " + user);
 
     if (userRepository.findFirstByUsername(user.getUsername()) != null) {
@@ -84,15 +83,15 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
       roles[i] = objects[i].getRole() + ":" + objects[i].getProject();
     }
 
-    org.springframework.security.core.userdetails.User
-        userToAdd =
-        new org.springframework.security.core.userdetails.User(user.getUsername(),
-                                                               BCrypt.hashpw(user.getPassword(), BCrypt.gensalt(12)),
-                                                               user.isEnabled(),
-                                                               true,
-                                                               true,
-                                                               true,
-                                                               AuthorityUtils.createAuthorityList(roles));
+    org.springframework.security.core.userdetails.User userToAdd =
+        new org.springframework.security.core.userdetails.User(
+            user.getUsername(),
+            BCrypt.hashpw(user.getPassword(), BCrypt.gensalt(12)),
+            user.isEnabled(),
+            true,
+            true,
+            true,
+            AuthorityUtils.createAuthorityList(roles));
     user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt(12)));
     userDetailsManager.createUser(userToAdd);
     return userRepository.save(user);
@@ -106,7 +105,8 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
   }
 
   @Override
-  public User update(User newUser) throws NotAllowedException, BadRequestException, NotFoundException {
+  public User update(User newUser)
+      throws NotAllowedException, BadRequestException, NotFoundException {
 
     User userToUpdate = query(newUser.getId());
     if (!userToUpdate.getUsername().equals(newUser.getUsername())) {
@@ -126,15 +126,15 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
     userToUpdate.setEmail(newUser.getEmail());
     userToUpdate.setEnabled(newUser.isEnabled());
 
-    org.springframework.security.core.userdetails.User
-        newUserDetails =
-        new org.springframework.security.core.userdetails.User(newUser.getUsername(),
-                                                               newUser.getPassword(),
-                                                               newUser.isEnabled(),
-                                                               true,
-                                                               true,
-                                                               true,
-                                                               AuthorityUtils.createAuthorityList(roles));
+    org.springframework.security.core.userdetails.User newUserDetails =
+        new org.springframework.security.core.userdetails.User(
+            newUser.getUsername(),
+            newUser.getPassword(),
+            newUser.isEnabled(),
+            true,
+            true,
+            true,
+            AuthorityUtils.createAuthorityList(roles));
     userDetailsManager.updateUser(newUserDetails);
 
     newUser.setPassword(userToUpdate.getPassword());
@@ -186,7 +186,8 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
   }
 
   @Override
-  public void changePassword(String oldPwd, String newPwd) throws UnauthorizedUserException, PasswordWeakException {
+  public void changePassword(String oldPwd, String newPwd)
+      throws UnauthorizedUserException, PasswordWeakException {
     log.debug("Got old password: " + oldPwd);
     if (checkStrength) {
       Utils.checkPasswordIntegrity(newPwd);
@@ -195,7 +196,8 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
   }
 
   @Override
-  public User changePasswordOf(String userName, String newPwd) throws PasswordWeakException, NotFoundException {
+  public User changePasswordOf(String userName, String newPwd)
+      throws PasswordWeakException, NotFoundException {
     User user = userRepository.findFirstByUsername(userName);
     if (user == null) {
       throw new NotFoundException("Not found user " + userName);
@@ -211,20 +213,21 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
     for (int i = 0; i < user.getRoles().size(); i++) {
       roles[i] = objects[i].getRole() + ":" + objects[i].getProject();
     }
-    org.springframework.security.core.userdetails.User
-        userToUpdate =
-        new org.springframework.security.core.userdetails.User(userName,
-                                                               user.getPassword(),
-                                                               user.isEnabled(),
-                                                               true,
-                                                               true,
-                                                               true,
-                                                               AuthorityUtils.createAuthorityList(roles));
+    org.springframework.security.core.userdetails.User userToUpdate =
+        new org.springframework.security.core.userdetails.User(
+            userName,
+            user.getPassword(),
+            user.isEnabled(),
+            true,
+            true,
+            true,
+            AuthorityUtils.createAuthorityList(roles));
     userDetailsManager.updateUser(userToUpdate);
     return userRepository.save(user);
   }
 
-  public void checkIntegrity(User user) throws BadRequestException, NotFoundException, NotAllowedException {
+  public void checkIntegrity(User user)
+      throws BadRequestException, NotFoundException, NotAllowedException {
     if (user.getUsername() == null || user.getUsername().equals("")) {
       throw new BadRequestException("Username must be provided");
     }
@@ -232,7 +235,8 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
       throw new BadRequestException("Password must be provided");
     }
     if (user.getEmail() != null && !user.getEmail().equals("")) {
-      String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+      String EMAIL_PATTERN =
+          "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
       Pattern pattern = Pattern.compile(EMAIL_PATTERN);
       if (!pattern.matcher(user.getEmail()).matches()) {
         throw new BadRequestException("Email is not well formatted");
