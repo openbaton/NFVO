@@ -245,7 +245,8 @@ public class OpenbatonCLI implements CommandLineRunner {
     StringTokenizer stringTokenizer = new StringTokenizer(line, " ");
 
     if (stringTokenizer.countTokens() != 2) {
-      System.err.println("Error: please provide only the id to be removed");
+      log.error("Please provide only the id to be removed");
+      return;
     }
     stringTokenizer.nextToken();
     String id = stringTokenizer.nextToken();
@@ -258,7 +259,8 @@ public class OpenbatonCLI implements CommandLineRunner {
     StringTokenizer stringTokenizer = new StringTokenizer(line, " ");
 
     if (stringTokenizer.countTokens() != 2) {
-      System.err.println("Error: please provide only the id to be removed");
+      log.error("Please provide only the id to be removed");
+      return;
     }
 
     stringTokenizer.nextToken();
@@ -271,35 +273,41 @@ public class OpenbatonCLI implements CommandLineRunner {
 
     String result = "\n";
     result += "Available NSRs:\n";
+    String formatBar = "|%20s|%20s|%40s|%40s|";
+    String formatPlus = "+%20s+%20s+%40s+%40s+";
     result +=
         String.format(
-                "+%40s+%20s+%40s+",
-                "----------------------------------------",
+                formatPlus,
                 "--------------------",
+                "--------------------",
+                "----------------------------------------",
                 "----------------------------------------")
             + "\n";
-    result += String.format("|%40s|%20s|%40s|", "id", "name", "project-id") + "\n";
+    result += String.format(formatBar, "name", "status", "id", "project-id") + "\n";
     result +=
         String.format(
-                "+%40s+%20s+%40s+",
-                "========================================",
+                formatPlus,
                 "====================",
+                "====================",
+                "========================================",
                 "========================================")
             + "\n";
 
     for (NetworkServiceRecord networkServiceRecord : nsrRepository.findAll()) {
       result +=
           String.format(
-                  "|%40s|%20s|%40s|",
-                  networkServiceRecord.getId(),
+                  formatBar,
                   networkServiceRecord.getName(),
+                  networkServiceRecord.getStatus(),
+                  networkServiceRecord.getId(),
                   networkServiceRecord.getProjectId())
               + "\n";
       result +=
           String.format(
-                  "+%40s+%20s+%40s+",
-                  "----------------------------------------",
+                  formatPlus,
                   "--------------------",
+                  "--------------------",
+                  "----------------------------------------",
                   "----------------------------------------")
               + "\n";
     }
@@ -415,7 +423,7 @@ public class OpenbatonCLI implements CommandLineRunner {
 
     for (String queue :
         RabbitManager.getQueues(brokerIp, username, password, virtualHost, managementPort)) {
-      if (queue.startsWith("vim-drivers") || queue.startsWith("monitoring")) {
+      if (queue.startsWith("vim-drivers") || queue.startsWith("monitor")) {
         StringTokenizer stringTokenizer = new StringTokenizer(queue, ".");
 
         result +=
