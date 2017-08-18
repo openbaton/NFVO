@@ -205,7 +205,7 @@ public class HealTask extends AbstractTask {
       log.debug("Dependency updated: " + dependency);
       //----
 
-      /** Setting the status of the VNF to INITIaLIZED so to send only one INSTANTIATE_FINISH */
+      /* Setting the status of the VNF to INITIaLIZED so to send only one INSTANTIATE_FINISH */
       vnfrToNotify.setStatus(Status.INITIALIZED);
       vnfrToNotify = vnfrRepository.save(vnfrToNotify);
       VnfmManagerEndpoint vnfmManagerEndpoint = vnfmRegister.getVnfm(vnfrToNotify.getEndpoint());
@@ -213,8 +213,10 @@ public class HealTask extends AbstractTask {
 
       //Preparing modify message (with only the new dependency)
       OrVnfmGenericMessage modifyMessage = new OrVnfmGenericMessage(vnfrToNotify, Action.MODIFY);
+
       modifyMessage.setVnfrd(dependency_new);
-      vnfmSender.sendCommand(modifyMessage, vnfmManagerEndpoint);
+      vnfStateHandler.executeAction(vnfmSender.sendCommand(modifyMessage, vnfmManagerEndpoint));
+
       log.debug("modify in message sent");
     }
 

@@ -18,7 +18,11 @@
 package org.openbaton.catalogue.mano.descriptor;
 
 import java.util.Set;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToOne;
 import org.openbaton.catalogue.mano.common.AbstractVirtualLink;
 import org.openbaton.catalogue.mano.common.Security;
 
@@ -43,8 +47,13 @@ public class VirtualLinkDescriptor extends AbstractVirtualLink {
   private String vendor;
   /** Version of this VLD */
   private String descriptor_version;
+
+  /** Public ip pool */
+  private String poolName;
+
   /** Number of endpoints available on this VL (e.g. E-Line=2) */
   private int number_of_endpoints;
+
   /** A reference to an attached Connection Point (nsd/vnfd/pnfd:connection_point:id) */
   @ElementCollection(fetch = FetchType.EAGER)
   private Set<String> connection;
@@ -56,7 +65,40 @@ public class VirtualLinkDescriptor extends AbstractVirtualLink {
   @OneToOne(cascade = CascadeType.ALL)
   private Security vld_security;
 
+  @Override
+  public String toString() {
+    return "VirtualLinkDescriptor{"
+        + "projectId='"
+        + projectId
+        + '\''
+        + ", vendor='"
+        + vendor
+        + '\''
+        + ", descriptor_version='"
+        + descriptor_version
+        + '\''
+        + ", poolName='"
+        + poolName
+        + '\''
+        + ", number_of_endpoints="
+        + number_of_endpoints
+        + ", connection="
+        + connection
+        + ", vld_security="
+        + vld_security
+        + "} "
+        + super.toString();
+  }
+
   public VirtualLinkDescriptor() {}
+
+  public String getPoolName() {
+    return poolName;
+  }
+
+  public void setPoolName(String poolName) {
+    this.poolName = poolName;
+  }
 
   public String getName() {
     return name;
@@ -104,26 +146,5 @@ public class VirtualLinkDescriptor extends AbstractVirtualLink {
 
   public void setVld_security(Security vld_security) {
     this.vld_security = vld_security;
-  }
-
-  @Override
-  public String toString() {
-    return "VirtualLinkDescriptor{"
-        + "projectId='"
-        + projectId
-        + '\''
-        + ", vendor='"
-        + vendor
-        + '\''
-        + ", descriptor_version='"
-        + descriptor_version
-        + '\''
-        + ", number_of_endpoints="
-        + number_of_endpoints
-        + ", connection="
-        + connection
-        + ", vld_security="
-        + vld_security
-        + '}';
   }
 }

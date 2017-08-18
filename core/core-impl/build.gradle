@@ -40,8 +40,11 @@ dependencies {
     compile 'org.codehaus.jackson:jackson-mapper-asl:1.9.13'
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'org.jgrapht:jgrapht-core:0.9.2'
+
     compile 'commons-validator:commons-validator:1.5.1'
     compile 'org.apache.commons:commons-compress:1.9'
+    compile group: 'commons-net', name: 'commons-net', version: '3.6'
+
 
     testCompile 'org.mockito:mockito-all:1.10.19'
     testCompile 'org.springframework:spring-test:' + springVersion

@@ -75,9 +75,19 @@ public abstract class AbstractVirtualLink implements Serializable {
   /** Name referenced by VNFCs */
   protected String name;
 
+  protected String cidr;
+
   @PrePersist
   public void ensureId() {
     id = IdGenerator.createUUID();
+  }
+
+  public String getCidr() {
+    return cidr;
+  }
+
+  public void setCidr(String cidr) {
+    this.cidr = cidr;
   }
 
   public AbstractVirtualLink() {}
