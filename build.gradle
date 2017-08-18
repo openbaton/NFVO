@@ -17,12 +17,6 @@
 buildscript {
     repositories { mavenCentral() }
     dependencies { classpath("se.transmode.gradle:gradle-docker:1.2") }
-//    ext {
-//        springBootVersion = '1.4.0.RELEASE'
-//    }
-//    dependencies {
-//        classpath("org.springframework.boot:spring-boot-gradle-plugin:"+ springBootVersion)
-//    }
 }
 
 plugins {
