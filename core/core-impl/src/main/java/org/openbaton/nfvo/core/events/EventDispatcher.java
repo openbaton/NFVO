@@ -161,9 +161,9 @@ class EventDispatcher
   }
 
   @Override
-  public void unregister(String id, String projectId) throws NotFoundException {
+  public void unregister(String id) throws NotFoundException {
     eventManagement.removeUnreachableEndpoints();
-    EventEndpoint endpoint = eventEndpointRepository.findFirstByIdAndProjectId(id, projectId);
+    EventEndpoint endpoint = eventEndpointRepository.findFirstById(id);
     if (endpoint == null) throw new NotFoundException("No event found with ID " + id);
     log.info("Removing EventEndpoint with id: " + id);
     eventEndpointRepository.delete(id);
