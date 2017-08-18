@@ -19,10 +19,12 @@ package org.openbaton.nfvo.core.core;
 
 import java.util.HashSet;
 import java.util.Set;
+import org.apache.commons.net.util.SubnetUtils;
 import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.Subnet;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.repositories.NetworkRepository;
@@ -46,7 +48,7 @@ public class NetworkManagement implements org.openbaton.nfvo.core.interfaces.Net
 
   @Override
   public Network add(VimInstance vimInstance, Network network)
-      throws VimException, PluginException {
+      throws VimException, PluginException, BadRequestException {
     log.info("Creating network " + network.getName() + " on vim " + vimInstance.getName());
     org.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement vim;
     vim = vimBroker.getVim(vimInstance.getType());
@@ -62,11 +64,24 @@ public class NetworkManagement implements org.openbaton.nfvo.core.interfaces.Net
       Set<Subnet> subnets = new HashSet<>();
       subnets.add(subnet);
       network.setSubnets(subnets);
+    } else {
+      for (Subnet subnet : network.getSubnets()) {
+        if (subnet.getName() == null || subnet.getName().equals(""))
+          subnet.setName(network.getName() + "_subnet");
+        if (subnet.getCidr() == null || subnet.getCidr().equals(""))
+          subnet.setCidr("192.168." + (int) (Math.random() * 255) + ".0/24");
+        try {
+          new SubnetUtils(subnet.getCidr());
+        } catch (IllegalArgumentException e) {
+          log.error(String.format("Cidr : %s is not valid", subnet.getCidr()));
+          throw new BadRequestException(String.format("Cidr : %s is not valid", subnet.getCidr()));
+        }
+      }
     }
     //Create Network on cloud environment
     network = vim.add(vimInstance, network);
     //Create Network in NetworkRepository
-    networkRepository.save(network);
+    network = networkRepository.save(network);
     //Add network to VimInstance
     vimInstance.getNetworks().add(network);
     log.info("Created Network " + network.getName());

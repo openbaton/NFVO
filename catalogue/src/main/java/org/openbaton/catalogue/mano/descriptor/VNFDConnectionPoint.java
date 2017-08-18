@@ -33,15 +33,13 @@ public class VNFDConnectionPoint extends ConnectionPoint {
    */
   private String virtual_link_reference;
 
+  private String virtual_link_reference_id;
+
   private String floatingIp;
 
-  public int getInterfaceId() {
-    return interfaceId;
-  }
+  private String fixedIp;
 
-  public void setInterfaceId(int interfaceId) {
-    this.interfaceId = interfaceId;
-  }
+  private String chosenPool;
 
   private int interfaceId;
 
@@ -51,13 +49,38 @@ public class VNFDConnectionPoint extends ConnectionPoint {
         + "virtual_link_reference='"
         + virtual_link_reference
         + '\''
+        + ", virtual_link_reference_id='"
+        + virtual_link_reference_id
+        + '\''
         + ", floatingIp='"
         + floatingIp
+        + '\''
+        + ", fixedIp='"
+        + fixedIp
+        + '\''
+        + ", chosenPool='"
+        + chosenPool
         + '\''
         + ", interfaceId="
         + interfaceId
         + "} "
         + super.toString();
+  }
+
+  public int getInterfaceId() {
+    return interfaceId;
+  }
+
+  public void setInterfaceId(int interfaceId) {
+    this.interfaceId = interfaceId;
+  }
+
+  public String getChosenPool() {
+    return chosenPool;
+  }
+
+  public void setChosenPool(String chosenPool) {
+    this.chosenPool = chosenPool;
   }
 
   public VNFDConnectionPoint() {}
@@ -76,5 +99,21 @@ public class VNFDConnectionPoint extends ConnectionPoint {
 
   public void setVirtual_link_reference(String virtual_link_reference) {
     this.virtual_link_reference = virtual_link_reference;
+  }
+
+  public String getFixedIp() {
+    return fixedIp;
+  }
+
+  public void setFixedIp(String fixedIp) {
+    this.fixedIp = fixedIp;
+  }
+
+  public String getVirtual_link_reference_id() {
+    return virtual_link_reference_id;
+  }
+
+  public void setVirtual_link_reference_id(String virtual_link_reference_id) {
+    this.virtual_link_reference_id = virtual_link_reference_id;
   }
 }
