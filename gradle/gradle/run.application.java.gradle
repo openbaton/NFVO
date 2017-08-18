@@ -23,9 +23,9 @@ buildscript {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:"+ springBootVersion)
     }
 }
-apply plugin: org.springframework.boot.gradle.SpringBootPlugin
+//apply plugin: org.springframework.boot.gradle.SpringBootPlugin
 
-mainClassName = mainClass
+//mainClassName = mainClass
 jar {
     from ('./src/main/resources') {
         include 'META-INF/services'

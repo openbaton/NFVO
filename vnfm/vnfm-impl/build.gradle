@@ -29,7 +29,7 @@ dependencies {
 
 
     compile "org.springframework.boot:spring-boot-starter-web:" + springBootVersion
-    compile "org.springframework:spring-core:" + springVersion
+    //compile "org.springframework:spring-core:" + springVersion
 
     compile 'com.google.code.gson:gson:2.8.0'
 

@@ -20,17 +20,17 @@ dependencies {
 
 
 
-    compile 'commons-dbcp:commons-dbcp:1.4'
+    //compile 'commons-dbcp:commons-dbcp:1.4'
 //    compile 'mysql:mysql-connector-java:5.1.40'
 
     // CrudRepository
-    compile 'org.springframework.data:spring-data-jpa:1.10.6.RELEASE'
+    //compile 'org.springframework.data:spring-data-jpa:1.10.6.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-data-jpa:' + springBootVersion
+    //runtime 'org.hibernate:hibernate-entitymanager:4.3.11.Final'
 
-    runtime 'org.hibernate:hibernate-entitymanager:4.3.11.Final'
-
-    testCompile 'org.springframework:spring-test:' + springVersion
+    //testCompile 'org.springframework:spring-test:' + springVersion
     testCompile 'org.springframework.boot:spring-boot-starter-data-jpa:' + springBootVersion
-    testCompile 'org.hsqldb:hsqldb:2.3.4'
+    //testCompile 'org.hsqldb:hsqldb:2.3.4'
 
     testCompile 'junit:junit:'+junitVersion
 }

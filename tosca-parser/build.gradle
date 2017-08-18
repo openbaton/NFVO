@@ -26,13 +26,13 @@ dependencies {
     compile 'org.yaml:snakeyaml:1.17'
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'commons-io:commons-io:2.5'
-    compile 'org.apache.commons:commons-compress:1.13'
+    //compile 'org.apache.commons:commons-compress:1.13'
 
-    compile 'commons-validator:commons-validator:1.5.1'
-    compile 'org.springframework.boot:spring-boot:' + springBootVersion
-    compile 'org.springframework.boot:spring-boot-autoconfigure:' + springBootVersion
+    //compile 'commons-validator:commons-validator:1.5.1'
+    //compile 'org.springframework.boot:spring-boot:' + springBootVersion
+    //compile 'org.springframework.boot:spring-boot-autoconfigure:' + springBootVersion
 //    compile 'org.springframework:spring-jms:' + springVersion
-    compile 'org.springframework.data:spring-data-jpa:1.10.6.RELEASE'
+    //compile 'org.springframework.data:spring-data-jpa:1.10.6.RELEASE'
     compile 'org.springframework.boot:spring-boot-starter-amqp:' + springBootVersion
 
     testCompile("org.mockito:mockito-all:2.0.2-beta")

@@ -17,6 +17,12 @@
 buildscript {
     repositories { mavenCentral() }
     dependencies { classpath("se.transmode.gradle:gradle-docker:1.2") }
+//    ext {
+//        springBootVersion = '1.4.0.RELEASE'
+//    }
+//    dependencies {
+//        classpath("org.springframework.boot:spring-boot-gradle-plugin:"+ springBootVersion)
+//    }
 }
 
 plugins {
@@ -27,14 +33,13 @@ plugins {
     id "com.github.hierynomus.license" version "0.14.0"
     // For managing the dependencies' versions
     id 'com.github.ben-manes.versions' version '0.13.0'
-    //id 'org.springframework.boot' version '1.4.3.RELEASE'
+    id 'org.springframework.boot' version '1.5.0.RELEASE'
 }
 
 apply plugin: 'java'
 apply plugin: 'docker'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
-
 
 apply from: 'gradle/gradle/git.helpers.gradle'
 apply from: 'gradle/gradle/command.line.helper.gradle'
@@ -48,7 +53,7 @@ ext {
      * Spring Related Variables
      */
     springVersion = '4.3.5.RELEASE'
-    springBootVersion = '1.2.5.RELEASE'
+    springBootVersion = '1.5.0.RELEASE'
     //------------------------------------------------//
     //------------------------------------------------//
     /**
@@ -67,7 +72,7 @@ ext {
     /**
      * gradle Related Vars
      */
-    mainClass = 'org.openbaton.nfvo.main.Application'
+    //mainClass = 'org.openbaton.nfvo.main.Application'
     //------------------------------------------------//
     //------------------------------------------------//
     /**
@@ -77,7 +82,7 @@ ext {
 }
 
 apply from: 'gradle/gradle/application.java.gradle'
-apply from: 'gradle/gradle/run.application.java.gradle'
+//apply from: 'gradle/gradle/run.application.java.gradle'
 apply from: 'gradle/gradle/git.release.gradle'
 
 apply from: 'gradle/gradle/packaging.nfvo.debian.gradle'
@@ -112,11 +117,13 @@ downloadLicenses {
     ]
 
 }
+mainClassName = 'org.openbaton.nfvo.main.Application'
 
 
 dependencies {
     compile project(':main')
 }
+
 allprojects {
     jar {
         manifest {
@@ -129,4 +136,6 @@ allprojects {
         }
     }
 }
+
+
 compileJava.dependsOn tasks.googleJavaFormat

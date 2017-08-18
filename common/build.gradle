@@ -33,11 +33,12 @@ dependencies {
     compile project(':catalogue')
     compile project(':exception')
 
-    compile 'org.springframework.boot:spring-boot-starter-logging:' + springBootVersion
+    //compile 'org.springframework.boot:spring-boot-starter-logging:' + springBootVersion
+    compile 'org.springframework.boot:spring-boot-starter-web:' + springBootVersion
 
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'org.springframework.boot:spring-boot-starter-amqp:' + springBootVersion
 
-    compile 'org.apache.tomcat:tomcat-catalina:8.0.39'
-    compile group: 'commons-codec', name: 'commons-codec', version: '1.10'
+    //compile 'org.apache.tomcat:tomcat-catalina:8.0.39'
+    //compile group: 'commons-codec', name: 'commons-codec', version: '1.10'
 }
