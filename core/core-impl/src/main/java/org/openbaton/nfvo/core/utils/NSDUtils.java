@@ -17,6 +17,15 @@
 
 package org.openbaton.nfvo.core.utils;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.regex.Pattern;
 import org.apache.commons.net.util.SubnetUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.jgrapht.alg.cycle.DirectedSimpleCycles;
@@ -55,16 +64,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 /** Created by lto on 13/05/15. */
 @Service
