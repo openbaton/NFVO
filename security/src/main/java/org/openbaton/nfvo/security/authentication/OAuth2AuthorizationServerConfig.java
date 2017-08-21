@@ -64,6 +64,7 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
 
   private DefaultTokenServices tokenServices;
   private DefaultTokenServices serviceTokenServices;
+  private TokenStore tokenStore = new InMemoryTokenStore();
 
   @Value("${nfvo.security.user.token.validity:600}")
   private int userTokenValidityDuration;
@@ -75,7 +76,7 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
   private void init() {
     this.serviceTokenServices = new DefaultTokenServices();
     this.serviceTokenServices.setSupportRefreshToken(true);
-    this.serviceTokenServices.setTokenStore(tokenStore());
+    this.serviceTokenServices.setTokenStore(tokenStore);
     this.serviceTokenServices.setAccessTokenValiditySeconds(serviceTokenValidityDuration);
   }
 
@@ -96,6 +97,7 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
   public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
     endpoints
         .authenticationManager(this.authenticationManager)
+        .tokenStore(this.tokenStore)
         .userDetailsService(customUserDetailsManager);
   }
 
@@ -116,10 +118,20 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
   public DefaultTokenServices tokenServices() {
     this.tokenServices = new DefaultTokenServices();
     this.tokenServices.setSupportRefreshToken(true);
-    this.tokenServices.setTokenStore(tokenStore());
+    this.tokenServices.setTokenStore(this.tokenStore);
     this.tokenServices.setAccessTokenValiditySeconds(userTokenValidityDuration);
     return tokenServices;
   }
+
+  //
+  //  @Bean
+  //  public DefaultTokenServices serviceTokenServices() {
+  //    DefaultTokenServices tokenServices = new DefaultTokenServices();
+  //    tokenServices.setSupportRefreshToken(true);
+  //    tokenServices.setTokenStore(tokenStore);
+  //    tokenServices.setAccessTokenValiditySeconds(serviceTokenValidityDuration);
+  //    return tokenServices;
+  //  }
 
   public OAuth2AccessToken getNewServiceToken(String serviceName) {
     Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
@@ -154,22 +166,13 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
         new UsernamePasswordAuthenticationToken(userPrincipal, null, authorities);
     OAuth2Authentication auth = new OAuth2Authentication(oAuth2Request, authenticationToken);
 
-    DefaultTokenServices tokenServices = new DefaultTokenServices();
-    tokenServices.setSupportRefreshToken(true);
-    tokenServices.setTokenStore(tokenStore());
-    tokenServices.setAccessTokenValiditySeconds(serviceTokenValidityDuration);
+    //          DefaultTokenServices tokenServices = new DefaultTokenServices();
+    //          tokenServices.setSupportRefreshToken(true);
+    //          tokenServices.setTokenStore(tokenStore);
+    //          tokenServices.setAccessTokenValiditySeconds(serviceTokenValidityDuration);
 
     OAuth2AccessToken token = serviceTokenServices.createAccessToken(auth);
     log.trace("New Service token: " + token);
     return token;
-  }
-
-  @Bean
-  public DefaultTokenServices serviceTokenServices() {
-    DefaultTokenServices tokenServices = new DefaultTokenServices();
-    tokenServices.setSupportRefreshToken(true);
-    tokenServices.setTokenStore(tokenStore());
-    tokenServices.setAccessTokenValiditySeconds(serviceTokenValidityDuration);
-    return tokenServices;
   }
 }

@@ -17,19 +17,11 @@
 
 package org.openbaton.vim_impl.vim.test;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyMap;
-import static org.mockito.Matchers.anySet;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.junit.Assert;
@@ -63,28 +55,25 @@ import org.openbaton.vim.drivers.VimDriverCaller;
 import org.openbaton.vim_impl.vim.GenericVIM;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 //import org.openbaton.nfvo.common.exceptions.VimException;
 
 /** Created by lto on 21/05/15. */
-@RunWith(PowerMockRunner.class)
-@PowerMockRunnerDelegate(SpringJUnit4ClassRunner.class)
-//@RunWith(SpringJUnit4ClassRunner.class)
-//@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = {ApplicationTest.class})
+@PowerMockRunnerDelegate(SpringRunner.class)
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class})
-@ContextConfiguration(classes = {ApplicationTest.class})
 @TestPropertySource(properties = {"mocked_id=1234567890", "port: 4242"})
 @PrepareForTest({Vim.class})
 @SuppressWarnings({"unsafe", "unchecked"})

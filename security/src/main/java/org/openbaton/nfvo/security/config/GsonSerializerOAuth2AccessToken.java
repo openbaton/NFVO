@@ -19,15 +19,13 @@ package org.openbaton.nfvo.security.config;
 
 import com.google.gson.*;
 import java.lang.reflect.Type;
-import org.openbaton.catalogue.nfvo.messages.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GsonSerializerDefaultOAuth2AccessToken
-    implements JsonSerializer<DefaultOAuth2AccessToken> {
+public class GsonSerializerOAuth2AccessToken implements JsonSerializer<OAuth2AccessToken> {
 
   private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
@@ -35,9 +33,9 @@ public class GsonSerializerDefaultOAuth2AccessToken
 
   @Override
   public JsonElement serialize(
-      DefaultOAuth2AccessToken src, Type typeOfSrc, JsonSerializationContext context) {
+      OAuth2AccessToken src, Type typeOfSrc, JsonSerializationContext context) {
     JsonObject jsonObject = new JsonObject();
-    log.info("token is:" + src);
+    log.debug("token is:" + src);
     jsonObject.add("token", new JsonPrimitive(src.getValue()));
     jsonObject.add("value", new JsonPrimitive(src.getValue()));
     return jsonObject;
