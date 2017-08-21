@@ -38,7 +38,6 @@ public class GsonSerializerOAuth2AccessToken implements JsonSerializer<OAuth2Acc
     JsonObject jsonObject = new JsonObject();
     jsonObject.add("token", new JsonPrimitive(src.getValue()));
     jsonObject.add("value", new JsonPrimitive(src.getValue()));
-    jsonObject.add("access_token", new JsonPrimitive(src.getValue()));
     return jsonObject;
   }
 }
