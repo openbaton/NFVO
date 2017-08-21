@@ -44,9 +44,8 @@ apply from: 'gradle/gradle/command.line.helper.gradle'
 ext {
     //------------------------------------------------//
     /**
-     * Spring Related Variables
+     * Spring Boot version
      */
-    springVersion = '4.3.10.RELEASE'
     springBootVersion = '1.5.6.RELEASE'
     //------------------------------------------------//
     //------------------------------------------------//
