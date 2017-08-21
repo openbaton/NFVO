@@ -107,6 +107,7 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
         .secret("secret")
         .authorizedGrantTypes("authorization_code", "refresh_token", "password")
         .scopes("read", "write")
+        .authorities("ROLE_CLIENT")
         .resourceIds(RESOURCE_ID);
   }
 
@@ -153,22 +154,22 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
         new UsernamePasswordAuthenticationToken(userPrincipal, null, authorities);
     OAuth2Authentication auth = new OAuth2Authentication(oAuth2Request, authenticationToken);
 
-    //    DefaultTokenServices tokenServices = new DefaultTokenServices();
-    //        tokenServices.setSupportRefreshToken(true);
-    //        tokenServices.setTokenStore(this.tokenStore);
-    //        tokenServices.setAccessTokenValiditySeconds(serviceTokenValidityDuration);
+    DefaultTokenServices tokenServices = new DefaultTokenServices();
+    tokenServices.setSupportRefreshToken(true);
+    tokenServices.setTokenStore(tokenStore());
+    tokenServices.setAccessTokenValiditySeconds(serviceTokenValidityDuration);
 
     OAuth2AccessToken token = serviceTokenServices.createAccessToken(auth);
     log.trace("New Service token: " + token);
     return token;
   }
 
-  //  @Bean
-  //  public DefaultTokenServices serviceTokenServices() {
-  //    DefaultTokenServices tokenServices = new DefaultTokenServices();
-  //    tokenServices.setSupportRefreshToken(true);
-  //    tokenServices.setTokenStore(this.tokenStore);
-  //    tokenServices.setAccessTokenValiditySeconds(serviceTokenValidityDuration);
-  //    return tokenServices;
-  //  }
+  @Bean
+  public DefaultTokenServices serviceTokenServices() {
+    DefaultTokenServices tokenServices = new DefaultTokenServices();
+    tokenServices.setSupportRefreshToken(true);
+    tokenServices.setTokenStore(tokenStore());
+    tokenServices.setAccessTokenValiditySeconds(serviceTokenValidityDuration);
+    return tokenServices;
+  }
 }
