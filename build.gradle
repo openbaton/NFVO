@@ -46,7 +46,7 @@ ext {
     /**
      * Spring Related Variables
      */
-    springVersion = '4.3.5.RELEASE'
+    springVersion = '4.3.10.RELEASE'
     springBootVersion = '1.5.6.RELEASE'
     //------------------------------------------------//
     //------------------------------------------------//
