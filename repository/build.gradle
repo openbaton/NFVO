@@ -19,6 +19,9 @@ dependencies {
     compile project(':catalogue')
 
     compile 'org.springframework.boot:spring-boot-starter-data-jpa:' + springBootVersion
+
     testCompile 'org.springframework.boot:spring-boot-starter-data-jpa:' + springBootVersion
+    testCompile 'org.springframework.boot:spring-boot-starter-test:' + springBootVersion
+    testCompile 'org.hsqldb:hsqldb:2.3.4'
     testCompile 'junit:junit:'+junitVersion
 }

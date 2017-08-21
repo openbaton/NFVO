@@ -39,22 +39,22 @@ import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
 //import GenericRepository;
 
 /** Created by lto on 30/04/15. */
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = {ApplicationTest.class})
 @Transactional
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class})
-@ContextConfiguration(classes = {ApplicationTest.class})
 @TestPropertySource(properties = {"timezone = GMT", "port: 4242"})
 public class RepositoriesClassSuiteTest {
 
