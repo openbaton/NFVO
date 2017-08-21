@@ -50,15 +50,15 @@ import org.openbaton.vim.drivers.VimDriverCaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 
 /** Created by lto on 20/04/15. */
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = {NetworkServiceRecordManagementClassSuiteTest.class})
 @Configuration
-@ContextConfiguration(classes = NetworkServiceRecordManagementClassSuiteTest.class)
 public class NetworkManagementClassSuiteTest {
 
   @Rule public ExpectedException exception = ExpectedException.none();

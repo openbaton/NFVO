@@ -35,7 +35,6 @@ dependencies {
     compile 'org.apache.commons:commons-compress:1.9'
 
     testCompile 'org.mockito:mockito-all:1.10.19'
-    testCompile 'org.springframework:spring-test:' + springVersion
+    testCompile 'org.springframework.boot:spring-boot-starter-test:'+springBootVersion
     testCompile 'junit:junit:'+junitVersion
-
 }
