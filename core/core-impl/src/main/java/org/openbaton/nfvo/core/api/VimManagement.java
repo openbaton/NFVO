@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Future;
@@ -87,6 +88,9 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   public boolean isCheckForVimInVnfr() {
     return checkForVimInVnfr;
   }
+
+  @Value("#{'${nfvo.vim.nocheck:test}'.split(',')}")
+  private List<String> noCheckVims;
 
   @Override
   public VimInstance add(VimInstance vimInstance, String projectId)
@@ -302,7 +306,9 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
 
     if (vimCheck) {
       for (VimInstance vimInstance : vimRepository.findAll()) {
-        if (vimInstance.getType().equals("test")) {
+        if (noCheckVims.contains(vimInstance.getType())) {
+          log.info("Vim of this type " + vimInstance.getType() + " is set to no check");
+          vimInstance.setActive(true);
           continue;
         }
 
