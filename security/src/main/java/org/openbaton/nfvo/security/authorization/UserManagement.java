@@ -57,7 +57,7 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
 
   @Autowired
   @Qualifier("customUserDetailsService")
-  private UserDetailsManager userDetailsManager;
+  private UserDetailsManager customUserDetailsService;
 
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -93,14 +93,14 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
             true,
             AuthorityUtils.createAuthorityList(roles));
     user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt(12)));
-    userDetailsManager.createUser(userToAdd);
+    customUserDetailsService.createUser(userToAdd);
     return userRepository.save(user);
   }
 
   @Override
   public void delete(User user) throws NotAllowedException {
     log.debug("Deleting user: " + user);
-    userDetailsManager.deleteUser(user.getUsername());
+    customUserDetailsService.deleteUser(user.getUsername());
     userRepository.delete(user);
   }
 
@@ -135,7 +135,7 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
             true,
             true,
             AuthorityUtils.createAuthorityList(roles));
-    userDetailsManager.updateUser(newUserDetails);
+    customUserDetailsService.updateUser(newUserDetails);
 
     newUser.setPassword(userToUpdate.getPassword());
 
@@ -192,7 +192,7 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
     if (checkStrength) {
       Utils.checkPasswordIntegrity(newPwd);
     }
-    userDetailsManager.changePassword(oldPwd, newPwd);
+    customUserDetailsService.changePassword(oldPwd, newPwd);
   }
 
   @Override
@@ -222,7 +222,7 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
             true,
             true,
             AuthorityUtils.createAuthorityList(roles));
-    userDetailsManager.updateUser(userToUpdate);
+    customUserDetailsService.updateUser(userToUpdate);
     return userRepository.save(user);
   }
 
@@ -274,6 +274,7 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
       return null;
     }
     String currentUserName = authentication.getName();
+    log.debug("getting current user: " + currentUserName);
     return this.queryByName(currentUserName);
   }
 }
