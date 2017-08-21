@@ -307,7 +307,6 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     if (vimCheck) {
       for (VimInstance vimInstance : vimRepository.findAll()) {
         if (noCheckVims.contains(vimInstance.getType())) {
-          log.info("Vim of this type " + vimInstance.getType() + " is set to no check");
           vimInstance.setActive(true);
           continue;
         }
