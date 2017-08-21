@@ -26,18 +26,8 @@ dependencies {
 
     compile project(':vim-drivers')
 
-    /**
-     * Spring dependencies
-     */
-    //compile 'org.springframework.boot:spring-boot:' + springBootVersion
     compile 'org.springframework.boot:spring-boot-starter-logging'
     compile 'org.springframework.boot:spring-boot-starter-web'
-    //TODO to be removed
-//    compile 'org.springframework:spring-jms:' + springVersion
-
-    //compile 'org.apache.commons:commons-compress:1.13'
-//    compile 'javax.jms:javax.jms-api:2.0.1'
-    //compile 'org.apache.httpcomponents:httpclient:4.5.2'
     compile 'org.codehaus.jackson:jackson-mapper-asl:1.9.13'
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'org.jgrapht:jgrapht-core:0.9.2'
