@@ -23,13 +23,9 @@ dependencies {
     compile project(':repository')
     compile project(':core-int')
     compile project(':vnfm-int')
-
-
-    compile("org.springframework.boot:spring-boot-starter-amqp:" + springBootVersion)
-
-
+    
+    compile 'org.springframework.boot:spring-boot-starter-amqp:' + springBootVersion
     compile "org.springframework.boot:spring-boot-starter-web:" + springBootVersion
-    //compile "org.springframework:spring-core:" + springVersion
 
     compile 'com.google.code.gson:gson:2.8.0'
 

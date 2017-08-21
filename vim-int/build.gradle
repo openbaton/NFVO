@@ -36,5 +36,5 @@ dependencies {
     compile project(':monitoring')
     compile project(':vim-drivers')
 
-    testCompile group: 'junit', name: 'junit', version: junitVersion
+    testCompile 'junit:junit:' + junitVersion
 }
