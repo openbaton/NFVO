@@ -29,17 +29,16 @@ public class ResourceServer extends ResourceServerConfigurerAdapter {
 
   @Override
   public void configure(HttpSecurity http) throws Exception {
-    http.headers().frameOptions().disable();
     // API calls
     http.authorizeRequests()
+        .antMatchers("/api/v1/components/services/register", "/api/v1/security")
+        .permitAll()
+        .and()
+        .authorizeRequests()
         .antMatchers("/api/**")
         .access("#oauth2.hasScope('write')")
         .and()
-        .exceptionHandling()
-        .and()
-        .authorizeRequests()
-        .antMatchers("/api/v1/components/services/register")
-        .permitAll();
+        .exceptionHandling();
   }
 
   @Override
