@@ -1,4 +1,4 @@
-/*
+repository/build.gradle/*
  * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,14 +23,9 @@ dependencies {
     compile project(':utils')
     compile project(':vnfm-int')
 
-    compile 'com.google.code.gson:gson:2.8.0'
-    //compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.3'
-    compile group: 'org.apache.directory.studio', name: 'org.apache.commons.lang', version: '2.6'
-    //compile group: 'commons-io', name: 'commons-io', version: '2.5'
-
     compile 'org.springframework.boot:spring-boot-starter-websocket:' + springBootVersion
-    //compile "org.springframework.security:spring-security-core:4.2.1.RELEASE"
-    //compile 'org.springframework.data:spring-data-commons-core:1.4.1.RELEASE'
     compile 'org.springframework.boot:spring-boot-starter-security:' + springBootVersion
-    compile 'org.springframework.security.oauth:spring-security-oauth2:2.0.12.RELEASE'
+    compile 'org.springframework.security.oauth:spring-security-oauth2:2.1.0.RELEASE'
+    compile 'org.aspectj:aspectjweaver:1.8.10'
+    compile 'org.apache.directory.studio:org.apache.commons.lang:2.6'
 }

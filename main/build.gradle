@@ -30,25 +30,11 @@ dependencies {
     runtime project(':repository')
     runtime project(':vnfm-impl')
 
-    //compile 'org.springframework:spring-context:' + springVersion
-    //compile 'org.springframework.boot:spring-boot:' + springBootVersion
-    //compile 'org.springframework.boot:spring-boot-autoconfigure:' + springBootVersion
-
-    //compile 'org.springframework.data:spring-data-jpa:1.10.6.RELEASE'
-    //compile 'org.springframework.data:spring-data-commons:1.12.6.RELEASE'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa:'+ springBootVersion
-
     compile 'org.springframework.boot:spring-boot-starter-amqp:' + springBootVersion
-
-    compile 'org.aspectj:aspectjweaver:1.8.10'
-
     compile 'org.springframework.boot:spring-boot-starter-actuator:' + springBootVersion
-
+    compile 'org.aspectj:aspectjweaver:1.8.10'
     compile 'org.flywaydb:flyway-core:4.2.0'
 
-//    TEST
-    //testCompile 'org.springframework:spring-test:' + springVersion
     testCompile 'junit:junit:'+junitVersion
-    //testCompile 'org.hsqldb:hsqldb:2.3.4'
-
 }

@@ -34,7 +34,4 @@ dependencies {
     compile project(":catalogue")
     compile project(":utils")
 
-    //compile 'org.springframework:spring-context:' + springVersion
-    //compile 'org.springframework.boot:spring-boot:' + springBootVersion
-
 }
