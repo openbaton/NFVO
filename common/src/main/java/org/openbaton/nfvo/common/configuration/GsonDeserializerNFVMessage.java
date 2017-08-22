@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-/** Created by lto on 10/11/15. */
 @Service
 public class GsonDeserializerNFVMessage implements JsonDeserializer<NFVMessage> {
 

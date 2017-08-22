@@ -25,7 +25,7 @@ import org.openbaton.catalogue.util.IdGenerator;
 @Entity
 public class ScalingAction implements Serializable {
   @Id private String id;
-  @Version private int version = 0;
+  @Version private Integer version = 0;
 
   @Enumerated(EnumType.STRING)
   private ScalingActionType type;
@@ -43,7 +43,7 @@ public class ScalingAction implements Serializable {
     return id;
   }
 
-  public int getVersion() {
+  public Integer getVersion() {
     return version;
   }
 

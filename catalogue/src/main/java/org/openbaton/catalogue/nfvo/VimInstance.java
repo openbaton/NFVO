@@ -20,6 +20,7 @@ package org.openbaton.catalogue.nfvo;
 import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.*;
+import javax.validation.constraints.*;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.util.IdGenerator;
 
@@ -30,12 +31,26 @@ public class VimInstance implements Serializable {
 
   @Id private String id;
 
-  @Version private int version = 0;
+  @Version private Integer version = 0;
+
+  @NotNull
+  @Size(min = 1)
   private String name;
+
+  @NotNull
+  @Size(min = 1)
   private String authUrl;
+
   private String tenant;
+
+  @NotNull
+  @Size(min = 1)
   private String username;
+
+  @NotNull
+  @Size(min = 1)
   private String password;
+
   private String keyPair;
 
   @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -59,7 +74,7 @@ public class VimInstance implements Serializable {
   private Set<Network> networks;
 
   private String projectId;
-  private boolean active;
+  private Boolean active = true;
 
   public VimInstance() {}
 
@@ -76,11 +91,11 @@ public class VimInstance implements Serializable {
     this.id = id;
   }
 
-  public int getVersion() {
+  public Integer getVersion() {
     return version;
   }
 
-  public void setVersion(int version) {
+  public void setVersion(Integer version) {
     this.version = version;
   }
 
@@ -233,11 +248,11 @@ public class VimInstance implements Serializable {
     return projectId;
   }
 
-  public void setActive(boolean active) {
+  public void setActive(Boolean active) {
     this.active = active;
   }
 
-  public boolean isActive() {
+  public Boolean isActive() {
     return active;
   }
 }

@@ -33,4 +33,5 @@ dependencies {
     compile 'org.springframework.data:spring-data-commons-core:1.4.1.RELEASE'
     compile 'org.springframework.boot:spring-boot-starter-security:' + springBootVersion
     compile 'org.springframework.security.oauth:spring-security-oauth2:2.0.12.RELEASE'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.7'
 }

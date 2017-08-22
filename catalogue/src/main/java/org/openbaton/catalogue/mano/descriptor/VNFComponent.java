@@ -21,6 +21,8 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import org.openbaton.catalogue.util.IdGenerator;
 
 /**
@@ -34,24 +36,26 @@ public class VNFComponent implements Serializable {
   /** Unique VNFC identification within the namespace of a specific VNF. */
   @Id protected String id;
 
-  @Version protected int version = 0;
+  @Version protected Integer version = 0;
 
   /**
    * Describes network connectivity between a VNFC instance (based on this VDU) and an internal
    * Virtual Link.
    */
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  @NotNull
+  @Size(min = 1)
   protected Set<VNFDConnectionPoint> connection_point;
 
   public VNFComponent() {
     this.connection_point = new HashSet<>();
   }
 
-  public int getVersion() {
+  public Integer getVersion() {
     return version;
   }
 
-  public void setVersion(int version) {
+  public void setVersion(Integer version) {
     this.version = version;
   }
 

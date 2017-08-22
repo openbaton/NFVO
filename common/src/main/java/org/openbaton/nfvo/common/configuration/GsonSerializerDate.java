@@ -14,24 +14,20 @@
  * limitations under the License.
  *
  */
-buildscript {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.bmuschko:gradle-nexus-plugin:2.3'
-    }
+
+package org.openbaton.nfvo.common.configuration;
+
+import com.google.gson.*;
+import java.lang.reflect.Type;
+import java.util.Date;
+import org.springframework.stereotype.Service;
+
+/** Created by lto on 10/11/15. */
+@Service
+public class GsonSerializerDate implements JsonSerializer<Date> {
+
+  @Override
+  public JsonElement serialize(Date src, Type typeOfSrc, JsonSerializationContext context) {
+    return new JsonPrimitive(src.getTime());
+  }
 }
-
-apply plugin: 'com.bmuschko.nexus'
-apply from: '../gradle/gradle/nexus.upload.plugin.gradle'
-
-dependencies {
-    compile 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final'
-    compile 'com.fasterxml.jackson.core:jackson-annotations:2.8.6'
-    compile group: 'javax.validation', name: 'validation-api', version: '2.0.0.Final'
-}
-
-

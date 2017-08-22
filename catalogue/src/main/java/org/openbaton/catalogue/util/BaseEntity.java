@@ -14,7 +14,7 @@ import javax.persistence.Version;
 public class BaseEntity implements Serializable {
   @Id private String id;
 
-  @Version private int version;
+  @Version private Integer version = 0;
 
   @PrePersist
   public void ensureId() {
@@ -31,11 +31,11 @@ public class BaseEntity implements Serializable {
     this.id = id;
   }
 
-  public int getVersion() {
+  public Integer getVersion() {
     return version;
   }
 
-  public void setVersion(int version) {
+  public void setVersion(Integer version) {
     this.version = version;
   }
 

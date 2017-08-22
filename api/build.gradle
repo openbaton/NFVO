@@ -37,6 +37,11 @@ dependencies {
     testCompile("com.jayway.jsonpath:json-path-assert:2.2.0")
     testCompile("org.mockito:mockito-all:1.10.19")
     testCompile("junit:junit:" + junitVersion)
+
+    compile group: 'com.kjetland', name: 'mbknor-jackson-jsonschema_2.12', version: '1.0.24'
+    compile group: 'com.networknt', name: 'json-schema-validator', version: '0.1.10'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.7'
+
 }
 
 

@@ -311,8 +311,8 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
     nsd.setVnfd(virtualNetworkFunctionDescriptors);
 
     VNFDependency vnfDependency = new VNFDependency();
-    vnfDependency.setSource(virtualNetworkFunctionDescriptor1);
-    vnfDependency.setTarget(virtualNetworkFunctionDescriptor2);
+    vnfDependency.setSource(virtualNetworkFunctionDescriptor1.getName());
+    vnfDependency.setTarget(virtualNetworkFunctionDescriptor2.getName());
     nsd.getVnf_dependency().add(vnfDependency);
 
     return nsd;

@@ -25,7 +25,7 @@ import org.openbaton.catalogue.util.IdGenerator;
 @Entity
 public class Location implements Serializable {
   @Id private String id;
-  @Version private int version = 0;
+  @Version private Integer version = 0;
   private String name;
   private String latitude;
   private String longitude;
@@ -43,11 +43,11 @@ public class Location implements Serializable {
     id = IdGenerator.createUUID();
   }
 
-  public int getVersion() {
+  public Integer getVersion() {
     return version;
   }
 
-  public void setVersion(int version) {
+  public void setVersion(Integer version) {
     this.version = version;
   }
 

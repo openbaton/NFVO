@@ -19,11 +19,13 @@ package org.openbaton.nfvo.common.configuration;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.util.Date;
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.tomcat.util.descriptor.web.SecurityCollection;
 import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
@@ -40,12 +42,17 @@ public class SystemConfiguration {
   @Value("${nfvo.https:false}")
   private boolean https;
 
+  @Autowired private GsonDeserializerDate dateDeserializer;
+  @Autowired private GsonSerializerDate dateSerializer;
+
   @Bean
   @Scope("prototype")
   Gson gson() {
     return new GsonBuilder()
         .setPrettyPrinting()
         .registerTypeAdapter(NFVMessage.class, new GsonDeserializerNFVMessage())
+        .registerTypeAdapter(Date.class, dateDeserializer)
+        .registerTypeAdapter(Date.class, dateSerializer)
         .create();
   }
 

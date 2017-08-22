@@ -18,6 +18,9 @@
 package org.openbaton.catalogue.mano.descriptor;
 
 import javax.persistence.Entity;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import org.openbaton.catalogue.mano.common.ConnectionPoint;
 
 /**
@@ -31,17 +34,28 @@ public class VNFDConnectionPoint extends ConnectionPoint {
    * References an internal Virtual Link (vnfd:virtual_link:id, see clause 6.3.1.3) to which other
    * VDUs, NFs, and other types of endpoints can connect.
    */
+  @NotNull
+  @Size(min = 1)
   private String virtual_link_reference;
 
-  private String virtual_link_reference_id;
-
+  @Pattern(
+    regexp =
+        "(^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
+            + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
+            + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
+            + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$)|(random)"
+  )
   private String floatingIp;
+
+  private String virtual_link_reference_id;
 
   private String fixedIp;
 
   private String chosenPool;
 
-  private int interfaceId;
+
+
+  private Integer interfaceId = 0;
 
   @Override
   public String toString() {
@@ -55,30 +69,22 @@ public class VNFDConnectionPoint extends ConnectionPoint {
         + ", floatingIp='"
         + floatingIp
         + '\''
-        + ", fixedIp='"
-        + fixedIp
-        + '\''
-        + ", chosenPool='"
-        + chosenPool
-        + '\''
         + ", interfaceId="
         + interfaceId
         + "} "
         + super.toString();
   }
 
-  public int getInterfaceId() {
-    return interfaceId;
-  }
-
-  public void setInterfaceId(int interfaceId) {
-    this.interfaceId = interfaceId;
-  }
-
   public String getChosenPool() {
     return chosenPool;
   }
+  public Integer getInterfaceId() {
+    return interfaceId;
+  }
 
+  public void setInterfaceId(Integer interfaceId) {
+    this.interfaceId = interfaceId;
+  }
   public void setChosenPool(String chosenPool) {
     this.chosenPool = chosenPool;
   }

@@ -21,12 +21,12 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 import javax.persistence.*;
+import javax.validation.constraints.*;
 import org.openbaton.catalogue.mano.common.HighAvailability;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.common.faultmanagement.VRFaultManagementPolicy;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.util.IdGenerator;
-
 /**
  * Created by lto on 06/02/15.
  *
@@ -35,7 +35,8 @@ import org.openbaton.catalogue.util.IdGenerator;
 @Entity
 public class VirtualDeploymentUnit implements Serializable {
   @Id private String id;
-  @Version private int version = 0;
+
+  @Version private Integer version = 0;
 
   private String projectId;
 
@@ -100,7 +101,9 @@ public class VirtualDeploymentUnit implements Serializable {
   /**
    * Defines minimum and maximum number of instances which can be created to support scale out/in.
    */
+  @Min(1)
   private int scale_in_out;
+
   /** Contains information that is distinct for each VNFC created based on this VDU. */
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
   private Set<VNFComponent> vnfc;
@@ -150,11 +153,11 @@ public class VirtualDeploymentUnit implements Serializable {
     this.id = id;
   }
 
-  public int getVersion() {
+  public Integer getVersion() {
     return version;
   }
 
-  public void setVersion(int version) {
+  public void setVersion(Integer version) {
     this.version = version;
   }
 

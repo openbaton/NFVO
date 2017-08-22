@@ -281,41 +281,36 @@ public class NSDUtils {
 
     for (VNFDependency vnfDependency : networkServiceDescriptor.getVnf_dependency()) {
       log.trace("" + vnfDependency);
-      VirtualNetworkFunctionDescriptor source = vnfDependency.getSource();
-      VirtualNetworkFunctionDescriptor target = vnfDependency.getTarget();
 
-      if (source == null
-          || target == null
-          || source.getName() == null
-          || target.getName() == null) {
+      if (vnfDependency.getSource() == null || vnfDependency.getTarget() == null) {
         throw new NetworkServiceIntegrityException(
             "Source name and Target name must be defined in the request json file");
       }
 
       VirtualNetworkFunctionDescriptor vnfSource =
-          getVnfdFromNSD(source.getName(), networkServiceDescriptor);
+          getVnfdFromNSD(vnfDependency.getSource(), networkServiceDescriptor);
       if (vnfSource == null) {
         throw new NetworkServiceIntegrityException(
             "VNFD source name"
-                + source.getName()
+                + vnfDependency.getSource()
                 + " was not found in the NetworkServiceDescriptor");
       } else {
-        vnfDependency.setSource(vnfSource);
+        vnfDependency.setSource_id(vnfSource.getId());
       }
 
       VirtualNetworkFunctionDescriptor vnfTarget =
-          getVnfdFromNSD(target.getName(), networkServiceDescriptor);
+          getVnfdFromNSD(vnfDependency.getTarget(), networkServiceDescriptor);
       if (vnfTarget == null) {
         throw new NetworkServiceIntegrityException(
             "VNFD target name"
-                + source.getName()
+                + vnfDependency.getTarget()
                 + " was not found in the NetworkServiceDescriptor");
       } else {
-        vnfDependency.setTarget(vnfTarget);
+        vnfDependency.setTarget_id(vnfTarget.getId());
       }
 
       // Add an edge to the graph
-      g.addEdge(source.getName(), target.getName());
+      g.addEdge(vnfDependency.getSource(), vnfDependency.getTarget());
     }
 
     // Get simple cycles
@@ -351,7 +346,8 @@ public class NSDUtils {
         VNFDependency dependency = new VNFDependency();
         for (VirtualNetworkFunctionDescriptor vnfd2 : networkServiceDescriptor.getVnfd()) {
           if (vnfd2.getName().equals(vnfdName)) {
-            dependency.setSource(vnfd2);
+            dependency.setSource(vnfd2.getName());
+            dependency.setSource_id(vnfd2.getId());
           }
         }
         if (dependency.getSource() == null) {
@@ -363,7 +359,8 @@ public class NSDUtils {
                   + " was not found in the NSD.");
         }
 
-        dependency.setTarget(vnfd);
+        dependency.setTarget(vnfd.getName());
+        dependency.setTarget_id(vnfd.getId());
 
         if (vnfd.getRequires().get(vnfdName).getParameters() == null
             || vnfd.getRequires().get(vnfdName).getParameters().isEmpty()) {
@@ -402,8 +399,8 @@ public class NSDUtils {
     for (VNFDependency oldDependency : networkServiceDescriptor.getVnf_dependency()) {
       boolean contained = false;
       for (VNFDependency newDependency : newDependencies) {
-        if (newDependency.getTarget().getName().equals(oldDependency.getTarget().getName())
-            && newDependency.getSource().getName().equals(oldDependency.getSource().getName())) {
+        if (newDependency.getTarget().equals(oldDependency.getTarget())
+            && newDependency.getSource().equals(oldDependency.getSource())) {
           log.debug("Old is: " + oldDependency);
           if (oldDependency.getParameters() != null) {
             newDependency.getParameters().addAll(oldDependency.getParameters());

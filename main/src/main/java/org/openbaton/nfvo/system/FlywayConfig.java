@@ -45,7 +45,7 @@ public class FlywayConfig {
     Flyway flyway = new Flyway();
     flyway.setDataSource(dataSource);
     flyway.setLocations("classpath:/flyway");
-    flyway.setBaselineVersion(MigrationVersion.fromVersion("4.0.1.0"));
+    flyway.setBaselineVersion(MigrationVersion.fromVersion("4.0.1.1"));
     try {
       flyway.baseline();
     } catch (FlywayException e) {

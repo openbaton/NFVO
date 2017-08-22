@@ -447,8 +447,8 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     nsd.setVnfd(virtualNetworkFunctionDescriptors);
 
     VNFDependency vnfDependency = new VNFDependency();
-    vnfDependency.setSource(virtualNetworkFunctionDescriptor1);
-    vnfDependency.setTarget(virtualNetworkFunctionDescriptor2);
+    vnfDependency.setSource(virtualNetworkFunctionDescriptor1.getName());
+    vnfDependency.setTarget(virtualNetworkFunctionDescriptor2.getName());
     vnfDependency.setParameters(new HashSet<String>());
     nsd.getVnf_dependency().add(vnfDependency);
 

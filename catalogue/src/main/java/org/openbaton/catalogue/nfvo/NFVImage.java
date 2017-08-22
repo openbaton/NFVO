@@ -17,6 +17,7 @@
 
 package org.openbaton.catalogue.nfvo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Entity;
@@ -38,7 +39,6 @@ public class NFVImage implements Serializable {
   private long minRam; //in MB
   private long minDiskSpace; //in GB
   private String minCPU;
-
   private boolean isPublic;
   private String diskFormat;
   private String containerFormat;
@@ -130,6 +130,7 @@ public class NFVImage implements Serializable {
     this.updated = updated;
   }
 
+  @JsonProperty(value = "isPublic")
   public boolean isPublic() {
     return isPublic;
   }
