@@ -26,8 +26,6 @@ dependencies {
 
     compile project(':vim-drivers')
 
-    compile 'org.springframework.boot:spring-boot-starter-logging'
-    compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.codehaus.jackson:jackson-mapper-asl:1.9.13'
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'org.jgrapht:jgrapht-core:0.9.2'

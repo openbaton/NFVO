@@ -25,8 +25,7 @@ dependencies {
     compile 'org.yaml:snakeyaml:1.17'
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'commons-io:commons-io:2.5'
-    compile 'org.springframework.boot:spring-boot-starter-amqp:' + springBootVersion
-
+    compile 'org.springframework.boot:spring-boot-starter-amqp'
     testCompile 'org.mockito:mockito-all:2.0.2-beta'
     testCompile 'junit:junit:' + junitVersion
 }

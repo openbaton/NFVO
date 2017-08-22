@@ -42,7 +42,7 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.7.22'
 
     testCompile 'org.mockito:mockito-all:2.0.2-beta'
-    testCompile 'org.springframework.boot:spring-boot-starter-test:' + springBootVersion
+    testCompile 'org.springframework.boot:spring-boot-starter-test:' +springBootVersion
     testCompile 'org.powermock:powermock-mockito-release-full:1.6.4'
     testCompile 'commons-io:commons-io:2.5'
     testCompile 'junit:junit:' + junitVersion

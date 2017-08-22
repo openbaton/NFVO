@@ -23,9 +23,7 @@ dependencies {
     compile project(':utils')
     compile project(':vnfm-int')
 
-    compile 'org.springframework.boot:spring-boot-starter-websocket:' + springBootVersion
-    compile 'org.springframework.boot:spring-boot-starter-security:' + springBootVersion
-    compile 'org.springframework.security.oauth:spring-security-oauth2:2.1.0.RELEASE'
-    compile 'org.aspectj:aspectjweaver:1.8.10'
+    compile 'org.springframework.boot:spring-boot-starter-security:'+ springBootVersion
+    compile 'org.springframework.security.oauth:spring-security-oauth2:2.2.0.RELEASE'
     compile 'org.apache.directory.studio:org.apache.commons.lang:2.6'
 }

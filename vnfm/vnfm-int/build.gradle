@@ -19,6 +19,7 @@ dependencies {
     compile project(':catalogue')
     compile project(':exception')
 
-    compile("org.springframework.boot:spring-boot-starter-amqp:" + springBootVersion)
+    compile 'org.springframework.boot:spring-boot-starter-amqp:' + springBootVersion
+
     testCompile 'junit:junit:'+junitVersion
 }
