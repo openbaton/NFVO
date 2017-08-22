@@ -65,7 +65,7 @@ ext {
     /**
      * Junit Version
      */
-    junitVersion = "4.12"
+    junitVersion = '4.12'
 }
 
 
