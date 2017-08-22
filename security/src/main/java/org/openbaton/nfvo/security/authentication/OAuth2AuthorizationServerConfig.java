@@ -109,7 +109,7 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
         .secret("secret")
         .authorizedGrantTypes("authorization_code", "refresh_token", "password")
         .scopes("read", "write")
-        .authorities("ROLE_CLIENT")
+        //.authorities("ROLE_CLIENT")
         .resourceIds(RESOURCE_ID);
   }
 

@@ -67,14 +67,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   public UserDetailsManager userDetailsManager() {
     return new InMemoryUserDetailsManager(new Properties());
   }
-
-  @Bean
-  public SessionRegistry sessionRegistry() {
-    return new SessionRegistryImpl();
-  }
-
-  @Bean
-  public HttpSessionEventPublisher httpSessionEventPublisher() {
-    return new HttpSessionEventPublisher();
-  }
 }
