@@ -27,7 +27,7 @@ plugins {
     id "com.github.hierynomus.license" version "0.14.0"
     // For managing the dependencies' versions
     id 'com.github.ben-manes.versions' version '0.13.0'
-    id 'org.springframework.boot' version project.ext.springBootVersion
+    id 'org.springframework.boot' version '1.5.6.RELEASE'
 }
 
 apply plugin: 'java'

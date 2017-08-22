@@ -34,5 +34,6 @@ dependencies {
     compile project(":utils")
 
     compile 'org.springframework.boot:spring-boot-starter-amqp:' + springBootVersion
+
     testCompile 'junit:junit:4.11'
 }

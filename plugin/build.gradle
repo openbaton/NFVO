@@ -30,8 +30,6 @@ apply plugin: 'com.bmuschko.nexus'
 apply from: '../gradle/gradle/nexus.upload.plugin.gradle'
 
 dependencies {
-
     compile project(":catalogue")
     compile project(":utils")
-
 }
