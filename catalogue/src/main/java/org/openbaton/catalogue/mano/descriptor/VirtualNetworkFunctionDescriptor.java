@@ -30,8 +30,6 @@ import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.TypeConstraintException;
-
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.openbaton.catalogue.mano.common.ConnectionPoint;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.common.NFVEntityDescriptor;
