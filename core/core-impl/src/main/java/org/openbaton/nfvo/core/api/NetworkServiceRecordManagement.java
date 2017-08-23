@@ -17,19 +17,6 @@
 
 package org.openbaton.nfvo.core.api;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import javax.annotation.PostConstruct;
 import org.apache.commons.net.util.SubnetUtils;
 import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
@@ -106,6 +93,22 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+
 @Service
 @Scope("prototype")
 @ConfigurationProperties
@@ -133,6 +136,7 @@ public class NetworkServiceRecordManagement
   @Autowired private VimRepository vimInstanceRepository;
   @Autowired private VnfmEndpointRepository vnfmManagerEndpointRepository;
   @Autowired private VimBroker vimBroker;
+  @Autowired private EntityManager entityManager;
 
   @Value("${nfvo.delete.vnfr.wait.timeout:60}")
   private int timeout;
@@ -183,6 +187,12 @@ public class NetworkServiceRecordManagement
     if (networkServiceDescriptor == null) {
       throw new NotFoundException("NSD with ID " + idNsd + " was not found");
     }
+
+    // Detach instance of NSD to stop persistance
+    if (networkServiceDescriptor.getId() != null) {
+      entityManager.detach(networkServiceDescriptor);
+    }
+
     DeployNSRBody body = new DeployNSRBody();
     body.setVduVimInstances(vduVimInstances);
     if (configurations == null) {
@@ -279,115 +289,6 @@ public class NetworkServiceRecordManagement
     log.info("Checking if all vnfm are registered and active");
     Iterable<VnfmManagerEndpoint> endpoints = vnfmManagerEndpointRepository.findAll();
 
-    //    nsdUtils.checkEndpoint(vnfd, endpoints);
-    //
-    //    log.trace("Fetched NetworkServiceRecord: " + nsr);
-    //    NetworkServiceRecord networkServiceRecord = null;
-    //    boolean savedNsrSuccessfully = false;
-    //    int attempt = 0;
-    //    // this while loop is necessary, because while creating the NSR also a VIM might be changed (newly created
-    // networks).
-    //    // then saving the NSR might produce OptimisticLockingFailureExceptions.
-    //    while (!savedNsrSuccessfully) {
-    //      networkServiceRecord = NSRUtils.createNetworkServiceRecord(null);
-    //      SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
-    //      networkServiceRecord.setCreatedAt(format.format(new Date()));
-    //      networkServiceRecord.setTask("Onboarding");
-    //      networkServiceRecord.setKeyNames(new HashSet<String>());
-    //      if (body != null && body.getKeys() != null && !body.getKeys().isEmpty()) {
-    //        for (Key key : body.getKeys()) {
-    //          networkServiceRecord.getKeyNames().add(key.getName());
-    //        }
-    //      }
-    //      log.trace("Creating " + networkServiceRecord);
-    //
-    //      //    for (VirtualLinkRecord vlr : networkServiceRecord.getVlr()) {
-    //      for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
-    //        for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
-    //          List<String> instanceNames = getRuntimeDeploymentInfo(body, vdu);
-    //          log.debug("Checking vim instance support");
-    //          instanceNames = checkIfVimAreSupportedByPackage(vnfd, instanceNames);
-    //          vduVimInstances.put(vdu.getId(), instanceNames);
-    //          for (String vimInstanceName : instanceNames) {
-    //
-    //            VimInstance vimInstance = null;
-    //
-    //            for (VimInstance vi : vimInstanceRepository.findByProjectId(vdu.getProjectId())) {
-    //              if (vimInstanceName.equals(vi.getName())) {
-    //                vimInstance = vi;
-    //                break;
-    //              }
-    //            }
-    //
-    //            if (vimInstance == null) {
-    //              throw new NotFoundException("Not found VIM instance: " + vimInstanceName);
-    //            }
-    //
-    //            //check networks
-    //            for (VNFComponent vnfc : vdu.getVnfc()) {
-    //              for (VNFDConnectionPoint vnfdConnectionPoint : vnfc.getConnection_point()) {
-    //                //                if (vnfdConnectionPoint.getVirtual_link_reference().equals(vlr.getName())) {
-    //                boolean networkExists = false;
-    //                if (vimInstance.getNetworks() == null)
-    //                  throw new VimException(
-    //                          "VIM instance " + vimInstance.getName() + "does not have networks ");
-    //                for (Network network : vimInstance.getNetworks()) {
-    //                  //                    if (network.getName().equals(vlr.getName()) || network.getExtId()
-    // .equals(vlr.getName())) {
-    //                  if (network.getName().equals(vnfdConnectionPoint.getVirtual_link_reference())
-    //                          || network
-    //                          .getExtId()
-    //                          .equals(vnfdConnectionPoint.getVirtual_link_reference())) {
-    //                    networkExists = true;
-    //                    //                      vlr.setStatus(LinkStatus.NORMALOPERATION);
-    //                    //                      vlr.setVim_id(vdu.getId());
-    //                    //                      vlr.setExtId(network.getExtId());
-    //                    //                      vlr.getConnection().add(vnfdConnectionPoint.getId());
-    //                    break;
-    //                  }
-    //                }
-    //                if (!networkExists) {
-    //                  Network network = new Network();
-    //                  network.setName(vnfdConnectionPoint.getVirtual_link_reference());
-    //                  network.setSubnets(new HashSet<Subnet>());
-    //                  network = networkManagement.add(vimInstance, network);
-    //                  //                    vlr.setStatus(LinkStatus.NORMALOPERATION);
-    //                  //                    vlr.setVim_id(vdu.getId());
-    //                  //                    vlr.setExtId(network.getExtId());
-    //                  //                    vlr.getConnection().add(vnfdConnectionPoint.getId());
-    //                }
-    //                //       }
-    //              }
-    //            }
-    //          }
-    //        }
-    //      }
-    //
-    //      // TODO it better: Check if the chosen VIM has ENOUGH Resources for deployment
-    //      checkQuotaForNS(networkServiceDescriptor);
-    //
-    //      NSRUtils.setDependencies(networkServiceDescriptor, networkServiceRecord);
-    //
-    //      networkServiceRecord.setProjectId(projectID);
-    //      try {
-    //        networkServiceRecord = nsrRepository.save(networkServiceRecord);
-    //        savedNsrSuccessfully = true;
-    //        log.debug(
-    //                "Persisted NSR "
-    //                        + networkServiceRecord.getName()
-    //                        + ". Got id: "
-    //                        + networkServiceRecord.getId());
-    //      } catch (OptimisticLockingFailureException e) {
-    //        if (attempt >= 3) {
-    //          log.error(
-    //                  "After 4 attempts there is still an OptimisticLockingFailureException when creating the NSR.
-    // Stop trying.");
-    //          throw e;
-    //        }
-    //        log.warn("OptimisticLockingFailureException while creating the NSR. We will try it again.");
-    //        savedNsrSuccessfully = false;
-    //        attempt++;
-    //      }
     return null;
   }
 
@@ -1331,7 +1232,8 @@ public class NetworkServiceRecordManagement
       } catch (OptimisticLockingFailureException e) {
         if (attempt >= 3) {
           log.error(
-              "After 4 attempts there is still an OptimisticLockingFailureException when creating the NSR. Stop "
+              "After 4 attempts there is still an OptimisticLockingFailureException when creating the NSR. Stop"
+                  + " "
                   + "trying.");
           throw e;
         }
@@ -1750,6 +1652,10 @@ public class NetworkServiceRecordManagement
   /**
    * Triggers the execution of an {@link org.openbaton.catalogue.nfvo.Action} on a specific
    * VNFCInstance.
+   *
+   * <p>
+   *
+   * <p>
    *
    * <p>
    *

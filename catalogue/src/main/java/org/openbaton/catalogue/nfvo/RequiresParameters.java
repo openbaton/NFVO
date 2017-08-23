@@ -19,10 +19,15 @@ package org.openbaton.catalogue.nfvo;
 
 import java.util.Iterator;
 import java.util.Set;
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.PrePersist;
+import javax.persistence.Version;
 import org.openbaton.catalogue.util.IdGenerator;
 
-/** Created by tbr on 07.07.16. */
 @Entity(name = "requiresParameters")
 public class RequiresParameters {
 
@@ -30,7 +35,7 @@ public class RequiresParameters {
   @Version private int version;
 
   @Column
-  @ElementCollection(targetClass = String.class)
+  @ElementCollection(fetch = FetchType.EAGER)
   private Set<String> parameters;
 
   @PrePersist
@@ -54,7 +59,6 @@ public class RequiresParameters {
     this.version = version;
   }
 
-  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
   public Set<String> getParameters() {
     return parameters;
   }
@@ -65,24 +69,23 @@ public class RequiresParameters {
 
   @Override
   public String toString() {
-    return "requiresParameters{"
+    return "RequiresParameters{"
         + "id='"
         + id
         + '\''
         + ", version="
         + version
-        + ", parameters=["
-        + parametersToString()
-        + ']'
+        + ", parameters="
+        + (parameters != null ? parameters : "[ ]")
         + '}';
   }
 
   private String parametersToString() {
-    String returnString = "";
+    StringBuilder returnString = new StringBuilder();
     for (Iterator<String> iterator = parameters.iterator(); iterator.hasNext(); ) {
-      returnString += "\'" + iterator.next() + "\'";
-      if (iterator.hasNext()) returnString += ", ";
+      returnString.append("\'").append(iterator.next()).append("\'");
+      if (iterator.hasNext()) returnString.append(", ");
     }
-    return returnString;
+    return returnString.toString();
   }
 }
