@@ -18,9 +18,10 @@
 package org.openbaton.catalogue.mano.descriptor;
 
 import javax.persistence.Entity;
+import javax.validation.constraints.Size;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.*;
 import org.openbaton.catalogue.mano.common.ConnectionPoint;
 
 /**
@@ -52,7 +53,8 @@ public class VNFDConnectionPoint extends ConnectionPoint {
   private String fixedIp;
 
   private String chosenPool;
-  @Min(-0)
+
+  @Min(0)
   private Integer interfaceId = 0;
 
   @Override

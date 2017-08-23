@@ -17,7 +17,6 @@
 
 package org.openbaton.catalogue.nfvo;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Entity;
@@ -130,7 +129,6 @@ public class NFVImage implements Serializable {
     this.updated = updated;
   }
 
-  @JsonProperty(value = "isPublic")
   public boolean isPublic() {
     return isPublic;
   }

@@ -64,7 +64,7 @@ public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
             Class<?> parameterClass = handlerMethod.getMethod().getParameterTypes()[i];
             if (!parameterClass.getName().equals("com.google.gson.JsonObject"))
               classSchema = getJsonSchemaFromClass(parameterClass);
-            else log.debug("URL: " + request.getRequestURL());
+            else log.trace("URL: " + request.getRequestURL());
           }
         }
       }
