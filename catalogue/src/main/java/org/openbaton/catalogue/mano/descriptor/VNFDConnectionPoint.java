@@ -20,7 +20,7 @@ package org.openbaton.catalogue.mano.descriptor;
 import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import org.openbaton.catalogue.mano.common.ConnectionPoint;
 
 /**
@@ -52,9 +52,7 @@ public class VNFDConnectionPoint extends ConnectionPoint {
   private String fixedIp;
 
   private String chosenPool;
-
-
-
+  @Min(-0)
   private Integer interfaceId = 0;
 
   @Override
@@ -78,6 +76,7 @@ public class VNFDConnectionPoint extends ConnectionPoint {
   public String getChosenPool() {
     return chosenPool;
   }
+
   public Integer getInterfaceId() {
     return interfaceId;
   }
@@ -85,6 +84,7 @@ public class VNFDConnectionPoint extends ConnectionPoint {
   public void setInterfaceId(Integer interfaceId) {
     this.interfaceId = interfaceId;
   }
+
   public void setChosenPool(String chosenPool) {
     this.chosenPool = chosenPool;
   }

@@ -102,7 +102,7 @@ public class VirtualDeploymentUnit implements Serializable {
    * Defines minimum and maximum number of instances which can be created to support scale out/in.
    */
   @Min(1)
-  private int scale_in_out;
+  private Integer scale_in_out;
 
   /** Contains information that is distinct for each VNFC created based on this VDU. */
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
@@ -217,11 +217,11 @@ public class VirtualDeploymentUnit implements Serializable {
     this.high_availability = high_availability;
   }
 
-  public int getScale_in_out() {
+  public Integer getScale_in_out() {
     return scale_in_out;
   }
 
-  public void setScale_in_out(int scale_in_out) {
+  public void setScale_in_out(Integer scale_in_out) {
     this.scale_in_out = scale_in_out;
   }
 

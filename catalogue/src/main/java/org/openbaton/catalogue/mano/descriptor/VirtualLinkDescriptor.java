@@ -64,31 +64,6 @@ public class VirtualLinkDescriptor extends AbstractVirtualLink {
   @OneToOne(cascade = CascadeType.ALL)
   private Security vld_security;
 
-  @Override
-  public String toString() {
-    return "VirtualLinkDescriptor{"
-        + "projectId='"
-        + projectId
-        + '\''
-        + ", vendor='"
-        + vendor
-        + '\''
-        + ", descriptor_version='"
-        + descriptor_version
-        + '\''
-        + ", poolName='"
-        + poolName
-        + '\''
-        + ", number_of_endpoints="
-        + number_of_endpoints
-        + ", connection="
-        + connection
-        + ", vld_security="
-        + vld_security
-        + "} "
-        + super.toString();
-  }
-
   public VirtualLinkDescriptor() {}
 
   public String getPoolName() {
@@ -158,6 +133,9 @@ public class VirtualLinkDescriptor extends AbstractVirtualLink {
         + '\''
         + ", descriptor_version='"
         + descriptor_version
+        + '\''
+        + ", poolName='"
+        + poolName
         + '\''
         + ", number_of_endpoints="
         + number_of_endpoints
