@@ -364,7 +364,7 @@ public class VnfmManager
     ApplicationEventNFVO event = new ApplicationEventNFVO(action, payload, projectId);
     EventNFVO eventNFVO = new EventNFVO(this);
     eventNFVO.setEventNFVO(event);
-    log.debug("Publishing event: " + event);
+    log.trace("Publishing event: " + event);
     publisher.publishEvent(eventNFVO);
   }
 

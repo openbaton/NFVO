@@ -1106,7 +1106,7 @@ public class NetworkServiceRecordManagement
             virtualNetworkFunctionRecord.getProjectId());
     EventNFVO eventNFVO = new EventNFVO(this);
     eventNFVO.setEventNFVO(event);
-    log.debug("Publishing event: " + event);
+    log.trace("Publishing event: " + event);
     publisher.dispatchEvent(eventNFVO);
 
     if (networkServiceRecord.getStatus().ordinal() == Status.SCALING.ordinal()) {
