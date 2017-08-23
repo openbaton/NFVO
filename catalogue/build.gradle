@@ -30,7 +30,6 @@ apply from: '../gradle/gradle/nexus.upload.plugin.gradle'
 
 dependencies {
     compile 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final'
-    compile 'com.fasterxml.jackson.core:jackson-annotations:2.8.6'
 }
 
 

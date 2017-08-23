@@ -19,13 +19,18 @@
 
 package org.openbaton.catalogue.nfvo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Set;
-import javax.persistence.*;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.PrePersist;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.persistence.Version;
 import org.openbaton.catalogue.util.IdGenerator;
 
-/** Created by mpa on 22/05/16. */
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"name", "version", "vendor"}))
 public class ImageMetadata implements Serializable {
@@ -38,7 +43,7 @@ public class ImageMetadata implements Serializable {
 
   private String version;
 
-  @JsonIgnore @Version private int hb_version = 0;
+  @Version private int hb_version = 0;
 
   private String upload;
 
@@ -52,7 +57,7 @@ public class ImageMetadata implements Serializable {
     this.username = username;
   }
 
-  @JsonIgnore private String username;
+  private String username;
 
   @ElementCollection(fetch = FetchType.EAGER)
   private Set<String> ids;
@@ -66,7 +71,7 @@ public class ImageMetadata implements Serializable {
     return imageRepoId;
   }
 
-  @JsonIgnore private String imageRepoId;
+  private String imageRepoId;
 
   @PrePersist
   public void ensureId() {
