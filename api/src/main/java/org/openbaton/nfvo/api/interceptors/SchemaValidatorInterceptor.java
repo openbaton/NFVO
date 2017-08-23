@@ -21,11 +21,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.kjetland.jackson.jsonSchema.JsonSchemaGenerator;
 import com.networknt.schema.ValidationMessage;
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.util.Set;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.nfvo.api.configuration.CustomHttpServletRequestWrapper;
 import org.openbaton.nfvo.api.configuration.SchemaValidator;
 import org.slf4j.Logger;
@@ -35,6 +32,13 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Service
 public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
@@ -73,8 +77,13 @@ public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
     if (classSchema != null) {
       log.trace("Request Body is : " + requestBody.toString());
       log.trace("Request url is : " + requestURL);
-      Set<ValidationMessage> validationMessages =
-          SchemaValidator.validateSchema(classSchema, requestBody.toString());
+      Set<ValidationMessage> validationMessages = null;
+      try {
+        validationMessages = SchemaValidator.validateSchema(classSchema, requestBody.toString());
+      } catch (BadRequestException e) {
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+        return false;
+      }
       if (validationMessages.size() > 0) {
         StringBuffer validationResult = new StringBuffer();
         for (ValidationMessage s : validationMessages) {
@@ -85,12 +94,10 @@ public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
 
         log.trace("Response body is : " + validationResult);
         log.trace(request.getHeader("Accept"));
-        if (request.getHeader("Accept").equalsIgnoreCase("application/json")
-            || request.getHeader("Accept").equalsIgnoreCase("application/octet-stream")) {
+        if (request.getHeader("Accept").equalsIgnoreCase("application/json") || request.getHeader("Accept").equalsIgnoreCase("application/octet-stream")) {
           response.setContentLength(validationResult.length());
           response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-          response.sendError(
-              HttpServletResponse.SC_BAD_REQUEST, validationResult.toString().replace("$.", " "));
+          response.sendError(HttpServletResponse.SC_BAD_REQUEST, validationResult.toString().replace("$.", " "));
         }
         return false;
       } else {
@@ -110,7 +117,7 @@ public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
   }
 
   @SuppressWarnings("unchecked")
-  public String getJsonSchemaFromClass(Class javaClass) throws IOException {
+  private String getJsonSchemaFromClass(Class javaClass) throws IOException {
 
     ObjectMapper mapper = new ObjectMapper();
     JsonSchemaGenerator schemaGen = new JsonSchemaGenerator(mapper);

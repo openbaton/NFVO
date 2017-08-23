@@ -17,19 +17,25 @@
 
 package org.openbaton.nfvo.common.configuration;
 
-import com.google.gson.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Service;
+
 import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import org.openbaton.catalogue.nfvo.messages.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 @Service
+@ConfigurationProperties
 public class GsonDeserializerDate implements JsonDeserializer<Date> {
 
   @Value("${nfvo.api.serializer.date.format:timestamp}")
@@ -41,6 +47,9 @@ public class GsonDeserializerDate implements JsonDeserializer<Date> {
   public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {
     Date result;
+    if (dateFormat == null) {
+      dateFormat = "timestamp";
+    }
     switch (dateFormat) {
       case "string":
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss a z");
