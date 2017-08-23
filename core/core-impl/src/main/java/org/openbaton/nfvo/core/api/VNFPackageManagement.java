@@ -395,7 +395,7 @@ public class VNFPackageManagement
             imageMetadata.setUpload((String) imageDetails.get("option"));
 
             if (imageDetails.containsKey("ids")) {
-              imageMetadata.setIds((Set<String>) imageDetails.get("ids"));
+              imageMetadata.setIds(new HashSet<String>((ArrayList) imageDetails.get("ids")));
             } else {
               imageMetadata.setIds(new HashSet<String>());
             }
