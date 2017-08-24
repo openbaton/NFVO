@@ -30,7 +30,7 @@ import org.openbaton.catalogue.util.IdGenerator;
 public class ConfigurationParameter implements Serializable {
 
   @Id private String id;
-  @Version private int version;
+  @Version private Integer version = 0;
 
   @Column(length = 1024)
   private String description;
@@ -79,11 +79,11 @@ public class ConfigurationParameter implements Serializable {
     this.id = id;
   }
 
-  public int getVersion() {
+  public Integer getVersion() {
     return version;
   }
 
-  public void setVersion(int version) {
+  public void setVersion(Integer version) {
     this.version = version;
   }
 

@@ -27,6 +27,8 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.TypeConstraintException;
 import org.openbaton.catalogue.mano.common.ConnectionPoint;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
@@ -52,6 +54,8 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
   private Configuration configurations;
   /** This describes a set of elements related to a particular VDU */
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  @NotNull
+  @Size(min = 1)
   private Set<VirtualDeploymentUnit> vdu;
   /**
    * Represents the type of network connectivity mandated by the VNF vendor between two or more
@@ -110,7 +114,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
   @ElementCollection(fetch = FetchType.EAGER)
   private Set<String> provides;
 
-  private boolean cyclicDependency;
+  private Boolean cyclicDependency = false;
 
   private String createdAt;
 
@@ -153,11 +157,11 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
     this.configurations = configurations;
   }
 
-  public boolean isCyclicDependency() {
+  public Boolean isCyclicDependency() {
     return cyclicDependency;
   }
 
-  public void setCyclicDependency(boolean cyclicDependency) {
+  public void setCyclicDependency(Boolean cyclicDependency) {
     this.cyclicDependency = cyclicDependency;
   }
 

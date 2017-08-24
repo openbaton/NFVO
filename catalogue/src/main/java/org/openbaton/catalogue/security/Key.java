@@ -24,6 +24,7 @@ import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.*;
 import org.openbaton.catalogue.util.IdGenerator;
 
 /** Created by mpa on 09.08.16. */
@@ -36,10 +37,14 @@ public class Key implements Serializable {
 
   @Id private String id;
 
+  @NotNull
+  @Size(min = 1)
   private String name;
 
   private String projectId;
 
+  @NotNull
+  @Size(min = 1)
   @Column(length = 500)
   private String publicKey;
 

@@ -26,7 +26,7 @@ import org.openbaton.catalogue.util.IdGenerator;
 @Entity
 public class Configuration implements Serializable {
   @Id private String id;
-  @Version private int version;
+  @Version private Integer version = 0;
 
   private String projectId;
   // TODO think at cascade type
@@ -72,11 +72,11 @@ public class Configuration implements Serializable {
     this.id = id;
   }
 
-  public int getVersion() {
+  public Integer getVersion() {
     return version;
   }
 
-  public void setVersion(int version) {
+  public void setVersion(Integer version) {
     this.version = version;
   }
 

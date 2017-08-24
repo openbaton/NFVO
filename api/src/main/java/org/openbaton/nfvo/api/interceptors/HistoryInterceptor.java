@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-/** Created by lto on 17/10/16. */
 @Service
 public class HistoryInterceptor extends HandlerInterceptorAdapter {
 
@@ -42,7 +41,9 @@ public class HistoryInterceptor extends HandlerInterceptorAdapter {
       throws Exception {
     //    super.postHandle(request, response, handler, modelAndView);
     log.trace("Calling addHistoryAction");
-    historyManagement.addAction(
-        request.getMethod(), request.getRequestURI(), String.valueOf(response.getStatus()));
+    if (!request.getMethod().equalsIgnoreCase("post")
+        || !request.getRequestURI().equalsIgnoreCase("/error"))
+      historyManagement.addAction(
+          request.getMethod(), request.getRequestURI(), String.valueOf(response.getStatus()));
   }
 }

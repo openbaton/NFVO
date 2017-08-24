@@ -52,8 +52,7 @@ public class VirtualLinkDescriptor extends AbstractVirtualLink {
   private String poolName;
 
   /** Number of endpoints available on this VL (e.g. E-Line=2) */
-  private int number_of_endpoints;
-
+  private Integer number_of_endpoints = 0;
   /** A reference to an attached Connection Point (nsd/vnfd/pnfd:connection_point:id) */
   @ElementCollection(fetch = FetchType.EAGER)
   private Set<String> connection;
@@ -64,31 +63,6 @@ public class VirtualLinkDescriptor extends AbstractVirtualLink {
    */
   @OneToOne(cascade = CascadeType.ALL)
   private Security vld_security;
-
-  @Override
-  public String toString() {
-    return "VirtualLinkDescriptor{"
-        + "projectId='"
-        + projectId
-        + '\''
-        + ", vendor='"
-        + vendor
-        + '\''
-        + ", descriptor_version='"
-        + descriptor_version
-        + '\''
-        + ", poolName='"
-        + poolName
-        + '\''
-        + ", number_of_endpoints="
-        + number_of_endpoints
-        + ", connection="
-        + connection
-        + ", vld_security="
-        + vld_security
-        + "} "
-        + super.toString();
-  }
 
   public VirtualLinkDescriptor() {}
 
@@ -124,11 +98,11 @@ public class VirtualLinkDescriptor extends AbstractVirtualLink {
     this.descriptor_version = descriptor_version;
   }
 
-  public int getNumber_of_endpoints() {
+  public Integer getNumber_of_endpoints() {
     return number_of_endpoints;
   }
 
-  public void setNumber_of_endpoints(int number_of_endpoints) {
+  public void setNumber_of_endpoints(Integer number_of_endpoints) {
     this.number_of_endpoints = number_of_endpoints;
   }
 
@@ -146,5 +120,29 @@ public class VirtualLinkDescriptor extends AbstractVirtualLink {
 
   public void setVld_security(Security vld_security) {
     this.vld_security = vld_security;
+  }
+
+  @Override
+  public String toString() {
+    return "VirtualLinkDescriptor{"
+        + "projectId='"
+        + projectId
+        + '\''
+        + ", vendor='"
+        + vendor
+        + '\''
+        + ", descriptor_version='"
+        + descriptor_version
+        + '\''
+        + ", poolName='"
+        + poolName
+        + '\''
+        + ", number_of_endpoints="
+        + number_of_endpoints
+        + ", connection="
+        + connection
+        + ", vld_security="
+        + vld_security
+        + '}';
   }
 }

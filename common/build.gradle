@@ -40,4 +40,6 @@ dependencies {
 
     compile 'org.apache.tomcat:tomcat-catalina:8.0.39'
     compile group: 'commons-codec', name: 'commons-codec', version: '1.10'
+    compile group: 'org.apache.commons', name: 'commons-text', version: '1.1'
+    compile 'org.apache.httpcomponents:httpclient:4.5.2'
 }

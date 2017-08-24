@@ -15,26 +15,24 @@
  *
  */
 
-package org.openbaton.nfvo.common.utils.jms;
+package org.openbaton.nfvo.common.configuration;
 
-import org.openbaton.nfvo.common.interfaces.Receiver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+
 import org.springframework.stereotype.Service;
 
-/** Created by tce on 14.08.15. */
-@Service
-@Scope
-public class RabbitReceiver implements Receiver {
-  private Logger log = LoggerFactory.getLogger(this.getClass());
+import java.lang.reflect.Type;
+import java.util.Date;
 
-  @Autowired private RabbitTemplate rabbitTemplate;
+/** Created by lto on 10/11/15. */
+@Service
+public class GsonSerializerDate implements JsonSerializer<Date> {
 
   @Override
-  public Object receive(String queue) {
-    return rabbitTemplate.receiveAndConvert(queue);
+  public JsonElement serialize(Date src, Type typeOfSrc, JsonSerializationContext context) {
+    return new JsonPrimitive(src.getTime());
   }
 }

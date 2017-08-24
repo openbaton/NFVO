@@ -32,7 +32,7 @@ apply from: '../gradle/gradle/nexus.upload.plugin.gradle'
 dependencies {
 
     compile project(":catalogue")
-    compile project(":utils")
+    compile project(":common")
 
     compile 'org.springframework:spring-context:' + springVersion
     compile 'org.springframework.boot:spring-boot:' + springBootVersion

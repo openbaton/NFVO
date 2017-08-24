@@ -154,8 +154,10 @@ public class NetworkServiceDescriptorManagement
     try {
       networkServiceDescriptor.setCreatedAt(format.format(new Date()));
       networkServiceDescriptor.setUpdatedAt(format.format(new Date()));
+      networkServiceDescriptor.setEnabled(true);
       networkServiceDescriptor = nsdRepository.save(networkServiceDescriptor);
     } catch (Exception e) {
+      e.printStackTrace();
       throw new org.openbaton.exceptions.EntityInUseException(
           "One of the VNF chosen is already in use by another NS");
     }

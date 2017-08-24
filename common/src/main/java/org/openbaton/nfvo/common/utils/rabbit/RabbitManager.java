@@ -15,7 +15,7 @@
  *
  */
 
-package org.openbaton.utils.rabbit;
+package org.openbaton.nfvo.common.utils.rabbit;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

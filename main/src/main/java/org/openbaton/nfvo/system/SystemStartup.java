@@ -17,8 +17,8 @@
 
 package org.openbaton.nfvo.system;
 
-import static org.openbaton.utils.rabbit.RabbitManager.createRabbitMqUser;
-import static org.openbaton.utils.rabbit.RabbitManager.setRabbitMqUserPermissions;
+import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.createRabbitMqUser;
+import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.setRabbitMqUserPermissions;
 
 import java.io.FileInputStream;
 import java.io.IOException;

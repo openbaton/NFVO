@@ -22,6 +22,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.Version;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import org.openbaton.catalogue.util.IdGenerator;
 
 /** Created by lto on 01/07/15. */
@@ -35,9 +37,12 @@ import org.openbaton.catalogue.util.IdGenerator;
 @Entity
 public class EventEndpoint implements Serializable {
   @Id private String id;
-  @Version private int version = 0;
+  @Version private Integer version = 0;
 
+  @NotNull
+  @Size(min = 1)
   private String name;
+
   private String projectId;
 
   public String getProjectId() {
@@ -51,9 +56,14 @@ public class EventEndpoint implements Serializable {
   private String networkServiceId;
   private String virtualNetworkFunctionId;
 
-  private EndpointType type;
+  @NotNull private EndpointType type;
+
+  @NotNull
+  @Size(min = 1)
   private String endpoint;
-  private Action event;
+
+  @NotNull private Action event;
+
   private String description;
   private String status;
 
@@ -143,11 +153,11 @@ public class EventEndpoint implements Serializable {
     this.id = id;
   }
 
-  public int getVersion() {
+  public Integer getVersion() {
     return version;
   }
 
-  public void setVersion(int version) {
+  public void setVersion(Integer version) {
     this.version = version;
   }
 
@@ -175,55 +185,55 @@ public class EventEndpoint implements Serializable {
     this.endpoint = endpoint;
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-
-    EventEndpoint that = (EventEndpoint) o;
-
-    if (!getName().equals(that.getName())) {
-      return false;
-    }
-    if (!getProjectId().equals(that.getProjectId())) {
-      return false;
-    }
-    if (getNetworkServiceId() != null
-        ? !getNetworkServiceId().equals(that.getNetworkServiceId())
-        : that.getNetworkServiceId() != null) {
-      return false;
-    }
-    if (getVirtualNetworkFunctionId() != null
-        ? !getVirtualNetworkFunctionId().equals(that.getVirtualNetworkFunctionId())
-        : that.getVirtualNetworkFunctionId() != null) {
-      return false;
-    }
-    if (getType() != that.getType()) {
-      return false;
-    }
-    if (!getEndpoint().equals(that.getEndpoint())) {
-      return false;
-    }
-    return getEvent() == that.getEvent();
-  }
-
-  @Override
-  public int hashCode() {
-    int result = getName().hashCode();
-    result = 31 * result + getProjectId().hashCode();
-    result = 31 * result + (getNetworkServiceId() != null ? getNetworkServiceId().hashCode() : 0);
-    result =
-        31 * result
-            + (getVirtualNetworkFunctionId() != null
-                ? getVirtualNetworkFunctionId().hashCode()
-                : 0);
-    result = 31 * result + getType().hashCode();
-    result = 31 * result + getEndpoint().hashCode();
-    result = 31 * result + getEvent().hashCode();
-    return result;
-  }
+  //  @Override
+  //  public boolean equals(Object o) {
+  //    if (this == o) {
+  //      return true;
+  //    }
+  //    if (o == null || getClass() != o.getClass()) {
+  //      return false;
+  //    }
+  //
+  //    EventEndpoint that = (EventEndpoint) o;
+  //
+  //    if (!getName().equals(that.getName())) {
+  //      return false;
+  //    }
+  //    if (!getProjectId().equals(that.getProjectId())) {
+  //      return false;
+  //    }
+  //    if (getNetworkServiceId() != null
+  //        ? !getNetworkServiceId().equals(that.getNetworkServiceId())
+  //        : that.getNetworkServiceId() != null) {
+  //      return false;
+  //    }
+  //    if (getVirtualNetworkFunctionId() != null
+  //        ? !getVirtualNetworkFunctionId().equals(that.getVirtualNetworkFunctionId())
+  //        : that.getVirtualNetworkFunctionId() != null) {
+  //      return false;
+  //    }
+  //    if (getType() != that.getType()) {
+  //      return false;
+  //    }
+  //    if (!getEndpoint().equals(that.getEndpoint())) {
+  //      return false;
+  //    }
+  //    return getEvent() == that.getEvent();
+  //  }
+  //
+  //  @Override
+  //  public int hashCode() {
+  //    int result = getName().hashCode();
+  //    result = 31 * result + getProjectId().hashCode();
+  //    result = 31 * result + (getNetworkServiceId() != null ? getNetworkServiceId().hashCode() : 0);
+  //    result =
+  //        31 * result
+  //            + (getVirtualNetworkFunctionId() != null
+  //                ? getVirtualNetworkFunctionId().hashCode()
+  //                : 0);
+  //    result = 31 * result + getType().hashCode();
+  //    result = 31 * result + getEndpoint().hashCode();
+  //    result = 31 * result + getEvent().hashCode();
+  //    return result;
+  //  }
 }

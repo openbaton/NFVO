@@ -21,8 +21,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.openbaton.nfvo.common.utils.rabbit.RabbitManager;
 import org.openbaton.plugin.utils.Utils;
-import org.openbaton.utils.rabbit.RabbitManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

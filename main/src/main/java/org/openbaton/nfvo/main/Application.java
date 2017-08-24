@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -33,7 +34,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /** Created by lto on 16/04/15. */
-@SpringBootApplication
+//@SpringBootApplication
+@SpringBootApplication(exclude = DispatcherServletAutoConfiguration.class)
 @EntityScan(basePackages = "org.openbaton")
 @ComponentScan(basePackages = "org.openbaton")
 @EnableJpaRepositories(value = "org.openbaton")

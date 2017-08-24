@@ -38,7 +38,6 @@ public class NFVImage implements Serializable {
   private long minRam; //in MB
   private long minDiskSpace; //in GB
   private String minCPU;
-
   private boolean isPublic;
   private String diskFormat;
   private String containerFormat;

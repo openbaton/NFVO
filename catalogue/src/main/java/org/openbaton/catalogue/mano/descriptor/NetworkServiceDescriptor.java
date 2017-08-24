@@ -20,6 +20,8 @@ package org.openbaton.catalogue.mano.descriptor;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import org.openbaton.catalogue.mano.common.NFVEntityDescriptor;
 import org.openbaton.catalogue.mano.common.Security;
 
@@ -45,6 +47,8 @@ public class NetworkServiceDescriptor extends NFVEntityDescriptor {
     },
     fetch = FetchType.EAGER
   )
+  @NotNull
+  @Size(min = 1)
   private Set<VirtualNetworkFunctionDescriptor> vnfd;
   /**
    * Describe dependencies between VNF. Defined in terms of source and target VNF i.e. target VNF
@@ -71,7 +75,7 @@ public class NetworkServiceDescriptor extends NFVEntityDescriptor {
   @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Security nsd_security;
 
-  private boolean enabled;
+  private Boolean enabled;
 
   //NFVO Version
   private String nfvo_version;
@@ -106,11 +110,11 @@ public class NetworkServiceDescriptor extends NFVEntityDescriptor {
 
   public NetworkServiceDescriptor() {}
 
-  public boolean isEnabled() {
+  public Boolean isEnabled() {
     return enabled;
   }
 
-  public void setEnabled(boolean enabled) {
+  public void setEnabled(Boolean enabled) {
     this.enabled = enabled;
   }
 
