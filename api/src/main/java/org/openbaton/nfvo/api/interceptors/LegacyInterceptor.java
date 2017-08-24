@@ -19,16 +19,14 @@ package org.openbaton.nfvo.api.interceptors;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.openbaton.nfvo.api.configuration.CustomHttpServletRequestWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 @Service
 public class LegacyInterceptor extends HandlerInterceptorAdapter {
@@ -37,25 +35,40 @@ public class LegacyInterceptor extends HandlerInterceptorAdapter {
   @Autowired private Gson gson;
 
   @Override
-  public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+  public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+      throws Exception {
 
     String requestURI = request.getRequestURI();
-    if ((requestURI.equalsIgnoreCase("/api/v1/ns-descriptors/") || requestURI.equalsIgnoreCase("/api/v1/ns-descriptors")) && request.getMethod().equalsIgnoreCase("post")) {
+    if ((requestURI.equalsIgnoreCase("/api/v1/ns-descriptors/")
+            || requestURI.equalsIgnoreCase("/api/v1/ns-descriptors"))
+        && request.getMethod().equalsIgnoreCase("post")) {
       if (request instanceof CustomHttpServletRequestWrapper) {
         String requestBody = ((CustomHttpServletRequestWrapper) request).getBody();
-        JsonObject jsonObject = gson.fromJson(requestBody,JsonObject.class);
+        JsonObject jsonObject = gson.fromJson(requestBody, JsonObject.class);
         if (jsonObject.has("vnf_dependency")) {
           for (JsonElement dep : jsonObject.getAsJsonArray("vnf_dependency")) {
             if (dep.isJsonObject()) {
-              if (dep.getAsJsonObject().has("source") && dep.getAsJsonObject().get("source").isJsonObject()) {
-                if (dep.getAsJsonObject().getAsJsonObject("source").has("name") && dep.getAsJsonObject().getAsJsonObject("source").get("name").isJsonPrimitive()) {
-                  String sourceName = dep.getAsJsonObject().getAsJsonObject("source").get("name").getAsString();
+              if (dep.getAsJsonObject().has("source")
+                  && dep.getAsJsonObject().get("source").isJsonObject()) {
+                if (dep.getAsJsonObject().getAsJsonObject("source").has("name")
+                    && dep.getAsJsonObject()
+                        .getAsJsonObject("source")
+                        .get("name")
+                        .isJsonPrimitive()) {
+                  String sourceName =
+                      dep.getAsJsonObject().getAsJsonObject("source").get("name").getAsString();
                   dep.getAsJsonObject().addProperty("source", sourceName);
                 }
               }
-              if (dep.getAsJsonObject().has("target") && dep.getAsJsonObject().getAsJsonObject("target").has("name")) {
-                if (dep.getAsJsonObject().getAsJsonObject("target").has("name") && dep.getAsJsonObject().getAsJsonObject("target").get("name").isJsonPrimitive()){
-                  String targetName = dep.getAsJsonObject().getAsJsonObject("target").get("name").getAsString();
+              if (dep.getAsJsonObject().has("target")
+                  && dep.getAsJsonObject().getAsJsonObject("target").has("name")) {
+                if (dep.getAsJsonObject().getAsJsonObject("target").has("name")
+                    && dep.getAsJsonObject()
+                        .getAsJsonObject("target")
+                        .get("name")
+                        .isJsonPrimitive()) {
+                  String targetName =
+                      dep.getAsJsonObject().getAsJsonObject("target").get("name").getAsString();
                   dep.getAsJsonObject().addProperty("target", targetName);
                 }
               }

@@ -70,6 +70,7 @@ public class CustomHttpServletRequestWrapper extends HttpServletRequestWrapper {
   public String getBody() {
     return this.body;
   }
+
   public void setBody(String body) {
     this.body = body;
   }
