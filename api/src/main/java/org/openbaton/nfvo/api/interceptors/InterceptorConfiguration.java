@@ -18,6 +18,7 @@ package org.openbaton.nfvo.api.interceptors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -29,6 +30,7 @@ public class InterceptorConfiguration extends WebMvcConfigurerAdapter {
   @Autowired private AuthorizeInterceptor authorizeInterceptor;
   @Autowired private HistoryInterceptor historyInterceptor;
   @Autowired private SchemaValidatorInterceptor schemaValidatorInterceptor;
+  @Autowired private LegacyInterceptor legacyInterceptor;
 
   //    @Override
   //    public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -52,6 +54,10 @@ public class InterceptorConfiguration extends WebMvcConfigurerAdapter {
 
     registry
         .addInterceptor(authorizeInterceptor)
+        .addPathPatterns("/**")
+        .excludePathPatterns("/oauth/token");
+    registry
+        .addInterceptor(legacyInterceptor)
         .addPathPatterns("/**")
         .excludePathPatterns("/oauth/token");
     registry

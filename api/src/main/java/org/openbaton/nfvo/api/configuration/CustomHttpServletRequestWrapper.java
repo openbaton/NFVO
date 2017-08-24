@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 public class CustomHttpServletRequestWrapper extends HttpServletRequestWrapper {
-  private final String body;
+  private String body;
 
   public CustomHttpServletRequestWrapper(HttpServletRequest request) throws IOException {
     super(request);
@@ -29,15 +29,9 @@ public class CustomHttpServletRequestWrapper extends HttpServletRequestWrapper {
       } else {
         stringBuilder.append("");
       }
-    } catch (IOException ex) {
-      throw ex;
     } finally {
       if (bufferedReader != null) {
-        try {
-          bufferedReader.close();
-        } catch (IOException ex) {
-          throw ex;
-        }
+        bufferedReader.close();
       }
     }
     body = stringBuilder.toString();
@@ -46,28 +40,26 @@ public class CustomHttpServletRequestWrapper extends HttpServletRequestWrapper {
   @Override
   public ServletInputStream getInputStream() throws IOException {
     final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(body.getBytes());
-    ServletInputStream servletInputStream =
-        new ServletInputStream() {
-          @Override
-          public boolean isFinished() {
-            return byteArrayInputStream.available() == 0;
-          }
+    return new ServletInputStream() {
+      @Override
+      public boolean isFinished() {
+        return byteArrayInputStream.available() == 0;
+      }
 
-          @Override
-          public boolean isReady() {
-            return true;
-          }
+      @Override
+      public boolean isReady() {
+        return true;
+      }
 
-          @Override
-          public void setReadListener(ReadListener listener) {
-            throw new RuntimeException("Not implemented");
-          }
+      @Override
+      public void setReadListener(ReadListener listener) {
+        throw new RuntimeException("Not implemented");
+      }
 
-          public int read() throws IOException {
-            return byteArrayInputStream.read();
-          }
-        };
-    return servletInputStream;
+      public int read() throws IOException {
+        return byteArrayInputStream.read();
+      }
+    };
   }
 
   @Override
@@ -77,5 +69,8 @@ public class CustomHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
   public String getBody() {
     return this.body;
+  }
+  public void setBody(String body) {
+    this.body = body;
   }
 }
