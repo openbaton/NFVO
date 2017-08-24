@@ -21,11 +21,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-
-import org.springframework.stereotype.Service;
-
 import java.lang.reflect.Type;
 import java.util.Date;
+import org.springframework.stereotype.Service;
 
 /** Created by lto on 10/11/15. */
 @Service
