@@ -17,13 +17,8 @@
 
 package org.openbaton.catalogue.mano.common;
 
-import org.openbaton.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
-import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
-import org.openbaton.catalogue.util.IdGenerator;
-
 import java.io.Serializable;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -36,6 +31,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
+import org.openbaton.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
+import org.openbaton.catalogue.util.IdGenerator;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
@@ -46,8 +44,7 @@ public abstract class NFVEntityDescriptor implements Serializable {
 
   @Version protected Integer hb_version = 0;
 
-  @NotNull
-  @Column protected String name;
+  @NotNull @Column protected String name;
 
   protected String projectId;
 
@@ -60,11 +57,9 @@ public abstract class NFVEntityDescriptor implements Serializable {
   }
 
   /** Provider or vendor of the Network Service. */
-  @NotNull
-  protected String vendor;
+  @NotNull protected String vendor;
   /** Version of the Network Service Descriptor. */
-  @NotNull
-  protected String version;
+  @NotNull protected String version;
   /**
    * VNFFG which is part of the Network Service, see clause 6.5.1. A Network Service might have
    * multiple graphs, for example, for: 1. Control plane traffic. 2. Management-plane traffic. 3.

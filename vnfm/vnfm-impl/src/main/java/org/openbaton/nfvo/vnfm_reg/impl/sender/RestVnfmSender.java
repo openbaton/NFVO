@@ -26,6 +26,7 @@ import org.openbaton.vnfm.interfaces.sender.VnfmSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -44,9 +45,11 @@ public class RestVnfmSender implements VnfmSender {
   private RestTemplate rest;
   private HttpHeaders headers;
   private HttpStatus status;
-  @Autowired private Gson mapper;
   private Logger log = LoggerFactory.getLogger(this.getClass());
-  @Autowired private Gson gson;
+
+  @Autowired
+  @Qualifier("gson")
+  private Gson gson;
 
   private String get(String path, String url) {
     HttpEntity<String> requestEntity = new HttpEntity<>("", headers);
@@ -100,7 +103,7 @@ public class RestVnfmSender implements VnfmSender {
   }
 
   public Future<NFVMessage> sendToVnfm(NFVMessage nfvMessage, String url) {
-    String json = mapper.toJson(nfvMessage);
+    String json = gson.toJson(nfvMessage);
     if (!url.endsWith("/")) {
       url += "/";
     }

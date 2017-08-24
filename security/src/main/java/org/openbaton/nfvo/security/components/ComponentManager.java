@@ -1,8 +1,8 @@
 package org.openbaton.nfvo.security.components;
 
-import static org.openbaton.utils.rabbit.RabbitManager.createRabbitMqUser;
-import static org.openbaton.utils.rabbit.RabbitManager.removeRabbitMqUser;
-import static org.openbaton.utils.rabbit.RabbitManager.setRabbitMqUserPermissions;
+import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.createRabbitMqUser;
+import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.removeRabbitMqUser;
+import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.setRabbitMqUserPermissions;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -23,12 +23,12 @@ import org.openbaton.catalogue.security.Role;
 import org.openbaton.catalogue.security.ServiceMetadata;
 import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.nfvo.common.utils.key.KeyHelper;
 import org.openbaton.nfvo.repositories.ManagerCredentialsRepository;
 import org.openbaton.nfvo.repositories.ProjectRepository;
 import org.openbaton.nfvo.repositories.ServiceRepository;
 import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
 import org.openbaton.nfvo.security.authentication.OAuth2AuthorizationServerConfig;
-import org.openbaton.utils.key.KeyHelper;
 import org.openbaton.vnfm.interfaces.register.VnfmRegister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
