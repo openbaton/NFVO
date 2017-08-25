@@ -25,6 +25,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1//vnf-forwarding-graphs")
 public class RestVNFFG {
@@ -71,8 +73,8 @@ public class RestVNFFG {
    * @return List<VNFForwardingGraphDescriptor>: The list of VNFFGs available
    */
   @RequestMapping(method = RequestMethod.GET)
-  public Iterable<VNFForwardingGraphDescriptor> findAll() {
-    return vnffgManagement.query();
+  public List<VNFForwardingGraphDescriptor> findAll() {
+    return (List<VNFForwardingGraphDescriptor>) vnffgManagement.query();
   }
 
   /**

@@ -24,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/vnfcomponents")
 public class RestVNFComponent {
@@ -34,8 +36,8 @@ public class RestVNFComponent {
 
   @RequestMapping(method = RequestMethod.GET)
   @ResponseStatus(HttpStatus.OK)
-  public Iterable<VNFComponent> findAll() {
-    return vnfComponentManagment.query();
+  public List<VNFComponent> findAll() {
+    return (List<VNFComponent>) vnfComponentManagment.query();
   }
 
   @RequestMapping(value = "{id}", method = RequestMethod.GET)

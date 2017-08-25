@@ -102,9 +102,9 @@ public class RestEvent {
   }
 
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public Iterable<EventEndpoint> getEventEndpoints(
+  public List<EventEndpoint> getEventEndpoints(
       @RequestHeader(value = "project-id") String projectId) {
-    return eventManagement.queryByProjectId(projectId);
+    return (List<EventEndpoint>) eventManagement.queryByProjectId(projectId);
   }
 
   @RequestMapping(

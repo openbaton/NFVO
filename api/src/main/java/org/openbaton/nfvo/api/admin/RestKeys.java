@@ -141,8 +141,8 @@ public class RestKeys {
     notes = "Returns all the keys created for the project with id specified in the header"
   )
   @RequestMapping(method = RequestMethod.GET)
-  public Iterable<Key> findAll(@RequestHeader(value = "project-id") String projectId) {
-    return keyManagement.query(projectId);
+  public List<Key> findAll(@RequestHeader(value = "project-id") String projectId) {
+    return (List<Key>) keyManagement.query(projectId);
   }
 
   /**

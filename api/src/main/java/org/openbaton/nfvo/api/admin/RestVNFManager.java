@@ -25,6 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/vnfmanagers")
 public class RestVNFManager {
@@ -39,8 +41,8 @@ public class RestVNFManager {
   )
   @RequestMapping(method = RequestMethod.GET)
   @ResponseStatus(HttpStatus.OK)
-  public Iterable<VnfmManagerEndpoint> findAll() {
-    return vnfManagerManagement.query();
+  public List<VnfmManagerEndpoint> findAll() {
+    return (List<VnfmManagerEndpoint>) vnfManagerManagement.query();
   }
 
   @ApiOperation(

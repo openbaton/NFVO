@@ -27,6 +27,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/configurations")
 public class RestConfiguration {
@@ -76,10 +78,10 @@ public class RestConfiguration {
    * @return List<Configuration>: The list of Configurations available
    */
   @RequestMapping(method = RequestMethod.GET)
-  public Iterable<Configuration> findAll(
+  public List<Configuration> findAll(
       @RequestHeader(value = "project-id", required = false) String projectId) {
     log.trace("Find all Configurations");
-    return configurationManagement.queryByProject(projectId);
+    return (List<Configuration>) configurationManagement.queryByProject(projectId);
   }
 
   /**
