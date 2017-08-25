@@ -18,9 +18,7 @@
 package org.openbaton.nfvo.security.authentication;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
@@ -33,7 +31,7 @@ public class ResourceServer extends ResourceServerConfigurerAdapter {
   public void configure(HttpSecurity http) throws Exception {
     // API calls
     http.authorizeRequests()
-        .antMatchers("/api/v1/components/services/register")
+        .antMatchers("/api/v1/components/services/register", "/api/v1/security")
         .permitAll()
         .and()
         .authorizeRequests()
@@ -41,31 +39,6 @@ public class ResourceServer extends ResourceServerConfigurerAdapter {
         .access("#oauth2.hasScope('write')")
         .and()
         .exceptionHandling();
-//    http.headers().frameOptions().disable();
-//
-//    // API calls
-//    //log.debug("Security must be enabled");
-//    http.authorizeRequests()
-//            .regexMatchers(HttpMethod.POST, "/api/v1/")
-//            .access("#oauth2.hasScope('write')")
-//            .and()
-//            .sessionManagement()
-//            .sessionCreationPolicy(SessionCreationPolicy.NEVER)
-//            .and()
-//            .exceptionHandling()
-//            .and()
-//            .authorizeRequests()
-//            .antMatchers("/api/v1/components/services/register")
-//            .permitAll();
-//
-//    http.authorizeRequests()
-//            .antMatchers("/api/**")
-//            .access("#oauth2.hasScope('write')")
-//            .and()
-//            .sessionManagement()
-//            .sessionCreationPolicy(SessionCreationPolicy.NEVER)
-//            .and()
-//            .exceptionHandling();
   }
 
   @Override

@@ -274,7 +274,6 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
       return null;
     }
     String currentUserName = authentication.getName();
-    log.debug("getting current user: " + currentUserName);
     return this.queryByName(currentUserName);
   }
 }
