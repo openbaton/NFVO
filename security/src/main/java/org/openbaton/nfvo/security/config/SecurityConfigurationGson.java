@@ -7,17 +7,18 @@ import org.openbaton.nfvo.common.configuration.GsonDeserializerNFVMessage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
 
 @Configuration
 public class SecurityConfigurationGson {
 
   @Bean
-  @Scope("prototype")
+  //@Scope("prototype")
   Gson gson() {
     return new GsonBuilder()
         .setPrettyPrinting()
         .registerTypeAdapter(NFVMessage.class, new GsonDeserializerNFVMessage())
-        //.registerTypeAdapter(OAuth2AccessToken.class, new GsonSerializerOAuth2AccessToken())
+        .registerTypeAdapter(OAuth2AccessToken.class, new GsonSerializerOAuth2AccessToken())
         .create();
   }
 }
