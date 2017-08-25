@@ -168,8 +168,8 @@ public class RestComponents {
     produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.OK)
-  public List<ServiceMetadata> listServices(
-      @RequestHeader(value = "project-id") String projectId) throws IOException {
+  public List<ServiceMetadata> listServices(@RequestHeader(value = "project-id") String projectId)
+      throws IOException {
 
     return (List<ServiceMetadata>) componentManager.listServices();
   }

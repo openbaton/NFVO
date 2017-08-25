@@ -6,7 +6,6 @@ import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.nfvo.common.configuration.GsonDeserializerNFVMessage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 
 @Configuration

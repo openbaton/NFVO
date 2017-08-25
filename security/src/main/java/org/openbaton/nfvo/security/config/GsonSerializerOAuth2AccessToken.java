@@ -22,9 +22,6 @@ import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 import org.springframework.stereotype.Service;
@@ -50,7 +47,8 @@ public class GsonSerializerOAuth2AccessToken implements JsonSerializer<OAuth2Acc
     Date expiration = src.getExpiration();
     if (expiration != null) {
       long now = System.currentTimeMillis();
-      jsonObject.add(OAuth2AccessToken.EXPIRES_IN, new JsonPrimitive((expiration.getTime() - now) / 1000));
+      jsonObject.add(
+          OAuth2AccessToken.EXPIRES_IN, new JsonPrimitive((expiration.getTime() - now) / 1000));
     }
 
     Set<String> scope = src.getScope();
@@ -63,7 +61,7 @@ public class GsonSerializerOAuth2AccessToken implements JsonSerializer<OAuth2Acc
         scopes.append(" ");
       }
 
-      jsonObject.addProperty(OAuth2AccessToken.SCOPE, scopes.substring(0, scopes.length() - 1) );
+      jsonObject.addProperty(OAuth2AccessToken.SCOPE, scopes.substring(0, scopes.length() - 1));
     }
 
     Map<String, Object> additionalInformation = src.getAdditionalInformation();

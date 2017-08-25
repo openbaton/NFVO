@@ -16,6 +16,7 @@
 
 package org.openbaton.nfvo.api.catalogue;
 
+import java.util.List;
 import javax.validation.Valid;
 import org.openbaton.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
 import org.openbaton.nfvo.core.interfaces.VNFFGManagement;
@@ -24,8 +25,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1//vnf-forwarding-graphs")

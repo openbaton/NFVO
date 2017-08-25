@@ -226,7 +226,8 @@ public class RestNetworkServiceDescriptor {
   @RequestMapping(method = RequestMethod.GET)
   public List<NetworkServiceDescriptor> findAll(
       @RequestHeader(value = "project-id") String projectId) {
-    return (List<NetworkServiceDescriptor>) networkServiceDescriptorManagement.queryByProjectId(projectId);
+    return (List<NetworkServiceDescriptor>)
+        networkServiceDescriptorManagement.queryByProjectId(projectId);
   }
 
   /**
