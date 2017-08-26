@@ -48,8 +48,6 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private OAuth2AuthorizationServerConfig serverConfig;
-  //  @Autowired private TokenStore tokenStore;
-  //  @Autowired private DefaultTokenServices tokenServices;
   @Autowired private Gson gson;
   @Autowired private ServiceRepository serviceRepository;
   @Autowired private ManagerCredentialsRepository managerCredentialsRepository;
