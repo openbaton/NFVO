@@ -68,46 +68,43 @@ configure_rabbitmq () {
     if [ ${result} -gt 0 ]; then
         result=$(rabbitmqctl list_users | grep '^admin' | wc -l)
     	if [ ${result} -eq 0 ]; then
-            rabbitmqctl add_user admin openbaton
+            rabbitmq_admin_password=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c32)
+
+            rabbitmqctl add_user admin ${rabbitmq_admin_password}
             rabbitmqctl set_user_tags admin administrator
             rabbitmqctl set_permissions -p / admin ".*" ".*" ".*"
+            rabbitmq-plugins enable rabbitmq_management
+            service rabbitmq-server restart
+            if [ "$?" != "0" ]; then
+                log_failure_msg "rabbitmq is not running properly (check the problem in /var/log/rabbitmq)"
+                exit 1
+            fi
+
+            # Set the rabbitmq 'admin' password
+            export rabbitmq_admin_password=${rabbitmq_admin_password}
+            log_success_msg "Setting new 'admin' password: ${rabbitmq_admin_password}"
+            log_warning_msg "The 'admin' password has been randomly generated and you can find it in the '/etc/openbaton/openbaton-${OPENBATON_COMPONENT_NAME}.properties' properties file as the value of the 'spring.rabbitmq.password' property"
+            sed -i "s|spring.rabbitmq.password\s*=\s*.*|spring.rabbitmq.password=${rabbitmq_admin_password}|g" /etc/openbaton/openbaton-${OPENBATON_COMPONENT_NAME}.properties 
         fi
-        
-        #### Workaround to enable rabbitmq management plugin ####
-	    if [ -f /etc/rabbitmq/enabled_plugins ]; then
-            result=$(grep /etc/rabbitmq/enabled_plugins -e "[rabbitmq_management].")
-    	    if [ "${result}" != "[rabbitmq_management]." ]; then
-                echo "[rabbitmq_management]." >> /etc/rabbitmq/enabled_plugins
-    	    fi
-        else
-	        echo "[rabbitmq_management]." > /etc/rabbitmq/enabled_plugins
+
+        # In case of "noninteractive" FRONTEND either the value from the configuration file or the default value will be used (DEFAULT: rabbitmq_broker_ip=localhost ; rabbitmq_management_port=15672)
+        if [ "${DEBIAN_FRONTEND}" != "Noninteractive" -a "${DEBIAN_FRONTEND}" != "noninteractive" ]; then
+            read -p "Enter the rabbitmq broker ip [localhost]: " rabbitmq_broker_ip
+            read -p "Enter the rabbitmq management port [15672]: " rabbitmq_management_port
         fi
-        ##########################################################
-        
-        service rabbitmq-server restart
-        if [ "$?" != "0" ]; then
-            log_failure_msg "rabbitmq is not running properly (check the problem in /var/log/rabbitmq)"
-            exit 1
-        fi
+
+        # Set the rabbitmq broker ip
+        rabbitmq_broker_ip=${rabbitmq_broker_ip:-$RABBITMQ_BROKER_IP_DEFAULT}
+        export rabbitmq_broker_ip=${rabbitmq_broker_ip}
+        log_success_msg "Setting new broker IP: ${rabbitmq_broker_ip}"
+        sed -i "s|nfvo.rabbit.brokerIp\s*=\s*.*|nfvo.rabbit.brokerIp=${rabbitmq_broker_ip}|g" /etc/openbaton/openbaton-${OPENBATON_COMPONENT_NAME}.properties
+
+        # Set the rabbitmq management port
+        rabbitmq_management_port=${rabbitmq_management_port:-$RABBITMQ_MANAGEMENT_PORT_DEFAULT}
+        export rabbitmq_management_port=${rabbitmq_management_port}
+        log_success_msg "Setting new management port: ${rabbitmq_management_port}"
+        sed -i "s|nfvo.rabbit.management.port\s*=\s*.*|nfvo.rabbit.management.port=${rabbitmq_management_port}|g" /etc/openbaton/openbaton-${OPENBATON_COMPONENT_NAME}.properties
     fi
-
-    # In case of "noninteractive" FRONTEND either the value from the configuration file or the default value will be used (DEFAULT: rabbitmq_broker_ip=localhost ; rabbitmq_management_port=15672)
-    if [ "${DEBIAN_FRONTEND}" != "Noninteractive" -a "${DEBIAN_FRONTEND}" != "noninteractive" ]; then
-        read -p "Enter the rabbitmq broker ip [localhost]: " rabbitmq_broker_ip
-        read -p "Enter the rabbitmq management port [15672]: " rabbitmq_management_port
-    fi
-
-    # Set the rabbitmq broker ip
-    rabbitmq_broker_ip=${rabbitmq_broker_ip:-$RABBITMQ_BROKER_IP_DEFAULT}
-    export rabbitmq_broker_ip=${rabbitmq_broker_ip}
-    log_success_msg "Setting new broker IP: ${rabbitmq_broker_ip}"
-    sed -i "s|nfvo.rabbit.brokerIp\s*=\s*localhost|nfvo.rabbit.brokerIp=${rabbitmq_broker_ip}|g" /etc/openbaton/openbaton-${OPENBATON_COMPONENT_NAME}.properties
-
-    # Set the rabbitmq management port
-    rabbitmq_management_port=${rabbitmq_management_port:-$RABBITMQ_MANAGEMENT_PORT_DEFAULT}
-    export rabbitmq_management_port=${rabbitmq_management_port}
-    log_success_msg "Setting new management port: ${rabbitmq_management_port}"
-    sed -i "s|nfvo.rabbit.management.port\s*=\s*15672|nfvo.rabbit.management.port=${rabbitmq_management_port}|g" /etc/openbaton/openbaton-${OPENBATON_COMPONENT_NAME}.properties 
 }
 
 
