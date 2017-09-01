@@ -19,8 +19,7 @@ package org.openbaton.nfvo.api.interceptors;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
 import org.openbaton.nfvo.api.configuration.CustomHttpServletRequestWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,10 +27,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 @Service
 public class LegacyInterceptor extends HandlerInterceptorAdapter {
 
   private Logger log = LoggerFactory.getLogger(this.getClass());
+
   @Autowired private Gson gson;
 
   @Override
@@ -49,6 +52,7 @@ public class LegacyInterceptor extends HandlerInterceptorAdapter {
           for (JsonElement dep : jsonObject.getAsJsonArray("vnf_dependency")) {
             if (dep.isJsonObject()) {
               if (dep.getAsJsonObject().has("source")
+                  && dep.getAsJsonObject().get("source").isJsonObject()
                   && dep.getAsJsonObject().get("source").isJsonObject()) {
                 if (dep.getAsJsonObject().getAsJsonObject("source").has("name")
                     && dep.getAsJsonObject()
@@ -61,6 +65,7 @@ public class LegacyInterceptor extends HandlerInterceptorAdapter {
                 }
               }
               if (dep.getAsJsonObject().has("target")
+                  && dep.getAsJsonObject().get("target").isJsonObject()
                   && dep.getAsJsonObject().getAsJsonObject("target").has("name")) {
                 if (dep.getAsJsonObject().getAsJsonObject("target").has("name")
                     && dep.getAsJsonObject()
