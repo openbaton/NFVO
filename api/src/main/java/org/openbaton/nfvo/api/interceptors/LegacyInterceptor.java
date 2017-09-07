@@ -19,16 +19,14 @@ package org.openbaton.nfvo.api.interceptors;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.openbaton.nfvo.api.configuration.CustomHttpServletRequestWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 @Service
 public class LegacyInterceptor extends HandlerInterceptorAdapter {
