@@ -1,4 +1,4 @@
-From openjdk:8-jdk as builder
+FROM openjdk:8-jdk as builder
 COPY . /project
 WORKDIR /project
 RUN ./gradlew build -x test
