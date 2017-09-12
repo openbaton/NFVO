@@ -197,6 +197,10 @@ configure_for_upgrade () {
     log_success_msg "Upgrading Open Baton ${OPENBATON_COMPONENT_NAME_FANCY} installation .."
 }
 
+fix_db_connectors_used () {
+    sed -i "s|spring.datasource.driver-class-name\s*=\s*com.mysql.jdbc.Driver|spring.datasource.driver-class-name=org.mariadb.jdbc.Driver|g" /etc/openbaton/openbaton-${OPENBATON_COMPONENT_NAME}.properties
+}
+
 start_component () {
     # Allow the use of the .deb package to install Open Baton with Docker (the Docker file developer need to manage the starting of the NFVO in the Docker file) 
     if [ "${OPENBATON_COMPONENT_AUTOSTART}" = "true" ]; then
@@ -223,6 +227,7 @@ case "${1}" in
             configure_new_installation
         else # upgrade (during upgrade the postinst file is invoked as: 'postinst configure <old_version_number>')
             configure_for_upgrade
+            fix_db_connectors_used
         fi 
         ;;
 
