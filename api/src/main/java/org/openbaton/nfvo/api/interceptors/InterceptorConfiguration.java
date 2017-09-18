@@ -59,11 +59,11 @@ public class InterceptorConfiguration extends WebMvcConfigurerAdapter {
         .addInterceptor(legacyInterceptor)
         .addPathPatterns("/**")
         .excludePathPatterns("/oauth/token");
-//    registry
-//        .addInterceptor(schemaValidatorInterceptor)
-//        .addPathPatterns("/**")
-//        .excludePathPatterns(
-//            "/**/api/v1/keys/generate", "/**/api/v1/users/changepwd/*", "/oauth/token");
+    //    registry
+    //        .addInterceptor(schemaValidatorInterceptor)
+    //        .addPathPatterns("/**")
+    //        .excludePathPatterns(
+    //            "/**/api/v1/keys/generate", "/**/api/v1/users/changepwd/*", "/oauth/token");
     registry
         .addInterceptor(historyInterceptor)
         .addPathPatterns("/**")

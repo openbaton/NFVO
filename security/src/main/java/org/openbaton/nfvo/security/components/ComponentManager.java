@@ -323,6 +323,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
         managerCredentials.setRabbitPassword(password);
         managerCredentials = managerCredentialsRepository.save(managerCredentials);
         if (endpoint != null) vnfmManagerEndpointRepository.save(endpoint);
+        log.info("Registered a new manager.");
         return gson.toJson(managerCredentials);
       } else if (body.get("action").getAsString().toLowerCase().equals("unregister")
           || body.get("action").getAsString().toLowerCase().equals("deregister")) {
