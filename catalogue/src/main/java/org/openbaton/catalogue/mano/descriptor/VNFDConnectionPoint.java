@@ -17,12 +17,13 @@
 
 package org.openbaton.catalogue.mano.descriptor;
 
+import org.openbaton.catalogue.mano.common.ConnectionPoint;
+
 import javax.persistence.Entity;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import org.openbaton.catalogue.mano.common.ConnectionPoint;
 
 /**
  * Created by lto on 06/02/15.
@@ -44,7 +45,7 @@ public class VNFDConnectionPoint extends ConnectionPoint {
         "(^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
             + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
             + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
-            + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$)|(random)"
+            + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$)|(random)|^$"
   )
   private String floatingIp;
 
