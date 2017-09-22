@@ -17,13 +17,12 @@
 
 package org.openbaton.catalogue.mano.descriptor;
 
-import org.openbaton.catalogue.mano.common.ConnectionPoint;
-
 import javax.persistence.Entity;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import org.openbaton.catalogue.mano.common.ConnectionPoint;
 
 /**
  * Created by lto on 06/02/15.

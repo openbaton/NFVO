@@ -18,10 +18,13 @@
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import org.openbaton.catalogue.mano.common.Event;
+import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
+import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
@@ -78,6 +81,12 @@ public class InstantiateTask extends AbstractTask {
               + existing.getId()
               + ") existing hibernat version is = "
               + existing.getHb_version());
+    }
+
+    for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
+      for (VNFCInstance vnfcInstance : vdu.getVnfc_instance()) {
+        vnfcInstance.getConnection_point().removeIf(Objects::isNull);
+      }
     }
 
     dependencyManagement.fillDependecyParameters(virtualNetworkFunctionRecord);

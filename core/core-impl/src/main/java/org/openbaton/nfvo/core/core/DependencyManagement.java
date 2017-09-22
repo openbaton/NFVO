@@ -41,6 +41,7 @@ import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
+import org.openbaton.nfvo.repositories.VNFCInstanceRepository;
 import org.openbaton.nfvo.repositories.VNFRDependencyRepository;
 import org.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.openbaton.vnfm.interfaces.state.VnfStateHandler;
@@ -70,6 +71,7 @@ public class DependencyManagement
   @Autowired private NetworkServiceRecordRepository nsrRepository;
 
   @Autowired private VNFRDependencyRepository vnfrDependencyRepository;
+  @Autowired private VNFCInstanceRepository vnfcInstanceRepository;
 
   /**
    * Check whether the virtualNetworkFunctionRecord is a target in a dependency. If it is then check
@@ -200,13 +202,13 @@ public class DependencyManagement
     for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu())
       for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
 
-        log.debug("VNFComponent id: " + vnfcInstance.getVnfComponent().getId());
+        //log.debug("VNFComponent id: " + vnfcInstance.getVnfComponent().getId());
         log.debug("VNFRecordDependency is " + vnfRecordDependency);
         log.debug("VNFCDependencyParameters is " + vnfcDependencyParameters);
 
         if (vnfcDependencyParameters == null) {
           vnfcDependencyParameters = new VNFCDependencyParameters();
-          vnfcDependencyParameters.setParameters(new HashMap<String, DependencyParameters>());
+          vnfcDependencyParameters.setParameters(new HashMap<>());
         }
 
         log.debug("Parameters requested are: ");
@@ -214,7 +216,10 @@ public class DependencyManagement
 
         if (vnfcDependencyParameters.getParameters().get(vnfcInstance.getId()) == null) {
           DependencyParameters dependencyParameters = new DependencyParameters();
-          dependencyParameters.setParameters(new HashMap<String, String>());
+          dependencyParameters.setParameters(new HashMap<>());
+          if (vnfcInstance.getId() == null) {
+            vnfcInstance = vnfcInstanceRepository.save(vnfcInstance);
+          }
           vnfcDependencyParameters.getParameters().put(vnfcInstance.getId(), dependencyParameters);
         }
         for (Ip ip : vnfcInstance.getIps()) {
