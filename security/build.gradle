@@ -25,7 +25,7 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-security:'+ springBootVersion
     compile 'org.springframework.security.oauth:spring-security-oauth2:2.2.0.RELEASE'
     compile 'org.apache.directory.studio:org.apache.commons.lang:2.6'
-    // This is for enabling spring endpoints (i.e. /health)
+    // This is for enabling spring endpoints (e.g. /health)
     runtime 'org.springframework.boot:spring-boot-starter-actuator:'+ springBootVersion
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.7'
 }
