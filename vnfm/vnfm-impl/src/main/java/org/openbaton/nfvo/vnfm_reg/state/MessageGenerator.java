@@ -73,21 +73,6 @@ public class MessageGenerator implements org.openbaton.vnfm.interfaces.manager.M
   @Value("${nfvo.timezone:CET}")
   private String timezone;
 
-  @Value("${nfvo.ems.version:0.19}")
-  private String emsVersion;
-
-  @Value("${ems.rabbitmq.username:ems}")
-  private String emsUsername;
-
-  @Value("${ems.rabbitmq.password:openbaton}")
-  private String emsPassword;
-
-  @Value("${nfvo.ems.queue.heartbeat:60}")
-  private String emsHeartbeat;
-
-  @Value("${nfvo.ems.queue.autodelete:true}")
-  private String emsAutodelete;
-
   @Value("${spring.rabbitmq.port:5672}")
   private String brokerPort;
 
@@ -123,12 +108,6 @@ public class MessageGenerator implements org.openbaton.vnfm.interfaces.manager.M
     extension.put("brokerPort", brokerPort.trim());
     extension.put("monitoringIp", monitoringIp.trim());
     extension.put("timezone", timezone);
-    extension.put("emsVersion", emsVersion);
-    extension.put("username", emsUsername);
-    extension.put("password", emsPassword);
-    extension.put("exchangeName", "openbaton-exchange");
-    extension.put("emsHeartbeat", emsHeartbeat);
-    extension.put("emsAutodelete", emsAutodelete);
     return extension;
   }
 
