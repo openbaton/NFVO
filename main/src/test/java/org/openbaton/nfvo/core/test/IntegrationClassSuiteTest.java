@@ -18,6 +18,7 @@
 package org.openbaton.nfvo.core.test;
 
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openbaton.nfvo.main.Application;
@@ -41,6 +42,7 @@ public class IntegrationClassSuiteTest {
   @Autowired ConfigurableApplicationContext context;
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
+  @Ignore
   @Test
   public void method1() {
     log.info("Here the context");
