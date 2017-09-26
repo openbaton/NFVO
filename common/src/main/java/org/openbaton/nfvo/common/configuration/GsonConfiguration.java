@@ -19,9 +19,7 @@ package org.openbaton.nfvo.common.configuration;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import java.util.Date;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,28 +30,12 @@ import org.springframework.context.annotation.Scope;
 @ConfigurationProperties
 public class GsonConfiguration {
 
-  @Autowired private GsonDeserializerDate dateDeserializer;
-  @Autowired private GsonSerializerDate dateSerializer;
-
-  @Bean
-  @Scope("prototype")
-  Gson gson() {
-    return new GsonBuilder()
-        .setPrettyPrinting()
-        .registerTypeAdapter(NFVMessage.class, new NfvoGsonDeserializerNFVMessage())
-        .registerTypeAdapter(Date.class, dateDeserializer)
-        .registerTypeAdapter(Date.class, dateSerializer)
-        .create();
-  }
-
   @Bean
   @Scope("prototype")
   Gson vnfmGson() {
     return new GsonBuilder()
         .setPrettyPrinting()
         .registerTypeAdapter(NFVMessage.class, new VnfmGsonDeserializerNFVMessage())
-        .registerTypeAdapter(Date.class, dateDeserializer)
-        .registerTypeAdapter(Date.class, dateSerializer)
         .create();
   }
 }
