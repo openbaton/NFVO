@@ -17,9 +17,12 @@
 
 package org.openbaton.catalogue.nfvo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.PrePersist;
+import javax.persistence.Version;
 import org.openbaton.catalogue.util.IdGenerator;
 
 /** Created by lto on 23/07/15. */
@@ -30,7 +33,7 @@ public class Script implements Serializable {
 
   private String name;
 
-  @Lob @JsonIgnore private byte[] payload;
+  @Lob private byte[] payload;
 
   public Script() {}
 
@@ -63,7 +66,6 @@ public class Script implements Serializable {
     this.name = name;
   }
 
-  @JsonIgnore
   public byte[] getPayload() {
     return payload;
   }

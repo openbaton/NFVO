@@ -95,22 +95,18 @@ public class NSRUtils {
             .getTarget()
             .equals(
                 vnfDependency
-                    .getTarget()
-                    .getName())) { // if there is a vnfRecordDepenendency with the same target
+                    .getTarget())) { // if there is a vnfRecordDepenendency with the same target
           // I find the source
           for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
               networkServiceDescriptor.getVnfd()) {
             log.debug(
                 "Source is: "
-                    + vnfDependency.getSource().getName()
+                    + vnfDependency.getSource()
                     + ". Target is: "
-                    + vnfDependency.getTarget().getName()
+                    + vnfDependency.getTarget()
                     + ". VNFR is: "
                     + virtualNetworkFunctionDescriptor.getName());
-            if (vnfDependency
-                .getSource()
-                .getName()
-                .equals(virtualNetworkFunctionDescriptor.getName())) {
+            if (vnfDependency.getSource().equals(virtualNetworkFunctionDescriptor.getName())) {
               vnfRecordDependency
                   .getIdType()
                   .put(
@@ -144,10 +140,7 @@ public class NSRUtils {
         for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
             networkServiceDescriptor.getVnfd()) {
 
-          if (vnfDependency
-              .getSource()
-              .getName()
-              .equals(virtualNetworkFunctionDescriptor.getName())) {
+          if (vnfDependency.getSource().equals(virtualNetworkFunctionDescriptor.getName())) {
             vnfRecordDependency
                 .getIdType()
                 .put(
@@ -164,9 +157,7 @@ public class NSRUtils {
                 .put(virtualNetworkFunctionDescriptor.getType(), dependencyParameters);
           }
 
-          if (virtualNetworkFunctionDescriptor
-              .getName()
-              .equals(vnfDependency.getTarget().getName()))
+          if (virtualNetworkFunctionDescriptor.getName().equals(vnfDependency.getTarget()))
             vnfRecordDependency.setTarget(virtualNetworkFunctionDescriptor.getName());
 
           vnfRecordDependency.setVnfcParameters(new HashMap<String, VNFCDependencyParameters>());

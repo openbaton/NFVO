@@ -31,5 +31,5 @@ apply from: '../gradle/gradle/nexus.upload.plugin.gradle'
 
 dependencies {
     compile project(":catalogue")
-    compile project(":utils")
+    compile project(":common")
 }

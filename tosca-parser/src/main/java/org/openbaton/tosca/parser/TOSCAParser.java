@@ -135,14 +135,9 @@ public class TOSCAParser {
       VNFDependency vnfDependency = new VNFDependency();
 
       RelationshipsTemplate relationshipsTemplate = relationshipsTemplates.get(key);
-      VirtualNetworkFunctionDescriptor vnfdSouce = new VirtualNetworkFunctionDescriptor();
-      VirtualNetworkFunctionDescriptor vnfdTarget = new VirtualNetworkFunctionDescriptor();
 
-      vnfdSouce.setName(relationshipsTemplate.getSource());
-      vnfdTarget.setName(relationshipsTemplate.getTarget());
-
-      vnfDependency.setSource(vnfdSouce);
-      vnfDependency.setTarget(vnfdTarget);
+      vnfDependency.setSource(relationshipsTemplate.getSource());
+      vnfDependency.setTarget(relationshipsTemplate.getTarget());
       vnfDependency.setParameters(new HashSet<>(relationshipsTemplate.getParameters()));
 
       nsd.getVnf_dependency().add(vnfDependency);

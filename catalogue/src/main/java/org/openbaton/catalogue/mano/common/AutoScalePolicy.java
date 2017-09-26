@@ -26,7 +26,7 @@ import org.openbaton.catalogue.util.IdGenerator;
 @Entity
 public class AutoScalePolicy implements Serializable {
   @Id private String id;
-  @Version private int version = 0;
+  @Version private Integer version = 0;
 
   private String name;
 
@@ -59,7 +59,7 @@ public class AutoScalePolicy implements Serializable {
     return id;
   }
 
-  public int getVersion() {
+  public Integer getVersion() {
     return version;
   }
 

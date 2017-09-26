@@ -56,32 +56,19 @@ public class Registration {
    * @param endpoint The VNFM Endpoint to register @see
    *     org.openbaton.catalogue.nfvo.VnfmManagerEndpoint
    * @return new username and password for rabbitmq for specific vnfm endpoint
-   * @throws InterruptedException in case of InterruptedException
    */
-  public String[] registerVnfmToNfvo(RabbitTemplate rabbitTemplate, VnfmManagerEndpoint endpoint)
-      throws InterruptedException {
+  public String[] registerVnfmToNfvo(RabbitTemplate rabbitTemplate, VnfmManagerEndpoint endpoint) {
 
     JsonObject message = new JsonObject();
     message.add("type", new JsonPrimitive(endpoint.getType()));
     message.add("action", new JsonPrimitive("register"));
     message.add("vnfmManagerEndpoint", gson.toJsonTree(endpoint, VnfmManagerEndpoint.class));
     log.debug("Registering the Vnfm to the Nfvo");
-    int tries = 0;
-    Object res = null;
-    if (maxTries < 0) maxTries = Integer.MAX_VALUE;
-    while (tries < maxTries) {
-      res =
-          rabbitTemplate.convertSendAndReceive(
-              "openbaton-exchange", "nfvo.manager.handling", gson.toJson(message));
-      if (res == null) {
-        log.debug(
-            "NFVO answer is null, i suppose it is not running yet, i will try again in 2,5 seconds.");
-        Thread.sleep(2500);
-        tries++;
-      } else {
-        break;
-      }
-    }
+
+    Object res =
+        rabbitTemplate.convertSendAndReceive(
+            "openbaton-exchange", "nfvo.manager.handling", gson.toJson(message));
+
     if (res == null) {
       throw new IllegalArgumentException("The NFVO's answer to the registration request is null.");
     }
@@ -249,5 +236,17 @@ public class Registration {
       throws InterruptedException, TimeoutException, IOException {
     new Registration()
         .registerPluginToNfvo("localhost", 5672, "admin", "openbaton", "/", "cippalippa");
+  }
+
+  /**
+   * Returns true if the Registration object's username field is not null and has a value different
+   * than the empty string. Can be therefore used to check if the registration was successful or
+   * not.
+   *
+   * @return true if username is not null and not empty
+   */
+  public boolean hasUsername() {
+    if (this.username != null && !this.username.equals("")) return true;
+    return false;
   }
 }

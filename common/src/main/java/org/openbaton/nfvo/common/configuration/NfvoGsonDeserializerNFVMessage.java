@@ -17,20 +17,38 @@
 
 package org.openbaton.nfvo.common.configuration;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
+import java.util.Date;
 import org.openbaton.catalogue.nfvo.Action;
-import org.openbaton.catalogue.nfvo.messages.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrAllocateResourcesMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrErrorMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrGenericMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrHealedMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrInstantiateMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrLogMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrScaledMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrScalingMessage;
+import org.openbaton.catalogue.nfvo.messages.VnfmOrStartStopMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-/** Created by lto on 10/11/15. */
 @Service
-public class GsonDeserializerNFVMessage implements JsonDeserializer<NFVMessage> {
+public class NfvoGsonDeserializerNFVMessage implements JsonDeserializer<NFVMessage> {
 
-  private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+  private Gson gson =
+      new GsonBuilder()
+          .setPrettyPrinting()
+          .registerTypeAdapter(Date.class, new GsonDeserializerDate())
+          .registerTypeAdapter(Date.class, new GsonSerializerDate())
+          .create();
 
   private Logger log = LoggerFactory.getLogger(this.getClass());
 

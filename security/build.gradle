@@ -20,7 +20,6 @@ dependencies {
     compile project(':catalogue')
     compile project(':exception')
     compile project(':common')
-    compile project(':utils')
     compile project(':vnfm-int')
 
     compile 'org.springframework.boot:spring-boot-starter-security:'+ springBootVersion
@@ -28,4 +27,5 @@ dependencies {
     compile 'org.apache.directory.studio:org.apache.commons.lang:2.6'
     // This is for enabling spring endpoints (i.e. /health)
     runtime 'org.springframework.boot:spring-boot-starter-actuator:'+ springBootVersion
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.7'
 }

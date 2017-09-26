@@ -186,18 +186,18 @@ public class VnfmManager
         networkServiceDescriptor.getVnfd()) {
       String virtualNetworkFunctionDescriptorName = virtualNetworkFunctionDescriptor.getName();
       int weightForVNFR =
-          getWeightForVNFR(virtualNetworkFunctionDescriptor, networkServiceDescriptor);
+          getWeightForVNFR(virtualNetworkFunctionDescriptor.getName(), networkServiceDescriptor);
       vnfrNamesWeighted.put(virtualNetworkFunctionDescriptorName, weightForVNFR);
       log.debug("Set weight for " + virtualNetworkFunctionDescriptorName + " to " + weightForVNFR);
     }
   }
 
   private int getWeightForVNFR(
-      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
+      String virtualNetworkFunctionDescriptorName,
       NetworkServiceDescriptor networkServiceDescriptor) {
     int result = 0;
     for (VNFDependency dependency : networkServiceDescriptor.getVnf_dependency()) {
-      if (dependency.getTarget().getName().equals(virtualNetworkFunctionDescriptor.getName())) {
+      if (dependency.getTarget().equals(virtualNetworkFunctionDescriptorName)) {
         result++;
         result += getWeightForVNFR(dependency.getSource(), networkServiceDescriptor);
       }
@@ -364,7 +364,7 @@ public class VnfmManager
     ApplicationEventNFVO event = new ApplicationEventNFVO(action, payload, projectId);
     EventNFVO eventNFVO = new EventNFVO(this);
     eventNFVO.setEventNFVO(event);
-    log.debug("Publishing event: " + event);
+    log.trace("Publishing event: " + event);
     publisher.publishEvent(eventNFVO);
   }
 

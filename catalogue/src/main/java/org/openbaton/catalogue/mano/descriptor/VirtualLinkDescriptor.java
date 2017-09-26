@@ -18,7 +18,11 @@
 package org.openbaton.catalogue.mano.descriptor;
 
 import java.util.Set;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToOne;
 import org.openbaton.catalogue.mano.common.AbstractVirtualLink;
 import org.openbaton.catalogue.mano.common.Security;
 
@@ -43,8 +47,12 @@ public class VirtualLinkDescriptor extends AbstractVirtualLink {
   private String vendor;
   /** Version of this VLD */
   private String descriptor_version;
+
+  /** Public ip pool */
+  private String poolName;
+
   /** Number of endpoints available on this VL (e.g. E-Line=2) */
-  private int number_of_endpoints;
+  private Integer number_of_endpoints = 0;
   /** A reference to an attached Connection Point (nsd/vnfd/pnfd:connection_point:id) */
   @ElementCollection(fetch = FetchType.EAGER)
   private Set<String> connection;
@@ -57,6 +65,14 @@ public class VirtualLinkDescriptor extends AbstractVirtualLink {
   private Security vld_security;
 
   public VirtualLinkDescriptor() {}
+
+  public String getPoolName() {
+    return poolName;
+  }
+
+  public void setPoolName(String poolName) {
+    this.poolName = poolName;
+  }
 
   public String getName() {
     return name;
@@ -82,11 +98,11 @@ public class VirtualLinkDescriptor extends AbstractVirtualLink {
     this.descriptor_version = descriptor_version;
   }
 
-  public int getNumber_of_endpoints() {
+  public Integer getNumber_of_endpoints() {
     return number_of_endpoints;
   }
 
-  public void setNumber_of_endpoints(int number_of_endpoints) {
+  public void setNumber_of_endpoints(Integer number_of_endpoints) {
     this.number_of_endpoints = number_of_endpoints;
   }
 
@@ -117,6 +133,9 @@ public class VirtualLinkDescriptor extends AbstractVirtualLink {
         + '\''
         + ", descriptor_version='"
         + descriptor_version
+        + '\''
+        + ", poolName='"
+        + poolName
         + '\''
         + ", number_of_endpoints="
         + number_of_endpoints

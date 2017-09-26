@@ -19,13 +19,22 @@
 
 package org.openbaton.catalogue.nfvo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.Version;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.util.IdGenerator;
 
@@ -85,7 +94,7 @@ public class VNFPackageMetadata implements Serializable {
 
   private String vnfPackageFileName;
 
-  @Lob @JsonIgnore private byte[] vnfPackageFile;
+  @Lob private byte[] vnfPackageFile;
 
   @Lob private byte[] csarFile;
 

@@ -16,12 +16,9 @@
 
 package org.openbaton.nfvo.api.admin;
 
-import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
@@ -30,6 +27,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.validation.Valid;
+import org.openbaton.catalogue.api.ServiceCreateBody;
 import org.openbaton.catalogue.security.ServiceMetadata;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.MissingParameterException;
@@ -82,38 +80,41 @@ public class RestComponents {
   @ResponseStatus(HttpStatus.CREATED)
   public String createService(
       @RequestHeader(value = "project-id") String projectId,
-      @RequestBody @Valid JsonObject serviceCreateBody)
+      //      @RequestBody @Valid JsonObject serviceCreateBody)
+      @RequestBody @Valid ServiceCreateBody serviceCreateBody)
       throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, BadRequestException,
           NotFoundException, MissingParameterException {
 
-    if (!serviceCreateBody.has("name"))
-      throw new BadRequestException("The request's json body has to contain a name property.");
-    if (!serviceCreateBody.has("roles")) {
-      throw new BadRequestException(
-          "The request's json body has to contain a roles property as a list of project ids or names.");
-    }
-
-    String serviceName = null;
-    try {
-      serviceName = serviceCreateBody.getAsJsonPrimitive("name").getAsString();
-    } catch (ClassCastException e1) {
-      throw new BadRequestException(
-          "The request's json body has to have this form: {'name':'examplename', 'roles':['project1', 'project2'] }");
-    } catch (IllegalStateException e2) {
-      throw new BadRequestException(
-          "The request's json body has to have this form: {'name':'examplename', 'roles':['project1', 'project2'] }");
-    }
-    Type baseType = new TypeToken<List<String>>() {}.getType();
-    List<String> projects;
-    try {
-      projects = gson.fromJson(serviceCreateBody.get("roles").getAsJsonArray(), baseType);
-    } catch (ClassCastException e1) {
-      throw new BadRequestException(
-          "The request's json body has to have this form: {'name':'examplename', 'roles':['project1', 'project2'] }");
-    } catch (IllegalStateException e2) {
-      throw new BadRequestException(
-          "The request's json body has to have this form: {'name':'examplename', 'roles':['project1', 'project2'] }");
-    }
+    //    if (!serviceCreateBody.has("name"))
+    //      throw new BadRequestException("The request's json body has to contain a name property.");
+    //    if (!serviceCreateBody.has("roles")) {
+    //      throw new BadRequestException(
+    //          "The request's json body has to contain a roles property as a list of project ids or names.");
+    //    }
+    //
+    //    String serviceName = null;
+    //    try {
+    //      serviceName = serviceCreateBody.getAsJsonPrimitive("name").getAsString();
+    //    } catch (ClassCastException e1) {
+    //      throw new BadRequestException(
+    //          "The request's json body has to have this form: {'name':'examplename', 'roles':['project1', 'project2'] }");
+    //    } catch (IllegalStateException e2) {
+    //      throw new BadRequestException(
+    //          "The request's json body has to have this form: {'name':'examplename', 'roles':['project1', 'project2'] }");
+    //    }
+    //    Type baseType = new TypeToken<List<String>>() {}.getType();
+    //    List<String> projects;
+    //    try {
+    //      projects = gson.fromJson(serviceCreateBody.get("roles").getAsJsonArray(), baseType);
+    //    } catch (ClassCastException e1) {
+    //      throw new BadRequestException(
+    //          "The request's json body has to have this form: {'name':'examplename', 'roles':['project1', 'project2'] }");
+    //    } catch (IllegalStateException e2) {
+    //      throw new BadRequestException(
+    //          "The request's json body has to have this form: {'name':'examplename', 'roles':['project1', 'project2'] }");
+    //    }
+    String serviceName = serviceCreateBody.getName();
+    List<String> projects = serviceCreateBody.getRoles();
     return componentManager.createService(serviceName, projectId, projects);
   }
 

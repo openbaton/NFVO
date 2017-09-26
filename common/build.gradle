@@ -36,4 +36,5 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-web:' + springBootVersion
     compile 'org.springframework.boot:spring-boot-starter-amqp:' + springBootVersion
     compile 'com.google.code.gson:gson:2.8.0'
+    
 }

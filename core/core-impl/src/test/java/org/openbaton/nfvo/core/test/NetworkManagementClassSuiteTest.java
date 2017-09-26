@@ -24,7 +24,11 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -41,6 +45,7 @@ import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.Subnet;
 import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.core.core.NetworkManagement;
@@ -128,13 +133,13 @@ public class NetworkManagementClassSuiteTest {
     final Subnet subnet = new Subnet();
     subnet.setName("subnet_name");
     subnet.setExtId("ext_id");
-    subnet.setCidr("cidr");
+    subnet.setCidr("192.168.1.0/24");
     subnet.setNetworkId("network_id");
     return subnet;
   }
 
   @Test
-  public void networkManagementAddTest() throws VimException, PluginException {
+  public void networkManagementAddTest() throws VimException, PluginException, BadRequestException {
     Network network_exp = createNetwork();
     when(networkRepository.save(any(Network.class))).thenReturn(network_exp);
     when(vimBroker.getVim(anyString())).thenReturn(myVim);

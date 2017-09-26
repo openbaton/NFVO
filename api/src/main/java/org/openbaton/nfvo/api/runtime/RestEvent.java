@@ -80,7 +80,7 @@ public class RestEvent {
   public void unregister(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException {
-    eventDispatcher.unregister(id, projectId);
+    eventDispatcher.unregister(id);
   }
 
   /**
@@ -98,7 +98,7 @@ public class RestEvent {
   public void multipleDelete(
       @RequestBody @Valid List<String> ids, @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException {
-    for (String id : ids) eventDispatcher.unregister(id, projectId);
+    for (String id : ids) eventDispatcher.unregister(id);
   }
 
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

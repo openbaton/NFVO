@@ -28,6 +28,8 @@ public class InterceptorConfiguration extends WebMvcConfigurerAdapter {
 
   @Autowired private AuthorizeInterceptor authorizeInterceptor;
   @Autowired private HistoryInterceptor historyInterceptor;
+  @Autowired private SchemaValidatorInterceptor schemaValidatorInterceptor;
+  @Autowired private LegacyInterceptor legacyInterceptor;
 
   //    @Override
   //    public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -53,6 +55,15 @@ public class InterceptorConfiguration extends WebMvcConfigurerAdapter {
         .addInterceptor(authorizeInterceptor)
         .addPathPatterns("/**")
         .excludePathPatterns("/oauth/token");
+    registry
+        .addInterceptor(legacyInterceptor)
+        .addPathPatterns("/**")
+        .excludePathPatterns("/oauth/token");
+    //    registry
+    //        .addInterceptor(schemaValidatorInterceptor)
+    //        .addPathPatterns("/**")
+    //        .excludePathPatterns(
+    //            "/**/api/v1/keys/generate", "/**/api/v1/users/changepwd/*", "/oauth/token");
     registry
         .addInterceptor(historyInterceptor)
         .addPathPatterns("/**")

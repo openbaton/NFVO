@@ -16,6 +16,7 @@
 
 package org.openbaton.nfvo.api.interceptors;
 
+import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.openbaton.catalogue.security.BaseUser;
@@ -29,6 +30,7 @@ import org.openbaton.nfvo.security.interfaces.UserManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -57,7 +59,7 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
     if (authentication != null) {
       if (!(authentication instanceof AnonymousAuthenticationToken)) {
         String currentUserName = authentication.getName();
-        return checkAuthorization(projectId, request, currentUserName);
+        return checkAuthorization(projectId, request, currentUserName, response);
       } else {
         log.trace(
             "AnonymousUser requesting method: "
@@ -69,17 +71,31 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
         } else if (alwaysAllowedPath(request)) {
           return true;
         } else {
-          return false;
+          return sendError(request, response);
         }
       }
     } else {
+      if (request.getMethod().equalsIgnoreCase("post")
+          && request.getRequestURI().equalsIgnoreCase("/error")) return true;
       log.warn(
           "AnonymousUser requesting method: "
               + request.getMethod()
               + " on "
               + request.getRequestURI());
-      return false;
+      return sendError(request, response);
     }
+  }
+
+  private boolean sendError(HttpServletRequest request, HttpServletResponse response)
+      throws IOException {
+    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+    response.sendError(
+        HttpServletResponse.SC_BAD_REQUEST,
+        "AnonymousUser requesting method: "
+            + request.getMethod()
+            + " on "
+            + request.getRequestURI());
+    return false;
   }
 
   private boolean isLogin(HttpServletRequest request) {
@@ -87,14 +103,17 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
   }
 
   private boolean checkAuthorization(
-      String project, HttpServletRequest request, String currentUserName)
-      throws NotFoundException, NotAllowedException {
+      String project,
+      HttpServletRequest request,
+      String currentUserName,
+      HttpServletResponse response)
+      throws NotFoundException, NotAllowedException, IOException {
 
     log.trace("Current User: " + currentUserName);
     log.trace("projectId: \"" + project + "\"");
     log.trace(request.getMethod() + " on URI: " + request.getRequestURI());
     log.trace("UserManagement: " + userManagement);
-    BaseUser baseUser = null;
+    BaseUser baseUser;
     try {
       baseUser = userManagement.queryByName(currentUserName);
     } catch (NotFoundException e) {
@@ -133,13 +152,14 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
     } else {
       Iterable<Project> userProjects = projectManagement.query(baseUser);
       if (userProjects.iterator().hasNext()) {
-        return checkAuthorization(userProjects.iterator().next().getId(), request, currentUserName);
+        return checkAuthorization(
+            userProjects.iterator().next().getId(), request, currentUserName, response);
       } else {
         throw new NotFoundException(
             "Not Found any project you are assigned to. Please ask an admin to assign a project to you.");
       }
     }
-    return false;
+    return sendError(request, response);
   }
 
   //TODO realize this configurable

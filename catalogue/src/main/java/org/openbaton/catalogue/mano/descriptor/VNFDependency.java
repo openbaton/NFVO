@@ -25,6 +25,8 @@ package org.openbaton.catalogue.mano.descriptor;
 import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import org.openbaton.catalogue.util.IdGenerator;
 
 /**
@@ -39,21 +41,35 @@ public class VNFDependency implements Serializable {
 
   @Id private String id;
 
-  @Version private int version = 0;
+  @Version private Integer version = 0;
 
-  @ManyToOne(
-    cascade = {CascadeType.REFRESH},
-    fetch = FetchType.EAGER
-  )
-  @JoinColumn(nullable = false)
-  private VirtualNetworkFunctionDescriptor source;
+  @NotNull
+  @Size(min = 1)
+  private String source;
 
-  @ManyToOne(
-    cascade = {CascadeType.REFRESH},
-    fetch = FetchType.EAGER
-  )
-  @JoinColumn(nullable = false)
-  private VirtualNetworkFunctionDescriptor target;
+  public String getSource_id() {
+    return source_id;
+  }
+
+  public void setSource_id(String source_id) {
+    this.source_id = source_id;
+  }
+
+  public String getTarget_id() {
+    return target_id;
+  }
+
+  public void setTarget_id(String target_id) {
+    this.target_id = target_id;
+  }
+
+  private String source_id;
+
+  @NotNull
+  @Size(min = 1)
+  private String target;
+
+  private String target_id;
 
   @ElementCollection(fetch = FetchType.EAGER)
   private Set<String> parameters;
@@ -65,11 +81,11 @@ public class VNFDependency implements Serializable {
     id = IdGenerator.createUUID();
   }
 
-  public VirtualNetworkFunctionDescriptor getSource() {
+  public String getSource() {
     return source;
   }
 
-  public void setSource(VirtualNetworkFunctionDescriptor source) {
+  public void setSource(String source) {
     this.source = source;
   }
 
@@ -81,11 +97,11 @@ public class VNFDependency implements Serializable {
     this.parameters = parameters;
   }
 
-  public VirtualNetworkFunctionDescriptor getTarget() {
+  public String getTarget() {
     return target;
   }
 
-  public void setTarget(VirtualNetworkFunctionDescriptor target) {
+  public void setTarget(String target) {
     this.target = target;
   }
 
@@ -97,26 +113,36 @@ public class VNFDependency implements Serializable {
     this.id = id;
   }
 
-  public int getVersion() {
+  public Integer getVersion() {
     return version;
   }
 
-  public void setVersion(int version) {
+  public void setVersion(Integer version) {
     this.version = version;
   }
 
   @Override
   public String toString() {
-    return "VNFDependency [id="
+    return "VNFDependency{"
+        + "id='"
         + id
+        + '\''
         + ", version="
         + version
-        + ", source="
-        + (source == null ? source : source.getName())
-        + ", target="
-        + (target == null ? target : target.getName())
+        + ", source='"
+        + source
+        + '\''
+        + ", source_id='"
+        + source_id
+        + '\''
+        + ", target='"
+        + target
+        + '\''
+        + ", target_id='"
+        + target_id
+        + '\''
         + ", parameters="
         + parameters
-        + "]";
+        + '}';
   }
 }

@@ -24,6 +24,8 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
@@ -40,7 +42,6 @@ import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.repositories.ImageRepository;
-import org.openbaton.nfvo.repositories.NetworkRepository;
 import org.openbaton.nfvo.repositories.VNFDRepository;
 import org.openbaton.nfvo.repositories.VNFRRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
@@ -49,6 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -59,6 +61,7 @@ import org.springframework.stereotype.Service;
 /** Created by lto on 13/05/15. */
 @Service
 @Scope
+@ConfigurationProperties
 public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimManagement {
 
   @Autowired private VimRepository vimRepository;
@@ -66,8 +69,6 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   @Autowired private VimBroker vimBroker;
 
   @Autowired private ImageRepository imageRepository;
-
-  @Autowired private NetworkRepository networkRepository;
 
   @Autowired private VNFDRepository vnfdRepository;
 
@@ -78,14 +79,27 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   // if set to true there will be a check if the stored Vims are still reachable every minute
+
   @Value("${nfvo.vim.active.check:false}")
   private boolean vimCheck;
 
   @Value("${nfvo.vim.delete.check.vnfr:true}")
   private boolean checkForVimInVnfr;
 
+  //TODO change Scope to prototype
+  @Value("${nfvo.vim.refresh.timout:120}")
+  private int refreshTimeout;
+
   public boolean isCheckForVimInVnfr() {
     return checkForVimInVnfr;
+  }
+
+  public int getRefreshTimeout() {
+    return refreshTimeout;
+  }
+
+  public void setRefreshTimeout(int refreshTimeout) {
+    this.refreshTimeout = refreshTimeout;
   }
 
   @Override
@@ -197,9 +211,12 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     Future<Set<DeploymentFlavour>> futureFlavors = asyncVimManagement.updateFlavors(vimInstance);
 
     try {
-      futureImages.get();
-      futureFlavors.get();
-      futureNetworks.get();
+
+      futureImages.get(refreshTimeout, TimeUnit.SECONDS);
+      futureFlavors.get(refreshTimeout, TimeUnit.SECONDS);
+      futureNetworks.get(refreshTimeout, TimeUnit.SECONDS);
+    } catch (TimeoutException e) {
+      throw new VimException("Refreshing VIM went in timout: " + e.getLocalizedMessage());
     } catch (Exception e) {
       e.printStackTrace();
       throw new VimException("Refreshing VIM caused following error: " + e.getMessage());
@@ -365,7 +382,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
       Set<NFVImage> images_old = new HashSet<>();
       images_refreshed.addAll(vimBroker.getVim(vimInstance.getType()).queryImages(vimInstance));
       if (vimInstance.getImages() == null) {
-        vimInstance.setImages(new HashSet<NFVImage>());
+        vimInstance.setImages(new HashSet<>());
       }
       for (NFVImage image_new : images_refreshed) {
         boolean found = false;

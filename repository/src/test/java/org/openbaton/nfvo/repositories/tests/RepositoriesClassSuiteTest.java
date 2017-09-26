@@ -31,10 +31,8 @@ import org.junit.runner.RunWith;
 import org.openbaton.catalogue.mano.common.HighAvailability;
 import org.openbaton.catalogue.mano.common.ResiliencyLevel;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -170,11 +168,6 @@ public class RepositoriesClassSuiteTest {
       Assert.assertEquals(
           ((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i]).getVersion(),
           ((VirtualNetworkFunctionDescriptor) nsd_new.getVnfd().toArray()[i]).getVersion());
-      //            for (int k = 0; k < ((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i]).getMonitoring_parameter().size(); k++) {
-      //                Assert.assertEquals(
-      //                        ((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i]).getMonitoring_parameter().get(k),
-      //                        ((VirtualNetworkFunctionDescriptor) nsd_new.getVnfd().toArray()[i]).getMonitoring_parameter().get(k));
-      //            }
       for (int j = 0;
           j < ((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i]).getVdu().size();
           j++) {
@@ -274,10 +267,15 @@ public class RepositoriesClassSuiteTest {
 
   private NetworkServiceDescriptor createNetworkServiceDescriptor() {
     NetworkServiceDescriptor nsd = new NetworkServiceDescriptor();
+    nsd.setName("Test");
     nsd.setVendor("FOKUS");
+    nsd.setVersion("1.0b");
     Set<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new HashSet<>();
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
         new VirtualNetworkFunctionDescriptor();
+    virtualNetworkFunctionDescriptor.setName("test");
+    virtualNetworkFunctionDescriptor.setVersion("test");
+    virtualNetworkFunctionDescriptor.setVendor("test");
     virtualNetworkFunctionDescriptor.setType("test");
     virtualNetworkFunctionDescriptor.setMonitoring_parameter(
         new HashSet<String>() {
@@ -288,8 +286,8 @@ public class RepositoriesClassSuiteTest {
           }
         });
     final VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
-    vdu.setVnfc(new HashSet<VNFComponent>());
-    vdu.setVnfc_instance(new HashSet<VNFCInstance>());
+    vdu.setVnfc(new HashSet<>());
+    vdu.setVnfc_instance(new HashSet<>());
     vdu.setVimInstanceName(Collections.singletonList("test"));
     HighAvailability highAvailability = new HighAvailability();
     highAvailability.setGeoRedundancy(false);

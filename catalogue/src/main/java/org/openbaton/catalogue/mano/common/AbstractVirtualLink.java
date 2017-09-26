@@ -47,7 +47,7 @@ public abstract class AbstractVirtualLink implements Serializable {
   /** ID of the VLD */
   @Id protected String id;
 
-  @Version protected int hb_version = 0;
+  @Version protected Integer hb_version = 0;
 
   /** extId of the network to attach */
   protected String extId;
@@ -75,9 +75,19 @@ public abstract class AbstractVirtualLink implements Serializable {
   /** Name referenced by VNFCs */
   protected String name;
 
+  protected String cidr;
+
   @PrePersist
   public void ensureId() {
     id = IdGenerator.createUUID();
+  }
+
+  public String getCidr() {
+    return cidr;
+  }
+
+  public void setCidr(String cidr) {
+    this.cidr = cidr;
   }
 
   public AbstractVirtualLink() {}
@@ -90,11 +100,11 @@ public abstract class AbstractVirtualLink implements Serializable {
     this.id = id;
   }
 
-  public int getHb_version() {
+  public Integer getHb_version() {
     return hb_version;
   }
 
-  public void setHb_version(int hb_version) {
+  public void setHb_version(Integer hb_version) {
     this.hb_version = hb_version;
   }
 

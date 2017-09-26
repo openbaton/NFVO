@@ -142,7 +142,7 @@ public class VNFPackageManagement
     for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId))
       vimManagement.refresh(vimInstance);
     VNFPackage vnfPackage = new VNFPackage();
-    vnfPackage.setScripts(new HashSet<Script>());
+    vnfPackage.setScripts(new HashSet<>());
     Map<String, Object> metadata = null;
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = null;
     byte[] imageFile = null;
@@ -297,7 +297,7 @@ public class VNFPackageManagement
 
     VNFPackage vnfPackage = new VNFPackage();
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = null;
-    VNFPackageMetadata vnfPackageMetadata = null;
+    VNFPackageMetadata vnfPackageMetadata = new VNFPackageMetadata();
     NFVImage image = new NFVImage();
     ImageMetadata imageMetadata = new ImageMetadata();
 
@@ -316,8 +316,6 @@ public class VNFPackageManagement
           if (entry.getName().equals("Metadata.yaml")) {
             metadata = Utils.getMapFromYamlFile(content);
             vnfPackage.setName((String) metadata.get("name"));
-
-            vnfPackageMetadata = new VNFPackageMetadata();
 
             vnfPackageMetadata.setName((String) metadata.get("name"));
             vnfPackage.setName((String) metadata.get("name"));
@@ -397,7 +395,7 @@ public class VNFPackageManagement
             imageMetadata.setUpload((String) imageDetails.get("option"));
 
             if (imageDetails.containsKey("ids")) {
-              imageMetadata.setIds((Set<String>) imageDetails.get("ids"));
+              imageMetadata.setIds(new HashSet<String>((ArrayList) imageDetails.get("ids")));
             } else {
               imageMetadata.setIds(new HashSet<String>());
             }

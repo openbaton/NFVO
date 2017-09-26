@@ -31,7 +31,7 @@ import org.openbaton.catalogue.util.IdGenerator;
 public class DeploymentFlavour implements Serializable {
   /*ID of the deployment flavour.*/
   @Id protected String id;
-  @Version protected int version = 0;
+  @Version protected Integer version = 0;
   /*
    * Assurance parameter against which this flavour is being described. The key could be a combination of multiple assurance
    * parameters with a logical relationship between them. The parameters should be present as a monitoring_parameter supported in clause 6.2.1.1.
@@ -40,15 +40,15 @@ public class DeploymentFlavour implements Serializable {
   protected String flavour_key;
 
   protected String extId;
-  private int ram;
-  private int disk;
-  private int vcpus;
+  private Integer ram = 0;
+  private Integer disk = 0;
+  private Integer vcpus = 0;
 
-  public int getVersion() {
+  public Integer getVersion() {
     return version;
   }
 
-  public void setVersion(int version) {
+  public void setVersion(Integer version) {
     this.version = version;
   }
 
@@ -81,27 +81,27 @@ public class DeploymentFlavour implements Serializable {
     this.extId = extId;
   }
 
-  public int getRam() {
+  public Integer getRam() {
     return ram;
   }
 
-  public void setRam(int ram) {
+  public void setRam(Integer ram) {
     this.ram = ram;
   }
 
-  public int getDisk() {
+  public Integer getDisk() {
     return disk;
   }
 
-  public void setDisk(int disk) {
+  public void setDisk(Integer disk) {
     this.disk = disk;
   }
 
-  public int getVcpus() {
+  public Integer getVcpus() {
     return vcpus;
   }
 
-  public void setVcpus(int vcpus) {
+  public void setVcpus(Integer vcpus) {
     this.vcpus = vcpus;
   }
 

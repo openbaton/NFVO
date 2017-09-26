@@ -31,7 +31,7 @@ apply from: '../gradle/gradle/nexus.upload.plugin.gradle'
 dependencies {
 
     compile project(":catalogue")
-    compile project(":utils")
+    compile project(":common")
 
     compile 'org.springframework.boot:spring-boot-starter-amqp:' + springBootVersion
 

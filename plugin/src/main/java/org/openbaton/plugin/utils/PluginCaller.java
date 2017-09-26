@@ -48,7 +48,7 @@ import org.openbaton.catalogue.nfvo.PluginMessage;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimDriverException;
-import org.openbaton.utils.rabbit.RabbitManager;
+import org.openbaton.nfvo.common.utils.rabbit.RabbitManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -166,11 +166,7 @@ public class PluginCaller {
   public Serializable executeRPC(String methodName, Collection<Serializable> args, Type returnType)
       throws IOException, InterruptedException, PluginException {
 
-    try {
-      connection = factory.newConnection();
-    } catch (TimeoutException e) {
-      throw new PluginException("Could not open a connection after timeout.");
-    }
+    connection = factory.newConnection();
     Channel channel = connection.createChannel();
     String replyQueueName = channel.queueDeclare().getQueue();
     String exchange = "openbaton-exchange";

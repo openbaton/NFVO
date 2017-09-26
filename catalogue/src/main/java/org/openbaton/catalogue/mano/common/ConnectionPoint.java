@@ -32,7 +32,7 @@ public class ConnectionPoint implements Serializable {
 
   /*ID of the Connection Point.*/
   @Id protected String id;
-  @Version protected int version = 0;
+  @Version protected Integer version = 0;
 
   /**
    * This may be for example a virtual port, a virtual NIC address, a physical port, a physical NIC
@@ -43,11 +43,11 @@ public class ConnectionPoint implements Serializable {
 
   public ConnectionPoint() {}
 
-  public int getVersion() {
+  public Integer getVersion() {
     return version;
   }
 
-  public void setVersion(int version) {
+  public void setVersion(Integer version) {
     this.version = version;
   }
 

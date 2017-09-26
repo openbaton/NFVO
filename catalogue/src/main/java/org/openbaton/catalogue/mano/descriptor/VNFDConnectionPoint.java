@@ -18,6 +18,10 @@
 package org.openbaton.catalogue.mano.descriptor;
 
 import javax.persistence.Entity;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import org.openbaton.catalogue.mano.common.ConnectionPoint;
 
 /**
@@ -31,25 +35,36 @@ public class VNFDConnectionPoint extends ConnectionPoint {
    * References an internal Virtual Link (vnfd:virtual_link:id, see clause 6.3.1.3) to which other
    * VDUs, NFs, and other types of endpoints can connect.
    */
+  @NotNull
+  @Size(min = 1)
   private String virtual_link_reference;
 
+  @Pattern(
+    regexp =
+        "(^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
+            + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
+            + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
+            + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$)|(random)|^$"
+  )
   private String floatingIp;
 
-  public int getInterfaceId() {
-    return interfaceId;
-  }
+  private String virtual_link_reference_id;
 
-  public void setInterfaceId(int interfaceId) {
-    this.interfaceId = interfaceId;
-  }
+  private String fixedIp;
 
-  private int interfaceId;
+  private String chosenPool;
+
+  @Min(0)
+  private Integer interfaceId = 0;
 
   @Override
   public String toString() {
     return "VNFDConnectionPoint{"
         + "virtual_link_reference='"
         + virtual_link_reference
+        + '\''
+        + ", virtual_link_reference_id='"
+        + virtual_link_reference_id
         + '\''
         + ", floatingIp='"
         + floatingIp
@@ -58,6 +73,22 @@ public class VNFDConnectionPoint extends ConnectionPoint {
         + interfaceId
         + "} "
         + super.toString();
+  }
+
+  public String getChosenPool() {
+    return chosenPool;
+  }
+
+  public Integer getInterfaceId() {
+    return interfaceId;
+  }
+
+  public void setInterfaceId(Integer interfaceId) {
+    this.interfaceId = interfaceId;
+  }
+
+  public void setChosenPool(String chosenPool) {
+    this.chosenPool = chosenPool;
   }
 
   public VNFDConnectionPoint() {}
@@ -76,5 +107,21 @@ public class VNFDConnectionPoint extends ConnectionPoint {
 
   public void setVirtual_link_reference(String virtual_link_reference) {
     this.virtual_link_reference = virtual_link_reference;
+  }
+
+  public String getFixedIp() {
+    return fixedIp;
+  }
+
+  public void setFixedIp(String fixedIp) {
+    this.fixedIp = fixedIp;
+  }
+
+  public String getVirtual_link_reference_id() {
+    return virtual_link_reference_id;
+  }
+
+  public void setVirtual_link_reference_id(String virtual_link_reference_id) {
+    this.virtual_link_reference_id = virtual_link_reference_id;
   }
 }

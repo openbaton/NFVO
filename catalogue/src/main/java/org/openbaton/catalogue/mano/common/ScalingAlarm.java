@@ -28,7 +28,7 @@ import org.openbaton.catalogue.util.IdGenerator;
 @Entity
 public class ScalingAlarm implements Serializable {
   @Id private String id;
-  @Version private int version = 0;
+  @Version private Integer version = 0;
 
   private String metric;
   private String statistic;
@@ -46,7 +46,7 @@ public class ScalingAlarm implements Serializable {
     return id;
   }
 
-  public int getVersion() {
+  public Integer getVersion() {
     return version;
   }
 
