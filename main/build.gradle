@@ -29,7 +29,7 @@ dependencies {
     runtime project(':repository')
     runtime project(':vnfm-impl')
 
-    compile 'org.flywaydb:flyway-core:4.2.0'
+    compile 'org.flywaydb:flyway-core:4.0.3'
 
     testCompile 'junit:junit:'+junitVersion
     testCompile 'org.springframework.boot:spring-boot-starter-test:'+ springBootVersion
