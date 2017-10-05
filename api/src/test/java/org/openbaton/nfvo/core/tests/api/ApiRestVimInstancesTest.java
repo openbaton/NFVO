@@ -35,7 +35,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openbaton.catalogue.nfvo.VimInstance;
-import org.openbaton.exceptions.*;
+import org.openbaton.exceptions.AlreadyExistingException;
+import org.openbaton.exceptions.BadFormatException;
+import org.openbaton.exceptions.BadRequestException;
+import org.openbaton.exceptions.EntityUnreachableException;
+import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.PluginException;
+import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.api.admin.RestVimInstances;
 import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.openbaton.nfvo.security.components.ComponentManager;
@@ -83,7 +89,7 @@ public class ApiRestVimInstancesTest {
   @Test
   public void findByIdVimInstance()
       throws NoSuchAlgorithmException, InvalidKeyException, BadPaddingException,
-          NoSuchPaddingException, IllegalBlockSizeException, NotFoundException {
+          NoSuchPaddingException, IllegalBlockSizeException, NotFoundException, BadFormatException {
     VimInstance datacenter = new VimInstance();
     datacenter.setId("123");
     datacenter.setName("DC-1");
