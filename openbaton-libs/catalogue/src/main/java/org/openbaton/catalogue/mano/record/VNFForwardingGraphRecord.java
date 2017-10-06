@@ -64,8 +64,13 @@ public class VNFForwardingGraphRecord implements Serializable {
    * Set of Connection Points which form a Network Forwarding Path and description of policies to
    * establish and rules to choose the path
    */
-  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-  private NetworkForwardingPath network_forwarding_path;
+  //@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  //private NetworkForwardingPath network_forwarding_path;
+
+  // should be Set as in the VNFFG Descriptor
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  private Set<NetworkForwardingPath> network_forwarding_path;
+
   /** Reference to Connection Points (nsr/vnfr/pnfr:connection_point:id) forming the VNFFG */
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<VNFDConnectionPoint> connection_point;
@@ -80,6 +85,7 @@ public class VNFForwardingGraphRecord implements Serializable {
   private int number_of_vnfs;
   private int number_of_pnfs;
   private int number_of_virtual_links;
+  private boolean symmetrical;
 
   public VNFForwardingGraphRecord() {}
 
@@ -152,11 +158,17 @@ public class VNFForwardingGraphRecord implements Serializable {
     this.audit_log = audit_log;
   }
 
-  public NetworkForwardingPath getNetwork_forwarding_path() {
+  /*public NetworkForwardingPath getNetwork_forwarding_path() {
+    return network_forwarding_path;
+  }*/
+  public Set<NetworkForwardingPath> getNetwork_forwarding_path() {
     return network_forwarding_path;
   }
 
-  public void setNetwork_forwarding_path(NetworkForwardingPath network_forwarding_path) {
+  /*public void setNetwork_forwarding_path(NetworkForwardingPath network_forwarding_path) {
+    this.network_forwarding_path = network_forwarding_path;
+  }*/
+  public void setNetwork_forwarding_path(Set<NetworkForwardingPath> network_forwarding_path) {
     this.network_forwarding_path = network_forwarding_path;
   }
 
@@ -222,5 +234,13 @@ public class VNFForwardingGraphRecord implements Serializable {
 
   public void setNumber_of_virtual_links(int number_of_virtual_links) {
     this.number_of_virtual_links = number_of_virtual_links;
+  }
+
+  public boolean isSymmetrical() {
+    return symmetrical;
+  }
+
+  public void setSymmetricity(boolean sym) {
+    this.symmetrical = sym;
   }
 }

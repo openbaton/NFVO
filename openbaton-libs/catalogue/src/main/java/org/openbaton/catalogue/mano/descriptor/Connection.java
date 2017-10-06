@@ -18,11 +18,10 @@
 package org.openbaton.catalogue.mano.descriptor;
 
 import java.io.Serializable;
+import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.PrePersist;
 import javax.persistence.Version;
-import org.openbaton.catalogue.util.IdGenerator;
 
 /**
  * Created by lto on 06/02/15.
@@ -32,13 +31,19 @@ import org.openbaton.catalogue.util.IdGenerator;
  * <p>A policy or rule to apply to the NFP
  */
 @Entity
-public class Policy implements Serializable {
+public class Connection implements Serializable {
 
-  @Id private String id;
   @Version private int version = 0;
-  private ACLMatchingCriteria aclMatchingCriteria;
+  @Id private String id;
 
-  public Policy() {}
+  private String VNFD;
+  private String virtualLink;
+
+  public Connection() {}
+
+  public String getVNFD() {
+    return VNFD;
+  }
 
   public String getId() {
     return id;
@@ -48,16 +53,33 @@ public class Policy implements Serializable {
     this.id = id;
   }
 
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
+  public void setVNFD(String VNFD) {
+    this.VNFD = VNFD;
   }
 
-  public ACLMatchingCriteria getMatchingCriteria() {
-    return aclMatchingCriteria;
+  public String getVirtualLink() {
+    return virtualLink;
   }
 
-  public void setMatchingCriteria(ACLMatchingCriteria aclMatchingCriteria) {
-    this.aclMatchingCriteria = aclMatchingCriteria;
+  public void setVirtualLink(String virtualLink) {
+    this.virtualLink = virtualLink;
+  }
+
+  @Override
+  public String toString() {
+    return "Connection{" + "VNFD='" + VNFD + '\'' + ", virtualLink='" + virtualLink + '\'' + '}';
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Connection that = (Connection) o;
+    return Objects.equals(VNFD, that.VNFD) && Objects.equals(virtualLink, that.virtualLink);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(VNFD, virtualLink);
   }
 }

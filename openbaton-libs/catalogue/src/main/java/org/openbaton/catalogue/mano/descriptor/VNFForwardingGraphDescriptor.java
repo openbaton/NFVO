@@ -36,6 +36,9 @@ public class VNFForwardingGraphDescriptor implements Serializable {
   /** ID of the VNFFG Descriptor */
   @Id private String id;
 
+  /* * Specify the symmetricity of the VNFFG */
+  private boolean symmetrical;
+
   @Version private int hb_version = 0;
   /** Specify the vendor generating this VNFFG */
   private String vendor;
@@ -108,6 +111,14 @@ public class VNFForwardingGraphDescriptor implements Serializable {
 
   public void setVersion(String version) {
     this.version = version;
+  }
+
+  public boolean isSymmetrical() {
+    return symmetrical;
+  }
+
+  public void setSymmetricity(boolean sym) {
+    this.symmetrical = sym;
   }
 
   public int getNumber_of_endpoints() {
