@@ -36,6 +36,9 @@ public class VNFForwardingGraphDescriptor implements Serializable {
   /** ID of the VNFFG Descriptor */
   @Id private String id;
 
+  /* * Specify the symmetricity of the VNFFG */
+  private boolean symmetrical;
+
   @Version private int hb_version = 0;
   /** Specify the vendor generating this VNFFG */
   private String vendor;
@@ -108,6 +111,14 @@ public class VNFForwardingGraphDescriptor implements Serializable {
 
   public void setVersion(String version) {
     this.version = version;
+  }
+
+  public boolean isSymmetrical() {
+    return symmetrical;
+  }
+
+  public void setSymmetricity(boolean sym) {
+    this.symmetrical = sym;
   }
 
   public int getNumber_of_endpoints() {
@@ -184,14 +195,20 @@ public class VNFForwardingGraphDescriptor implements Serializable {
 
   @Override
   public String toString() {
-    return "VNFForwardingGraph [id="
+    return "VNFForwardingGraphDescriptor{"
+        + "id='"
         + id
+        + '\''
+        + ", symmetrical="
+        + symmetrical
         + ", hb_version="
         + hb_version
-        + ", vendor="
+        + ", vendor='"
         + vendor
-        + ", version="
+        + '\''
+        + ", version='"
         + version
+        + '\''
         + ", number_of_endpoints="
         + number_of_endpoints
         + ", number_of_virtual_links="
@@ -202,12 +219,13 @@ public class VNFForwardingGraphDescriptor implements Serializable {
         + network_forwarding_path
         + ", connection_point="
         + connection_point
-        + ", descriptor_version="
+        + ", descriptor_version='"
         + descriptor_version
+        + '\''
         + ", constituent_vnfs="
         + constituent_vnfs
         + ", vnffgd_security="
         + vnffgd_security
-        + "]";
+        + '}';
   }
 }

@@ -36,6 +36,7 @@ public class Policy implements Serializable {
 
   @Id private String id;
   @Version private int version = 0;
+  private ACLMatchingCriteria acl_matching_criteria;
 
   public Policy() {}
 
@@ -50,5 +51,13 @@ public class Policy implements Serializable {
   @PrePersist
   public void ensureId() {
     id = IdGenerator.createUUID();
+  }
+
+  public ACLMatchingCriteria getAcl_matching_criteria() {
+    return acl_matching_criteria;
+  }
+
+  public void setAcl_matching_criteria(ACLMatchingCriteria acl_matching_criteria) {
+    this.acl_matching_criteria = acl_matching_criteria;
   }
 }

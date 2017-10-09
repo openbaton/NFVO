@@ -22,11 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.openbaton.catalogue.mano.common.AutoScalePolicy;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
-import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
-import org.openbaton.catalogue.mano.descriptor.VNFDependency;
-import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
-import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.mano.record.LinkStatus;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.PhysicalNetworkFunctionRecord;
@@ -79,6 +75,15 @@ public class NSRUtils {
         VirtualLinkRecord vlr = createVirtualLinkRecord(virtualLinkDescriptor);
         vlr.setParent_ns(networkServiceDescriptor.getId());
         networkServiceRecord.getVlr().add(vlr);
+      }
+    }
+    // Config. VNFFG
+    if (networkServiceDescriptor.getVnffgd().size() != 0) {
+      for (VNFForwardingGraphDescriptor vnfForwardingGraphDescriptor :
+          networkServiceDescriptor.getVnffgd()) {
+        VNFForwardingGraphRecord vnffgr =
+            NSRUtils.createVNFForwardingGraphRecord(vnfForwardingGraphDescriptor);
+        networkServiceRecord.getVnffgr().add(vnffgr);
       }
     }
     return networkServiceRecord;
@@ -206,6 +211,97 @@ public class NSRUtils {
     }
 
     return virtualLinkRecord;
+  }
+
+  public static VNFForwardingGraphRecord createVNFForwardingGraphRecord(
+      VNFForwardingGraphDescriptor vnffgDescriptor) {
+
+    VNFForwardingGraphRecord vnfforwardingGraphRecord = new VNFForwardingGraphRecord();
+
+    vnfforwardingGraphRecord.setDescriptor_reference(vnffgDescriptor);
+
+    //  vnfforwardingGraphRecord.setParent_ns(new NetworkServiceRecord());
+
+    vnfforwardingGraphRecord.setDependent_virtual_link(new HashSet<VirtualLinkRecord>());
+
+    /*  for(VirtualLinkRecord vlr: networkServiceRecord.getVlr()){
+        for(VirtualLinkDescriptor vld: vnffgDescriptor.getDependent_virtual_link()){
+            if(vlr.getName().equals(vld.getName())){
+                vnfforwardingGraphRecord.getDependent_virtual_link().add(vlr);
+                break;
+
+            }
+        }
+    }
+     */
+    // I am not sure how the status is managed !!
+    vnfforwardingGraphRecord.setStatus(Status.ACTIVE);
+
+    // I am not sure also how the Notification and LifeCycle Event can be done
+    vnfforwardingGraphRecord.setNotification(new HashSet<String>());
+    vnfforwardingGraphRecord.setLifecycle_event_history(new HashSet<LifecycleEvent>());
+    vnfforwardingGraphRecord.setAudit_log(" ");
+
+    vnfforwardingGraphRecord.setNetwork_forwarding_path(new HashSet<NetworkForwardingPath>());
+
+    for (NetworkForwardingPath networkForwardingPath :
+        vnffgDescriptor.getNetwork_forwarding_path()) {
+      NetworkForwardingPath newNetworkForwardingPath = new NetworkForwardingPath();
+      Policy newPolicy = new Policy();
+      ACLMatchingCriteria newACL = new ACLMatchingCriteria();
+      newACL.setDestinationIP(
+          networkForwardingPath.getPolicy().getAcl_matching_criteria().getDestinationIP());
+      newACL.setSourceIP(
+          networkForwardingPath.getPolicy().getAcl_matching_criteria().getSourceIP());
+      newACL.setProtocol(
+          networkForwardingPath.getPolicy().getAcl_matching_criteria().getProtocol());
+      newACL.setDestinationPort(
+          networkForwardingPath.getPolicy().getAcl_matching_criteria().getDestinationPort());
+      newACL.setSourcePort(
+          networkForwardingPath.getPolicy().getAcl_matching_criteria().getSourcePort());
+      newPolicy.setAcl_matching_criteria(newACL);
+      //newPolicy.setQoSLevel(networkForwardingPath.getPolicy().getQoSLevel());
+      newNetworkForwardingPath.setPolicy(newPolicy);
+
+      /*List<Connection> connections
+
+      for (Connection entry : networkForwardingPath.getConnections()) {
+          newConnection.put(entry.getKey(), entry.getValue());
+      }*/
+      newNetworkForwardingPath.setConnections(networkForwardingPath.getConnections());
+
+      vnfforwardingGraphRecord.getNetwork_forwarding_path().add(newNetworkForwardingPath);
+    }
+    vnfforwardingGraphRecord.setConnection_point(new HashSet<VNFDConnectionPoint>());
+    vnfforwardingGraphRecord.setMember_vnfs(new HashSet<VirtualNetworkFunctionRecord>());
+
+    // The consititute VNFRs need to be add to the VNFFGR but at the time of Creation of VNFFGR, the VNFRs info is not ready, So it needs to be handled.
+    /*  if(networkServiceRecord.getVnfr().size()!=0){
+      for(VirtualNetworkFunctionRecord vnfr:networkServiceRecord.getVnfr()) {
+         for (CostituentVNF costituentVNF : vnffgDescriptor.getConstituent_vnfs()) {
+
+            if(costituentVNF.getVnf_reference().equals(vnfr.getDescriptor_reference())){
+                 vnfforwardingGraphRecord.getMember_vnfs().add(vnfr);
+                 break;
+             }
+         }
+
+     }
+    }
+
+     */
+    vnfforwardingGraphRecord.setSymmetrical(vnffgDescriptor.isSymmetrical());
+    vnfforwardingGraphRecord.setVendor(vnffgDescriptor.getVendor());
+    vnfforwardingGraphRecord.setVersion(vnffgDescriptor.getVersion());
+    vnfforwardingGraphRecord.setNumber_of_endpoints(vnffgDescriptor.getNumber_of_endpoints());
+    vnfforwardingGraphRecord.setNumber_of_virtual_links(
+        vnfforwardingGraphRecord.getDependent_virtual_link().size());
+
+    // Need to be adjusted if the PNFS are supported
+    // vnfforwardingGraphRecord.setNumber_of_vnfs(vnfforwardingGraphRecord.getMember_vnfs().size());
+    // vnfforwardingGraphRecord.setNumber_of_pnfs(0);
+
+    return vnfforwardingGraphRecord;
   }
 
   private static PhysicalNetworkFunctionRecord createPhysicalNetworkFunctionRecord(

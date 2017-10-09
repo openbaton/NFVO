@@ -18,7 +18,7 @@
 package org.openbaton.catalogue.mano.descriptor;
 
 import java.io.Serializable;
-import java.util.Map;
+import java.util.List;
 import javax.persistence.*;
 import org.openbaton.catalogue.util.IdGenerator;
 
@@ -38,8 +38,12 @@ public class NetworkForwardingPath implements Serializable {
   /**
    * A tuple containing a reference to a Connection Point in the NFP and the position in the path
    */
-  @ElementCollection(fetch = FetchType.EAGER)
-  private Map<String, String> connection;
+  //@ElementCollection(fetch = FetchType.EAGER)
+  //private Map<String, String> connection;
+
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  @JoinColumn(name = "NetworkForwardingPathId")
+  private List<Connection> connections;
 
   public NetworkForwardingPath() {}
 
@@ -72,16 +76,16 @@ public class NetworkForwardingPath implements Serializable {
     this.policy = policy;
   }
 
-  public Map<String, String> getConnection() {
-    return connection;
+  public List<Connection> getConnections() {
+    return connections;
   }
 
-  public void setConnection(Map<String, String> connection) {
-    this.connection = connection;
+  public void setConnections(List<Connection> connections) {
+    this.connections = connections;
   }
 
-  @Override
-  public String toString() {
+  @java.lang.Override
+  public java.lang.String toString() {
     return "NetworkForwardingPath{"
         + "id='"
         + id
@@ -90,8 +94,8 @@ public class NetworkForwardingPath implements Serializable {
         + version
         + ", policy="
         + policy
-        + ", connection="
-        + connection
+        + ", connections="
+        + connections
         + '}';
   }
 }
