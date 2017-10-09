@@ -35,71 +35,6 @@ if [ "$_user" != 'root' ]; then
 fi
 
 
-function check_rabbitmq {
-    if [[ "$OSTYPE" == "linux-gnu" ]]; then
-	ps -aux | grep -v grep | grep rabbitmq > /dev/null
-        if [ $? -ne 0 ]; then
-          	echo "rabbit is not running, let's try to start it..."
-            	start_rabbitmq
-        fi
-    elif [[ "$OSTYPE" == "darwin"* ]]; then
-	ps aux | grep -v grep | grep rabbitmq > /dev/null
-        if [ $? -ne 0 ]; then
-          	echo "rabbitmq is not running, let's try to start it..."
-            	start_rabbitmq
-        fi
-    fi
-}
-
-
-function start_rabbitmq {
-    ${_ex} 'rabbitmq-server -detached'
-    if [ $? -ne 0 ]; then
-        echo "ERROR: rabbitmq is not running properly (check the problem in /var/log/rabbitmq.log) "
-        exit 1
-    fi
-}
-
-function start_mysql_osx {
-    sudo /usr/local/mysql/support-files/mysql.server start
-}
-
-function start_mysql_linux {
-    sudo service mysql start
-}
-
-
-function check_mysql {
-    if [[ "$OSTYPE" == "linux-gnu" ]]; then
-	result=$(pgrep mysql | wc -l);
-        if [ ${result} -eq 0 ]; then
-                read -p "mysql is down, would you like to start it ([y]/n):" yn
-		case ${yn} in
-			[Yy]* ) start_mysql_linux ; break;;
-			[Nn]* ) echo "you can't proceed withuot having mysql up and running" 
-				exit;;
-			* ) start_mysql_linux;;
-		esac
-        else
-                echo "mysql is already running.."
-        fi
-    elif [[ "$OSTYPE" == "darwin"* ]]; then
-	mysqladmin status
-	result=$?
-        if [ "${result}" -eq "0" ]; then
-                echo "mysql service running..."
-        else
-                read -p "mysql is down, would you like to start it ([y]/n):" yn
-                case ${yn} in
-                        [Yy]* ) start_mysql_osx ; break;;
-                        [Nn]* ) exit;;
-                        * ) start_mysql_osx;;
-                esac
-        fi
-    fi
-}
-
-
 function check_already_running {
     pgrep -f openbaton-${_version}.jar
     if [ "$?" -eq "0" ]; then
@@ -136,7 +71,6 @@ function start_checks {
         then
             compile
     fi
-    check_rabbitmq
     check_timezone
 }
 
