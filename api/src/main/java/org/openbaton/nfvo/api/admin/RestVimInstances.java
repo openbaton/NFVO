@@ -20,6 +20,7 @@ import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.Set;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -109,7 +110,7 @@ public class RestVimInstances {
         "This method returns the list of all the VimInstances on-boarded in this project identified by the header project-id"
   )
   @RequestMapping(method = RequestMethod.GET)
-  public Iterable<VimInstance> findAll(
+  public List<VimInstance> findAll(
       @RequestHeader(value = "project-id") String projectId,
       @RequestHeader(value = "authorization") String token)
       throws IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException,
@@ -123,7 +124,7 @@ public class RestVimInstances {
         vim.setPassword("**********");
       }
 
-    return vimInstances;
+    return (List<VimInstance>) vimInstances;
   }
 
   /**

@@ -27,14 +27,13 @@ plugins {
     id "com.github.hierynomus.license" version "0.14.0"
     // For managing the dependencies' versions
     id 'com.github.ben-manes.versions' version '0.13.0'
-    //id 'org.springframework.boot' version '1.4.3.RELEASE'
+    id 'org.springframework.boot' version '1.5.7.RELEASE'
 }
 
 apply plugin: 'java'
 apply plugin: 'docker'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
-
 
 apply from: 'gradle/gradle/git.helpers.gradle'
 apply from: 'gradle/gradle/command.line.helper.gradle'
@@ -45,10 +44,9 @@ apply from: 'gradle/gradle/command.line.helper.gradle'
 ext {
     //------------------------------------------------//
     /**
-     * Spring Related Variables
+     * Spring Boot version
      */
-    springVersion = '4.3.5.RELEASE'
-    springBootVersion = '1.2.5.RELEASE'
+    springBootVersion = '1.5.7.RELEASE'
     //------------------------------------------------//
     //------------------------------------------------//
     /**
@@ -65,19 +63,13 @@ ext {
     //------------------------------------------------//
     //------------------------------------------------//
     /**
-     * gradle Related Vars
-     */
-    mainClass = 'org.openbaton.nfvo.main.Application'
-    //------------------------------------------------//
-    //------------------------------------------------//
-    /**
      * Junit Version
      */
-    junitVersion = "4.12"
+    junitVersion = '4.12'
 }
 
+
 apply from: 'gradle/gradle/application.java.gradle'
-apply from: 'gradle/gradle/run.application.java.gradle'
 apply from: 'gradle/gradle/git.release.gradle'
 
 apply from: 'gradle/gradle/packaging.nfvo.debian.gradle'
@@ -89,34 +81,21 @@ apply from: 'gradle/gradle/distribution.gradle'
 apply from: 'gradle/gradle/dependencies.updater.gradle'
 
 apply from: 'gradle/gradle/brew.formula.creator.gradle'
+apply from: 'gradle/gradle/licenses.gradle'
 
 repositories {
     mavenCentral()
 }
 
-downloadLicenses {
-    ext.apacheTwo = license('Apache License, Version 2.0', 'http://opensource.org/licenses/Apache-2.0')
-    ext.bsd = license('BSD License', 'http://www.opensource.org/licenses/bsd-license.php')
-    ext.lgplTwoOne = license('LGPL 2.1','https://www.gnu.org/licenses/lgpl-2.1.html')
-    ext.gplTwo = license('GPL v2','https://www.gnu.org/licenses/old-licenses/gpl-2.0.html')
-    ext.mit = license('MIT','https://opensource.org/licenses/MIT')
-
-    includeProjectDependencies = true
-
-    aliases = [
-            (apacheTwo) : ['The Apache Software License, Version 2.0', 'Apache 2', 'Apache License Version 2.0','Apache 2.0','Apache License, version 2.0', 'Apache License, Version 2.0', 'Apache License 2.0', license('Apache License', 'http://www.apache.org/licenses/LICENSE-2.0')],
-            (bsd) : ['BSD', license('New BSD License', 'http://www.opensource.org/licenses/bsd-license.php')],
-            (lgplTwoOne) : ['GNU Lesser General Public License 2.1', 'LGPL 2.1','GNU Lesser General Public License'],
-            (gplTwo) : ['The GNU General Public License, Version 2', 'GPL v2'],
-            (mit) : ['MIT', 'MIT License']
-    ]
-
-}
-
+mainClassName = 'org.openbaton.nfvo.main.Application'
 
 dependencies {
     compile project(':main')
+    // Enable automatic restart upon code changes
+    // More info: https://docs.spring.io/spring-boot/docs/current/reference/html/using-boot-devtools.html#using-boot-devtools-restart
+    //compile 'org.springframework.boot:spring-boot-devtools'
 }
+
 allprojects {
     jar {
         manifest {
@@ -129,4 +108,5 @@ allprojects {
         }
     }
 }
+
 compileJava.dependsOn tasks.googleJavaFormat

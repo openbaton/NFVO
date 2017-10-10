@@ -17,7 +17,7 @@
 
 buildscript {
     repositories {
-        mavenLocal()
+        //mavenLocal()
         mavenCentral()
         jcenter()
     }
@@ -32,14 +32,8 @@ apply from: '../gradle/gradle/nexus.upload.plugin.gradle'
 dependencies {
     compile project(':catalogue')
     compile project(':exception')
-
-    compile 'org.springframework.boot:spring-boot-starter-logging:' + springBootVersion
-
-    compile 'com.google.code.gson:gson:2.8.0'
+    compile 'org.apache.commons:commons-text:1.1'
+    compile 'org.springframework.boot:spring-boot-starter-web:' + springBootVersion
     compile 'org.springframework.boot:spring-boot-starter-amqp:' + springBootVersion
-
-    compile 'org.apache.tomcat:tomcat-catalina:8.0.39'
-    compile group: 'commons-codec', name: 'commons-codec', version: '1.10'
-    compile group: 'org.apache.commons', name: 'commons-text', version: '1.1'
-    compile 'org.apache.httpcomponents:httpclient:4.5.2'
+    compile 'com.google.code.gson:gson:2.8.0'
 }

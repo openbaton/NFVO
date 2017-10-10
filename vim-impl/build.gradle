@@ -17,7 +17,7 @@
 
 buildscript {
     repositories {
-        mavenLocal()
+        //mavenLocal()
         mavenCentral()
         jcenter()
     }
@@ -40,12 +40,10 @@ dependencies {
     compile project(':plugin')
 
     compile 'org.slf4j:slf4j-api:1.7.22'
-    compile 'org.springframework:spring-context:' + springVersion
-    compile 'org.springframework.boot:spring-boot:' + springBootVersion
 
     testCompile 'org.mockito:mockito-all:2.0.2-beta'
-    testCompile("org.powermock:powermock-mockito-release-full:1.6.4")
-    testCompile 'org.springframework:spring-test:' + springVersion
-    testCompile group: 'junit', name: 'junit', version: junitVersion
+    testCompile 'org.springframework.boot:spring-boot-starter-test:' +springBootVersion
+    testCompile 'org.powermock:powermock-mockito-release-full:1.6.4'
     testCompile 'commons-io:commons-io:2.5'
+    testCompile 'junit:junit:' + junitVersion
 }

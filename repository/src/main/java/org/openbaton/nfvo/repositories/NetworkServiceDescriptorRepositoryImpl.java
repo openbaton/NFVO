@@ -27,7 +27,6 @@ import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional(readOnly = true)
 public class NetworkServiceDescriptorRepositoryImpl
     implements NetworkServiceDescriptorRepositoryCustom {
 

@@ -22,22 +22,19 @@ dependencies {
     compile project(':security')
     compile project(':tosca-parser')
 
-//    compile("mysql:mysql-connector-java:5.1.40")
+    //compile 'mysql:mysql-connector-java:5.1.4'
     // Java 8
-//    compile group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.0.3'
+    //compile 'org.mariadb.jdbc:mariadb-java-client:2.0.3'
     // Java 7
-    compile group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '1.6.2'
-    compile("org.hsqldb:hsqldb:2.3.4")
+    compile 'org.mariadb.jdbc:mariadb-java-client:1.6.2'
+    compile 'org.hsqldb:hsqldb:2.3.4'
 
     compile 'com.google.code.gson:gson:2.8.0'
-    compile "io.springfox:springfox-swagger2:2.6.1"
+    compile 'io.springfox:springfox-swagger2:2.6.1'
 
-    compile("org.springframework.boot:spring-boot-starter-websocket:" + springBootVersion)
-
-    testCompile("com.jayway.jsonpath:json-path-assert:2.2.0")
-    testCompile("org.mockito:mockito-all:1.10.19")
-    testCompile("junit:junit:" + junitVersion)
-
+    testCompile 'com.jayway.jsonpath:json-path-assert:2.2.0'
+    testCompile 'org.mockito:mockito-all:1.10.19'
+    testCompile 'junit:junit:' + junitVersion
     compile group: 'com.kjetland', name: 'mbknor-jackson-jsonschema_2.12', version: '1.0.24'
     compile group: 'com.networknt', name: 'json-schema-validator', version: '0.1.10'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.7'

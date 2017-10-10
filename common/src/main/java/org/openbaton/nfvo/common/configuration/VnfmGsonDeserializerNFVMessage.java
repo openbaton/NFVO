@@ -7,7 +7,6 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
-import java.util.Date;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
@@ -26,12 +25,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class VnfmGsonDeserializerNFVMessage implements JsonDeserializer<NFVMessage> {
 
-  private Gson gson =
-      new GsonBuilder()
-          .setPrettyPrinting()
-          .registerTypeAdapter(Date.class, new GsonDeserializerDate())
-          .registerTypeAdapter(Date.class, new GsonSerializerDate())
-          .create();
+  private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
   private Logger log = LoggerFactory.getLogger(this.getClass());
 

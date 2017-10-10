@@ -16,7 +16,7 @@
  */
 buildscript {
 	repositories {
-		mavenLocal()
+		//mavenLocal()
 		mavenCentral()
 		jcenter()
 	}
@@ -31,5 +31,6 @@ apply from: '../gradle/gradle/nexus.upload.plugin.gradle'
 dependencies {
 	compile project(':catalogue')
 	compile project(':plugin')
+
 	compile 'org.slf4j:slf4j-api:1.7.22'
 }

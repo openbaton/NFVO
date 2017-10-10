@@ -16,6 +16,7 @@
 
 package org.openbaton.nfvo.api.catalogue;
 
+import java.util.List;
 import javax.validation.Valid;
 import org.openbaton.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
 import org.openbaton.nfvo.core.interfaces.VNFFGManagement;
@@ -71,8 +72,8 @@ public class RestVNFFG {
    * @return List<VNFForwardingGraphDescriptor>: The list of VNFFGs available
    */
   @RequestMapping(method = RequestMethod.GET)
-  public Iterable<VNFForwardingGraphDescriptor> findAll() {
-    return vnffgManagement.query();
+  public List<VNFForwardingGraphDescriptor> findAll() {
+    return (List<VNFForwardingGraphDescriptor>) vnffgManagement.query();
   }
 
   /**

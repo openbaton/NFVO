@@ -17,6 +17,7 @@
 package org.openbaton.nfvo.api.admin;
 
 import io.swagger.annotations.ApiOperation;
+import java.util.List;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.nfvo.core.interfaces.VNFManagerManagement;
 import org.slf4j.Logger;
@@ -39,8 +40,8 @@ public class RestVNFManager {
   )
   @RequestMapping(method = RequestMethod.GET)
   @ResponseStatus(HttpStatus.OK)
-  public Iterable<VnfmManagerEndpoint> findAll() {
-    return vnfManagerManagement.query();
+  public List<VnfmManagerEndpoint> findAll() {
+    return (List<VnfmManagerEndpoint>) vnfManagerManagement.query();
   }
 
   @ApiOperation(

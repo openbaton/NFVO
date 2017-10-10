@@ -169,9 +169,9 @@ public class RestComponents {
     produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.OK)
-  public Iterable<ServiceMetadata> listServices(
-      @RequestHeader(value = "project-id") String projectId) throws IOException {
+  public List<ServiceMetadata> listServices(@RequestHeader(value = "project-id") String projectId)
+      throws IOException {
 
-    return componentManager.listServices();
+    return (List<ServiceMetadata>) componentManager.listServices();
   }
 }
