@@ -114,7 +114,8 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
       break;
     }
     if (unencryptedBody == null)
-      throw new NotFoundException("Could not decrypt the body, did you enabled the service?");
+      throw new NotFoundException(
+          "Could not decrypt the body, did you enable the service? Is the passed service key correct?");
 
     JsonObject bodyJson = gson.fromJson(unencryptedBody, JsonObject.class);
 
@@ -122,10 +123,9 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
     String action = bodyJson.getAsJsonPrimitive("action").getAsString();
 
     if (!service.getName().equals(serviceName)) {
-      log.error(
-          "The name of the found Service does not match to the requested name " + serviceName);
+      log.error("The name of the found service does not match the requested name " + serviceName);
       throw new NotFoundException(
-          "The name of the found Service does not match to the requested name " + serviceName);
+          "The name of the found service does not match the requested name " + serviceName);
     }
 
     if (action.toLowerCase().equals("register")) {

@@ -17,6 +17,8 @@
 package org.openbaton.nfvo.api.admin;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -121,8 +123,8 @@ public class RestComponents {
   /**
    * Registers a Service. For this to work, the Service has to be already created. The request body
    * is expected to be a String. This String has to be the word 'register' encrypted with the Key
-   * obtained while creating the Service. This method returns a token which can be used by the
-   * Service to issue requests to the NFVO API.
+   * obtained while creating the Service. This method returns a token encapsulated in a Json object
+   * which can be used by the Service to issue requests to the NFVO API.
    *
    * @param serviceRegisterBody
    * @return
@@ -135,15 +137,17 @@ public class RestComponents {
     value = "/services/register",
     method = RequestMethod.POST,
     consumes = MediaType.TEXT_PLAIN_VALUE,
-    produces = MediaType.TEXT_PLAIN_VALUE
+    produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.CREATED)
-  public String registerService(@RequestBody String serviceRegisterBody)
+  public JsonObject registerService(@RequestBody String serviceRegisterBody)
       throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NotFoundException,
           InvalidKeyException, BadPaddingException, NoSuchPaddingException,
           IllegalBlockSizeException {
 
-    return componentManager.registerService(serviceRegisterBody);
+    JsonObject response = new JsonObject();
+    response.add("token", new JsonPrimitive(componentManager.registerService(serviceRegisterBody)));
+    return response;
   }
 
   /** Enable a new Service. */
