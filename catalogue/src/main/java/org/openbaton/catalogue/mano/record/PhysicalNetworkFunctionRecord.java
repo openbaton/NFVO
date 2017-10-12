@@ -17,11 +17,14 @@
 
 package org.openbaton.catalogue.mano.record;
 
-import java.io.Serializable;
 import java.util.Set;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 import org.openbaton.catalogue.mano.common.ConnectionPoint;
-import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /**
  * Created by lto on 06/02/15.
@@ -29,21 +32,11 @@ import org.openbaton.catalogue.util.IdGenerator;
  * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class PhysicalNetworkFunctionRecord implements Serializable {
+public class PhysicalNetworkFunctionRecord extends BaseEntity {
 
-  @Id private String id;
   private String vendor;
   private String version;
   private String description;
-  private String projectId;
-
-  public String getProjectId() {
-    return projectId;
-  }
-
-  public void setProjectId(String projectId) {
-    this.projectId = projectId;
-  }
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<ConnectionPoint> connection_point;
@@ -70,19 +63,6 @@ public class PhysicalNetworkFunctionRecord implements Serializable {
   private Set<String> pnf_address;
 
   public PhysicalNetworkFunctionRecord() {}
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
 
   public String getVendor() {
     return vendor;
@@ -162,5 +142,38 @@ public class PhysicalNetworkFunctionRecord implements Serializable {
 
   public void setPnf_address(Set<String> pnf_address) {
     this.pnf_address = pnf_address;
+  }
+
+  @Override
+  public String toString() {
+    return "PhysicalNetworkFunctionRecord{"
+        + "vendor='"
+        + vendor
+        + '\''
+        + ", version='"
+        + version
+        + '\''
+        + ", description='"
+        + description
+        + '\''
+        + ", connection_point="
+        + connection_point
+        + ", parent_ns_id='"
+        + parent_ns_id
+        + '\''
+        + ", descriptor_reference='"
+        + descriptor_reference
+        + '\''
+        + ", vnffgr="
+        + vnffgr
+        + ", oam_reference='"
+        + oam_reference
+        + '\''
+        + ", connected_virtual_link="
+        + connected_virtual_link
+        + ", pnf_address="
+        + pnf_address
+        + "} "
+        + super.toString();
   }
 }

@@ -17,40 +17,22 @@
 
 package org.openbaton.catalogue.nfvo;
 
-import java.io.Serializable;
 import java.util.Map;
-import javax.persistence.*;
-import org.openbaton.catalogue.util.IdGenerator;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by lto on 21/08/15. */
 @Entity
-public class DependencyParameters implements Serializable {
-
-  @Id private String id;
-  @Version private int version = 0;
+public class DependencyParameters extends BaseEntity {
 
   @ElementCollection(fetch = FetchType.EAGER)
   private Map<String, String> parameters;
 
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public int getVersion() {
-    return version;
-  }
-
-  public void setVersion(int version) {
-    this.version = version;
+  @Override
+  public String toString() {
+    return "DependencyParameters{" + "parameters=" + parameters + "} " + super.toString();
   }
 
   public Map<String, String> getParameters() {
@@ -59,18 +41,5 @@ public class DependencyParameters implements Serializable {
 
   public void setParameters(Map<String, String> parameters) {
     this.parameters = parameters;
-  }
-
-  @Override
-  public String toString() {
-    return "DependencyParameters{"
-        + "id='"
-        + id
-        + '\''
-        + ", version="
-        + version
-        + ", parameters="
-        + parameters
-        + '}';
   }
 }

@@ -19,6 +19,7 @@ package org.openbaton.nfvo.core.core;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.exceptions.NotFoundException;
@@ -39,9 +40,11 @@ public class VnfPlacementManagement
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Override
-  public VimInstance choseRandom(List<String> vimInstanceName, String projectId) {
+  public VimInstance choseRandom(Set<String> vimInstanceName, String projectId) {
     if (!vimInstanceName.isEmpty()) {
-      String name = vimInstanceName.get((int) (Math.random() * 1000) % vimInstanceName.size());
+      String name =
+          vimInstanceName.toArray(new String[0])[
+              (int) (Math.random() * 1000) % vimInstanceName.size()];
       VimInstance vimInstance = null;
       for (VimInstance vimInstance1 : vimInstanceRepository.findByProjectId(projectId))
         if (vimInstance1.getName().equals(name)) {
@@ -60,7 +63,7 @@ public class VnfPlacementManagement
   @Override
   public List<String> chose(
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
-      List<String> vimTypes,
+      Set<String> vimTypes,
       String projectId)
       throws NotFoundException {
     List<VimInstance> vimInstances = vimInstanceRepository.findByProjectId(projectId);

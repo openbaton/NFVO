@@ -17,9 +17,8 @@
 
 package org.openbaton.catalogue.mano.record;
 
-import java.io.Serializable;
 import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
@@ -27,11 +26,8 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.PrePersist;
-import javax.persistence.Version;
 import org.openbaton.catalogue.mano.common.AutoScalePolicy;
 import org.openbaton.catalogue.mano.common.ConnectionPoint;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
@@ -39,16 +35,11 @@ import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.HistoryLifecycleEvent;
-import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by lto on 06/02/15. Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12) */
 @Entity
-public class VirtualNetworkFunctionRecord implements Serializable {
-
-  /** ID of the VNF instance */
-  @Id private String id;
-
-  @Version private int hb_version = 0;
+public class VirtualNetworkFunctionRecord extends BaseEntity {
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<AutoScalePolicy> auto_scale_policy;
@@ -56,7 +47,6 @@ public class VirtualNetworkFunctionRecord implements Serializable {
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<ConnectionPoint> connection_point;
 
-  private String projectId;
   /** Reference to selected deployment flavour (vnfd:deployment_flavour_key:id) */
   private String deployment_flavour_key;
 
@@ -76,7 +66,7 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     cascade = {CascadeType.ALL},
     fetch = FetchType.EAGER
   )
-  private List<HistoryLifecycleEvent> lifecycle_event_history;
+  private Set<HistoryLifecycleEvent> lifecycle_event_history;
   /** A language attribute may be specified to identify default localisation/language */
   private String localization;
   /** Active monitoring parameters */
@@ -184,14 +174,6 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     this.lifecycle_event = new HashSet<>();
   }
 
-  public String getProjectId() {
-    return projectId;
-  }
-
-  public void setProjectId(String projectId) {
-    this.projectId = projectId;
-  }
-
   public Configuration getConfigurations() {
     return configurations;
   }
@@ -206,11 +188,6 @@ public class VirtualNetworkFunctionRecord implements Serializable {
 
   public void setCyclicDependency(boolean cyclicDependency) {
     this.cyclicDependency = cyclicDependency;
-  }
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
   }
 
   public String getEndpoint() {
@@ -241,14 +218,6 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     this.auto_scale_policy = auto_scale_policy;
   }
 
-  public int getHb_version() {
-    return hb_version;
-  }
-
-  public void setHb_version(int hb_version) {
-    this.hb_version = hb_version;
-  }
-
   public Set<ConnectionPoint> getConnection_point() {
     return connection_point;
   }
@@ -263,14 +232,6 @@ public class VirtualNetworkFunctionRecord implements Serializable {
 
   public void setDeployment_flavour_key(String deployment_flavour_key) {
     this.deployment_flavour_key = deployment_flavour_key;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
   }
 
   public Set<LifecycleEvent> getLifecycle_event() {
@@ -378,11 +339,12 @@ public class VirtualNetworkFunctionRecord implements Serializable {
     this.notification = notification;
   }
 
-  public List<HistoryLifecycleEvent> getLifecycle_event_history() {
+  public Set<HistoryLifecycleEvent> getLifecycle_event_history() {
     return lifecycle_event_history;
   }
 
-  public void setLifecycle_event_history(List<HistoryLifecycleEvent> lifecycle_event_history) {
+  public void setLifecycle_event_history(
+      LinkedHashSet<HistoryLifecycleEvent> lifecycle_event_history) {
     this.lifecycle_event_history = lifecycle_event_history;
   }
 
@@ -453,15 +415,7 @@ public class VirtualNetworkFunctionRecord implements Serializable {
   @Override
   public String toString() {
     return "VirtualNetworkFunctionRecord{"
-        + "audit_log='"
-        + audit_log
-        + '\''
-        + ", id='"
-        + id
-        + '\''
-        + ", hb_version="
-        + hb_version
-        + ", auto_scale_policy="
+        + "auto_scale_policy="
         + auto_scale_policy
         + ", connection_point="
         + connection_point
@@ -506,6 +460,9 @@ public class VirtualNetworkFunctionRecord implements Serializable {
         + status
         + ", notification="
         + notification
+        + ", audit_log='"
+        + audit_log
+        + '\''
         + ", runtime_policy_info="
         + runtime_policy_info
         + ", name='"
@@ -529,6 +486,13 @@ public class VirtualNetworkFunctionRecord implements Serializable {
         + ", packageId='"
         + packageId
         + '\''
-        + '}';
+        + ", createdAt='"
+        + createdAt
+        + '\''
+        + ", updatedAt='"
+        + updatedAt
+        + '\''
+        + "} "
+        + super.toString();
   }
 }

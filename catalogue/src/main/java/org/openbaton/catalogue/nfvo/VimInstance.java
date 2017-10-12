@@ -17,21 +17,24 @@
 
 package org.openbaton.catalogue.nfvo;
 
-import java.io.Serializable;
 import java.util.Set;
-import javax.persistence.*;
-import javax.validation.constraints.*;
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
-import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by lto on 12/05/15. */
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"name", "projectId"}))
-public class VimInstance implements Serializable {
-
-  @Id private String id;
-
-  @Version private Integer version = 0;
+public class VimInstance extends BaseEntity {
 
   @NotNull
   @Size(min = 1)
@@ -73,31 +76,9 @@ public class VimInstance implements Serializable {
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<Network> networks;
 
-  private String projectId;
   private Boolean active = true;
 
   public VimInstance() {}
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public Integer getVersion() {
-    return version;
-  }
-
-  public void setVersion(Integer version) {
-    this.version = version;
-  }
 
   public String getName() {
     return name;
@@ -198,12 +179,7 @@ public class VimInstance implements Serializable {
   @Override
   public String toString() {
     return "VimInstance{"
-        + "id='"
-        + id
-        + '\''
-        + ", version="
-        + version
-        + ", name='"
+        + "name='"
         + name
         + '\''
         + ", authUrl='"
@@ -215,7 +191,9 @@ public class VimInstance implements Serializable {
         + ", username='"
         + username
         + '\''
-        + ", password='************'"
+        + ", password='"
+        + password
+        + '\''
         + ", keyPair='"
         + keyPair
         + '\''
@@ -232,20 +210,10 @@ public class VimInstance implements Serializable {
         + images
         + ", networks="
         + networks
-        + ", projectId='"
-        + projectId
-        + '\''
         + ", active="
         + active
-        + '}';
-  }
-
-  public void setProjectId(String projectId) {
-    this.projectId = projectId;
-  }
-
-  public String getProjectId() {
-    return projectId;
+        + "} "
+        + super.toString();
   }
 
   public void setActive(Boolean active) {

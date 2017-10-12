@@ -17,37 +17,37 @@
 
 package org.openbaton.catalogue.mano.common;
 
-import java.io.Serializable;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import javax.persistence.Version;
-import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by mpa on 15/12/15. */
 @Entity
-public class ScalingAlarm implements Serializable {
-  @Id private String id;
-  @Version private Integer version = 0;
+public class ScalingAlarm extends BaseEntity {
 
   private String metric;
   private String statistic;
   private String comparisonOperator;
   private double threshold;
-
   private double weight;
 
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public Integer getVersion() {
-    return version;
+  @Override
+  public String toString() {
+    return "ScalingAlarm{"
+        + "metric='"
+        + metric
+        + '\''
+        + ", statistic='"
+        + statistic
+        + '\''
+        + ", comparisonOperator='"
+        + comparisonOperator
+        + '\''
+        + ", threshold="
+        + threshold
+        + ", weight="
+        + weight
+        + "} "
+        + super.toString();
   }
 
   public String getMetric() {
@@ -88,28 +88,5 @@ public class ScalingAlarm implements Serializable {
 
   public void setWeight(double weight) {
     this.weight = weight;
-  }
-
-  @Override
-  public String toString() {
-    return "ScalingAlarm{"
-        + "id='"
-        + id
-        + '\''
-        + ", version="
-        + version
-        + ", metric='"
-        + metric
-        + '\''
-        + ", statistic='"
-        + statistic
-        + '\''
-        + ", comparisonOperator='"
-        + comparisonOperator
-        + '\''
-        + ", weight='"
-        + weight
-        + '\''
-        + '}';
   }
 }

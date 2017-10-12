@@ -32,7 +32,6 @@ import org.jgrapht.alg.cycle.DirectedSimpleCycles;
 import org.jgrapht.alg.cycle.SzwarcfiterLauerSimpleCycles;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedPseudograph;
-import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.common.AbstractVirtualLink;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
@@ -49,9 +48,7 @@ import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.exceptions.BadFormatException;
-import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.CyclicDependenciesException;
-import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.VNFDRepository;
@@ -218,14 +215,6 @@ public class NSDUtils {
     networkServiceDescriptor.getVnfd().removeAll(vnfd_remove);
     networkServiceDescriptor.getVnfd().addAll(vnfd_add);
     return marketIds;
-  }
-
-  public void fetchVimInstances(NetworkServiceDescriptor networkServiceDescriptor, String projectId)
-      throws NotFoundException {
-    /* Fetching VimInstances */
-    for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
-      fetchVimInstances(vnfd, projectId);
-    }
   }
 
   public void fetchVimInstances(VirtualNetworkFunctionDescriptor vnfd, String projectId)
@@ -412,7 +401,7 @@ public class NSDUtils {
         VNFDependency newDependency = new VNFDependency();
         newDependency.setSource(oldDependency.getSource());
         newDependency.setTarget(oldDependency.getTarget());
-        newDependency.setParameters(new HashSet<String>());
+        newDependency.setParameters(new HashSet<>());
         log.debug("Old is: " + oldDependency);
         if (oldDependency.getParameters() != null) {
           newDependency.getParameters().addAll(oldDependency.getParameters());
@@ -460,7 +449,7 @@ public class NSDUtils {
     checkIntegrity(virtualNetworkFunctionDescriptor, new HashSet<>());
   }
 
-  public void checkIntegrity(
+  private void checkIntegrity(
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
       Set<VirtualLinkDescriptor> virtualLinkDescriptors)
       throws NetworkServiceIntegrityException {
@@ -523,7 +512,7 @@ public class NSDUtils {
         }
       }
     } else {
-      virtualNetworkFunctionDescriptor.setVdu(new HashSet<VirtualDeploymentUnit>());
+      virtualNetworkFunctionDescriptor.setVdu(new HashSet<>());
     }
   }
 
@@ -865,82 +854,5 @@ public class NSDUtils {
               + "chosen. Please choose one from: "
               + flavors);
     }
-  }
-
-  public List<String> getRuntimeDeploymentInfo(DeployNSRBody body, VirtualDeploymentUnit vdu)
-      throws MissingParameterException {
-    List<String> instanceNames;
-
-    if (body == null
-        || body.getVduVimInstances() == null
-        || body.getVduVimInstances().get(vdu.getName()) == null
-        || body.getVduVimInstances().get(vdu.getName()).isEmpty()) {
-      if (vdu.getVimInstanceName() == null) {
-        throw new MissingParameterException(
-            "No VimInstance specified for vdu with name: " + vdu.getName());
-      }
-      instanceNames = vdu.getVimInstanceName();
-    } else {
-      instanceNames = body.getVduVimInstances().get(vdu.getName());
-    }
-    return instanceNames;
-  }
-
-  public List<String> checkIfVimAreSupportedByPackage(
-      VirtualNetworkFunctionDescriptor vnfd, List<String> instanceNames)
-      throws BadRequestException {
-    VNFPackage vnfPackage = vnfPackageRepository.findFirstById(vnfd.getVnfPackageLocation());
-    if (vnfPackage == null
-        || vnfPackage.getVimTypes() == null
-        || vnfPackage.getVimTypes().size() == 0) {
-      log.warn("VNFPackage does not provide supported VIM. I will skip the check!");
-    } else {
-      for (String vimInstanceName : instanceNames) {
-        VimInstance vimInstance;
-        for (VimInstance vi : vimInstanceRepository.findByProjectId(vnfd.getProjectId())) {
-          if (vimInstanceName.equals(vi.getName())) {
-            vimInstance = vi;
-            log.debug("Found vim instance " + vimInstance.getName());
-            log.debug(
-                "Checking if "
-                    + vimInstance.getType()
-                    + " is contained in "
-                    + vnfPackage.getVimTypes());
-            if (!vnfPackage.getVimTypes().contains(vimInstance.getType())) {
-              throw new org.openbaton.exceptions.BadRequestException(
-                  "The Vim Instance chosen does not support the VNFD " + vnfd.getName());
-            }
-          }
-        }
-      }
-    }
-    if (instanceNames.size() == 0) {
-      for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(vnfd.getProjectId())) {
-        if (vnfPackage == null
-            || vnfPackage.getVimTypes() == null
-            || vnfPackage.getVimTypes().isEmpty()) {
-          instanceNames.add(vimInstance.getName());
-        } else {
-          String type = vimInstance.getType();
-          if (type.contains(".")) {
-            type = type.split("\\.")[0];
-          }
-          if (vnfPackage.getVimTypes().contains(type)) {
-            instanceNames.add(vimInstance.getName());
-          }
-        }
-      }
-    }
-
-    if (instanceNames.size() == 0) {
-      throw new org.openbaton.exceptions.BadRequestException(
-          "No Vim Instance found for supporting the VNFD "
-              + vnfd.getName()
-              + " (looking for vim type: "
-              + vnfPackage.getVimTypes()
-              + ")");
-    }
-    log.debug("Vim Instances chosen are: " + instanceNames);
-    return instanceNames;
   }
 }

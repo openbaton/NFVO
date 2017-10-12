@@ -1,7 +1,7 @@
 package org.openbaton.vnfm.interfaces.manager;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
@@ -27,7 +27,7 @@ public interface MessageGenerator {
 
   OrVnfmInstantiateMessage getNextMessage(
       VirtualNetworkFunctionDescriptor vnfd,
-      Map<String, List<String>> vduVimInstances,
+      Map<String, Set<String>> vduVimInstances,
       NetworkServiceRecord networkServiceRecord,
       DeployNSRBody body)
       throws NotFoundException;

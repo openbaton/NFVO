@@ -34,15 +34,28 @@ import org.openbaton.catalogue.mano.common.Security;
 @Entity
 public class VirtualLinkDescriptor extends AbstractVirtualLink {
 
-  private String projectId;
-
-  public String getProjectId() {
-    return projectId;
+  @Override
+  public String toString() {
+    return "VirtualLinkDescriptor{"
+        + "vendor='"
+        + vendor
+        + '\''
+        + ", descriptor_version='"
+        + descriptor_version
+        + '\''
+        + ", poolName='"
+        + poolName
+        + '\''
+        + ", number_of_endpoints="
+        + number_of_endpoints
+        + ", connection="
+        + connection
+        + ", vld_security="
+        + vld_security
+        + "} "
+        + super.toString();
   }
 
-  public void setProjectId(String projectId) {
-    this.projectId = projectId;
-  }
   /** /** Vendor generating this VLD */
   private String vendor;
   /** Version of this VLD */
@@ -120,29 +133,5 @@ public class VirtualLinkDescriptor extends AbstractVirtualLink {
 
   public void setVld_security(Security vld_security) {
     this.vld_security = vld_security;
-  }
-
-  @Override
-  public String toString() {
-    return "VirtualLinkDescriptor{"
-        + "projectId='"
-        + projectId
-        + '\''
-        + ", vendor='"
-        + vendor
-        + '\''
-        + ", descriptor_version='"
-        + descriptor_version
-        + '\''
-        + ", poolName='"
-        + poolName
-        + '\''
-        + ", number_of_endpoints="
-        + number_of_endpoints
-        + ", connection="
-        + connection
-        + ", vld_security="
-        + vld_security
-        + '}';
   }
 }

@@ -1,7 +1,7 @@
 package org.openbaton.vnfm.interfaces.state;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.openbaton.catalogue.api.DeployNSRBody;
@@ -20,7 +20,7 @@ public interface VnfStateHandler {
       NetworkServiceDescriptor networkServiceDescriptor,
       NetworkServiceRecord networkServiceRecord,
       DeployNSRBody body,
-      Map<String, List<String>> vduVimInstances,
+      Map<String, Set<String>> vduVimInstances,
       VirtualNetworkFunctionDescriptor vnfd)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 

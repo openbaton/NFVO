@@ -17,9 +17,10 @@
 
 package org.openbaton.catalogue.mano.common;
 
-import java.io.Serializable;
-import javax.persistence.*;
-import org.openbaton.catalogue.util.IdGenerator;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /**
  * Created by lto on 06/02/15.
@@ -28,11 +29,7 @@ import org.openbaton.catalogue.util.IdGenerator;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class ConnectionPoint implements Serializable {
-
-  /*ID of the Connection Point.*/
-  @Id protected String id;
-  @Version protected Integer version = 0;
+public class ConnectionPoint extends BaseEntity {
 
   /**
    * This may be for example a virtual port, a virtual NIC address, a physical port, a physical NIC
@@ -43,19 +40,6 @@ public class ConnectionPoint implements Serializable {
 
   public ConnectionPoint() {}
 
-  public Integer getVersion() {
-    return version;
-  }
-
-  public void setVersion(Integer version) {
-    this.version = version;
-  }
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
   public String getType() {
 
     return type;
@@ -65,25 +49,8 @@ public class ConnectionPoint implements Serializable {
     this.type = type;
   }
 
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
   @Override
   public String toString() {
-    return "ConnectionPoint{"
-        + "id='"
-        + id
-        + '\''
-        + ", hb_version='"
-        + version
-        + ", type='"
-        + type
-        + '\''
-        + '}';
+    return "ConnectionPoint{" + "type='" + type + '\'' + "} " + super.toString();
   }
 }

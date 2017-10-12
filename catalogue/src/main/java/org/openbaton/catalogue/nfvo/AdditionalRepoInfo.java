@@ -1,20 +1,21 @@
 package org.openbaton.catalogue.nfvo;
 
-import java.util.List;
-import javax.persistence.*;
+import java.util.Set;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.PrePersist;
+import org.openbaton.catalogue.util.BaseEntity;
 import org.openbaton.catalogue.util.IdGenerator;
 
 /** Created by mob on 03.05.17. */
 @Entity
-public class AdditionalRepoInfo {
+public class AdditionalRepoInfo extends BaseEntity {
   private PackageType packageType;
   private String keyUrl;
 
   @ElementCollection(fetch = FetchType.EAGER)
-  private List<String> configuration;
-
-  @Id private String id;
-  @Version private int hb_version = 0;
+  private Set<String> configuration;
 
   public AdditionalRepoInfo() {}
 
@@ -44,27 +45,11 @@ public class AdditionalRepoInfo {
     setId(IdGenerator.createUUID());
   }
 
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public int getHb_version() {
-    return hb_version;
-  }
-
-  public void setHb_version(int hb_version) {
-    this.hb_version = hb_version;
-  }
-
-  public List<String> getConfiguration() {
+  public Set<String> getConfiguration() {
     return configuration;
   }
 
-  public void setConfiguration(List<String> configuration) {
+  public void setConfiguration(Set<String> configuration) {
     if (configuration == null) throw new NullPointerException("The configuration list is null");
     this.configuration = configuration;
   }
@@ -79,11 +64,7 @@ public class AdditionalRepoInfo {
         + '\''
         + ", configuration="
         + configuration
-        + ", id='"
-        + id
-        + '\''
-        + ", hb_version="
-        + hb_version
-        + '}';
+        + "} "
+        + super.toString();
   }
 }

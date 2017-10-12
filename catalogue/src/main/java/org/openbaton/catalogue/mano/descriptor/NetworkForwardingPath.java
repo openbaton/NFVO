@@ -17,10 +17,13 @@
 
 package org.openbaton.catalogue.mano.descriptor;
 
-import java.io.Serializable;
 import java.util.Map;
-import javax.persistence.*;
-import org.openbaton.catalogue.util.IdGenerator;
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToOne;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /**
  * Created by lto on 06/02/15.
@@ -28,10 +31,8 @@ import org.openbaton.catalogue.util.IdGenerator;
  * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class NetworkForwardingPath implements Serializable {
+public class NetworkForwardingPath extends BaseEntity {
 
-  @Id private String id;
-  @Version private int version = 0;
   /** A policy or rule to apply to the NFP */
   @OneToOne(cascade = CascadeType.ALL)
   private Policy policy;
@@ -43,25 +44,15 @@ public class NetworkForwardingPath implements Serializable {
 
   public NetworkForwardingPath() {}
 
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
-  public int getVersion() {
-    return version;
-  }
-
-  public void setVersion(int version) {
-    this.version = version;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
+  @Override
+  public String toString() {
+    return "NetworkForwardingPath{"
+        + "policy="
+        + policy
+        + ", connection="
+        + connection
+        + "} "
+        + super.toString();
   }
 
   public Policy getPolicy() {
@@ -78,20 +69,5 @@ public class NetworkForwardingPath implements Serializable {
 
   public void setConnection(Map<String, String> connection) {
     this.connection = connection;
-  }
-
-  @Override
-  public String toString() {
-    return "NetworkForwardingPath{"
-        + "id='"
-        + id
-        + '\''
-        + ", version="
-        + version
-        + ", policy="
-        + policy
-        + ", connection="
-        + connection
-        + '}';
   }
 }

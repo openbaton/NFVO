@@ -17,18 +17,12 @@
 
 package org.openbaton.catalogue.nfvo;
 
-import java.io.Serializable;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import javax.persistence.Version;
-import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by lto on 05/08/15. */
 @Entity
-public class Item implements Serializable {
-  @Id private String id;
-  @Version private int version = 0;
+public class Item extends BaseEntity {
 
   private String metric;
 
@@ -43,12 +37,7 @@ public class Item implements Serializable {
   @Override
   public String toString() {
     return "Item{"
-        + "id='"
-        + id
-        + '\''
-        + ", version="
-        + version
-        + ", metric='"
+        + "metric='"
         + metric
         + '\''
         + ", hostId='"
@@ -63,28 +52,8 @@ public class Item implements Serializable {
         + ", value='"
         + value
         + '\''
-        + '}';
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
-  public int getVersion() {
-    return version;
-  }
-
-  public void setVersion(int version) {
-    this.version = version;
+        + "} "
+        + super.toString();
   }
 
   public String getMetric() {

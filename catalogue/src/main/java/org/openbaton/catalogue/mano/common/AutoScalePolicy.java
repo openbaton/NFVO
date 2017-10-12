@@ -17,16 +17,18 @@
 
 package org.openbaton.catalogue.mano.common;
 
-import java.io.Serializable;
 import java.util.Set;
-import javax.persistence.*;
-import org.openbaton.catalogue.util.IdGenerator;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by mpa on 15/12/15. */
 @Entity
-public class AutoScalePolicy implements Serializable {
-  @Id private String id;
-  @Version private Integer version = 0;
+public class AutoScalePolicy extends BaseEntity {
 
   private String name;
 
@@ -49,19 +51,6 @@ public class AutoScalePolicy implements Serializable {
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<ScalingAction> actions;
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public Integer getVersion() {
-    return version;
-  }
 
   public String getName() {
     return name;
@@ -138,17 +127,11 @@ public class AutoScalePolicy implements Serializable {
   @Override
   public String toString() {
     return "AutoScalePolicy{"
-        + "id='"
-        + id
-        + '\''
-        + ", version="
-        + version
-        + ", name='"
+        + "name='"
         + name
         + '\''
-        + ", threshold='"
+        + ", threshold="
         + threshold
-        + '\''
         + ", comparisonOperator='"
         + comparisonOperator
         + '\''
@@ -164,6 +147,7 @@ public class AutoScalePolicy implements Serializable {
         + alarms
         + ", actions="
         + actions
-        + '}';
+        + "} "
+        + super.toString();
   }
 }

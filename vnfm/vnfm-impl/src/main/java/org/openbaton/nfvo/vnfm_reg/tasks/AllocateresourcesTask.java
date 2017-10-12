@@ -66,7 +66,7 @@ public class AllocateresourcesTask extends AbstractTask {
         "VNFR ("
             + virtualNetworkFunctionRecord.getId()
             + ") received hibernate version is = "
-            + virtualNetworkFunctionRecord.getHb_version());
+            + virtualNetworkFunctionRecord.getHbVersion());
 
     for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
       VimInstance vimInstance = vims.get(vdu.getId());

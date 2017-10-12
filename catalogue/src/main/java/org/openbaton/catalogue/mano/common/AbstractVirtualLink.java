@@ -17,17 +17,13 @@
 
 package org.openbaton.catalogue.mano.common;
 
-import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.PrePersist;
-import javax.persistence.Version;
-import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /**
  * Created by lto on 05/02/15.
@@ -42,12 +38,7 @@ import org.openbaton.catalogue.util.IdGenerator;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public abstract class AbstractVirtualLink implements Serializable {
-
-  /** ID of the VLD */
-  @Id protected String id;
-
-  @Version protected Integer hb_version = 0;
+public abstract class AbstractVirtualLink extends BaseEntity {
 
   /** extId of the network to attach */
   protected String extId;
@@ -56,31 +47,26 @@ public abstract class AbstractVirtualLink implements Serializable {
    * Throughput of the link (e.g. bandwidth of E-Line, root bandwidth of E-Tree, and aggregate
    * capacity of E-LAN)
    */
-  protected String root_requirement;
+  private String root_requirement;
   /** Throughput of leaf connections to the link (for E-Tree and E-LAN branches) */
-  protected String leaf_requirement;
+  private String leaf_requirement;
   /** QoS options available on the VL, e.g. latency, jitter, etc. */
   @ElementCollection(fetch = FetchType.EAGER)
-  protected Set<String> qos;
+  private Set<String> qos;
   /**
    * Test access facilities available on the VL (e.g. none, passive monitoring, or active
    * (intrusive) loopbacks at endpoints TODO think of using Enum instead of String
    */
   @ElementCollection(fetch = FetchType.EAGER)
-  protected Set<String> test_access;
+  private Set<String> test_access;
   /**
    * Connectivity types, e.g. E-Line, E-LAN, or E-Tree. TODO: think of using Enum instead of String
    */
-  protected String connectivity_type;
+  private String connectivity_type;
   /** Name referenced by VNFCs */
   protected String name;
 
-  protected String cidr;
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
+  private String cidr;
 
   public String getCidr() {
     return cidr;
@@ -88,24 +74,6 @@ public abstract class AbstractVirtualLink implements Serializable {
 
   public void setCidr(String cidr) {
     this.cidr = cidr;
-  }
-
-  public AbstractVirtualLink() {}
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public Integer getHb_version() {
-    return hb_version;
-  }
-
-  public void setHb_version(Integer hb_version) {
-    this.hb_version = hb_version;
   }
 
   public String getRoot_requirement() {
@@ -167,12 +135,7 @@ public abstract class AbstractVirtualLink implements Serializable {
   @Override
   public String toString() {
     return "AbstractVirtualLink{"
-        + "id='"
-        + id
-        + '\''
-        + ", hb_version="
-        + hb_version
-        + ", extId='"
+        + "extId='"
         + extId
         + '\''
         + ", root_requirement='"
@@ -191,6 +154,10 @@ public abstract class AbstractVirtualLink implements Serializable {
         + ", name='"
         + name
         + '\''
-        + '}';
+        + ", cidr='"
+        + cidr
+        + '\''
+        + "} "
+        + super.toString();
   }
 }

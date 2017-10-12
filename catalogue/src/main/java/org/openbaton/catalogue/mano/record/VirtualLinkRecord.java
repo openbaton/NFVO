@@ -35,10 +35,6 @@ import org.openbaton.catalogue.mano.common.LifecycleEvent;
  */
 @Entity
 public class VirtualLinkRecord extends AbstractVirtualLink {
-  //    @Id
-  //    private String id;
-  //    @Version
-  //    private int hb_version = 0;
   private String vendor;
   private String version;
   private int number_of_endpoints;

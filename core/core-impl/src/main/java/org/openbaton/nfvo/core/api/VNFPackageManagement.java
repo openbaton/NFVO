@@ -31,6 +31,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -255,7 +256,7 @@ public class VNFPackageManagement
     for (VirtualNetworkFunctionDescriptor vnfd : vnfdRepository.findByProjectId(projectId)) {
       if (vnfd.getVendor().equals(virtualNetworkFunctionDescriptor.getVendor())
           && vnfd.getName().equals(virtualNetworkFunctionDescriptor.getName())
-          && vnfd.getVersion().equals(virtualNetworkFunctionDescriptor.getVersion())) {
+          && vnfd.getHbVersion().equals(virtualNetworkFunctionDescriptor.getHbVersion())) {
         throw new AlreadyExistingException(
             "A VNFD with this vendor, name and version is already existing");
       }
@@ -351,11 +352,11 @@ public class VNFPackageManagement
             if (metadata.containsKey("vim-types")) {
               vnfPackageMetadata.setVimTypes(
                   new HashSet<String>((ArrayList) metadata.get("vim-types")));
-              vnfPackage.setVimTypes((ArrayList) metadata.get("vim-types"));
+              vnfPackage.setVimTypes((Set<String>) metadata.get("vim-types"));
             } else {
               vnfPackageMetadata.setVimTypes(
                   new HashSet<String>((ArrayList) metadata.get("vim_types")));
-              vnfPackage.setVimTypes((ArrayList) metadata.get("vim_types"));
+              vnfPackage.setVimTypes((Set<String>) metadata.get("vim_types"));
             }
 
             vnfPackageMetadata.setDescription((String) metadata.get("description"));
@@ -378,7 +379,7 @@ public class VNFPackageManagement
                 AdditionalRepoInfo additionalRepoInfo = new AdditionalRepoInfo(packageType);
                 if (rci.containsKey("key-url"))
                   additionalRepoInfo.setKeyUrl((String) rci.get("key-url"));
-                List<String> configurationInfo = (List<String>) rci.get("configuration");
+                Set<String> configurationInfo = (Set<String>) rci.get("configuration");
                 additionalRepoInfo.setConfiguration(configurationInfo);
                 vnfPackageMetadata.addRepoConfigurationInfo(additionalRepoInfo);
               }
@@ -702,7 +703,7 @@ public class VNFPackageManagement
       vnfPackage.setScriptsLink((String) metadata.get("scripts-link"));
     }
     if (metadata.containsKey("vim_types")) {
-      List<String> vimTypes = (List<String>) metadata.get("vim_types");
+      Set<String> vimTypes = (Set<String>) metadata.get("vim_types");
       vnfPackage.setVimTypes(vimTypes);
     } else {
       log.warn("vim_types is not specified! it is not possible to check the vim");
@@ -796,7 +797,7 @@ public class VNFPackageManagement
 
     for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
       if (vdu.getVimInstanceName() == null || vdu.getVimInstanceName().isEmpty()) {
-        vdu.setVimInstanceName(new ArrayList<String>());
+        vdu.setVimInstanceName(new LinkedHashSet<>());
         vdu.getVimInstanceName()
             .addAll(
                 vnfPlacementManagement.chose(
@@ -901,7 +902,7 @@ public class VNFPackageManagement
       }
       for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
 
-        List<String> vimInstanceNames = vdu.getVimInstanceName();
+        Set<String> vimInstanceNames = vdu.getVimInstanceName();
 
         for (String vimName : vimInstanceNames) {
 

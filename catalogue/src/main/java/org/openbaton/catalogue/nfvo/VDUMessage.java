@@ -26,8 +26,6 @@ public class VDUMessage implements Serializable {
   private Event lifecycleEvent;
   private Serializable payload;
 
-  public VDUMessage() {}
-
   public Event getLifecycleEvent() {
     return lifecycleEvent;
   }

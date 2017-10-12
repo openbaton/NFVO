@@ -17,18 +17,12 @@
 
 package org.openbaton.catalogue.nfvo;
 
-import java.io.Serializable;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import javax.persistence.Version;
-import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by mpa on 28.05.15. */
 @Entity
-public class Subnet implements Serializable {
-  @Id private String id;
-  @Version private int version = 0;
+public class Subnet extends BaseEntity {
   private String name;
   private String extId;
   private String networkId;
@@ -36,27 +30,6 @@ public class Subnet implements Serializable {
   private String gatewayIp;
 
   public Subnet() {}
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public int getVersion() {
-    return version;
-  }
-
-  public void setVersion(int version) {
-    this.version = version;
-  }
 
   public String getName() {
     return name;
@@ -101,12 +74,7 @@ public class Subnet implements Serializable {
   @Override
   public String toString() {
     return "Subnet{"
-        + "id='"
-        + id
-        + '\''
-        + ", version="
-        + version
-        + ", name='"
+        + "name='"
         + name
         + '\''
         + ", extId='"
@@ -121,6 +89,7 @@ public class Subnet implements Serializable {
         + ", gatewayIp='"
         + gatewayIp
         + '\''
-        + '}';
+        + "} "
+        + super.toString();
   }
 }

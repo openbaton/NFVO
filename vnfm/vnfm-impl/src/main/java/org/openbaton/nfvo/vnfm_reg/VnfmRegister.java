@@ -45,7 +45,11 @@ public class VnfmRegister implements org.openbaton.vnfm.interfaces.register.Vnfm
   }
 
   public void register(String type, String endpoint, EndpointType endpointType) {
-    this.vnfmEndpointRepository.save(new VnfmManagerEndpoint(type, endpoint, endpointType));
+    VnfmManagerEndpoint vnfmManagerEndpoint = new VnfmManagerEndpoint();
+    vnfmManagerEndpoint.setType(type);
+    vnfmManagerEndpoint.setEndpoint(endpoint);
+    vnfmManagerEndpoint.setEndpointType(endpointType);
+    this.vnfmEndpointRepository.save(vnfmManagerEndpoint);
   }
 
   @Override

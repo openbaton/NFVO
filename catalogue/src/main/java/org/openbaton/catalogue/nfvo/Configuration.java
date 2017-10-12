@@ -18,66 +18,32 @@
 package org.openbaton.catalogue.nfvo;
 
 /** Created by lto on 18/05/15. */
-import java.io.Serializable;
 import java.util.Set;
-import javax.persistence.*;
-import org.openbaton.catalogue.util.IdGenerator;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+import org.openbaton.catalogue.util.BaseEntity;
 
 @Entity
-public class Configuration implements Serializable {
-  @Id private String id;
-  @Version private Integer version = 0;
+public class Configuration extends BaseEntity {
 
-  private String projectId;
   // TODO think at cascade type
   @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<ConfigurationParameter> configurationParameters;
 
   private String name;
 
-  public String getProjectId() {
-    return projectId;
-  }
-
-  public void setProjectId(String projectId) {
-    this.projectId = projectId;
-  }
-
   @Override
   public String toString() {
     return "Configuration{"
-        + "id='"
-        + id
-        + '\''
-        + ", version="
-        + version
-        + ", configurationParameters="
+        + "configurationParameters="
         + configurationParameters
         + ", name='"
         + name
         + '\''
-        + '}';
-  }
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public Integer getVersion() {
-    return version;
-  }
-
-  public void setVersion(Integer version) {
-    this.version = version;
+        + "} "
+        + super.toString();
   }
 
   public Set<ConfigurationParameter> getConfigurationParameters() {

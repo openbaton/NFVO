@@ -292,7 +292,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
     Assert.assertEquals(nsd_exp.getId(), nsd.getId());
     Assert.assertEquals(nsd_exp.getName(), nsd.getName());
     Assert.assertEquals(nsd_exp.getVendor(), nsd.getVendor());
-    Assert.assertEquals(nsd_exp.getVersion(), nsd.getVersion());
+    Assert.assertEquals(nsd_exp.getHbVersion(), nsd.getHbVersion());
     Assert.assertEquals(nsd_exp.isEnabled(), nsd.isEnabled());
   }
 

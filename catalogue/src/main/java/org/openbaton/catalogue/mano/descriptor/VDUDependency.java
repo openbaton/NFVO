@@ -17,9 +17,10 @@
 
 package org.openbaton.catalogue.mano.descriptor;
 
-import java.io.Serializable;
-import javax.persistence.*;
-import org.openbaton.catalogue.util.IdGenerator;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OneToOne;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /**
  * Created by lto on 06/02/15.
@@ -27,9 +28,7 @@ import org.openbaton.catalogue.util.IdGenerator;
  * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class VDUDependency implements Serializable {
-  @Id private String id;
-  @Version private int version = 0;
+public class VDUDependency extends BaseEntity {
 
   @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
   private VirtualDeploymentUnit source;
@@ -37,27 +36,9 @@ public class VDUDependency implements Serializable {
   @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
   private VirtualDeploymentUnit target;
 
-  public VDUDependency() {}
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public int getVersion() {
-    return version;
-  }
-
-  public void setVersion(int version) {
-    this.version = version;
+  @Override
+  public String toString() {
+    return "VDUDependency{" + "source=" + source + ", target=" + target + "} " + super.toString();
   }
 
   public VirtualDeploymentUnit getTarget() {

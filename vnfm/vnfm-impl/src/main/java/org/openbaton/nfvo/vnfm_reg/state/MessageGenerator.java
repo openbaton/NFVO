@@ -1,11 +1,11 @@
 package org.openbaton.nfvo.vnfm_reg.state;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -13,7 +13,12 @@ import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.*;
+import org.openbaton.catalogue.nfvo.Action;
+import org.openbaton.catalogue.nfvo.ConfigurationParameter;
+import org.openbaton.catalogue.nfvo.EndpointType;
+import org.openbaton.catalogue.nfvo.VNFPackage;
+import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmInstantiateMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrAllocateResourcesMessage;
@@ -119,15 +124,15 @@ public class MessageGenerator implements org.openbaton.vnfm.interfaces.manager.M
   @Override
   public OrVnfmInstantiateMessage getNextMessage(
       VirtualNetworkFunctionDescriptor vnfd,
-      Map<String, List<String>> vduVimInstances,
+      Map<String, Set<String>> vduVimInstances,
       NetworkServiceRecord networkServiceRecord,
       DeployNSRBody body)
       throws NotFoundException {
     Map<String, Collection<VimInstance>> vimInstances = new HashMap<>();
 
     for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
-      vimInstances.put(vdu.getId(), new ArrayList<VimInstance>());
-      List<String> vimInstanceNames = vduVimInstances.get(vdu.getId());
+      vimInstances.put(vdu.getId(), new LinkedHashSet<>());
+      Set<String> vimInstanceNames = vduVimInstances.get(vdu.getId());
       for (String vimInstanceName : vimInstanceNames) {
         log.debug(
             "deployment procedure for (" + vnfd.getName() + "). Looking for " + vimInstanceName);

@@ -69,7 +69,7 @@ public class GrantoperationTask extends AbstractTask {
           "VNFR ("
               + virtualNetworkFunctionRecord.getId()
               + ") received hibernate version is: "
-              + virtualNetworkFunctionRecord.getHb_version());
+              + virtualNetworkFunctionRecord.getHbVersion());
       OrVnfmGrantLifecycleOperationMessage nfvMessage = new OrVnfmGrantLifecycleOperationMessage();
       nfvMessage.setGrantAllowed(true);
       nfvMessage.setVduVim(new HashMap<>());
@@ -112,7 +112,7 @@ public class GrantoperationTask extends AbstractTask {
             "VNFR ("
                 + virtualNetworkFunctionRecord.getId()
                 + ") current hibernate version is: "
-                + virtualNetworkFunctionRecord.getHb_version());
+                + virtualNetworkFunctionRecord.getHbVersion());
         OrVnfmGrantLifecycleOperationMessage nfvMessage =
             new OrVnfmGrantLifecycleOperationMessage();
         nfvMessage.setGrantAllowed(true);

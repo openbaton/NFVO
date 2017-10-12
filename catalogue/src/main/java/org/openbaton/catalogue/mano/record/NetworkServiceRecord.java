@@ -17,7 +17,6 @@
 
 package org.openbaton.catalogue.mano.record;
 
-import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
@@ -25,16 +24,14 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.PrePersist;
 import org.openbaton.catalogue.mano.common.AutoScalePolicy;
 import org.openbaton.catalogue.mano.common.ConnectionPoint;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.common.NetworkServiceDeploymentFlavour;
 import org.openbaton.catalogue.mano.common.faultmanagement.FaultManagementPolicy;
-import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /**
  * Created by lto on 06/02/15.
@@ -42,8 +39,7 @@ import org.openbaton.catalogue.util.IdGenerator;
  * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class NetworkServiceRecord implements Serializable {
-  @Id private String id;
+public class NetworkServiceRecord extends BaseEntity {
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<AutoScalePolicy> auto_scale_policy;
@@ -61,16 +57,7 @@ public class NetworkServiceRecord implements Serializable {
   private NetworkServiceDeploymentFlavour service_deployment_flavour;
 
   private String vendor;
-  private String projectId;
   private String task;
-
-  public String getProjectId() {
-    return projectId;
-  }
-
-  public void setProjectId(String projectId) {
-    this.projectId = projectId;
-  }
 
   private String version;
 
@@ -178,19 +165,6 @@ public class NetworkServiceRecord implements Serializable {
   private String name;
 
   public NetworkServiceRecord() {}
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
 
   public Set<AutoScalePolicy> getAuto_scale_policy() {
     return auto_scale_policy;
@@ -364,10 +338,7 @@ public class NetworkServiceRecord implements Serializable {
   @Override
   public String toString() {
     return "NetworkServiceRecord{"
-        + "id='"
-        + id
-        + '\''
-        + ", auto_scale_policy="
+        + "auto_scale_policy="
         + auto_scale_policy
         + ", connection_point="
         + connection_point
@@ -377,9 +348,6 @@ public class NetworkServiceRecord implements Serializable {
         + service_deployment_flavour
         + ", vendor='"
         + vendor
-        + '\''
-        + ", projectId='"
-        + projectId
         + '\''
         + ", task='"
         + task
@@ -423,12 +391,16 @@ public class NetworkServiceRecord implements Serializable {
         + ", createdAt='"
         + createdAt
         + '\''
+        + ", updatedAt='"
+        + updatedAt
+        + '\''
         + ", keyNames="
         + keyNames
         + ", name='"
         + name
         + '\''
-        + '}';
+        + "} "
+        + super.toString();
   }
 
   public void setTask(String task) {

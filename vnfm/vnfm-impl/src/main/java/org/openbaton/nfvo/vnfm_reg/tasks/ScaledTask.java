@@ -85,7 +85,7 @@ public class ScaledTask extends AbstractTask {
         "VNFR ("
             + virtualNetworkFunctionRecord.getId()
             + ") received hibernate version = "
-            + virtualNetworkFunctionRecord.getHb_version());
+            + virtualNetworkFunctionRecord.getHbVersion());
     setHistoryLifecycleEvent(new Date());
     saveVirtualNetworkFunctionRecord();
 

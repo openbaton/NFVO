@@ -17,35 +17,17 @@
 
 package org.openbaton.catalogue.security;
 
-import java.text.DateFormat;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by lto on 17/10/16. */
 @Entity
-public class HistoryEntity {
+public class HistoryEntity extends BaseEntity {
   private String username;
   private String method;
   private String path;
   private String result;
   private long timestamp;
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  @Id private String id;
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
 
   @Override
   public String toString() {
@@ -63,11 +45,9 @@ public class HistoryEntity {
         + result
         + '\''
         + ", timestamp="
-        + DateFormat.getInstance().format(timestamp)
-        + ", id='"
-        + id
-        + '\''
-        + '}';
+        + timestamp
+        + "} "
+        + super.toString();
   }
 
   public void setUsername(String username) {

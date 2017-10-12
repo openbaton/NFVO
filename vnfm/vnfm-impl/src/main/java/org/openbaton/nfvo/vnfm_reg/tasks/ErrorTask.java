@@ -81,7 +81,7 @@ public class ErrorTask extends AbstractTask {
                 + ") existing hibernate version is = "
                 + vnfrRepository
                     .findFirstById(virtualNetworkFunctionRecord.getId())
-                    .getHb_version());
+                    .getHbVersion());
       } catch (Exception e) {
         if (log.isDebugEnabled()) {
           log.error(e.getMessage(), e);
@@ -91,7 +91,7 @@ public class ErrorTask extends AbstractTask {
           "VNFR ("
               + virtualNetworkFunctionRecord.getId()
               + ") received hibernate version is: "
-              + virtualNetworkFunctionRecord.getHb_version());
+              + virtualNetworkFunctionRecord.getHbVersion());
       log.error(
           "Received ERROR message from VNFM related to VNFR: "
               + virtualNetworkFunctionRecord.getName());
