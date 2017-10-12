@@ -224,9 +224,10 @@ public class RestNetworkServiceDescriptor {
     notes = "Returns all Network Service Descriptors onboarded in the project with the specified id"
   )
   @RequestMapping(method = RequestMethod.GET)
-  public Iterable<NetworkServiceDescriptor> findAll(
+  public List<NetworkServiceDescriptor> findAll(
       @RequestHeader(value = "project-id") String projectId) {
-    return networkServiceDescriptorManagement.queryByProjectId(projectId);
+    return (List<NetworkServiceDescriptor>)
+        networkServiceDescriptorManagement.queryByProjectId(projectId);
   }
 
   /**

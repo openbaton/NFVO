@@ -72,7 +72,7 @@ public class GrantoperationTask extends AbstractTask {
               + virtualNetworkFunctionRecord.getHb_version());
       OrVnfmGrantLifecycleOperationMessage nfvMessage = new OrVnfmGrantLifecycleOperationMessage();
       nfvMessage.setGrantAllowed(true);
-      nfvMessage.setVduVim(new HashMap<String, VimInstance>());
+      nfvMessage.setVduVim(new HashMap<>());
       for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
         nfvMessage
             .getVduVim()

@@ -121,9 +121,9 @@ public class RestVirtualNetworkFunctionDescriptor {
    */
   @ApiOperation(value = "Retrieving all Virtual Network Function Descriptors", notes = "")
   @RequestMapping(method = RequestMethod.GET)
-  public Iterable<VirtualNetworkFunctionDescriptor> findAll(
+  public List<VirtualNetworkFunctionDescriptor> findAll(
       @RequestHeader(value = "project-id") String projectId) {
-    return vnfdManagement.queryByProjectId(projectId);
+    return (List<VirtualNetworkFunctionDescriptor>) vnfdManagement.queryByProjectId(projectId);
   }
 
   /**

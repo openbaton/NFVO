@@ -19,10 +19,8 @@ package org.openbaton.nfvo.repositories;
 
 import org.openbaton.catalogue.security.Key;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 /** Created by mpa on 09/08/16. */
-@Transactional(readOnly = true)
 public class KeyRepositoryImpl implements KeyRepositoryCustom {
 
   @Autowired private KeyRepository keyRepository;

@@ -21,12 +21,7 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
@@ -41,45 +36,14 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.openbaton.catalogue.mano.common.AutoScalePolicy;
-import org.openbaton.catalogue.mano.common.ConnectionPoint;
-import org.openbaton.catalogue.mano.common.DeploymentFlavour;
-import org.openbaton.catalogue.mano.common.Event;
-import org.openbaton.catalogue.mano.common.HighAvailability;
-import org.openbaton.catalogue.mano.common.LifecycleEvent;
-import org.openbaton.catalogue.mano.common.ResiliencyLevel;
-import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
-import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
-import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
-import org.openbaton.catalogue.mano.descriptor.VNFComponent;
-import org.openbaton.catalogue.mano.descriptor.VNFDependency;
-import org.openbaton.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
-import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
-import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.mano.common.*;
+import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.Configuration;
-import org.openbaton.catalogue.nfvo.ConfigurationParameter;
-import org.openbaton.catalogue.nfvo.NFVImage;
-import org.openbaton.catalogue.nfvo.Network;
-import org.openbaton.catalogue.nfvo.Quota;
-import org.openbaton.catalogue.nfvo.VNFPackage;
-import org.openbaton.catalogue.nfvo.VimInstance;
-import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
-import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.exceptions.BadFormatException;
-import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.MissingParameterException;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.QuotaExceededException;
-import org.openbaton.exceptions.VimDriverException;
-import org.openbaton.exceptions.VimException;
-import org.openbaton.exceptions.WrongStatusException;
+import org.openbaton.catalogue.nfvo.*;
+import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.core.api.ConfigurationManagement;
 import org.openbaton.nfvo.core.api.NetworkServiceRecordManagement;
 import org.openbaton.nfvo.core.api.VimManagement;
@@ -87,25 +51,20 @@ import org.openbaton.nfvo.core.interfaces.EventDispatcher;
 import org.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
 import org.openbaton.nfvo.core.utils.NSDUtils;
-import org.openbaton.nfvo.repositories.ConfigurationRepository;
-import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
-import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
-import org.openbaton.nfvo.repositories.VimRepository;
-import org.openbaton.nfvo.repositories.VnfPackageRepository;
-import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
+import org.openbaton.nfvo.repositories.*;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.scheduling.annotation.AsyncResult;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 
 /** Created by lto on 20/04/15. */
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = NetworkServiceRecordManagementClassSuiteTest.class)
 @org.springframework.context.annotation.Configuration
-@ContextConfiguration(classes = NetworkServiceRecordManagementClassSuiteTest.class)
 @SuppressWarnings({"unsafe", "unchecked"})
 public class NetworkServiceRecordManagementClassSuiteTest {
 

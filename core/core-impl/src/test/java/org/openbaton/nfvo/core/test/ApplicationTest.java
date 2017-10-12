@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Configuration;
 
 /** Created by lto on 20/04/15. */
 @Configuration
-@ComponentScan(basePackages = "org.project.openbaton.nfvo")
+@ComponentScan(basePackages = "org.openbaton.nfvo")
 public class ApplicationTest {
 
   public static void main(String[] argv) {

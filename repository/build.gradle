@@ -18,18 +18,10 @@
 dependencies {
     compile project(':catalogue')
 
+    compile 'org.springframework.boot:spring-boot-starter-data-jpa:' + springBootVersion
 
-
-    compile 'commons-dbcp:commons-dbcp:1.4'
-    // CrudRepository
-    compile 'org.springframework.data:spring-data-jpa:1.10.6.RELEASE'
-
-    runtime 'org.hibernate:hibernate-entitymanager:4.3.11.Final'
-
-    testCompile 'org.springframework:spring-test:' + springVersion
     testCompile 'org.springframework.boot:spring-boot-starter-data-jpa:' + springBootVersion
+    testCompile 'org.springframework.boot:spring-boot-starter-test:' + springBootVersion
     testCompile 'org.hsqldb:hsqldb:2.3.4'
-
-
     testCompile 'junit:junit:'+junitVersion
 }

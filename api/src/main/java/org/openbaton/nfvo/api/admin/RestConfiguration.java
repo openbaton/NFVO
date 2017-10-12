@@ -16,6 +16,7 @@
 
 package org.openbaton.nfvo.api.admin;
 
+import java.util.List;
 import javax.validation.Valid;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.exceptions.NotFoundException;
@@ -76,10 +77,10 @@ public class RestConfiguration {
    * @return List<Configuration>: The list of Configurations available
    */
   @RequestMapping(method = RequestMethod.GET)
-  public Iterable<Configuration> findAll(
+  public List<Configuration> findAll(
       @RequestHeader(value = "project-id", required = false) String projectId) {
     log.trace("Find all Configurations");
-    return configurationManagement.queryByProject(projectId);
+    return (List<Configuration>) configurationManagement.queryByProject(projectId);
   }
 
   /**

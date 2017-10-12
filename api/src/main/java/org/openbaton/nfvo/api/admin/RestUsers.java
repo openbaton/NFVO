@@ -131,9 +131,9 @@ public class RestUsers {
    */
   @ApiOperation(value = "Retrieve all Users", notes = "Returns all registered users")
   @RequestMapping(method = RequestMethod.GET)
-  public Iterable<User> findAll() {
+  public List<User> findAll() {
     log.trace("Find all Users");
-    return userManagement.query();
+    return (List<User>) userManagement.query();
   }
 
   /**

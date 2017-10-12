@@ -17,50 +17,26 @@
 
 package org.openbaton.nfvo.security.authentication;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 
 @Configuration
 @EnableResourceServer
-@ConfigurationProperties(prefix = "nfvo.security")
 public class ResourceServer extends ResourceServerConfigurerAdapter {
-
-  private boolean enabled;
-  private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Override
   public void configure(HttpSecurity http) throws Exception {
-    http.headers().frameOptions().disable();
-
     // API calls
-    log.debug("Security must be enabled");
     http.authorizeRequests()
-        .regexMatchers(HttpMethod.POST, "/api/v1/")
-        .access("#oauth2.hasScope('write')")
-        .and()
-        .sessionManagement()
-        .sessionCreationPolicy(SessionCreationPolicy.NEVER)
-        .and()
-        .exceptionHandling()
+        .antMatchers("/api/v1/components/services/register", "/api/v1/security")
+        .permitAll()
         .and()
         .authorizeRequests()
-        .antMatchers("/api/v1/components/services/register")
-        .permitAll();
-
-    http.authorizeRequests()
         .antMatchers("/api/**")
         .access("#oauth2.hasScope('write')")
-        .and()
-        .sessionManagement()
-        .sessionCreationPolicy(SessionCreationPolicy.NEVER)
         .and()
         .exceptionHandling();
   }
@@ -68,13 +44,5 @@ public class ResourceServer extends ResourceServerConfigurerAdapter {
   @Override
   public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
     resources.resourceId(OAuth2AuthorizationServerConfig.RESOURCE_ID);
-  }
-
-  public Boolean getEnabled() {
-    return enabled;
-  }
-
-  public void setEnabled(Boolean enabled) {
-    this.enabled = enabled;
   }
 }

@@ -199,8 +199,8 @@ public class RestVNFPackage {
     notes = "Returns all VNF Packages onboarded on the specified project"
   )
   @RequestMapping(method = RequestMethod.GET)
-  public Iterable<VNFPackage> findAll(@RequestHeader(value = "project-id") String projectId) {
-    return vnfPackageManagement.queryByProjectId(projectId);
+  public List<VNFPackage> findAll(@RequestHeader(value = "project-id") String projectId) {
+    return (List<VNFPackage>) vnfPackageManagement.queryByProjectId(projectId);
   }
 
   @ApiOperation(

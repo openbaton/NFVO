@@ -16,6 +16,7 @@
 
 package org.openbaton.nfvo.api.catalogue;
 
+import java.util.List;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.nfvo.core.interfaces.VNFComponentManagment;
 import org.slf4j.Logger;
@@ -34,8 +35,8 @@ public class RestVNFComponent {
 
   @RequestMapping(method = RequestMethod.GET)
   @ResponseStatus(HttpStatus.OK)
-  public Iterable<VNFComponent> findAll() {
-    return vnfComponentManagment.query();
+  public List<VNFComponent> findAll() {
+    return (List<VNFComponent>) vnfComponentManagment.query();
   }
 
   @RequestMapping(value = "{id}", method = RequestMethod.GET)

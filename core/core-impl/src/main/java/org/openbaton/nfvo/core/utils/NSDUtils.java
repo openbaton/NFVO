@@ -635,7 +635,7 @@ public class NSDUtils {
                         virtualNetworkFunctionDescriptor.getVirtual_link(), vnfdConnectionPoint)) {
                       throw new NetworkServiceIntegrityException(
                           String.format(
-                              "VirtualLinkReference %s not found in the availavle virtual links",
+                              "VirtualLinkReference %s not found in the virtual links defined in the vnfd",
                               vnfdConnectionPoint.getVirtual_link_reference()));
                     }
                   }
