@@ -17,6 +17,7 @@
 
 package org.openbaton.tosca.templates.TopologyTemplate.Nodes.VDU;
 
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -38,7 +39,12 @@ public class VDUProperties {
     }
 
     if (vduPropMap.containsKey("vim_instance_name")) {
-      vim_instance_name = (Set<String>) vduPropMap.get("vim_instance_name");
+      vim_instance_name =
+          new LinkedHashSet<String>() {
+            {
+              addAll((Collection<? extends String>) vduPropMap.get("vim_instance_name"));
+            }
+          };
     }
 
     if (vduPropMap.containsKey("fault_management_policy")) {

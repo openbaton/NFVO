@@ -62,7 +62,12 @@ public class VNFInterfaces {
             break;
         }
 
-        lifecycleEvent.setLifecycle_events((LinkedHashSet<String>) lifecycleMap.get(lifecycleName));
+        lifecycleEvent.setLifecycle_events(
+            new LinkedHashSet<String>() {
+              {
+                lifecycleMap.get(lifecycleName);
+              }
+            });
 
         lifecycleEvents.add(lifecycleEvent);
       }
