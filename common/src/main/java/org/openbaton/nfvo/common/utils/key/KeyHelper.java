@@ -71,17 +71,17 @@ public class KeyHelper {
   public static String encryptNew(String valueToEnc, String keyValue)
       throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException,
           BadPaddingException, IllegalBlockSizeException {
-    Key key = generateKey(keyValue.getBytes());
+    Key key = generateKey(keyValue.getBytes(StandardCharsets.UTF_8));
     Cipher c = Cipher.getInstance(AES_ALGORITHM);
     c.init(Cipher.ENCRYPT_MODE, key);
-    byte[] encValue = c.doFinal(valueToEnc.getBytes());
+    byte[] encValue = c.doFinal(valueToEnc.getBytes(StandardCharsets.UTF_8));
     return Base64.getEncoder().encodeToString(encValue);
   }
 
   public static String decryptNew(String encryptedValue, String keyValue)
       throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IOException,
           BadPaddingException, IllegalBlockSizeException {
-    Key key = generateKey(keyValue.getBytes());
+    Key key = generateKey(keyValue.getBytes(StandardCharsets.UTF_8));
     Cipher c = Cipher.getInstance(AES_ALGORITHM);
     c.init(Cipher.DECRYPT_MODE, key);
     byte[] decodedValue = decodeBase64(encryptedValue);
@@ -102,18 +102,18 @@ public class KeyHelper {
     return new String(cipher.doFinal(bytes), StandardCharsets.UTF_8);
   }
 
-  private static String decrypt(String bytes, Key key)
-      throws IllegalBlockSizeException, InvalidKeyException, BadPaddingException,
-          NoSuchAlgorithmException, NoSuchPaddingException {
-
-    return decrypt(bytes.getBytes(StandardCharsets.ISO_8859_1), key);
-  }
-
-  private static String encryptToString(String text, Key key)
-      throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
-          BadPaddingException, IllegalBlockSizeException {
-    return new String(encrypt(text, key), StandardCharsets.ISO_8859_1);
-  }
+//  private static String decrypt(String bytes, Key key)
+//      throws IllegalBlockSizeException, InvalidKeyException, BadPaddingException,
+//          NoSuchAlgorithmException, NoSuchPaddingException {
+//
+//    return decrypt(bytes.getBytes(StandardCharsets.ISO_8859_1), key);
+//  }
+//
+//  private static String encryptToString(String text, Key key)
+//      throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
+//          BadPaddingException, IllegalBlockSizeException {
+//    return new String(encrypt(text, key), StandardCharsets.ISO_8859_1);
+//  }
 
   /*
    *
