@@ -28,10 +28,8 @@ import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmStartStopMessage;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.nfvo.repositories.VNFCInstanceRepository;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -41,8 +39,6 @@ import org.springframework.stereotype.Service;
 @Scope("prototype")
 @ConfigurationProperties(prefix = "nfvo.start")
 public class StartTask extends AbstractTask {
-
-  @Autowired private VNFCInstanceRepository vnfcInstanceRepository;
 
   private String ordered;
   private VNFCInstance vnfcInstance;
