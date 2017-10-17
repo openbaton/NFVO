@@ -121,7 +121,7 @@ public class ConfigurationManagementClassSuiteTest {
     Assert.assertEquals(network_exp.getName(), network_new.getName());
     Assert.assertEquals(network_exp.getExtId(), network_new.getExtId());
     Assert.assertEquals(network_exp.getExternal(), network_new.getExternal());
-    Assert.assertEquals(network_exp.getShared(), network_new.getShared());
+    Assert.assertEquals(network_exp.getExtShared(), network_new.getExtShared());
     Assert.assertEquals(network_exp.getSubnets().size(), network_new.getSubnets().size());
   }
 

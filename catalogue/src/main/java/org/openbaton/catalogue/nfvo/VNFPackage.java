@@ -17,37 +17,35 @@
 
 package org.openbaton.catalogue.nfvo;
 
-import java.io.Serializable;
-import java.util.List;
 import java.util.Set;
-import javax.persistence.*;
-import org.openbaton.catalogue.util.IdGenerator;
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by lto on 22/07/15. */
 @Entity
-public class VNFPackage implements Serializable {
+public class VNFPackage extends BaseEntity {
 
-  @Id private String id;
-  @Version private int version = 0;
-
-  //Name of the Package
   private String name;
 
-  //NFVO Version
   private String nfvo_version;
 
   private String vnfPackageVersion;
 
-  public List<String> getVimTypes() {
+  public Set<String> getVimTypes() {
     return vimTypes;
   }
 
-  public void setVimTypes(List<String> vimTypes) {
+  public void setVimTypes(Set<String> vimTypes) {
     this.vimTypes = vimTypes;
   }
 
   @ElementCollection(fetch = FetchType.EAGER)
-  private List<String> vimTypes;
+  private Set<String> vimTypes;
 
   //URL to the image's location
   private String imageLink;
@@ -72,27 +70,12 @@ public class VNFPackage implements Serializable {
 
   public VNFPackage() {}
 
-  private String projectId;
-
-  public String getProjectId() {
-    return projectId;
-  }
-
-  public void setProjectId(String projectId) {
-    this.projectId = projectId;
-  }
-
   public String getImageLink() {
     return imageLink;
   }
 
   public void setImageLink(String imageLink) {
     this.imageLink = imageLink;
-  }
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
   }
 
   public String getScriptsLink() {
@@ -103,28 +86,12 @@ public class VNFPackage implements Serializable {
     this.scriptsLink = scriptsLink;
   }
 
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
   public Set<Script> getScripts() {
     return scripts;
   }
 
   public void setScripts(Set<Script> scripts) {
     this.scripts = scripts;
-  }
-
-  public int getVersion() {
-    return version;
-  }
-
-  public void setVersion(int version) {
-    this.version = version;
   }
 
   public String getName() {
@@ -170,10 +137,7 @@ public class VNFPackage implements Serializable {
   @Override
   public String toString() {
     return "VNFPackage{"
-        + "id='"
-        + id
-        + '\''
-        + ", name='"
+        + "name='"
         + name
         + '\''
         + ", nfvo_version='"
@@ -192,11 +156,12 @@ public class VNFPackage implements Serializable {
         + '\''
         + ", image="
         + image
+        + ", vnfPackageMetadata="
+        + vnfPackageMetadata
         + ", scripts="
         + scripts
-        + ", projectId='"
-        + projectId
         + '\''
-        + '}';
+        + "} "
+        + super.toString();
   }
 }

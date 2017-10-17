@@ -75,7 +75,7 @@ public class ScalingTask extends AbstractTask {
   protected NFVMessage doWork() throws Exception {
 
     log.debug("NFVO: SCALING");
-    log.trace("VNFR reiceived hibernate version = " + virtualNetworkFunctionRecord.getHb_version());
+    log.trace("VNFR reiceived hibernate version = " + virtualNetworkFunctionRecord.getHbVersion());
     log.debug(
         "The VNFR: "
             + virtualNetworkFunctionRecord.getName()
@@ -260,7 +260,7 @@ public class ScalingTask extends AbstractTask {
         "VNFR ("
             + virtualNetworkFunctionRecord.getId()
             + ") received hibernate version = "
-            + virtualNetworkFunctionRecord.getHb_version());
+            + virtualNetworkFunctionRecord.getHbVersion());
     return new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.SCALED);
   }
 

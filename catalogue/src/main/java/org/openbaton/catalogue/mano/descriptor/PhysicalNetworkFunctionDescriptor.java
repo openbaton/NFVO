@@ -17,12 +17,14 @@
 
 package org.openbaton.catalogue.mano.descriptor;
 
-import java.io.Serializable;
 import java.util.Set;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import org.openbaton.catalogue.mano.common.ConnectionPoint;
 import org.openbaton.catalogue.mano.common.Security;
-import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /**
  * Created by lto on 06/02/15.
@@ -30,12 +32,8 @@ import org.openbaton.catalogue.util.IdGenerator;
  * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class PhysicalNetworkFunctionDescriptor implements Serializable {
+public class PhysicalNetworkFunctionDescriptor extends BaseEntity {
 
-  /** The ID (e.g. name) of this PNFD. */
-  @Id private String id;
-
-  @Version private int hb_version = 0;
   /** The vendor generating this PNFD. */
   private String vendor;
   /** The version of PNF this PNFD is describing. */
@@ -59,25 +57,27 @@ public class PhysicalNetworkFunctionDescriptor implements Serializable {
 
   public PhysicalNetworkFunctionDescriptor() {}
 
-  public int getHb_version() {
-    return hb_version;
-  }
-
-  public void setHb_version(int hb_version) {
-    this.hb_version = hb_version;
-  }
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
+  @Override
+  public String toString() {
+    return "PhysicalNetworkFunctionDescriptor{"
+        + "vendor='"
+        + vendor
+        + '\''
+        + ", version='"
+        + version
+        + '\''
+        + ", description='"
+        + description
+        + '\''
+        + ", connection_point="
+        + connection_point
+        + ", descriptor_version='"
+        + descriptor_version
+        + '\''
+        + ", pnfd_security="
+        + pnfd_security
+        + "} "
+        + super.toString();
   }
 
   public String getVendor() {
@@ -126,26 +126,5 @@ public class PhysicalNetworkFunctionDescriptor implements Serializable {
 
   public void setPnfd_security(Security pnfd_security) {
     this.pnfd_security = pnfd_security;
-  }
-
-  @Override
-  public String toString() {
-    return "PhysicalNetworkFunctionDescriptor [id="
-        + id
-        + ", hb_version="
-        + hb_version
-        + ", vendor="
-        + vendor
-        + ", version="
-        + version
-        + ", description="
-        + description
-        + ", connection_point="
-        + connection_point
-        + ", descriptor_version="
-        + descriptor_version
-        + ", pnfd_security="
-        + pnfd_security
-        + "]";
   }
 }

@@ -1,7 +1,11 @@
 package org.openbaton.catalogue.util;
 
 import java.io.Serializable;
+import java.util.Map;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -14,7 +18,11 @@ import javax.persistence.Version;
 public class BaseEntity implements Serializable {
   @Id private String id;
 
-  @Version private Integer version = 0;
+  @Column(columnDefinition = "int default 0")
+  @Version
+  private Integer hbVersion = 0;
+
+  public BaseEntity() {}
 
   @PrePersist
   public void ensureId() {
@@ -22,6 +30,11 @@ public class BaseEntity implements Serializable {
   }
 
   private String projectId;
+
+  private boolean shared;
+
+  @ElementCollection(fetch = FetchType.EAGER)
+  private Map<String, String> metadata;
 
   public String getId() {
     return id;
@@ -31,12 +44,12 @@ public class BaseEntity implements Serializable {
     this.id = id;
   }
 
-  public Integer getVersion() {
-    return version;
+  public Integer getHbVersion() {
+    return hbVersion;
   }
 
-  public void setVersion(Integer version) {
-    this.version = version;
+  public void setHbVersion(Integer hbVersion) {
+    this.hbVersion = hbVersion;
   }
 
   public String getProjectId() {
@@ -54,10 +67,30 @@ public class BaseEntity implements Serializable {
         + id
         + '\''
         + ", version="
-        + version
+        + hbVersion
         + ", projectId='"
         + projectId
         + '\''
+        + ", shared="
+        + shared
+        + ", metadata="
+        + metadata
         + '}';
+  }
+
+  public boolean isShared() {
+    return shared;
+  }
+
+  public void setShared(boolean shared) {
+    this.shared = shared;
+  }
+
+  public Map<String, String> getMetadata() {
+    return metadata;
+  }
+
+  public void setMetadata(Map<String, String> metadata) {
+    this.metadata = metadata;
   }
 }

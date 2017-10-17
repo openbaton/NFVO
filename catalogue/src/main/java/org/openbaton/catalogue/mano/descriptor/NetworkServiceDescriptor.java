@@ -19,7 +19,12 @@ package org.openbaton.catalogue.mano.descriptor;
 
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.openbaton.catalogue.mano.common.NFVEntityDescriptor;
@@ -155,7 +160,8 @@ public class NetworkServiceDescriptor extends NFVEntityDescriptor {
 
   @Override
   public String toString() {
-    return "NetworkServiceDescriptor [vnfd="
+    return "NetworkServiceDescriptor{"
+        + "vnfd="
         + vnfd
         + ", vnf_dependency="
         + vnf_dependency
@@ -163,26 +169,18 @@ public class NetworkServiceDescriptor extends NFVEntityDescriptor {
         + pnfd
         + ", nsd_security="
         + nsd_security
-        + ", id="
-        + id
-        + ", hb_version="
-        + hb_version
-        + ", vendor="
-        + vendor
-        + ", version="
-        + version
-        + ", vnffgd="
-        + vnffgd
-        + ", vld="
-        + vld
-        + ", lifecycle_event="
-        + monitoring_parameter
-        + ", service_deployment_flavour="
-        + service_deployment_flavour
-        + ", auto_scale_policy="
-        + auto_scale_policy
-        + ", connection_point="
-        + connection_point
-        + "]";
+        + ", enabled="
+        + enabled
+        + ", nfvo_version='"
+        + nfvo_version
+        + '\''
+        + ", createdAt='"
+        + createdAt
+        + '\''
+        + ", updatedAt='"
+        + updatedAt
+        + '\''
+        + "} "
+        + super.toString();
   }
 }

@@ -17,16 +17,15 @@
 
 package org.openbaton.catalogue.nfvo;
 
-import java.io.Serializable;
-import javax.persistence.*;
-import org.openbaton.catalogue.util.IdGenerator;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by lto on 13/08/15. */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public abstract class Endpoint implements Serializable {
-  @Id protected String id;
-  @Version protected int version = 0;
+public abstract class Endpoint extends BaseEntity {
 
   protected String type;
   protected EndpointType endpointType;
@@ -41,32 +40,6 @@ public abstract class Endpoint implements Serializable {
 
   public void setActive(boolean active) {
     this.active = active;
-  }
-
-  @Override
-  public String toString() {
-    return "Endpoint{"
-        + "id='"
-        + id
-        + '\''
-        + ", version="
-        + version
-        + ", type='"
-        + type
-        + '\''
-        + ", endpointType="
-        + endpointType
-        + ", endpoint='"
-        + endpoint
-        + '\''
-        + ", description='"
-        + description
-        + '\''
-        + ", enabled="
-        + enabled
-        + ", active="
-        + active
-        + '}';
   }
 
   public String getDescription() {
@@ -85,25 +58,12 @@ public abstract class Endpoint implements Serializable {
     this.enabled = enabled;
   }
 
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
   public String getType() {
     return type;
   }
 
   public void setType(String type) {
     this.type = type;
-  }
-
-  public int getVersion() {
-    return version;
-  }
-
-  public void setVersion(int version) {
-    this.version = version;
   }
 
   public EndpointType getEndpointType() {
@@ -114,13 +74,26 @@ public abstract class Endpoint implements Serializable {
     this.endpointType = endpointType;
   }
 
-  public String getId() {
-
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
+  @Override
+  public String toString() {
+    return "Endpoint{"
+        + "type='"
+        + type
+        + '\''
+        + ", endpointType="
+        + endpointType
+        + ", endpoint='"
+        + endpoint
+        + '\''
+        + ", description='"
+        + description
+        + '\''
+        + ", enabled="
+        + enabled
+        + ", active="
+        + active
+        + "} "
+        + super.toString();
   }
 
   public String getEndpoint() {

@@ -17,32 +17,30 @@
 
 package org.openbaton.catalogue.mano.descriptor;
 
-import java.io.Serializable;
+import org.openbaton.catalogue.util.BaseEntity;
+
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.*;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import org.openbaton.catalogue.util.IdGenerator;
 
-/**
- * Created by lto on 06/02/15.
- *
- * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
- */
+/** Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12) */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class VNFComponent implements Serializable {
-  /** Unique VNFC identification within the namespace of a specific VNF. */
-  @Id protected String id;
-
-  @Version protected Integer version = 0;
+public class VNFComponent extends BaseEntity {
 
   /**
    * Describes network connectivity between a VNFC instance (based on this VDU) and an internal
    * Virtual Link.
    */
-  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
   @NotNull
   @Size(min = 1)
   protected Set<VNFDConnectionPoint> connection_point;
@@ -51,25 +49,9 @@ public class VNFComponent implements Serializable {
     this.connection_point = new HashSet<>();
   }
 
-  public Integer getVersion() {
-    return version;
-  }
-
-  public void setVersion(Integer version) {
-    this.version = version;
-  }
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
+  @Override
+  public String toString() {
+    return "VNFComponent{" + "connection_point=" + connection_point + "} " + super.toString();
   }
 
   public Set<VNFDConnectionPoint> getConnection_point() {
@@ -78,18 +60,5 @@ public class VNFComponent implements Serializable {
 
   public void setConnection_point(Set<VNFDConnectionPoint> connection_point) {
     this.connection_point = connection_point;
-  }
-
-  @Override
-  public String toString() {
-    return "VNFComponent{"
-        + "connection_point="
-        + connection_point
-        + ", id='"
-        + id
-        + '\''
-        + ", version="
-        + version
-        + '}';
   }
 }

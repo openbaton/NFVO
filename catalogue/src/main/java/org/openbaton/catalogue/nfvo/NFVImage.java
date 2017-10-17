@@ -17,21 +17,15 @@
 
 package org.openbaton.catalogue.nfvo;
 
-import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Version;
-import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by lto on 11/05/15. */
 @Entity
-public class NFVImage implements Serializable {
-  @Id private String id;
-  @Version private int version = 0;
+public class NFVImage extends BaseEntity {
 
   private String extId;
   private String name;
@@ -52,33 +46,12 @@ public class NFVImage implements Serializable {
 
   public NFVImage() {}
 
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
   public String getName() {
     return name;
   }
 
   public void setName(String name) {
     this.name = name;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public int getVersion() {
-    return version;
-  }
-
-  public void setVersion(int version) {
-    this.version = version;
   }
 
   public String getExtId() {
@@ -170,45 +143,35 @@ public class NFVImage implements Serializable {
 
   @Override
   public String toString() {
-    return "Image{"
-        + "id='"
-        + id
+    return "NFVImage{"
+        + "extId='"
+        + extId
         + '\''
         + ", name='"
         + name
         + '\''
-        + ", version="
-        + version
-        + ", extId='"
-        + extId
-        + '\''
-        + ", minRam='"
+        + ", minRam="
         + minRam
-        + '\''
-        + ", minDiskSpace='"
+        + ", minDiskSpace="
         + minDiskSpace
-        + '\''
         + ", minCPU='"
         + minCPU
         + '\''
-        + ", public='"
+        + ", isPublic="
         + isPublic
-        + '\''
         + ", diskFormat='"
         + diskFormat
         + '\''
         + ", containerFormat='"
         + containerFormat
         + '\''
-        + ", status='"
-        + status
-        + '\''
-        + ", created='"
+        + ", created="
         + created
-        + '\''
-        + ", updated='"
+        + ", updated="
         + updated
-        + '\''
-        + '}';
+        + ", status="
+        + status
+        + "} "
+        + super.toString();
   }
 }

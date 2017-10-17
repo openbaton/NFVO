@@ -17,17 +17,17 @@
 
 package org.openbaton.catalogue.nfvo;
 
-import java.io.Serializable;
 import java.util.Map;
-import javax.persistence.*;
-import org.openbaton.catalogue.util.IdGenerator;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by lto on 21/08/15. */
 @Entity
-public class VNFCDependencyParameters implements Serializable {
+public class VNFCDependencyParameters extends BaseEntity {
   private String vnfcId;
-  @Id private String id;
-  @Version private int version = 0;
 
   @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
   private Map<String, DependencyParameters> parameters;
@@ -38,27 +38,6 @@ public class VNFCDependencyParameters implements Serializable {
 
   public void setVnfcId(String vnfcId) {
     this.vnfcId = vnfcId;
-  }
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public int getVersion() {
-    return version;
-  }
-
-  public void setVersion(int version) {
-    this.version = version;
   }
 
   public Map<String, DependencyParameters> getParameters() {
@@ -72,16 +51,12 @@ public class VNFCDependencyParameters implements Serializable {
   @Override
   public String toString() {
     return "VNFCDependencyParameters{"
-        + "id='"
-        + id
-        + '\''
-        + ", vnfcId='"
+        + "vnfcId='"
         + vnfcId
         + '\''
-        + ", version="
-        + version
         + ", parameters="
         + parameters
-        + '}';
+        + "} "
+        + super.toString();
   }
 }

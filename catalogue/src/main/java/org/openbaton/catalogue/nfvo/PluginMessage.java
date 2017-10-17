@@ -20,7 +20,6 @@ package org.openbaton.catalogue.nfvo;
 import java.io.Serializable;
 import java.util.Collection;
 
-/** Created by tce on 13.08.15. */
 public class PluginMessage implements Serializable {
 
   private String methodName;

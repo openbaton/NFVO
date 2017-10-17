@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.persistence.NoResultException;
 import org.junit.Assert;
@@ -124,7 +125,6 @@ public class VirtualLinkManagementClassSuiteTest {
         virtualLinkRecord_exp.getLeaf_requirement(), virtualLinkRecord_new.getLeaf_requirement());
     Assert.assertEquals(
         virtualLinkRecord_exp.getRoot_requirement(), virtualLinkRecord_new.getRoot_requirement());
-    Assert.assertEquals(virtualLinkRecord_exp.getVersion(), virtualLinkRecord_new.getVersion());
     Assert.assertEquals(virtualLinkRecord_exp.getVim_id(), virtualLinkRecord_new.getVim_id());
     Assert.assertEquals(
         virtualLinkRecord_exp.getAllocated_capacity(),
@@ -239,7 +239,7 @@ public class VirtualLinkManagementClassSuiteTest {
             LifecycleEvent lifecycleEvent = new LifecycleEvent();
             lifecycleEvent.setEvent(Event.INSTANTIATE);
             lifecycleEvent.setLifecycle_events(
-                new ArrayList<String>() {
+                new LinkedHashSet<String>() {
                   {
                     add("command");
                   }

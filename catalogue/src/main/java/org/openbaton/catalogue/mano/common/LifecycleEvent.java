@@ -17,10 +17,14 @@
 
 package org.openbaton.catalogue.mano.common;
 
-import java.io.Serializable;
-import java.util.List;
-import javax.persistence.*;
-import org.openbaton.catalogue.util.IdGenerator;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /**
  * Created by lto on 06/02/15.
@@ -28,54 +32,25 @@ import org.openbaton.catalogue.util.IdGenerator;
  * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class LifecycleEvent implements Serializable {
-
-  @Id private String id;
-
-  @Version private Integer version = 0;
+public class LifecycleEvent extends BaseEntity {
 
   @Enumerated(EnumType.STRING)
   private Event event;
 
   @ElementCollection(fetch = FetchType.EAGER)
-  private List<String> lifecycle_events;
+  private Set<String> lifecycle_events;
 
   public LifecycleEvent() {}
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public Integer getVersion() {
-    return version;
-  }
-
-  public void setVersion(Integer version) {
-    this.version = version;
-  }
 
   @Override
   public String toString() {
     return "LifecycleEvent{"
-        + "id='"
-        + id
-        + '\''
-        + ", version="
-        + version
-        + ", event="
+        + "event="
         + event
-        +
-        //				", lifecycle_events=" + lifecycle_events +
-        '}';
+        + ", lifecycle_events="
+        + lifecycle_events
+        + "} "
+        + super.toString();
   }
 
   public Event getEvent() {
@@ -86,11 +61,11 @@ public class LifecycleEvent implements Serializable {
     this.event = event;
   }
 
-  public List<String> getLifecycle_events() {
+  public Set<String> getLifecycle_events() {
     return lifecycle_events;
   }
 
-  public void setLifecycle_events(List<String> lifecycle_events) {
+  public void setLifecycle_events(LinkedHashSet<String> lifecycle_events) {
     this.lifecycle_events = lifecycle_events;
   }
 }

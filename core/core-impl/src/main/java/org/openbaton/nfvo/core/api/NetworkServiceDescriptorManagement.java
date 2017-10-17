@@ -31,14 +31,35 @@ import java.util.Date;
 import java.util.List;
 import javax.persistence.NoResultException;
 import org.openbaton.catalogue.mano.common.Security;
-import org.openbaton.catalogue.mano.descriptor.*;
+import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VNFDependency;
+import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.nfvo.VNFPackageMetadata;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
-import org.openbaton.exceptions.*;
+import org.openbaton.exceptions.AlreadyExistingException;
+import org.openbaton.exceptions.BadFormatException;
+import org.openbaton.exceptions.BadRequestException;
+import org.openbaton.exceptions.CyclicDependenciesException;
+import org.openbaton.exceptions.EntityInUseException;
+import org.openbaton.exceptions.EntityUnreachableException;
+import org.openbaton.exceptions.IncompatibleVNFPackage;
+import org.openbaton.exceptions.NetworkServiceIntegrityException;
+import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.PluginException;
+import org.openbaton.exceptions.VimException;
+import org.openbaton.exceptions.WrongStatusException;
 import org.openbaton.nfvo.core.utils.NSDUtils;
-import org.openbaton.nfvo.repositories.*;
+import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
+import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
+import org.openbaton.nfvo.repositories.PhysicalNetworkFunctionDescriptorRepository;
+import org.openbaton.nfvo.repositories.VNFDRepository;
+import org.openbaton.nfvo.repositories.VNFDependencyRepository;
+import org.openbaton.nfvo.repositories.VnfPackageRepository;
+import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -223,7 +244,7 @@ public class NetworkServiceDescriptorManagement
     List<String> vnfdIds = new ArrayList<>();
     for (String id : market_ids) {
       for (VirtualNetworkFunctionDescriptor vnfd : vnfdRepository.findByProjectId(project_id)) {
-        String localId = vnfd.getVendor() + "/" + vnfd.getName() + "/" + vnfd.getVersion();
+        String localId = vnfd.getVendor() + "/" + vnfd.getName() + "/" + vnfd.getHbVersion();
         String vnfdId = vnfd.getId();
         log.debug(localId);
         if (localId.toLowerCase().equals(id.toLowerCase())) {
@@ -649,7 +670,7 @@ public class NetworkServiceDescriptorManagement
       }
     }
 
-    nsdRepository.delete(networkServiceDescriptor);
+    nsdRepository.delete(networkServiceDescriptor.getId());
     if (cascadeDelete) {
       for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
           networkServiceDescriptor.getVnfd()) {

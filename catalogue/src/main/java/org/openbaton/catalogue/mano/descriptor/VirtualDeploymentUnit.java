@@ -17,36 +17,25 @@
 
 package org.openbaton.catalogue.mano.descriptor;
 
-import java.io.Serializable;
-import java.util.List;
 import java.util.Set;
-import javax.persistence.*;
-import javax.validation.constraints.*;
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.validation.constraints.Min;
 import org.openbaton.catalogue.mano.common.HighAvailability;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.common.faultmanagement.VRFaultManagementPolicy;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
-import org.openbaton.catalogue.util.IdGenerator;
-/**
- * Created by lto on 06/02/15.
- *
- * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
- */
+import org.openbaton.catalogue.util.BaseEntity;
+
+//import javax.persistence.CascadeType;
+
+/** Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12) */
 @Entity
-public class VirtualDeploymentUnit implements Serializable {
-  @Id private String id;
-
-  @Version private Integer version = 0;
-
-  private String projectId;
-
-  public String getProjectId() {
-    return projectId;
-  }
-
-  public void setProjectId(String projectId) {
-    this.projectId = projectId;
-  }
+public class VirtualDeploymentUnit extends BaseEntity {
   /**
    * A unique identifier of this VDU within the scope of the VNFD, including version functional *
    * description and other identification information. This will be used to refer to VDU when
@@ -120,7 +109,7 @@ public class VirtualDeploymentUnit implements Serializable {
   private String hostname;
 
   @ElementCollection(fetch = FetchType.EAGER)
-  private List<String> vimInstanceName;
+  private Set<String> vimInstanceName;
 
   public VirtualDeploymentUnit() {}
 
@@ -140,25 +129,50 @@ public class VirtualDeploymentUnit implements Serializable {
     this.vnfc_instance = vnfc_instance;
   }
 
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public Integer getVersion() {
-    return version;
-  }
-
-  public void setVersion(Integer version) {
-    this.version = version;
+  @Override
+  public String toString() {
+    return "VirtualDeploymentUnit{"
+        + "name='"
+        + name
+        + '\''
+        + ", vm_image="
+        + vm_image
+        + ", parent_vdu='"
+        + parent_vdu
+        + '\''
+        + ", computation_requirement='"
+        + computation_requirement
+        + '\''
+        + ", virtual_memory_resource_element='"
+        + virtual_memory_resource_element
+        + '\''
+        + ", virtual_network_bandwidth_resource='"
+        + virtual_network_bandwidth_resource
+        + '\''
+        + ", lifecycle_event="
+        + lifecycle_event
+        + ", vdu_constraint='"
+        + vdu_constraint
+        + '\''
+        + ", high_availability="
+        + high_availability
+        + ", fault_management_policy="
+        + fault_management_policy
+        + ", scale_in_out="
+        + scale_in_out
+        + ", vnfc="
+        + vnfc
+        + ", vnfc_instance="
+        + vnfc_instance
+        + ", monitoring_parameter="
+        + monitoring_parameter
+        + ", hostname='"
+        + hostname
+        + '\''
+        + ", vimInstanceName="
+        + vimInstanceName
+        + "} "
+        + super.toString();
   }
 
   public Set<String> getVm_image() {
@@ -241,54 +255,6 @@ public class VirtualDeploymentUnit implements Serializable {
     this.monitoring_parameter = monitoring_parameter;
   }
 
-  @Override
-  public String toString() {
-    return "VirtualDeploymentUnit{"
-        + "id='"
-        + id
-        + '\''
-        + ", version="
-        + version
-        + ", name='"
-        + name
-        + '\''
-        + ", vm_image="
-        + vm_image
-        + ", computation_requirement='"
-        + computation_requirement
-        + '\''
-        + ", virtual_memory_resource_element='"
-        + virtual_memory_resource_element
-        + '\''
-        + ", virtual_network_bandwidth_resource='"
-        + virtual_network_bandwidth_resource
-        + '\''
-        + ", lifecycle_event="
-        + lifecycle_event
-        + ", vdu_constraint='"
-        + vdu_constraint
-        + '\''
-        + ", high_availability="
-        + high_availability
-        + ", fault_management_policy="
-        + fault_management_policy
-        + ", scale_in_out="
-        + scale_in_out
-        + ", vnfc="
-        + vnfc
-        + ", vnfc_instance="
-        + vnfc_instance
-        + ", monitoring_parameter="
-        + monitoring_parameter
-        + ", hostname='"
-        + hostname
-        + '\''
-        + ", vimInstanceName='"
-        + vimInstanceName
-        + '\''
-        + '}';
-  }
-
   public Set<VRFaultManagementPolicy> getFault_management_policy() {
     return fault_management_policy;
   }
@@ -305,11 +271,11 @@ public class VirtualDeploymentUnit implements Serializable {
     this.name = name;
   }
 
-  public List<String> getVimInstanceName() {
+  public Set<String> getVimInstanceName() {
     return vimInstanceName;
   }
 
-  public void setVimInstanceName(List<String> vimInstanceName) {
+  public void setVimInstanceName(Set<String> vimInstanceName) {
     this.vimInstanceName = vimInstanceName;
   }
 

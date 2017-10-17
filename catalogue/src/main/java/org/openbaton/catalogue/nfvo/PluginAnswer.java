@@ -46,7 +46,7 @@ public class PluginAnswer implements Serializable {
         + "answer="
         + answer
         + ", exception="
-        + (exception == null ? exception : exception.getMessage())
+        + (exception == null ? "{}" : exception.getMessage())
         + '}';
   }
 }

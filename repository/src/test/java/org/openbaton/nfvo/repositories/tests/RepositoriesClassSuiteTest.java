@@ -19,8 +19,8 @@ package org.openbaton.nfvo.repositories.tests;
 
 import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
 
-import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.sql.DataSource;
 import org.junit.Assert;
@@ -120,7 +120,9 @@ public class RepositoriesClassSuiteTest {
   @Test
   public void nsdRepositoryFindTest() {
     int i = 0;
-    for (NetworkServiceDescriptor networkServiceDescriptor : nsdRepository.findAll()) i++;
+    for (NetworkServiceDescriptor networkServiceDescriptor : nsdRepository.findAll()) {
+      i++;
+    }
     Assert.assertEquals(0, i);
   }
 
@@ -133,10 +135,10 @@ public class RepositoriesClassSuiteTest {
 
     for (int i = 0; i < 10; i++) {
       nsd.setVendor("" + i);
-      int version = nsd.getHb_version();
+      int version = nsd.getHbVersion();
       nsd_new = nsdRepository.save(nsd);
       Assert.assertEquals(nsd_new.getVendor(), "" + i);
-      int new_version = nsd_new.getHb_version();
+      int new_version = nsd_new.getHbVersion();
       log.warn("Expected " + (1 + version) + " but was " + new_version);
       // Assert.assertEquals(new_version, (version));
       nsd = nsd_new;
@@ -159,15 +161,15 @@ public class RepositoriesClassSuiteTest {
     NetworkServiceDescriptor nsd_new = nsdRepository.findOne(id);
 
     Assert.assertEquals(nsd.getId(), nsd_new.getId());
-    Assert.assertEquals(nsd.getVersion(), nsd_new.getVersion());
+    Assert.assertEquals(nsd.getHbVersion(), nsd_new.getHbVersion());
     Assert.assertEquals(nsd.getVendor(), nsd_new.getVendor());
     for (int i = 0; i < nsd.getVnfd().size(); i++) {
       Assert.assertEquals(
           ((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i]).getId(),
           ((VirtualNetworkFunctionDescriptor) nsd_new.getVnfd().toArray()[i]).getId());
       Assert.assertEquals(
-          ((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i]).getVersion(),
-          ((VirtualNetworkFunctionDescriptor) nsd_new.getVnfd().toArray()[i]).getVersion());
+          ((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i]).getHbVersion(),
+          ((VirtualNetworkFunctionDescriptor) nsd_new.getVnfd().toArray()[i]).getHbVersion());
       for (int j = 0;
           j < ((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i]).getVdu().size();
           j++) {
@@ -190,13 +192,13 @@ public class RepositoriesClassSuiteTest {
                             .getVdu()
                             .toArray()[
                         j])
-                .getVersion(),
+                .getHbVersion(),
             ((VirtualDeploymentUnit)
                     ((VirtualNetworkFunctionDescriptor) nsd_new.getVnfd().toArray()[i])
                             .getVdu()
                             .toArray()[
                         j])
-                .getVersion());
+                .getHbVersion());
         Assert.assertEquals(
             ((VirtualDeploymentUnit)
                     ((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i])
@@ -288,7 +290,12 @@ public class RepositoriesClassSuiteTest {
     final VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
     vdu.setVnfc(new HashSet<>());
     vdu.setVnfc_instance(new HashSet<>());
-    vdu.setVimInstanceName(Collections.singletonList("test"));
+    vdu.setVimInstanceName(
+        new LinkedHashSet<String>() {
+          {
+            add("test");
+          }
+        });
     HighAvailability highAvailability = new HighAvailability();
     highAvailability.setGeoRedundancy(false);
     highAvailability.setRedundancyScheme("1:N");

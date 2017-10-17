@@ -17,14 +17,20 @@
 
 package org.openbaton.catalogue.mano.record;
 
-import java.io.Serializable;
 import java.util.Set;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.descriptor.NetworkForwardingPath;
 import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
-import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /**
  * Created by lto on 06/02/15.
@@ -32,8 +38,7 @@ import org.openbaton.catalogue.util.IdGenerator;
  * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class VNFForwardingGraphRecord implements Serializable {
-  @Id private String id;
+public class VNFForwardingGraphRecord extends BaseEntity {
   /** Record of the VNFFGD (vnffgd:id) used to instantiate this VNFFG */
   @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private VNFForwardingGraphDescriptor descriptor_reference;
@@ -80,21 +85,6 @@ public class VNFForwardingGraphRecord implements Serializable {
   private int number_of_vnfs;
   private int number_of_pnfs;
   private int number_of_virtual_links;
-
-  public VNFForwardingGraphRecord() {}
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
 
   public VNFForwardingGraphDescriptor getDescriptor_reference() {
     return descriptor_reference;
@@ -222,5 +212,47 @@ public class VNFForwardingGraphRecord implements Serializable {
 
   public void setNumber_of_virtual_links(int number_of_virtual_links) {
     this.number_of_virtual_links = number_of_virtual_links;
+  }
+
+  @Override
+  public String toString() {
+    return "VNFForwardingGraphRecord{"
+        + "descriptor_reference="
+        + descriptor_reference
+        + ", parent_ns="
+        + parent_ns
+        + ", dependent_virtual_link="
+        + dependent_virtual_link
+        + ", status="
+        + status
+        + ", notification="
+        + notification
+        + ", lifecycle_event_history="
+        + lifecycle_event_history
+        + ", audit_log='"
+        + audit_log
+        + '\''
+        + ", network_forwarding_path="
+        + network_forwarding_path
+        + ", connection_point="
+        + connection_point
+        + ", member_vnfs="
+        + member_vnfs
+        + ", vendor='"
+        + vendor
+        + '\''
+        + ", version='"
+        + version
+        + '\''
+        + ", number_of_endpoints="
+        + number_of_endpoints
+        + ", number_of_vnfs="
+        + number_of_vnfs
+        + ", number_of_pnfs="
+        + number_of_pnfs
+        + ", number_of_virtual_links="
+        + number_of_virtual_links
+        + "} "
+        + super.toString();
   }
 }

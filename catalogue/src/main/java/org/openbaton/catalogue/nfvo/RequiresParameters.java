@@ -23,41 +23,14 @@ import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import javax.persistence.Version;
-import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.catalogue.util.BaseEntity;
 
 @Entity(name = "requiresParameters")
-public class RequiresParameters {
-
-  @Id private String id;
-  @Version private int version;
+public class RequiresParameters extends BaseEntity {
 
   @Column
   @ElementCollection(fetch = FetchType.EAGER)
   private Set<String> parameters;
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public int getVersion() {
-    return version;
-  }
-
-  public void setVersion(int version) {
-    this.version = version;
-  }
 
   public Set<String> getParameters() {
     return parameters;
@@ -69,15 +42,7 @@ public class RequiresParameters {
 
   @Override
   public String toString() {
-    return "RequiresParameters{"
-        + "id='"
-        + id
-        + '\''
-        + ", version="
-        + version
-        + ", parameters="
-        + (parameters != null ? parameters : "[ ]")
-        + '}';
+    return "RequiresParameters{" + "parameters=" + parameters + "} " + super.toString();
   }
 
   private String parametersToString() {

@@ -58,14 +58,14 @@ public class ModifyTask extends AbstractTask {
         "VNFR ("
             + virtualNetworkFunctionRecord.getId()
             + ") received hibernate version = "
-            + virtualNetworkFunctionRecord.getHb_version());
+            + virtualNetworkFunctionRecord.getHbVersion());
     setHistoryLifecycleEvent(new Date());
     saveVirtualNetworkFunctionRecord();
     log.trace(
         "VNFR ("
             + virtualNetworkFunctionRecord.getId()
             + ") current hibernate version is: "
-            + virtualNetworkFunctionRecord.getHb_version());
+            + virtualNetworkFunctionRecord.getHbVersion());
     log.debug(
         "VNFR "
             + virtualNetworkFunctionRecord.getName()

@@ -17,19 +17,19 @@
 
 package org.openbaton.catalogue.mano.record;
 
-import java.io.Serializable;
 import java.util.Map;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 import org.openbaton.catalogue.nfvo.DependencyParameters;
 import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
-import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by lto on 08/06/15. */
 @Entity
-public class VNFRecordDependency implements Serializable {
-
-  @Id private String id = IdGenerator.createUUID();
-  @Version private int version = 0;
+public class VNFRecordDependency extends BaseEntity {
 
   private String target;
 
@@ -52,11 +52,6 @@ public class VNFRecordDependency implements Serializable {
     this.vnfcParameters = vnfcParameters;
   }
 
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
   public Map<String, String> getIdType() {
     return idType;
   }
@@ -73,39 +68,10 @@ public class VNFRecordDependency implements Serializable {
     this.parameters = parameters;
   }
 
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public int getVersion() {
-    return version;
-  }
-
-  public void setVersion(int version) {
-    this.version = version;
-  }
-
-  public String getTarget() {
-    return target;
-  }
-
-  public void setTarget(String target) {
-    this.target = target;
-  }
-
   @Override
   public String toString() {
     return "VNFRecordDependency{"
-        + "id='"
-        + id
-        + '\''
-        + ", version="
-        + version
-        + ", target='"
+        + "target='"
         + target
         + '\''
         + ", parameters="
@@ -114,6 +80,15 @@ public class VNFRecordDependency implements Serializable {
         + vnfcParameters
         + ", idType="
         + idType
-        + '}';
+        + "} "
+        + super.toString();
+  }
+
+  public String getTarget() {
+    return target;
+  }
+
+  public void setTarget(String target) {
+    this.target = target;
   }
 }

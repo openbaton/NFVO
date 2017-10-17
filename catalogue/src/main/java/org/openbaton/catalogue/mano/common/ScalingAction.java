@@ -17,35 +17,20 @@
 
 package org.openbaton.catalogue.mano.common;
 
-import java.io.Serializable;
-import javax.persistence.*;
-import org.openbaton.catalogue.util.IdGenerator;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by mpa on 15/12/15. */
 @Entity
-public class ScalingAction implements Serializable {
-  @Id private String id;
-  @Version private Integer version = 0;
-
+public class ScalingAction extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private ScalingActionType type;
 
   private String value;
 
   private String target;
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public Integer getVersion() {
-    return version;
-  }
 
   public ScalingActionType getType() {
     return type;
@@ -63,23 +48,10 @@ public class ScalingAction implements Serializable {
     this.value = value;
   }
 
-  public String getTarget() {
-    return target;
-  }
-
-  public void setTarget(String target) {
-    this.target = target;
-  }
-
   @Override
   public String toString() {
     return "ScalingAction{"
-        + "id='"
-        + id
-        + '\''
-        + ", version="
-        + version
-        + ", type="
+        + "type="
         + type
         + ", value='"
         + value
@@ -87,6 +59,15 @@ public class ScalingAction implements Serializable {
         + ", target='"
         + target
         + '\''
-        + '}';
+        + "} "
+        + super.toString();
+  }
+
+  public String getTarget() {
+    return target;
+  }
+
+  public void setTarget(String target) {
+    this.target = target;
   }
 }

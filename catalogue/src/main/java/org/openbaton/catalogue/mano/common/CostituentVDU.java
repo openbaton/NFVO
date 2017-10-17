@@ -17,12 +17,8 @@
 
 package org.openbaton.catalogue.mano.common;
 
-import java.io.Serializable;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import javax.persistence.Version;
-import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /**
  * Created by lto on 06/02/15.
@@ -30,9 +26,7 @@ import org.openbaton.catalogue.util.IdGenerator;
  * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class CostituentVDU implements Serializable {
-  @Id private String id;
-  @Version private int version = 0;
+public class CostituentVDU extends BaseEntity {
   /**
    * References a VDU which should be used for this deployment flavour by vnfd:vdu:id, see clause
    * 6.3.1.2.1.
@@ -48,25 +42,19 @@ public class CostituentVDU implements Serializable {
 
   public CostituentVDU() {}
 
-  public int getVersion() {
-    return version;
-  }
-
-  public void setVersion(int version) {
-    this.version = version;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
+  @Override
+  public String toString() {
+    return "CostituentVDU{"
+        + "vdu_reference='"
+        + vdu_reference
+        + '\''
+        + ", number_of_instances="
+        + number_of_instances
+        + ", constituent_vnfc='"
+        + constituent_vnfc
+        + '\''
+        + "} "
+        + super.toString();
   }
 
   public String getVdu_reference() {

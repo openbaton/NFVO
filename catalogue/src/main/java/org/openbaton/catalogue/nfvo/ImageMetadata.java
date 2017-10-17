@@ -19,31 +19,23 @@
 
 package org.openbaton.catalogue.nfvo;
 
-import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-import javax.persistence.Version;
-import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.catalogue.util.BaseEntity;
 
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"name", "version", "vendor"}))
-public class ImageMetadata implements Serializable {
-
-  @Id private String id;
+public class ImageMetadata extends BaseEntity {
 
   private String name;
 
   private String vendor;
 
   private String version;
-
-  @Version private int hb_version = 0;
 
   private String upload;
 
@@ -73,33 +65,12 @@ public class ImageMetadata implements Serializable {
 
   private String imageRepoId;
 
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
   public String getFilePath() {
     return filePath;
   }
 
   public void setFilePath(String filePath) {
     this.filePath = filePath;
-  }
-
-  public int getHb_version() {
-    return hb_version;
-  }
-
-  public void setHb_version(int hb_version) {
-    this.hb_version = hb_version;
   }
 
   public String getUpload() {
@@ -165,10 +136,7 @@ public class ImageMetadata implements Serializable {
   @Override
   public String toString() {
     return "ImageMetadata{"
-        + "id='"
-        + id
-        + '\''
-        + ", name='"
+        + "name='"
         + name
         + '\''
         + ", vendor='"
@@ -177,8 +145,6 @@ public class ImageMetadata implements Serializable {
         + ", version='"
         + version
         + '\''
-        + ", hb_version="
-        + hb_version
         + ", upload='"
         + upload
         + '\''
@@ -198,6 +164,7 @@ public class ImageMetadata implements Serializable {
         + ", imageRepoId='"
         + imageRepoId
         + '\''
-        + '}';
+        + "} "
+        + super.toString();
   }
 }
