@@ -670,7 +670,7 @@ public class NetworkServiceDescriptorManagement
       }
     }
 
-    nsdRepository.delete(networkServiceDescriptor);
+    nsdRepository.delete(networkServiceDescriptor.getId());
     if (cascadeDelete) {
       for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
           networkServiceDescriptor.getVnfd()) {

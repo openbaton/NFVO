@@ -17,21 +17,6 @@
 
 package org.openbaton.nfvo.core.api;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
 import org.apache.commons.net.util.SubnetUtils;
 import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
@@ -108,6 +93,23 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
 
 @Service
 @Scope("prototype")
@@ -1084,7 +1086,46 @@ public class NetworkServiceRecordManagement
           ExecutionException, InterruptedException {
 
     for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectID)) {
-      vimManagement.refresh(vimInstance);
+      final Exception[] exception = {null};
+      if (body.getVduVimInstances() != null) {
+        body.getVduVimInstances()
+            .forEach(
+                (key, value) -> {
+                  if (value != null && value.size() > 0) {
+                    value.forEach(
+                        s -> {
+                          if (s.equals(vimInstance.getName())) {
+                            try {
+                              vimManagement.refresh(vimInstance);
+                            } catch (VimException
+                                | PluginException
+                                | BadRequestException
+                                | IOException
+                                | AlreadyExistingException e) {
+                              e.printStackTrace();
+                              exception[0] = e;
+                            }
+                          }
+                        });
+                  } else {
+                    try {
+                      vimManagement.refresh(vimInstance);
+                    } catch (VimException
+                        | PluginException
+                        | BadRequestException
+                        | IOException
+                        | AlreadyExistingException e) {
+                      e.printStackTrace();
+                      exception[0] = e;
+                    }
+                  }
+                });
+      } else {
+        vimManagement.refresh(vimInstance);
+      }
+      if (exception[0] != null) {
+        throw new VimException(exception[0]);
+      }
     }
 
     Map<String, Set<String>> vduVimInstances = new HashMap<>();
@@ -1649,7 +1690,7 @@ public class NetworkServiceRecordManagement
    * Triggers the execution of an {@link org.openbaton.catalogue.nfvo.Action} on a specific
    * VNFCInstance.
    *
-   * <p>Note: Currently only the HEAL action is supported.
+   * Note: Currently only the HEAL action is supported.
    *
    * @param nfvMessage
    * @param nsrId
