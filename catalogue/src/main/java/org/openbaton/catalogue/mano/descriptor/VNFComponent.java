@@ -17,8 +17,11 @@
 
 package org.openbaton.catalogue.mano.descriptor;
 
+import org.openbaton.catalogue.util.BaseEntity;
+
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -27,13 +30,8 @@ import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import org.openbaton.catalogue.util.BaseEntity;
 
-/**
- * Created by lto on 06/02/15.
- *
- * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
- */
+/** Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12) */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class VNFComponent extends BaseEntity {
@@ -42,7 +40,7 @@ public class VNFComponent extends BaseEntity {
    * Describes network connectivity between a VNFC instance (based on this VDU) and an internal
    * Virtual Link.
    */
-  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
   @NotNull
   @Size(min = 1)
   protected Set<VNFDConnectionPoint> connection_point;

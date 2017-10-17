@@ -31,11 +31,9 @@ import org.openbaton.catalogue.mano.common.faultmanagement.VRFaultManagementPoli
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.util.BaseEntity;
 
-/**
- * Created by lto on 06/02/15.
- *
- * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
- */
+//import javax.persistence.CascadeType;
+
+/** Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12) */
 @Entity
 public class VirtualDeploymentUnit extends BaseEntity {
   /**
