@@ -27,7 +27,7 @@ plugins {
     id "com.github.hierynomus.license" version "0.14.0"
     // For managing the dependencies' versions
     id 'com.github.ben-manes.versions' version '0.13.0'
-    id 'org.springframework.boot' version '1.5.7.RELEASE'
+    id 'org.springframework.boot' version '1.5.8.RELEASE'
 }
 
 apply plugin: 'java'
@@ -44,9 +44,9 @@ apply from: 'gradle/gradle/command.line.helper.gradle'
 ext {
     //------------------------------------------------//
     /**
-     * Spring Boot version
+     * Spring Boot version (replace it also in the plugin section!)
      */
-    springBootVersion = '1.5.7.RELEASE'
+    springBootVersion = '1.5.8.RELEASE'
     //------------------------------------------------//
     //------------------------------------------------//
     /**

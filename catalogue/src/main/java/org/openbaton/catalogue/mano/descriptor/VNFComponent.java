@@ -17,11 +17,8 @@
 
 package org.openbaton.catalogue.mano.descriptor;
 
-import org.openbaton.catalogue.util.BaseEntity;
-
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -30,6 +27,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /** Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12) */
 @Entity
