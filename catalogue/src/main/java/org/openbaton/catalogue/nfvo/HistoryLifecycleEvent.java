@@ -19,15 +19,12 @@ package org.openbaton.catalogue.nfvo;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by lto on 18/10/16. */
 @Entity
-public class HistoryLifecycleEvent {
+public class HistoryLifecycleEvent extends BaseEntity {
 
-  @Id private String id;
   private String event;
 
   @Column(length = 1024)
@@ -38,10 +35,7 @@ public class HistoryLifecycleEvent {
   @Override
   public String toString() {
     return "HistoryLifecycleEvent{"
-        + "id='"
-        + id
-        + '\''
-        + ", event='"
+        + "event='"
         + event
         + '\''
         + ", description='"
@@ -50,7 +44,8 @@ public class HistoryLifecycleEvent {
         + ", executedAt='"
         + executedAt
         + '\''
-        + '}';
+        + "} "
+        + super.toString();
   }
 
   public String getExecutedAt() {
@@ -59,19 +54,6 @@ public class HistoryLifecycleEvent {
 
   public void setExecutedAt(String executedAt) {
     this.executedAt = executedAt;
-  }
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
   }
 
   public String getEvent() {

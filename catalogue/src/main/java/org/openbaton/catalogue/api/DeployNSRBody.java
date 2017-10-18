@@ -17,23 +17,23 @@
 
 package org.openbaton.catalogue.api;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.security.Key;
 
-/** Created by lto on 10/08/16. */
 public class DeployNSRBody {
-  private Map<String, List<String>> vduVimInstances;
-  private List<Key> keys;
-  private Map<String, Configuration> configurations;
 
-  public Map<String, List<String>> getVduVimInstances() {
-    return vduVimInstances;
+  private Set<Key> keys;
+  private Map<String, Configuration> configurations;
+  private Map<String, Set<String>> vduVimInstances;
+
+  public void setVduVimInstances(Map<String, Set<String>> vduVimInstances) {
+    this.vduVimInstances = vduVimInstances;
   }
 
-  public void setVduVimInstances(Map<String, List<String>> vduVimInstances) {
-    this.vduVimInstances = vduVimInstances;
+  public Map<String, Set<String>> getVduVimInstances() {
+    return vduVimInstances;
   }
 
   public Map<String, Configuration> getConfigurations() {
@@ -44,11 +44,11 @@ public class DeployNSRBody {
     this.configurations = configurations;
   }
 
-  public List<Key> getKeys() {
+  public Set<Key> getKeys() {
     return keys;
   }
 
-  public void setKeys(List<Key> keys) {
+  public void setKeys(Set<Key> keys) {
     this.keys = keys;
   }
 }

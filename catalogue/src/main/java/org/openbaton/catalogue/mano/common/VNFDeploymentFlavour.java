@@ -61,4 +61,15 @@ public class VNFDeploymentFlavour extends DeploymentFlavour {
   public void setCostituent_vdu(Set<CostituentVDU> costituent_vdu) {
     this.costituent_vdu = costituent_vdu;
   }
+
+  @Override
+  public String toString() {
+    return "VNFDeploymentFlavour{"
+        + "df_constraint="
+        + df_constraint
+        + ", costituent_vdu="
+        + costituent_vdu
+        + "} "
+        + super.toString();
+  }
 }

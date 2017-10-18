@@ -22,12 +22,13 @@ package org.openbaton.catalogue.mano.descriptor;
  *
  * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
-import java.io.Serializable;
 import java.util.Set;
-import javax.persistence.*;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /**
  * Describe dependencies between VNF. Defined in terms of source and target VNF i.e. target VNF
@@ -37,11 +38,7 @@ import org.openbaton.catalogue.util.IdGenerator;
  * should be instantiated by the NFV Orchestrator.
  */
 @Entity
-public class VNFDependency implements Serializable {
-
-  @Id private String id;
-
-  @Version private Integer version = 0;
+public class VNFDependency extends BaseEntity {
 
   @NotNull
   @Size(min = 1)
@@ -76,11 +73,6 @@ public class VNFDependency implements Serializable {
 
   public VNFDependency() {}
 
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
   public String getSource() {
     return source;
   }
@@ -105,31 +97,10 @@ public class VNFDependency implements Serializable {
     this.target = target;
   }
 
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public Integer getVersion() {
-    return version;
-  }
-
-  public void setVersion(Integer version) {
-    this.version = version;
-  }
-
   @Override
   public String toString() {
     return "VNFDependency{"
-        + "id='"
-        + id
-        + '\''
-        + ", version="
-        + version
-        + ", source='"
+        + "source='"
         + source
         + '\''
         + ", source_id='"
@@ -143,6 +114,7 @@ public class VNFDependency implements Serializable {
         + '\''
         + ", parameters="
         + parameters
-        + '}';
+        + "} "
+        + super.toString();
   }
 }

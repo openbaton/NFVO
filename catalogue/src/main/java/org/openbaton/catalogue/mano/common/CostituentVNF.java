@@ -17,9 +17,10 @@
 
 package org.openbaton.catalogue.mano.common;
 
-import java.io.Serializable;
-import javax.persistence.*;
-import org.openbaton.catalogue.util.IdGenerator;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /**
  * Created by lto on 06/02/15.
@@ -27,19 +28,12 @@ import org.openbaton.catalogue.util.IdGenerator;
  * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class CostituentVNF implements Serializable {
-
-  @Id private String id;
-  @Version private int version = 0;
-
-  /**
-   * Reference to a VNFD declared as vnfd in the Network Service via vnf:id. TODO this must be an
-   * id. So a String. For doing that we must do manually
-   */
+public class CostituentVNF extends BaseEntity {
+  /** Reference to a VNFD declared as vnfd in the Network Service via vnf:id. */
   private String vnf_reference;
   /**
    * References a VNF flavour (vnfd:deployment_flavour:id) to be used for this service flavour, see
-   * clause 6.2.1.3.1 TODO this must be an id. So a String. For doing that we must do manually
+   * clause 6.2.1.3.1
    */
   private String vnf_flavour_id_reference;
   /** Represents the redundancy of instances, for example,"active" or "standby". */
@@ -61,21 +55,6 @@ public class CostituentVNF implements Serializable {
    * will be required.
    */
   private int number_of_instances;
-
-  public CostituentVNF() {}
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
 
   public String getVnf_reference() {
     return vnf_reference;

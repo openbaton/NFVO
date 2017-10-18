@@ -28,10 +28,8 @@ import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmStartStopMessage;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.nfvo.repositories.VNFCInstanceRepository;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -41,8 +39,6 @@ import org.springframework.stereotype.Service;
 @Scope("prototype")
 @ConfigurationProperties(prefix = "nfvo.start")
 public class StartTask extends AbstractTask {
-
-  @Autowired private VNFCInstanceRepository vnfcInstanceRepository;
 
   private String ordered;
   private VNFCInstance vnfcInstance;
@@ -69,18 +65,18 @@ public class StartTask extends AbstractTask {
     log.info("Started VNFR: " + virtualNetworkFunctionRecord.getName());
     VirtualNetworkFunctionRecord existing =
         vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
-    log.trace("VNFR existing hibernate version = " + existing.getHb_version());
-    log.trace("VNFR reiceived hibernate version = " + virtualNetworkFunctionRecord.getHb_version());
+    log.trace("VNFR existing hibernate version = " + existing.getHbVersion());
+    log.trace("VNFR reiceived hibernate version = " + virtualNetworkFunctionRecord.getHbVersion());
 
     for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
       for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
-        log.trace("VNFCI received hibernate version = " + vnfcInstance.getVersion());
+        log.trace("VNFCI received hibernate version = " + vnfcInstance.getHbVersion());
       }
     }
 
     for (VirtualDeploymentUnit virtualDeploymentUnit : existing.getVdu()) {
       for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
-        log.trace("VNFCI existing hibernate version = " + vnfcInstance.getVersion());
+        log.trace("VNFCI existing hibernate version = " + vnfcInstance.getHbVersion());
       }
     }
 

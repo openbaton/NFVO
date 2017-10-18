@@ -17,38 +17,30 @@
 
 package org.openbaton.catalogue.nfvo;
 
-import java.io.Serializable;
-import javax.persistence.*;
-import org.openbaton.catalogue.util.IdGenerator;
+import javax.persistence.Entity;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by lto on 18/05/15. */
 @Entity
-public class Location implements Serializable {
-  @Id private String id;
-  @Version private Integer version = 0;
+public class Location extends BaseEntity {
   private String name;
   private String latitude;
   private String longitude;
 
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
-  public Integer getVersion() {
-    return version;
-  }
-
-  public void setVersion(Integer version) {
-    this.version = version;
+  @Override
+  public String toString() {
+    return "Location{"
+        + "name='"
+        + name
+        + '\''
+        + ", latitude='"
+        + latitude
+        + '\''
+        + ", longitude='"
+        + longitude
+        + '\''
+        + "} "
+        + super.toString();
   }
 
   public String getName() {
@@ -73,25 +65,5 @@ public class Location implements Serializable {
 
   public void setLongitude(String longitude) {
     this.longitude = longitude;
-  }
-
-  @Override
-  public String toString() {
-    return "Location{"
-        + "id='"
-        + id
-        + '\''
-        + ", version="
-        + version
-        + ", name='"
-        + name
-        + '\''
-        + ", latitude='"
-        + latitude
-        + '\''
-        + ", longitude='"
-        + longitude
-        + '\''
-        + '}';
   }
 }

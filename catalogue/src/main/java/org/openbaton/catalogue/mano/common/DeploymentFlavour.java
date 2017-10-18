@@ -17,9 +17,10 @@
 
 package org.openbaton.catalogue.mano.common;
 
-import java.io.Serializable;
-import javax.persistence.*;
-import org.openbaton.catalogue.util.IdGenerator;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /**
  * Created by lto on 06/02/15.
@@ -28,14 +29,14 @@ import org.openbaton.catalogue.util.IdGenerator;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class DeploymentFlavour implements Serializable {
-  /*ID of the deployment flavour.*/
-  @Id protected String id;
-  @Version protected Integer version = 0;
+public class DeploymentFlavour extends BaseEntity {
   /*
-   * Assurance parameter against which this flavour is being described. The key could be a combination of multiple assurance
-   * parameters with a logical relationship between them. The parameters should be present as a monitoring_parameter supported in clause 6.2.1.1.
-   * For example, a flavour of a virtual EPC could be described in terms of the assurance parameter "calls per second" (cps).
+   * Assurance parameter against which this flavour is being described. The key could be a combination of multiple
+   * assurance
+   * parameters with a logical relationship between them. The parameters should be present as a monitoring_parameter
+   * supported in clause 6.2.1.1.
+   * For example, a flavour of a virtual EPC could be described in terms of the assurance parameter "calls per
+   * second" (cps).
    * */
   protected String flavour_key;
 
@@ -44,33 +45,12 @@ public class DeploymentFlavour implements Serializable {
   private Integer disk = 0;
   private Integer vcpus = 0;
 
-  public Integer getVersion() {
-    return version;
-  }
-
-  public void setVersion(Integer version) {
-    this.version = version;
-  }
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
   public String getFlavour_key() {
     return flavour_key;
   }
 
   public void setFlavour_key(String flavour_key) {
     this.flavour_key = flavour_key;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
   }
 
   public String getExtId() {
@@ -108,17 +88,19 @@ public class DeploymentFlavour implements Serializable {
   @Override
   public String toString() {
     return "DeploymentFlavour{"
-        + "id='"
-        + id
-        + '\''
-        + ", version="
-        + version
-        + ", flavour_key='"
+        + "flavour_key='"
         + flavour_key
         + '\''
         + ", extId='"
         + extId
         + '\''
-        + '}';
+        + ", ram="
+        + ram
+        + ", disk="
+        + disk
+        + ", vcpus="
+        + vcpus
+        + "} "
+        + super.toString();
   }
 }

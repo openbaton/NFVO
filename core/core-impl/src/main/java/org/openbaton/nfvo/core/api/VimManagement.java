@@ -449,7 +449,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
             if (network_nfvo.getExtId().equals(network_new.getExtId())) {
               network_nfvo.setName(network_new.getName());
               network_nfvo.setExternal(network_new.getExternal());
-              network_nfvo.setShared(network_new.getExternal());
+              network_nfvo.setExtShared(network_new.getExternal());
               Set<Subnet> subnets_refreshed = new HashSet<>();
               Set<Subnet> subnets_new = new HashSet<>();
               Set<Subnet> subnets_old = new HashSet<>();

@@ -191,15 +191,26 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
         + ", endpoint='"
         + endpoint
         + '\''
-        + ", vnfPackageLocation="
+        + ", vnfPackageLocation='"
         + vnfPackageLocation
+        + '\''
         + ", requires="
         + requires
         + ", provides="
         + provides
         + ", cyclicDependency="
         + cyclicDependency
-        + '}';
+        + ", createdAt='"
+        + createdAt
+        + '\''
+        + ", updatedAt='"
+        + updatedAt
+        + '\''
+        + ", nfvo_version='"
+        + nfvo_version
+        + '\''
+        + "} "
+        + super.toString();
   }
 
   public Map<String, RequiresParameters> getRequires() {

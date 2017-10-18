@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +50,7 @@ import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
+import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.openbaton.catalogue.nfvo.HistoryLifecycleEvent;
 import org.openbaton.catalogue.nfvo.ImageStatus;
@@ -173,8 +175,8 @@ public class NetworkServiceRecordManagement
       String idNsd,
       String projectID,
       List keys,
-      Map vduVimInstances,
-      Map configurations,
+      Map<String, Set<String>> vduVimInstances,
+      Map<String, Configuration> configurations,
       String monitoringIp)
       throws VimException, NotFoundException, PluginException, MissingParameterException,
           BadRequestException, IOException, AlreadyExistingException, BadFormatException,
@@ -201,7 +203,7 @@ public class NetworkServiceRecordManagement
     if (keys == null) {
       body.setKeys(null);
     } else {
-      List<Key> keys1 = new ArrayList<>();
+      Set<Key> keys1 = new LinkedHashSet<>();
       for (Object k : keys) {
         log.debug("Looking for keyname: " + k);
         Key key = keyRepository.findKey(projectID, (String) k);
@@ -255,7 +257,7 @@ public class NetworkServiceRecordManagement
     if (keys == null) {
       body.setKeys(null);
     } else {
-      List<Key> keys1 = new ArrayList<>();
+      Set<Key> keys1 = new LinkedHashSet<>();
       for (Object k : keys) {
         log.debug("Looking for keyname: " + k);
         Key key = keyRepository.findKey(projectId, (String) k);
@@ -305,7 +307,7 @@ public class NetworkServiceRecordManagement
     //    nsdUtils.fetchVimInstances(networkServiceDescriptor, projectId);
     DeployNSRBody body = new DeployNSRBody();
     if (vduVimInstances == null) {
-      body.setVduVimInstances(new HashMap<String, List<String>>());
+      body.setVduVimInstances(new HashMap<String, Set<String>>());
     } else {
       body.setVduVimInstances(vduVimInstances);
     }
@@ -317,7 +319,7 @@ public class NetworkServiceRecordManagement
     if (keys == null) {
       body.setKeys(null);
     } else {
-      List<Key> keys1 = new ArrayList<>();
+      Set<Key> keys1 = new LinkedHashSet<>();
       for (Object k : keys) {
         log.debug("Looking for keyname: " + k);
         keys1.add(keyRepository.findKey(projectId, (String) k));
@@ -1082,10 +1084,49 @@ public class NetworkServiceRecordManagement
           ExecutionException, InterruptedException {
 
     for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectID)) {
-      vimManagement.refresh(vimInstance);
+      final Exception[] exception = {null};
+      if (body.getVduVimInstances() != null) {
+        body.getVduVimInstances()
+            .forEach(
+                (key, value) -> {
+                  if (value != null && value.size() > 0) {
+                    value.forEach(
+                        s -> {
+                          if (s.equals(vimInstance.getName())) {
+                            try {
+                              vimManagement.refresh(vimInstance);
+                            } catch (VimException
+                                | PluginException
+                                | BadRequestException
+                                | IOException
+                                | AlreadyExistingException e) {
+                              e.printStackTrace();
+                              exception[0] = e;
+                            }
+                          }
+                        });
+                  } else {
+                    try {
+                      vimManagement.refresh(vimInstance);
+                    } catch (VimException
+                        | PluginException
+                        | BadRequestException
+                        | IOException
+                        | AlreadyExistingException e) {
+                      e.printStackTrace();
+                      exception[0] = e;
+                    }
+                  }
+                });
+      } else {
+        vimManagement.refresh(vimInstance);
+      }
+      if (exception[0] != null) {
+        throw new VimException(exception[0]);
+      }
     }
 
-    Map<String, List<String>> vduVimInstances = new HashMap<>();
+    Map<String, Set<String>> vduVimInstances = new HashMap<>();
     log.info("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor.getName());
     log.info("VNFD are: ");
     for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
@@ -1111,7 +1152,7 @@ public class NetworkServiceRecordManagement
       networkServiceRecord.setCreatedAt(format.format(new Date()));
       networkServiceRecord.setUpdatedAt(format.format(new Date()));
       networkServiceRecord.setTask("Onboarding");
-      networkServiceRecord.setKeyNames(new HashSet<String>());
+      networkServiceRecord.setKeyNames(new HashSet<>());
       if (body != null && body.getKeys() != null && !body.getKeys().isEmpty()) {
         for (Key key : body.getKeys()) {
           networkServiceRecord.getKeyNames().add(key.getName());
@@ -1125,7 +1166,7 @@ public class NetworkServiceRecordManagement
         virtualNetworkFunctionDescriptor.setCreatedAt(format.format(new Date()));
         virtualNetworkFunctionDescriptor.setUpdatedAt(format.format(new Date()));
         for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
-          List<String> instanceNames = getRuntimeDeploymentInfo(body, vdu);
+          Set<String> instanceNames = getRuntimeDeploymentInfo(body, vdu);
           log.debug("Checking vim instance support");
           instanceNames =
               checkIfVimAreSupportedByPackage(virtualNetworkFunctionDescriptor, instanceNames);
@@ -1181,8 +1222,6 @@ public class NetworkServiceRecordManagement
                       "VIM instance " + vimInstance.getName() + "does not have networks ");
                 }
                 for (Network network : vimInstance.getNetworks()) {
-                  //                    if (network.getName().equals(vlr.getName()) || network.getExtId().equals(vlr
-                  // .getName())) {
                   if (isVNFDConnectionPointExisting(vnfdConnectionPoint, network)) {
                     networkExists = true;
                     vnfdConnectionPoint.setVirtual_link_reference_id(network.getExtId());
@@ -1206,7 +1245,6 @@ public class NetworkServiceRecordManagement
                   network = networkManagement.add(vimInstance, network);
                   vnfdConnectionPoint.setVirtual_link_reference_id(network.getExtId());
                 }
-                //       }
               }
             }
           }
@@ -1329,7 +1367,7 @@ public class NetworkServiceRecordManagement
   private void fillDeploymentTimeIPs(
       NetworkServiceDescriptor networkServiceDescriptor,
       DeployNSRBody body,
-      Map<String, List<String>> vduVimInstances)
+      Map<String, Set<String>> vduVimInstances)
       throws NotFoundException {
     for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
         networkServiceDescriptor.getVnfd()) {
@@ -1556,9 +1594,8 @@ public class NetworkServiceRecordManagement
     }
   }
 
-  private List<String> checkIfVimAreSupportedByPackage(
-      VirtualNetworkFunctionDescriptor vnfd, List<String> instanceNames)
-      throws BadRequestException {
+  private Set<String> checkIfVimAreSupportedByPackage(
+      VirtualNetworkFunctionDescriptor vnfd, Set<String> instanceNames) throws BadRequestException {
     VNFPackage vnfPackage = vnfPackageRepository.findFirstById(vnfd.getVnfPackageLocation());
     if (vnfPackage == null
         || vnfPackage.getVimTypes() == null
@@ -1614,9 +1651,9 @@ public class NetworkServiceRecordManagement
     return instanceNames;
   }
 
-  private List<String> getRuntimeDeploymentInfo(DeployNSRBody body, VirtualDeploymentUnit vdu)
+  private Set<String> getRuntimeDeploymentInfo(DeployNSRBody body, VirtualDeploymentUnit vdu)
       throws MissingParameterException {
-    List<String> instanceNames;
+    Set<String> instanceNames;
 
     if (body == null
         || body.getVduVimInstances() == null
@@ -1650,12 +1687,6 @@ public class NetworkServiceRecordManagement
   /**
    * Triggers the execution of an {@link org.openbaton.catalogue.nfvo.Action} on a specific
    * VNFCInstance.
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
    *
    * <p>Note: Currently only the HEAL action is supported.
    *

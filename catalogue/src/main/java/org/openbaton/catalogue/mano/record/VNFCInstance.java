@@ -23,22 +23,23 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.PrePersist;
 import org.openbaton.catalogue.mano.common.Ip;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
-import org.openbaton.catalogue.util.IdGenerator;
 
 /** Created by lto on 08/09/15. */
 @Entity
 public class VNFCInstance extends VNFComponent {
 
-  protected String vim_id;
-  protected String vc_id;
+  private String vim_id;
+  private String vc_id;
   protected String hostname;
   protected String state;
 
-  @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-  protected VNFComponent vnfComponent;
+  @ManyToOne(
+    cascade = {CascadeType.REFRESH, CascadeType.DETACH},
+    fetch = FetchType.EAGER
+  )
+  private VNFComponent vnfComponent;
 
   @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<Ip> floatingIps;
@@ -125,10 +126,5 @@ public class VNFCInstance extends VNFComponent {
 
   public void setIps(Set<Ip> ips) {
     this.ips = ips;
-  }
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
   }
 }

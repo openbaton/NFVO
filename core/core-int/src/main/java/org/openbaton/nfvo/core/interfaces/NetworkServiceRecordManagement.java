@@ -20,12 +20,14 @@ package org.openbaton.nfvo.core.interfaces;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
@@ -47,8 +49,8 @@ public interface NetworkServiceRecordManagement {
       String nsd_id,
       String projectId,
       List keys,
-      Map vduVimInstances,
-      Map configurations,
+      Map<String, Set<String>> vduVimInstances,
+      Map<String, Configuration> configurations,
       String monitoringIp)
       throws VimException, NotFoundException, PluginException, MissingParameterException,
           BadRequestException, IOException, AlreadyExistingException, BadFormatException,

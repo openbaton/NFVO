@@ -17,46 +17,15 @@
 
 package org.openbaton.catalogue.mano.common;
 
-import java.io.Serializable;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import javax.persistence.Version;
-import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by lto on 23/09/15. */
 @Entity
-public class Ip implements Serializable {
-  @Id private String id;
-  @Version private int version = 0;
+public class Ip extends BaseEntity {
 
   private String netName;
   private String ip;
-
-  @Override
-  public String toString() {
-    return "Ip{"
-        + "id='"
-        + id
-        + '\''
-        + ", version="
-        + version
-        + ", netName='"
-        + netName
-        + '\''
-        + ", ip='"
-        + ip
-        + '\''
-        + '}';
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
 
   public String getIp() {
     return ip;
@@ -74,16 +43,8 @@ public class Ip implements Serializable {
     this.netName = netName;
   }
 
-  public int getVersion() {
-    return version;
-  }
-
-  public void setVersion(int version) {
-    this.version = version;
-  }
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
+  @Override
+  public String toString() {
+    return "Ip{" + "netName='" + netName + '\'' + ", ip='" + ip + '\'' + "} " + super.toString();
   }
 }

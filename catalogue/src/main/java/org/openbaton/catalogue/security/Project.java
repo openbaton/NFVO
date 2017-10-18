@@ -17,18 +17,14 @@
 
 package org.openbaton.catalogue.security;
 
-import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
 import org.openbaton.catalogue.nfvo.Quota;
-import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by lto on 24/05/16. */
 @Entity
-public class Project implements Serializable {
-  @Id private String id;
+public class Project extends BaseEntity {
 
   @Column(unique = true)
   private String name;
@@ -36,14 +32,6 @@ public class Project implements Serializable {
   private String description;
 
   private Quota quota;
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
 
   public String getName() {
     return name;
@@ -56,10 +44,7 @@ public class Project implements Serializable {
   @Override
   public String toString() {
     return "Project{"
-        + "id='"
-        + id
-        + '\''
-        + ", name='"
+        + "name='"
         + name
         + '\''
         + ", description='"
@@ -67,7 +52,8 @@ public class Project implements Serializable {
         + '\''
         + ", quota="
         + quota
-        + '}';
+        + "} "
+        + super.toString();
   }
 
   public Quota getQuota() {
@@ -76,11 +62,6 @@ public class Project implements Serializable {
 
   public void setQuota(Quota quota) {
     this.quota = quota;
-  }
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
   }
 
   public String getDescription() {

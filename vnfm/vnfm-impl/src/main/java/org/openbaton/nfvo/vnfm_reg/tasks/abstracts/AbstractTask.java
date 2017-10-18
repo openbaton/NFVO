@@ -19,7 +19,7 @@ package org.openbaton.nfvo.vnfm_reg.tasks.abstracts;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
@@ -447,8 +447,7 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
     lifecycleEvent.setDescription(description);
 
     if (virtualNetworkFunctionRecord.getLifecycle_event_history() == null) {
-      virtualNetworkFunctionRecord.setLifecycle_event_history(
-          new LinkedList<HistoryLifecycleEvent>());
+      virtualNetworkFunctionRecord.setLifecycle_event_history(new LinkedHashSet<>());
     }
     virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
     log.debug("Added lifecycle event history: " + lifecycleEvent);
@@ -462,8 +461,7 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
     lifecycleEvent.setDescription(message);
 
     if (virtualNetworkFunctionRecord.getLifecycle_event_history() == null) {
-      virtualNetworkFunctionRecord.setLifecycle_event_history(
-          new LinkedList<HistoryLifecycleEvent>());
+      virtualNetworkFunctionRecord.setLifecycle_event_history(new LinkedHashSet<>());
     }
     virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
     log.debug("Added lifecycle event history: " + lifecycleEvent);

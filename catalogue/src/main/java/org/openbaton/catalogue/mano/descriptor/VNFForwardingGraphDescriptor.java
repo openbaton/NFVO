@@ -17,13 +17,15 @@
 
 package org.openbaton.catalogue.mano.descriptor;
 
-import java.io.Serializable;
 import java.util.Set;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import org.openbaton.catalogue.mano.common.ConnectionPoint;
 import org.openbaton.catalogue.mano.common.CostituentVNF;
 import org.openbaton.catalogue.mano.common.Security;
-import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /**
  * Created by lto on 05/02/15.
@@ -31,12 +33,8 @@ import org.openbaton.catalogue.util.IdGenerator;
  * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
  */
 @Entity
-public class VNFForwardingGraphDescriptor implements Serializable {
+public class VNFForwardingGraphDescriptor extends BaseEntity {
 
-  /** ID of the VNFFG Descriptor */
-  @Id private String id;
-
-  @Version private int hb_version = 0;
   /** Specify the vendor generating this VNFFG */
   private String vendor;
   /**
@@ -80,19 +78,6 @@ public class VNFForwardingGraphDescriptor implements Serializable {
   private Security vnffgd_security;
 
   public VNFForwardingGraphDescriptor() {}
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
 
   public String getVendor() {
     return vendor;
@@ -142,14 +127,6 @@ public class VNFForwardingGraphDescriptor implements Serializable {
     this.network_forwarding_path = network_forwarding_path;
   }
 
-  public int getHb_version() {
-    return hb_version;
-  }
-
-  public void setHb_version(int hb_version) {
-    this.hb_version = hb_version;
-  }
-
   public Set<ConnectionPoint> getConnection_point() {
     return connection_point;
   }
@@ -184,14 +161,13 @@ public class VNFForwardingGraphDescriptor implements Serializable {
 
   @Override
   public String toString() {
-    return "VNFForwardingGraph [id="
-        + id
-        + ", hb_version="
-        + hb_version
-        + ", vendor="
+    return "VNFForwardingGraphDescriptor{"
+        + "vendor='"
         + vendor
-        + ", version="
+        + '\''
+        + ", version='"
         + version
+        + '\''
         + ", number_of_endpoints="
         + number_of_endpoints
         + ", number_of_virtual_links="
@@ -202,12 +178,14 @@ public class VNFForwardingGraphDescriptor implements Serializable {
         + network_forwarding_path
         + ", connection_point="
         + connection_point
-        + ", descriptor_version="
+        + ", descriptor_version='"
         + descriptor_version
+        + '\''
         + ", constituent_vnfs="
         + constituent_vnfs
         + ", vnffgd_security="
         + vnffgd_security
-        + "]";
+        + "} "
+        + super.toString();
   }
 }

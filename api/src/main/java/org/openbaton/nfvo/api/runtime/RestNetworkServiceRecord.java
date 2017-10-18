@@ -23,8 +23,8 @@ import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +61,6 @@ import org.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.support.PropertyComparator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -133,11 +132,10 @@ public class RestNetworkServiceRecord {
   /**
    * @param id of the NSR
    * @param projectId if of the project
-   * @param body the body json is:
-   *     <p>{ "vduVimInstances":{ "vduName1":[ "viminstancename" ], "vduName2":[ "viminstancename2"
-   *     ] }, "keys":[ "keyname1", "keyname2" ], "configurations":{ "vnfrName1":{ "name":"conf1",
-   *     "configurationParameters":[ { "confKey":"key1", "value":"value1",
-   *     "description":"description1" }, { "confKey":"key2", "value":"value2",
+   * @param body the body json is: { "vduVimInstances":{ "vduName1":[ "viminstancename" ],
+   *     "vduName2":[ "viminstancename2" ] }, "keys":[ "keyname1", "keyname2" ], "configurations":{
+   *     "vnfrName1":{ "name":"conf1", "configurationParameters":[ { "confKey":"key1",
+   *     "value":"value1", "description":"description1" }, { "confKey":"key2", "value":"value2",
    *     "description":"description2" } ] }, "vnfrName2":{ "name":"conf1",
    *     "configurationParameters":[ { "confKey":"key1", "value":"value1",
    *     "description":"description1" }, { "confKey":"key2", "value":"value2",
@@ -174,7 +172,7 @@ public class RestNetworkServiceRecord {
 
     String monitoringIp = null;
     List keys = null;
-    Map vduVimInstances = null;
+    Map<String, Set<String>> vduVimInstances = null;
     Map<String, Configuration> configurations = null;
 
     log.debug("Json Body is" + body);
@@ -187,7 +185,8 @@ public class RestNetworkServiceRecord {
           keys = gson.fromJson(body.getAsJsonArray("keys"), List.class);
         }
         if (body.has("vduVimInstances")) {
-          vduVimInstances = gson.fromJson(body.getAsJsonObject("vduVimInstances"), Map.class);
+          Type mapType = new TypeToken<Map<String, Set<String>>>() {}.getType();
+          vduVimInstances = gson.fromJson(body.getAsJsonObject("vduVimInstances"), mapType);
         }
         if (body.has("configurations")) {
           Type mapType = new TypeToken<Map<String, Configuration>>() {}.getType();
@@ -1030,18 +1029,19 @@ public class RestNetworkServiceRecord {
     produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.ACCEPTED)
-  public List<HistoryLifecycleEvent> getHistory(
+  public LinkedHashSet<HistoryLifecycleEvent> getHistory(
       @PathVariable("id") String id,
       @PathVariable("id_vnf") String id_vnf,
       @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException {
-    List<HistoryLifecycleEvent> lifecycle_event_history =
-        networkServiceRecordManagement
-            .getVirtualNetworkFunctionRecord(id, id_vnf, projectId)
-            .getLifecycle_event_history();
-    Collections.sort(
-        lifecycle_event_history,
-        new PropertyComparator<HistoryLifecycleEvent>("timestamp", true, true));
+    LinkedHashSet<HistoryLifecycleEvent> lifecycle_event_history =
+        (LinkedHashSet<HistoryLifecycleEvent>)
+            networkServiceRecordManagement
+                .getVirtualNetworkFunctionRecord(id, id_vnf, projectId)
+                .getLifecycle_event_history();
+    //    Collections.sort(
+    //        lifecycle_event_history,
+    //        new PropertyComparator<HistoryLifecycleEvent>("timestamp", true, true));
     return lifecycle_event_history;
   }
 

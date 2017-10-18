@@ -22,57 +22,27 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
-import org.openbaton.catalogue.util.IdGenerator;
 
-/** Created by lto on 20/05/15. */
-//@Entity
 public class Server implements Serializable {
-  //    @Id
-  private String id;
-  //    @Version
-  private int version = 0;
   private String name;
 
-  //    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
   private NFVImage image;
-  //    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
   private DeploymentFlavour flavor;
 
   private String status;
   private String extendedStatus;
   private String extId;
 
-  //    @ElementCollection(fetch = FetchType.EAGER)
   private Map<String, List<String>> ips;
 
-  //    @ElementCollection(fetch = FetchType.EAGER)
   private Map<String, String> floatingIps;
 
-  //    @Temporal(TemporalType.DATE)
   private Date created;
-  //    @Temporal(TemporalType.DATE)
   private Date updated;
 
   private String hostName;
   private String hypervisorHostName;
   private String instanceName;
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public int getVersion() {
-    return version;
-  }
-
-  //    @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
 
   public String getName() {
     return name;
@@ -181,12 +151,7 @@ public class Server implements Serializable {
   @Override
   public String toString() {
     return "Server{"
-        + "id='"
-        + id
-        + '\''
-        + ", version="
-        + version
-        + ", name='"
+        + "name='"
         + name
         + '\''
         + ", image="

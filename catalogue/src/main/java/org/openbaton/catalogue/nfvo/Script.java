@@ -17,45 +17,22 @@
 
 package org.openbaton.catalogue.nfvo;
 
-import java.io.Serializable;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Lob;
-import javax.persistence.PrePersist;
-import javax.persistence.Version;
-import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by lto on 23/07/15. */
 @Entity
-public class Script implements Serializable {
-  @Id private String id;
-  @Version private int version = 0;
-
+public class Script extends BaseEntity {
   private String name;
 
   @Lob private byte[] payload;
 
   public Script() {}
 
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
-  public int getVersion() {
-    return version;
-  }
-
-  public void setVersion(int version) {
-    this.version = version;
+  @Override
+  public String toString() {
+    return "Script{" + "name='" + name + '\'' + "} " + super.toString();
   }
 
   public String getName() {
@@ -72,10 +49,5 @@ public class Script implements Serializable {
 
   public void setPayload(byte[] payload) {
     this.payload = payload;
-  }
-
-  @Override
-  public String toString() {
-    return "Script{" + "id='" + id + '\'' + ", version=" + version + ", name='" + name + '\'' + '}';
   }
 }

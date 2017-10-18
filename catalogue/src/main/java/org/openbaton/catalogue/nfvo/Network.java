@@ -17,20 +17,20 @@
 
 package org.openbaton.catalogue.nfvo;
 
-import java.io.Serializable;
 import java.util.Set;
-import javax.persistence.*;
-import org.openbaton.catalogue.util.IdGenerator;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by lto on 20/05/15. */
 @Entity
-public class Network implements Serializable {
-  @Id private String id;
-  @Version private int version = 0;
+public class Network extends BaseEntity {
   private String name;
   private String extId;
   private Boolean external = false;
-  private Boolean shared = false;
+  private Boolean extShared = false;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<Subnet> subnets;
@@ -48,10 +48,7 @@ public class Network implements Serializable {
   @Override
   public String toString() {
     return "Network{"
-        + "id='"
-        + id
-        + '\''
-        + ", name='"
+        + "name='"
         + name
         + '\''
         + ", extId='"
@@ -59,16 +56,12 @@ public class Network implements Serializable {
         + '\''
         + ", external="
         + external
-        + ", shared="
-        + shared
+        + ", extShared="
+        + extShared
         + ", subnets="
         + subnets
-        + '}';
-  }
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
+        + "} "
+        + super.toString();
   }
 
   public String getExtId() {
@@ -79,14 +72,6 @@ public class Network implements Serializable {
     this.extId = extId;
   }
 
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
   public String getName() {
     return name;
   }
@@ -95,12 +80,12 @@ public class Network implements Serializable {
     this.name = name;
   }
 
-  public Boolean getShared() {
-    return shared;
+  public Boolean getExtShared() {
+    return extShared;
   }
 
-  public void setShared(Boolean shared) {
-    this.shared = shared;
+  public void setExtShared(Boolean extShared) {
+    this.extShared = extShared;
   }
 
   public Set<Subnet> getSubnets() {
@@ -109,13 +94,5 @@ public class Network implements Serializable {
 
   public void setSubnets(Set<Subnet> subnets) {
     this.subnets = subnets;
-  }
-
-  public int getVersion() {
-    return version;
-  }
-
-  public void setVersion(int version) {
-    this.version = version;
   }
 }

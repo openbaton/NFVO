@@ -17,44 +17,25 @@
 
 package org.openbaton.catalogue.mano.common;
 
-import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
-import javax.persistence.PrePersist;
-import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import org.openbaton.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
-import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.catalogue.util.BaseEntity;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public abstract class NFVEntityDescriptor implements Serializable {
-
-  /** ID of this Network Service Descriptor */
-  @Id protected String id;
-
-  @Version protected Integer hb_version = 0;
+public abstract class NFVEntityDescriptor extends BaseEntity {
 
   @NotNull @Column protected String name;
-
-  protected String projectId;
-
-  public String getProjectId() {
-    return projectId;
-  }
-
-  public void setProjectId(String projectId) {
-    this.projectId = projectId;
-  }
 
   /** Provider or vendor of the Network Service. */
   @NotNull protected String vendor;
@@ -104,33 +85,12 @@ public abstract class NFVEntityDescriptor implements Serializable {
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   protected Set<ConnectionPoint> connection_point;
 
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
   public String getName() {
     return name;
   }
 
   public void setName(String name) {
     this.name = name;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public Integer getHb_version() {
-    return hb_version;
-  }
-
-  public void setHb_version(Integer hb_version) {
-    this.hb_version = hb_version;
   }
 
   public String getVendor() {
@@ -195,5 +155,33 @@ public abstract class NFVEntityDescriptor implements Serializable {
 
   public void setService_deployment_flavour(Set<DeploymentFlavour> service_deployment_flavour) {
     this.service_deployment_flavour = service_deployment_flavour;
+  }
+
+  @Override
+  public String toString() {
+    return "NFVEntityDescriptor{"
+        + "name='"
+        + name
+        + '\''
+        + ", vendor='"
+        + vendor
+        + '\''
+        + ", version='"
+        + version
+        + '\''
+        + ", vnffgd="
+        + vnffgd
+        + ", vld="
+        + vld
+        + ", monitoring_parameter="
+        + monitoring_parameter
+        + ", service_deployment_flavour="
+        + service_deployment_flavour
+        + ", auto_scale_policy="
+        + auto_scale_policy
+        + ", connection_point="
+        + connection_point
+        + "} "
+        + super.toString();
   }
 }

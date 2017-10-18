@@ -71,7 +71,7 @@ public class RabbitVnfmSender implements VnfmSender {
     rabbitTemplate.setReplyTimeout(-1);
     Object receive =
         rabbitTemplate.convertSendAndReceive("openbaton-exchange", destinationName, json);
-    log.debug("Received: " + receive);
+    log.trace("Received: " + receive);
     String str;
     if (receive instanceof byte[]) {
       str = new String((byte[]) receive, StandardCharsets.UTF_8);

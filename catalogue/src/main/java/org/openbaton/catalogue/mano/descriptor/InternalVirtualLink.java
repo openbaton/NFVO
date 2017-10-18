@@ -51,35 +51,9 @@ public class InternalVirtualLink extends AbstractVirtualLink {
   @Override
   public String toString() {
     return "InternalVirtualLink{"
-        + "id='"
-        + id
-        + '\''
-        + ", name='"
-        + getName()
-        + '\''
-        + ", version='"
-        + hb_version
-        + ", connectivity_type='"
-        + getConnectivity_type()
-        + '\''
-        + ", connection_points_references='"
+        + "connection_points_references="
         + connection_points_references
-        + '\''
-        + ", root_requirement='"
-        + getRoot_requirement()
-        + '\''
-        + ", leaf_requirement='"
-        + getLeaf_requirement()
-        + '\''
-        + ", qos='"
-        + getQos()
-        + '\''
-        + ", extId='"
-        + extId
-        + '\''
-        + ", test_access='"
-        + getTest_access()
-        + '\''
-        + '}';
+        + "} "
+        + super.toString();
   }
 }

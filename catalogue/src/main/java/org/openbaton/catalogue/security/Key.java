@@ -17,15 +17,13 @@
 
 package org.openbaton.catalogue.security;
 
-import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.*;
-import org.openbaton.catalogue.util.IdGenerator;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by mpa on 09.08.16. */
 @Entity
@@ -33,15 +31,11 @@ import org.openbaton.catalogue.util.IdGenerator;
   name = "PublicKeys",
   uniqueConstraints = @UniqueConstraint(columnNames = {"name", "projectId"})
 )
-public class Key implements Serializable {
-
-  @Id private String id;
+public class Key extends BaseEntity {
 
   @NotNull
   @Size(min = 1)
   private String name;
-
-  private String projectId;
 
   @NotNull
   @Size(min = 1)
@@ -51,14 +45,8 @@ public class Key implements Serializable {
   @Override
   public String toString() {
     return "Key{"
-        + "id='"
-        + id
-        + '\''
-        + ", name='"
+        + "name='"
         + name
-        + '\''
-        + ", projectId='"
-        + projectId
         + '\''
         + ", publicKey='"
         + publicKey
@@ -66,7 +54,8 @@ public class Key implements Serializable {
         + ", fingerprint='"
         + fingerprint
         + '\''
-        + '}';
+        + "} "
+        + super.toString();
   }
 
   public String getFingerprint() {
@@ -78,21 +67,6 @@ public class Key implements Serializable {
   }
 
   private String fingerprint;
-
-  public String getId() {
-    return id;
-  }
-
-  public Key() {}
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
 
   public String getName() {
     return name;
@@ -108,13 +82,5 @@ public class Key implements Serializable {
 
   public void setPublicKey(String publicKey) {
     this.publicKey = publicKey;
-  }
-
-  public String getProjectId() {
-    return projectId;
-  }
-
-  public void setProjectId(String projectId) {
-    this.projectId = projectId;
   }
 }

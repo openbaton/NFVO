@@ -17,45 +17,36 @@
 
 package org.openbaton.catalogue.nfvo;
 
-import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import javax.persistence.Version;
-import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by lto on 18/05/15. */
 @Entity
-public class ConfigurationParameter implements Serializable {
-
-  @Id private String id;
-  @Version private Integer version = 0;
+public class ConfigurationParameter extends BaseEntity {
 
   @Column(length = 1024)
   private String description;
 
   private String confKey;
+
+  @Column(length = 1024)
   private String value;
 
   @Override
   public String toString() {
     return "ConfigurationParameter{"
-        + "id='"
-        + id
+        + "description='"
+        + description
         + '\''
-        + ", version="
-        + version
         + ", confKey='"
         + confKey
         + '\''
         + ", value='"
         + value
         + '\''
-        + ", description='"
-        + description
-        + '\''
-        + '}';
+        + "} "
+        + super.toString();
   }
 
   public String getDescription() {
@@ -64,27 +55,6 @@ public class ConfigurationParameter implements Serializable {
 
   public void setDescription(String description) {
     this.description = description;
-  }
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public Integer getVersion() {
-    return version;
-  }
-
-  public void setVersion(Integer version) {
-    this.version = version;
   }
 
   public String getConfKey() {

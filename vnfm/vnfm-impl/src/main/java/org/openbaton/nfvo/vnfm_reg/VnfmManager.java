@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import javax.annotation.PostConstruct;
@@ -146,7 +147,7 @@ public class VnfmManager
       NetworkServiceDescriptor networkServiceDescriptor,
       NetworkServiceRecord networkServiceRecord,
       DeployNSRBody body,
-      Map<String, List<String>> vduVimInstances,
+      Map<String, Set<String>> vduVimInstances,
       String monitoringIp)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
 

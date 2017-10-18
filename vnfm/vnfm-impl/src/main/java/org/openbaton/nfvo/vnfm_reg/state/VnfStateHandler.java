@@ -1,8 +1,8 @@
 package org.openbaton.nfvo.vnfm_reg.state;
 
 import com.google.gson.Gson;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import javax.annotation.PostConstruct;
@@ -125,7 +125,7 @@ public class VnfStateHandler implements org.openbaton.vnfm.interfaces.state.VnfS
       NetworkServiceDescriptor networkServiceDescriptor,
       NetworkServiceRecord networkServiceRecord,
       DeployNSRBody body,
-      Map<String, List<String>> vduVimInstances,
+      Map<String, Set<String>> vduVimInstances,
       VirtualNetworkFunctionDescriptor vnfd)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
     log.debug(

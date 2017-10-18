@@ -74,13 +74,13 @@ public class InstantiateTask extends AbstractTask {
         "VNFR ("
             + virtualNetworkFunctionRecord.getId()
             + ") received with hibernate version = "
-            + virtualNetworkFunctionRecord.getHb_version());
+            + virtualNetworkFunctionRecord.getHbVersion());
     if (existing != null) {
       log.trace(
           "VNFR ("
               + existing.getId()
               + ") existing hibernat version is = "
-              + existing.getHb_version());
+              + existing.getHbVersion());
     }
 
     for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
@@ -162,7 +162,7 @@ public class InstantiateTask extends AbstractTask {
         "VNFR ("
             + virtualNetworkFunctionRecord.getId()
             + ") hibernate version is = "
-            + virtualNetworkFunctionRecord.getHb_version());
+            + virtualNetworkFunctionRecord.getHbVersion());
     /*vnfmSender.sendCommand(
     new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.START),
     vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));*/

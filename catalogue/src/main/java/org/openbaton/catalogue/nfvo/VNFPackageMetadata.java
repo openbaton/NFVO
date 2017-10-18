@@ -19,7 +19,6 @@
 
 package org.openbaton.catalogue.nfvo;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
@@ -29,22 +28,17 @@ import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
-import javax.persistence.Version;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.util.BaseEntity;
 import org.openbaton.catalogue.util.IdGenerator;
 
 /** Created by mpa on 22/05/16. */
 @Entity
-public class VNFPackageMetadata implements Serializable {
-
-  @Id private String id;
-
-  @Version private int hb_version = 0;
+public class VNFPackageMetadata extends BaseEntity {
 
   //Name of the Package
   private String name;
@@ -60,21 +54,12 @@ public class VNFPackageMetadata implements Serializable {
 
   private String vnfPackageFatherId;
 
-  private boolean shared;
-
   private boolean defaultFlag;
 
   private String tag;
 
-  protected String projectId;
-
   @ElementCollection(fetch = FetchType.EAGER)
   private Map<String, String> requirements;
-
-  //URL to the image's location
-  //    @JsonIgnore
-  //    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-  //    private VNFPackage vnfPackage;
 
   //URL to the scripts' location
   @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -122,30 +107,6 @@ public class VNFPackageMetadata implements Serializable {
     setId(IdGenerator.createUUID());
   }
 
-  public VNFPackageMetadata() {}
-
-  public VNFPackageMetadata(String name, String vendor, String version) {
-    setName(name);
-    setVendor(vendor);
-    setVersion(version);
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public int getHb_version() {
-    return hb_version;
-  }
-
-  public void setHb_version(int hb_version) {
-    this.hb_version = hb_version;
-  }
-
   public String getName() {
     return name;
   }
@@ -180,14 +141,6 @@ public class VNFPackageMetadata implements Serializable {
     this.md5sum = md5sum;
   }
 
-  public boolean isShared() {
-    return shared;
-  }
-
-  public void setShared(boolean shared) {
-    this.shared = shared;
-  }
-
   public String getVnfPackageFileName() {
     return vnfPackageFileName;
   }
@@ -195,14 +148,6 @@ public class VNFPackageMetadata implements Serializable {
   public void setVnfPackageFileName(String vnfPackageFileName) {
     this.vnfPackageFileName = vnfPackageFileName;
   }
-
-  //    public VNFPackage getVnfPackage() {
-  //        return vnfPackage;
-  //    }
-  //
-  //    public void setVnfPackage(VNFPackage vnfPackage) {
-  //        this.vnfPackage = vnfPackage;
-  //    }
 
   public VirtualNetworkFunctionDescriptor getVnfd() {
     return vnfd;
@@ -304,14 +249,6 @@ public class VNFPackageMetadata implements Serializable {
 
   public void setDownloadCounter(int downloadCounter) {
     this.downloadCounter = downloadCounter;
-  }
-
-  public String getProjectId() {
-    return projectId;
-  }
-
-  public void setProjectId(String projectId) {
-    this.projectId = projectId;
   }
 
   public String getVersion() {
@@ -426,10 +363,7 @@ public class VNFPackageMetadata implements Serializable {
   @Override
   public String toString() {
     return "VNFPackageMetadata{"
-        + "id='"
-        + id
-        + '\''
-        + ", name='"
+        + "name='"
         + name
         + '\''
         + ", description='"
@@ -441,21 +375,29 @@ public class VNFPackageMetadata implements Serializable {
         + ", version='"
         + version
         + '\''
-        + ", default='"
-        + defaultFlag
-        + '\''
         + ", vnfmType='"
         + vnfmType
         + '\''
-        + ", shared="
-        + shared
+        + ", vnfPackageFatherId='"
+        + vnfPackageFatherId
+        + '\''
+        + ", defaultFlag="
+        + defaultFlag
         + ", tag='"
         + tag
         + '\''
         + ", requirements="
         + requirements
+        + ", vnfd="
+        + vnfd
+        + ", nfvImage="
+        + nfvImage
+        + ", imageMetadata="
+        + imageMetadata
         + ", vimTypes="
         + vimTypes
+        + ", additionalRepoInfoList="
+        + additionalRepoInfoList
         + ", vnfPackageFileName='"
         + vnfPackageFileName
         + '\''
@@ -473,14 +415,16 @@ public class VNFPackageMetadata implements Serializable {
         + '\''
         + ", downloadCounter="
         + downloadCounter
-        + ", osId="
+        + ", osId='"
         + osId
-        + ", osVersion="
+        + '\''
+        + ", osVersion='"
         + osVersion
-        + ", osArchitecture="
+        + '\''
+        + ", osArchitecture='"
         + osArchitecture
-        + ", additionalRepoInfoList="
-        + additionalRepoInfoList
-        + '}';
+        + '\''
+        + "} "
+        + super.toString();
   }
 }

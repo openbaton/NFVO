@@ -19,6 +19,7 @@ package org.openbaton.vnfm.interfaces.manager;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.openbaton.catalogue.api.DeployNSRBody;
@@ -42,16 +43,9 @@ public interface VnfmManager {
       NetworkServiceDescriptor networkServiceDescriptor,
       NetworkServiceRecord networkServiceRecord,
       DeployNSRBody body,
-      Map<String, List<String>> vduVimInstances,
+      Map<String, Set<String>> vduVimInstances,
       String monitoringIp)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
-
-  //  Future<String> executeAction(NFVMessage message) throws ExecutionException, InterruptedException;
-
-  //  @Async
-  //  Future<Void> sendMessageToVNFR(
-  //      VirtualNetworkFunctionRecord virtualNetworkFunctionRecordDest, NFVMessage nfvMessage)
-  //      throws NotFoundException, BadFormatException;
 
   Future<Void> release(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
