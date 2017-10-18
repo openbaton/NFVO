@@ -17,9 +17,10 @@
 
 package org.openbaton.catalogue.nfvo;
 
+import org.openbaton.catalogue.util.BaseEntity;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by lto on 18/05/15. */
 @Entity
@@ -29,6 +30,7 @@ public class ConfigurationParameter extends BaseEntity {
   private String description;
 
   private String confKey;
+  @Column(length = 1024)
   private String value;
 
   @Override
