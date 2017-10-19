@@ -17,8 +17,7 @@
 
 package org.openbaton.catalogue.mano.common;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -38,7 +37,7 @@ public class LifecycleEvent extends BaseEntity {
   private Event event;
 
   @ElementCollection(fetch = FetchType.EAGER)
-  private Set<String> lifecycle_events;
+  private List<String> lifecycle_events;
 
   public LifecycleEvent() {}
 
@@ -61,11 +60,11 @@ public class LifecycleEvent extends BaseEntity {
     this.event = event;
   }
 
-  public Set<String> getLifecycle_events() {
+  public List<String> getLifecycle_events() {
     return lifecycle_events;
   }
 
-  public void setLifecycle_events(LinkedHashSet<String> lifecycle_events) {
+  public void setLifecycle_events(List<String> lifecycle_events) {
     this.lifecycle_events = lifecycle_events;
   }
 }
