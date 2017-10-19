@@ -23,12 +23,16 @@ import com.kjetland.jackson.jsonSchema.JsonSchemaGenerator;
 import com.networknt.schema.ValidationMessage;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.util.HashSet;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VNFDependency;
+import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.nfvo.api.configuration.CustomHttpServletRequestWrapper;
-import org.openbaton.nfvo.api.configuration.SchemaValidator;
+import org.openbaton.nfvo.common.utils.schema.SchemaValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +52,9 @@ public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
       throws Exception {
 
     String requestURL = request.getRequestURL().toString();
-    if (request.getRequestURI().equalsIgnoreCase("/error")) return true;
+    if (request.getRequestURI().equalsIgnoreCase("/error")) {
+      return true;
+    }
     CustomHttpServletRequestWrapper wrapper = new CustomHttpServletRequestWrapper(request);
     String requestBody = wrapper.getBody();
     String classSchema = null;
@@ -63,9 +69,9 @@ public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
         for (Annotation a : methodParameters) {
           if (a instanceof RequestBody) {
             Class<?> parameterClass = handlerMethod.getMethod().getParameterTypes()[i];
-            if (!parameterClass.getName().equals("com.google.gson.JsonObject"))
+            if (!parameterClass.getName().equals("com.google.gson.JsonObject")) {
               classSchema = getJsonSchemaFromClass(parameterClass);
-            else log.trace("URL: " + request.getRequestURL());
+            }
           }
         }
       }
@@ -74,44 +80,96 @@ public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
     if (classSchema != null) {
       log.trace("Request Body is : " + requestBody);
       log.trace("Request url is : " + requestURL);
-      Set<ValidationMessage> validationMessages = null;
+      Set<ValidationMessage> validationMessages;
       try {
+        if (classSchema.equals(NetworkServiceDescriptor.class.getSimpleName())
+            || classSchema.equals(NetworkServiceDescriptor.class.getName())
+            || classSchema.equals(NetworkServiceDescriptor.class.getCanonicalName())) {
+          NetworkServiceDescriptor networkServiceDescriptor =
+              gson.fromJson(requestBody, NetworkServiceDescriptor.class);
+          if (networkServiceDescriptor
+                  .getVnfd()
+                  .stream()
+                  .filter(vnfd -> vnfd.getId() != null)
+                  .count()
+              > 0) {
+            Set<ValidationMessage> errors = new HashSet<>();
+            //Validating VLDs
+            networkServiceDescriptor
+                .getVld()
+                .forEach(
+                    vld -> {
+                      try {
+                        errors.addAll(
+                            SchemaValidator.validateSchema(
+                                VirtualLinkDescriptor.class.getCanonicalName(), gson.toJson(vld)));
+                      } catch (BadRequestException | IOException e) {
+                        e.printStackTrace();
+                      }
+                    });
+            //Validating VNFDeps
+            networkServiceDescriptor
+                .getVnf_dependency()
+                .forEach(
+                    vnfDependency -> {
+                      try {
+                        errors.addAll(
+                            SchemaValidator.validateSchema(
+                                VNFDependency.class.getCanonicalName(),
+                                gson.toJson(vnfDependency)));
+                      } catch (BadRequestException | IOException e) {
+                        e.printStackTrace();
+                      }
+                    });
+            if (!errors.isEmpty()) {
+              handleErrorMessages(request, response, errors);
+              return false;
+            }
+            return true;
+          }
+        }
         validationMessages = SchemaValidator.validateSchema(classSchema, requestBody);
       } catch (BadRequestException e) {
         response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
         return false;
       }
       if (validationMessages.size() > 0) {
-        StringBuilder validationResult = new StringBuilder();
-        for (ValidationMessage s : validationMessages) {
-
-          String message = s.getMessage();
-          validationResult.append(message).append(", ");
-        }
-
-        log.trace("Response body is : " + validationResult);
-        log.trace(request.getHeader("Accept"));
-        if (request.getHeader("Accept").equalsIgnoreCase("application/json")
-            || request.getHeader("Accept").equalsIgnoreCase("application/octet-stream")) {
-          response.setContentLength(validationResult.length());
-          response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-          response.sendError(
-              HttpServletResponse.SC_BAD_REQUEST, validationResult.toString().replace("$.", " "));
-        }
+        handleErrorMessages(request, response, validationMessages);
         return false;
       } else {
         log.trace("Response body is : no error");
         return super.preHandle(wrapper, response, handler);
       }
     } else {
-      if (requestURL.contains("/api/v1")
-          || request.getMethod().equalsIgnoreCase("get")
-          || request.getMethod().equalsIgnoreCase("delete")) ;
-      else {
+      if (!requestURL.contains("/api/v1")
+          && !request.getMethod().equalsIgnoreCase("get")
+          && !request.getMethod().equalsIgnoreCase("delete")) {
         log.warn("Not able to generate schema for url ...");
         log.warn("URL: " + requestURL);
       }
-      return super.preHandle(wrapper, response, handler);
+    }
+    return super.preHandle(wrapper, response, handler);
+  }
+
+  private void handleErrorMessages(
+      HttpServletRequest request,
+      HttpServletResponse response,
+      Set<ValidationMessage> validationMessages)
+      throws IOException {
+    StringBuilder validationResult = new StringBuilder();
+    for (ValidationMessage s : validationMessages) {
+      String message = s.getMessage();
+      validationResult.append(message).append(", ");
+    }
+
+    log.trace("Response body is : " + validationResult);
+    log.trace(request.getHeader("Accept"));
+    if (request.getHeader("Accept").equalsIgnoreCase("application/json")
+        || request.getHeader("Accept").equalsIgnoreCase("application/octet-stream")) {
+      response.setContentLength(validationResult.length());
+      response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+      response.sendError(
+          HttpServletResponse.SC_BAD_REQUEST, validationResult.toString().replace("$.", " "));
     }
   }
 

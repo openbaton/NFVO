@@ -31,7 +31,7 @@ public class BaseEntity implements Serializable {
 
   private String projectId;
 
-  private boolean shared;
+  private Boolean shared = false;
 
   @ElementCollection(fetch = FetchType.EAGER)
   private Map<String, String> metadata;
@@ -78,11 +78,11 @@ public class BaseEntity implements Serializable {
         + '}';
   }
 
-  public boolean isShared() {
+  public Boolean isShared() {
     return shared;
   }
 
-  public void setShared(boolean shared) {
+  public void setShared(Boolean shared) {
     this.shared = shared;
   }
 

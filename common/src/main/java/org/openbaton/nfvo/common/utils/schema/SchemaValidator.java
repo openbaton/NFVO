@@ -1,4 +1,4 @@
-package org.openbaton.nfvo.api.configuration;
+package org.openbaton.nfvo.common.utils.schema;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonNode;

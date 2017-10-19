@@ -20,8 +20,23 @@ package org.openbaton.nfvo.core.api;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
-import com.networknt.schema.ValidationMessage;
-
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
@@ -54,7 +69,6 @@ import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VNFPackageFormatException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.exceptions.WrongAction;
-import org.openbaton.nfvo.common.utils.schema.SchemaValidator;
 import org.openbaton.nfvo.core.interfaces.VnfPlacementManagement;
 import org.openbaton.nfvo.core.utils.CheckVNFDescriptor;
 import org.openbaton.nfvo.core.utils.CheckVNFPackage;
@@ -80,24 +94,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.error.YAMLException;
-
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.regex.Pattern;
 
 /** Created by lto on 22/07/15. */
 @Service
@@ -187,15 +183,17 @@ public class VNFPackageManagement
             //and has to be onboarded in the catalogue
             String json = new String(content);
             log.trace("Content of json is: " + json);
-            Set<ValidationMessage> errors = SchemaValidator.validateSchema(VirtualNetworkFunctionDescriptor.class.getCanonicalName(), json);
-            if (errors.size() >0 ){
-              StringBuilder builder = new StringBuilder();
-              for (ValidationMessage s : errors) {
-                String message = s.getMessage();
-                builder.append(message).append(", ");
-              }
-              throw new BadFormatException(builder.toString());
-            }
+            //            Set<ValidationMessage> errors =
+            //                SchemaValidator.validateSchema(
+            //                    VirtualNetworkFunctionDescriptor.class.getCanonicalName(), json);
+            //            if (errors.size() > 0) {
+            //              StringBuilder builder = new StringBuilder();
+            //              for (ValidationMessage s : errors) {
+            //                String message = s.getMessage();
+            //                builder.append(message).append(", ");
+            //              }
+            //              throw new BadFormatException(builder.toString());
+            //            }
             try {
               virtualNetworkFunctionDescriptor =
                   mapper.fromJson(json, VirtualNetworkFunctionDescriptor.class);
@@ -363,13 +361,12 @@ public class VNFPackageManagement
             }
 
             if (metadata.containsKey("vim-types")) {
-              vnfPackageMetadata.setVimTypes(
-                  new HashSet<String>((ArrayList) metadata.get("vim-types")));
-              vnfPackage.setVimTypes((Set<String>) metadata.get("vim-types"));
+              HashSet<String> vimTypes = new HashSet<String>((ArrayList) metadata.get("vim-types"));
+              vnfPackageMetadata.setVimTypes(vimTypes);
+              vnfPackage.setVimTypes(vimTypes);
             } else {
-              vnfPackageMetadata.setVimTypes(
-                  new HashSet<String>((ArrayList) metadata.get("vim_types")));
               LinkedHashSet<String> vimTypes = new LinkedHashSet<>();
+              vnfPackageMetadata.setVimTypes(vimTypes);
               vimTypes.addAll((ArrayList) metadata.get("vim_types"));
               vnfPackage.setVimTypes(vimTypes);
             }
