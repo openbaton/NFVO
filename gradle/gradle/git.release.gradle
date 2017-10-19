@@ -39,11 +39,11 @@ release {
 //            net.researchgate.release.BzrAdapter
 //    ]
 //
-//    git {
-//        requireBranch = 'master'
+    git {
+        requireBranch = ''
 //        pushToRemote = 'origin'
 //        pushToCurrentBranch = false
-//    }
+    }
 //
 //    svn {
 //        username = null
