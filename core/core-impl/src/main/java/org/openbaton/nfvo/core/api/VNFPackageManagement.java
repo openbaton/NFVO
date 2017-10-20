@@ -20,6 +20,7 @@ package org.openbaton.nfvo.core.api;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
+import com.networknt.schema.ValidationMessage;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -69,6 +70,7 @@ import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VNFPackageFormatException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.exceptions.WrongAction;
+import org.openbaton.nfvo.common.utils.schema.SchemaValidator;
 import org.openbaton.nfvo.core.interfaces.VnfPlacementManagement;
 import org.openbaton.nfvo.core.utils.CheckVNFDescriptor;
 import org.openbaton.nfvo.core.utils.CheckVNFPackage;
@@ -141,7 +143,7 @@ public class VNFPackageManagement
           InterruptedException, EntityUnreachableException, BadFormatException {
     log.info("Onboarding VNF Package...");
     for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId))
-      vimManagement.refresh(vimInstance);
+      vimManagement.refresh(vimInstance, false);
     VNFPackage vnfPackage = new VNFPackage();
     vnfPackage.setScripts(new HashSet<>());
     Map<String, Object> metadata = null;
@@ -183,17 +185,17 @@ public class VNFPackageManagement
             //and has to be onboarded in the catalogue
             String json = new String(content);
             log.trace("Content of json is: " + json);
-            //            Set<ValidationMessage> errors =
-            //                SchemaValidator.validateSchema(
-            //                    VirtualNetworkFunctionDescriptor.class.getCanonicalName(), json);
-            //            if (errors.size() > 0) {
-            //              StringBuilder builder = new StringBuilder();
-            //              for (ValidationMessage s : errors) {
-            //                String message = s.getMessage();
-            //                builder.append(message).append(", ");
-            //              }
-            //              throw new BadFormatException(builder.toString());
-            //            }
+            Set<ValidationMessage> errors =
+                SchemaValidator.validateSchema(
+                    VirtualNetworkFunctionDescriptor.class.getCanonicalName(), json);
+            if (errors.size() > 0) {
+              StringBuilder builder = new StringBuilder();
+              for (ValidationMessage s : errors) {
+                String message = s.getMessage();
+                builder.append(message).append(", ");
+              }
+              throw new BadFormatException(builder.toString());
+            }
             try {
               virtualNetworkFunctionDescriptor =
                   mapper.fromJson(json, VirtualNetworkFunctionDescriptor.class);
@@ -864,7 +866,7 @@ public class VNFPackageManagement
                 }
                 vdu.getVm_image().add(image.getExtId());
                 vimInstances.add(vimInstance.getId());
-                vimManagement.refresh(vimInstance);
+                vimManagement.refresh(vimInstance, false);
 
                 imageChecker.checkImageStatus(vimInstance);
               }
@@ -896,7 +898,7 @@ public class VNFPackageManagement
                 }
                 vdu.getVm_image().add(image.getExtId());
                 vimInstances.add(vimInstance.getId());
-                vimManagement.refresh(vimInstance);
+                vimManagement.refresh(vimInstance, false);
 
                 imageChecker.checkImageStatus(vimInstance);
               }
@@ -932,7 +934,7 @@ public class VNFPackageManagement
           }
 
           boolean found = false;
-          vimManagement.refresh(vimInstance);
+          vimManagement.refresh(vimInstance, false);
           //First, check for image ids
           if (imageDetails.containsKey("ids")) {
             for (NFVImage nfvImage : vimInstance.getImages()) {
@@ -996,7 +998,7 @@ public class VNFPackageManagement
                   }
                   vdu.getVm_image().add(image.getExtId());
                   vimInstances.add(vimInstance.getId());
-                  vimManagement.refresh(vimInstance);
+                  vimManagement.refresh(vimInstance, false);
 
                   imageChecker.checkImageStatus(vimInstance);
                 }
@@ -1014,7 +1016,7 @@ public class VNFPackageManagement
                   }
                   vimInstances.add(vimInstance.getId());
                   vdu.getVm_image().add(image.getExtId());
-                  vimManagement.refresh(vimInstance);
+                  vimManagement.refresh(vimInstance, false);
 
                   imageChecker.checkImageStatus(vimInstance);
                 }

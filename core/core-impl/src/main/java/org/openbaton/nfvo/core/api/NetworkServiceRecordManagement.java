@@ -1094,7 +1094,7 @@ public class NetworkServiceRecordManagement
                         s -> {
                           if (s.equals(vimInstance.getName())) {
                             try {
-                              vimManagement.refresh(vimInstance);
+                              vimManagement.refresh(vimInstance, false);
                             } catch (VimException
                                 | PluginException
                                 | BadRequestException
@@ -1107,7 +1107,7 @@ public class NetworkServiceRecordManagement
                         });
                   } else {
                     try {
-                      vimManagement.refresh(vimInstance);
+                      vimManagement.refresh(vimInstance, false);
                     } catch (VimException
                         | PluginException
                         | BadRequestException
@@ -1119,7 +1119,7 @@ public class NetworkServiceRecordManagement
                   }
                 });
       } else {
-        vimManagement.refresh(vimInstance);
+        vimManagement.refresh(vimInstance, false);
       }
       if (exception[0] != null) {
         throw new VimException(exception[0]);
@@ -1188,7 +1188,7 @@ public class NetworkServiceRecordManagement
 
             if (!vimInstance.getType().equals("test")) {
               boolean found = false;
-              vimManagement.refresh(vimInstance);
+              vimManagement.refresh(vimInstance, false);
 
               for (String imageName : vdu.getVm_image()) {
 

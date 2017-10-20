@@ -308,7 +308,7 @@ public class RestVimInstances {
     VimInstance vimInstance = vimManagement.query(id, projectId);
     if (vimInstance == null)
       throw new NotFoundException("VIM Instance with ID " + id + " not found.");
-    vimManagement.refresh(vimInstance);
+    vimManagement.refresh(vimInstance, true);
     return vimInstance;
   }
 }

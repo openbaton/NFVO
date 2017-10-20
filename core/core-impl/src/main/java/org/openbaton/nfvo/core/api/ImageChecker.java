@@ -59,11 +59,11 @@ public class ImageChecker {
 
       if (allImagesActive) {
         log.info("All images are active");
-        vimManagement.refresh(vimInstance);
+        vimManagement.refresh(vimInstance, false);
         return;
       }
     }
-    vimManagement.refresh(vimInstance);
+    vimManagement.refresh(vimInstance, false);
     throw new VimException("Not all images are active even after timeout!");
   }
 }

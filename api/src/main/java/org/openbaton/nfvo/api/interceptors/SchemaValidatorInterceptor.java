@@ -58,7 +58,7 @@ public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
     CustomHttpServletRequestWrapper wrapper = new CustomHttpServletRequestWrapper(request);
     String requestBody = wrapper.getBody();
     String classSchema = null;
-
+    Class<?> parameterClass = null;
     if (handler instanceof org.springframework.web.method.HandlerMethod) {
       org.springframework.web.method.HandlerMethod handlerMethod =
           (org.springframework.web.method.HandlerMethod) handler;
@@ -68,7 +68,7 @@ public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
         Annotation[] methodParameters = annotations[i];
         for (Annotation a : methodParameters) {
           if (a instanceof RequestBody) {
-            Class<?> parameterClass = handlerMethod.getMethod().getParameterTypes()[i];
+            parameterClass = handlerMethod.getMethod().getParameterTypes()[i];
             if (!parameterClass.getName().equals("com.google.gson.JsonObject")) {
               classSchema = getJsonSchemaFromClass(parameterClass);
             }
@@ -82,9 +82,9 @@ public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
       log.trace("Request url is : " + requestURL);
       Set<ValidationMessage> validationMessages;
       try {
-        if (classSchema.equals(NetworkServiceDescriptor.class.getSimpleName())
-            || classSchema.equals(NetworkServiceDescriptor.class.getName())
-            || classSchema.equals(NetworkServiceDescriptor.class.getCanonicalName())) {
+        if (parameterClass
+            .getCanonicalName()
+            .equals(NetworkServiceDescriptor.class.getCanonicalName())) {
           NetworkServiceDescriptor networkServiceDescriptor =
               gson.fromJson(requestBody, NetworkServiceDescriptor.class);
           if (networkServiceDescriptor
@@ -102,7 +102,8 @@ public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
                       try {
                         errors.addAll(
                             SchemaValidator.validateSchema(
-                                VirtualLinkDescriptor.class.getCanonicalName(), gson.toJson(vld)));
+                                getJsonSchemaFromClass(VirtualLinkDescriptor.class),
+                                gson.toJson(vld)));
                       } catch (BadRequestException | IOException e) {
                         e.printStackTrace();
                       }
@@ -115,7 +116,7 @@ public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
                       try {
                         errors.addAll(
                             SchemaValidator.validateSchema(
-                                VNFDependency.class.getCanonicalName(),
+                                getJsonSchemaFromClass(VNFDependency.class),
                                 gson.toJson(vnfDependency)));
                       } catch (BadRequestException | IOException e) {
                         e.printStackTrace();
