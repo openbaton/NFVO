@@ -103,7 +103,7 @@ public class VimManagementClassSuiteTest {
           BadRequestException, AlreadyExistingException {
     initMocks();
     VimInstance vimInstance = createVimInstance();
-    vimManagement.refresh(vimInstance);
+    vimManagement.refresh(vimInstance, false);
 
     Assert.assertEquals(2, vimInstance.getFlavours().size());
     Assert.assertEquals(2, vimInstance.getImages().size());

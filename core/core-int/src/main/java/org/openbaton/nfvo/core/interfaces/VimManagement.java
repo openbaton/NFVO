@@ -49,7 +49,7 @@ public interface VimManagement {
    */
   VimInstance query(String id, String projectId);
 
-  VimInstance refresh(VimInstance vimInstance)
+  VimInstance refresh(VimInstance vimInstance, boolean force)
       throws VimException, PluginException, IOException, BadRequestException,
           AlreadyExistingException;
 

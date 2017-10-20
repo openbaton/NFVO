@@ -20,12 +20,16 @@ package org.openbaton.nfvo.core.api;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URL;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
@@ -76,6 +80,8 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
 
   @Autowired private AsyncVimManagement asyncVimManagement;
 
+  private static Map<String, Long> lastUpdateVim;
+
   private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   // if set to true there will be a check if the stored Vims are still reachable every minute
@@ -90,6 +96,9 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   @Value("${nfvo.vim.refresh.timout:120}")
   private int refreshTimeout;
 
+  @Value("${nfvo.vim.cache.timout:10000}")
+  private long refreshCacheTimeout;
+
   public boolean isCheckForVimInVnfr() {
     return checkForVimInVnfr;
   }
@@ -102,6 +111,11 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     this.refreshTimeout = refreshTimeout;
   }
 
+  @PostConstruct
+  private void init() {
+    lastUpdateVim = new ConcurrentHashMap<>();
+  }
+
   @Override
   public VimInstance add(VimInstance vimInstance, String projectId)
       throws VimException, PluginException, IOException, BadRequestException,
@@ -109,7 +123,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     validateVimInstance(vimInstance);
     vimInstance.setProjectId(projectId);
     log.trace("Persisting VimInstance: " + vimInstance);
-    return this.refresh(vimInstance);
+    return this.refresh(vimInstance, true);
   }
 
   @Override
@@ -171,20 +185,32 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     if (vimInstance.getPassword().equals("**********")) {
       vimInstance.setPassword(vimInstanceOld.getPassword());
     }
-    return refresh(vimInstance);
+    return refresh(vimInstance, true);
     //    return vimInstance;
   }
 
   @Override
   public VimInstance query(String id, String projectId) {
-    VimInstance vimInstance = vimRepository.findFirstByIdAndProjectId(id, projectId);
-    return vimInstance;
+    return vimRepository.findFirstByIdAndProjectId(id, projectId);
   }
 
   @Override
-  public synchronized VimInstance refresh(VimInstance vimInstance)
+  public synchronized VimInstance refresh(VimInstance vimInstance, boolean force)
       throws VimException, PluginException, IOException, BadRequestException,
           AlreadyExistingException {
+
+    if (!force) {
+      long lastUpdated = 0;
+      try {
+        lastUpdated = lastUpdateVim.get(vimInstance.getId());
+      } catch (NullPointerException ignored) {
+
+      }
+      if (lastUpdated != 0 && lastUpdated > (new Date().getTime() + refreshCacheTimeout)) {
+        return vimInstance;
+      }
+    }
+
     if (vimCheck) {
       this.checkVimInstances();
     } else {
@@ -221,7 +247,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
       e.printStackTrace();
       throw new VimException("Refreshing VIM caused following error: " + e.getMessage());
     }
-
+    lastUpdateVim.put(vimInstance.getId(), new Date().getTime());
     return vimRepository.save(vimInstance);
   }
 
@@ -254,7 +280,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
           "VimInstance " + vimInstance.getName() + " is not reachable");
     }
     image = vimRepository.addImage(id, image);
-    refresh(vimInstance);
+    refresh(vimInstance, true);
     return image;
   }
 
@@ -268,7 +294,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
           "VimInstance " + vimInstance.getName() + " is not reachable");
     }
     try {
-      refresh(vimInstance);
+      refresh(vimInstance, true);
     } catch (Exception e) {
       log.error(
           "Unable to refresh the VIM instance with ID "
@@ -302,7 +328,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
           "VimInstance " + vimInstance.getName() + " is not reachable");
     }
     vimRepository.deleteImage(idVim, idImage);
-    refresh(vimInstance);
+    refresh(vimInstance, false);
   }
 
   @Override
