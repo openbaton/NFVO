@@ -19,14 +19,10 @@ package org.openbaton.nfvo.api.interceptors;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.kjetland.jackson.jsonSchema.JsonSchemaGenerator;
 import com.networknt.schema.ValidationMessage;
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.util.HashSet;
-import java.util.Set;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
@@ -40,6 +36,14 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Service
 public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
@@ -69,7 +73,8 @@ public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
         for (Annotation a : methodParameters) {
           if (a instanceof RequestBody) {
             parameterClass = handlerMethod.getMethod().getParameterTypes()[i];
-            if (!parameterClass.getName().equals("com.google.gson.JsonObject")) {
+            if (!parameterClass.getCanonicalName().equals(JsonObject.class.getCanonicalName())
+                && !parameterClass.isPrimitive()) {
               classSchema = getJsonSchemaFromClass(parameterClass);
             }
           }
