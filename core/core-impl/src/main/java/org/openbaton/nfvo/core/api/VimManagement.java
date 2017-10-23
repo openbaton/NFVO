@@ -247,8 +247,9 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
       e.printStackTrace();
       throw new VimException("Refreshing VIM caused following error: " + e.getMessage());
     }
+    vimInstance = vimRepository.save(vimInstance);
     lastUpdateVim.put(vimInstance.getId(), new Date().getTime());
-    return vimRepository.save(vimInstance);
+    return vimInstance;
   }
 
   private boolean vimInstanceWithSameNameExists(VimInstance vimInstance) {
