@@ -14,6 +14,26 @@ _tmpfolder=`mktemp -d`
 _screen_name="nfvo"
 
 
+check_binary () {
+    echo -n " * Checking for '${1}' ... "
+    if command -v ${1} >/dev/null 2>&1; then
+        echo "OK"
+        return 0
+    else
+        echo >&2 "FAILED"
+        return 1
+    fi
+}
+
+_ex='sh -c'
+if [ "${USER}" != "root" ]; then
+    if check_binary sudo; then
+        _ex='sudo -E sh -c'
+    elif check_binary su; then
+        _ex='su -c'
+    fi
+fi
+
 function check_already_running {
     pgrep -f openbaton-${_version}.jar
     if [ "$?" -eq "0" ]; then
