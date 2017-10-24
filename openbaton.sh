@@ -14,26 +14,6 @@ _tmpfolder=`mktemp -d`
 _screen_name="nfvo"
 
 
-check_binary () {
-    echo -n " * Checking for '${1}' ... "
-    if command -v ${1} >/dev/null 2>&1; then
-        echo "OK"
-        return 0
-    else
-        echo >&2 "FAILED"
-        return 1
-    fi
-}
-
-_ex='sh -c'
-if [ "${USER}" != "root" ]; then
-    if check_binary sudo; then
-        _ex='sudo -E sh -c'
-    elif check_binary su; then
-        _ex='su -c'
-    fi
-fi
-
 function check_already_running {
     pgrep -f openbaton-${_version}.jar
     if [ "$?" -eq "0" ]; then
@@ -47,14 +27,6 @@ function check_already_running {
     #fi
 }
 
-# Check if the property nfvo.timezone is set
-# The nfvo.timezone property syncronize all the VNF with the clock of the NFVO
-function check_timezone {
-	if ! grep nfvo.timezone ${_openbaton_config_file} > /dev/null ; then
-		${_ex} 'TIMEZONE=$( date +%Z )'
-		${_ex} 'echo "nfvo.timezone = $TIMEZONE" >> '"${_openbaton_config_file}"
-	fi
-}
 
 function install_plugins {
     echo "Getting OpenBaton Plugins..."
@@ -70,7 +42,6 @@ function start_checks {
         then
             compile
     fi
-    check_timezone
 }
 
 function start {
