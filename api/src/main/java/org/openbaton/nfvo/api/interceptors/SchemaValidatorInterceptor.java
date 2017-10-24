@@ -24,6 +24,7 @@ import com.kjetland.jackson.jsonSchema.JsonSchemaGenerator;
 import com.networknt.schema.ValidationMessage;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
@@ -72,6 +73,7 @@ public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
             parameterClass = handlerMethod.getMethod().getParameterTypes()[i];
             if (!parameterClass.getCanonicalName().equals(JsonObject.class.getCanonicalName())
                 && !parameterClass.isPrimitive()
+                && !Modifier.isAbstract(parameterClass.getModifiers())
                 && !parameterClass.getCanonicalName().equals(String.class.getCanonicalName())) {
               classSchema = getJsonSchemaFromClass(parameterClass);
             }
