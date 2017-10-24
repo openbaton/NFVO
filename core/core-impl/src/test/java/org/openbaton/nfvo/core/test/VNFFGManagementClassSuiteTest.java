@@ -209,7 +209,6 @@ public class VNFFGManagementClassSuiteTest {
           {
             VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
             HighAvailability highAvailability = new HighAvailability();
-            highAvailability.setGeoRedundancy(false);
             highAvailability.setRedundancyScheme("1:N");
             highAvailability.setResiliencyLevel(ResiliencyLevel.ACTIVE_STANDBY_STATELESS);
             vdu.setHigh_availability(highAvailability);
