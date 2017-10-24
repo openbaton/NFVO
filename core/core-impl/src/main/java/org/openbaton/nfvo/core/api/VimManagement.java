@@ -29,7 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
@@ -80,7 +79,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
 
   @Autowired private AsyncVimManagement asyncVimManagement;
 
-  private static Map<String, Long> lastUpdateVim;
+  private static Map<String, Long> lastUpdateVim = new ConcurrentHashMap<>();
 
   private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -109,11 +108,6 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
 
   public void setRefreshTimeout(int refreshTimeout) {
     this.refreshTimeout = refreshTimeout;
-  }
-
-  @PostConstruct
-  private void init() {
-    lastUpdateVim = new ConcurrentHashMap<>();
   }
 
   @Override
@@ -206,7 +200,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
       } catch (NullPointerException ignored) {
 
       }
-      if (lastUpdated != 0 && lastUpdated > (new Date().getTime() + refreshCacheTimeout)) {
+      if (lastUpdated != 0 && (lastUpdated + refreshCacheTimeout) >= new Date().getTime()) {
         return vimInstance;
       }
     }
@@ -248,7 +242,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
       throw new VimException("Refreshing VIM caused following error: " + e.getMessage());
     }
     vimInstance = vimRepository.save(vimInstance);
-    lastUpdateVim.put(vimInstance.getId(), new Date().getTime());
+    lastUpdateVim.put(vimInstance.getId(), (new Date()).getTime());
     return vimInstance;
   }
 
