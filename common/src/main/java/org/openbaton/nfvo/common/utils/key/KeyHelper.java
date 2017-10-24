@@ -10,23 +10,15 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
+import java.security.*;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Base64;
-import java.util.Random;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.text.RandomStringGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,14 +29,23 @@ public class KeyHelper {
 
   public static String DESEDE_ALGORITHM = "DESede";
   private static String AES_ALGORITHM = "AES";
+  private static final char[] ALPHANUMERIC =
+      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toCharArray();
 
+  /**
+   * Generates a random String containing 16 alphanumerical characters.
+   *
+   * @return a String containing 16 alphanumerical characters
+   * @throws NoSuchAlgorithmException
+   * @throws IOException
+   */
   public static String genKey() throws NoSuchAlgorithmException, IOException {
-    // Using Apache Commons RNG for randomness
-    Random rng = new Random();
-    // Generates a 20 code point string, using only the letters a-z
-    RandomStringGenerator generator =
-        new RandomStringGenerator.Builder().withinRange('A', 'z').build();
-    return generator.generate(16);
+    SecureRandom secureRandom = new SecureRandom();
+    StringBuilder stringBuilder = new StringBuilder(16);
+    for (int i = 0; i < 16; i++) {
+      stringBuilder.append(ALPHANUMERIC[secureRandom.nextInt(ALPHANUMERIC.length)]);
+    }
+    return stringBuilder.toString();
   }
 
   private static Key restoreKey(byte[] keyBytes) {
