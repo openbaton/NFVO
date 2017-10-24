@@ -103,6 +103,7 @@ public class VimManagementClassSuiteTest {
           BadRequestException, AlreadyExistingException {
     initMocks();
     VimInstance vimInstance = createVimInstance();
+    when(vimRepository.save(vimInstance)).thenReturn(vimInstance);
     vimManagement.refresh(vimInstance, false);
 
     Assert.assertEquals(2, vimInstance.getFlavours().size());
@@ -236,6 +237,7 @@ public class VimManagementClassSuiteTest {
 
   private VimInstance createVimInstance() {
     VimInstance vimInstance = new VimInstance();
+    vimInstance.setId("fe5524e0-0dbb-47ed-b87a-853adf7b6234");
     vimInstance.setActive(true);
     vimInstance.setProjectId(projectId);
     vimInstance.setName("vim_instance");
