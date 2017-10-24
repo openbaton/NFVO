@@ -17,38 +17,28 @@
 
 package org.openbaton.catalogue.mano.common.faultmanagement;
 
-import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.PrePersist;
-import javax.persistence.Version;
 import org.openbaton.catalogue.mano.common.monitoring.PerceivedSeverity;
-import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by mob on 29.10.15. */
 @Entity
-public class FaultManagementPolicy implements Serializable {
-  @Id protected String id;
-  @Version protected int version = 0;
-  protected String name;
-  protected boolean isVNFAlarm;
-  protected int period;
-  protected PerceivedSeverity severity;
+public class FaultManagementPolicy extends BaseEntity {
+  private String name;
+  private Boolean isVNFAlarm = false;
+  private int period;
+  private FaultManagementAction action;
+  private PerceivedSeverity severity;
 
   @OneToMany(
     cascade = {CascadeType.ALL},
     fetch = FetchType.EAGER
   )
-  protected Set<Criteria> criteria;
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
+  private Set<Criteria> criteria;
 
   public void setName(String name) {
     this.name = name;
@@ -82,37 +72,43 @@ public class FaultManagementPolicy implements Serializable {
     return name;
   }
 
-  public String getId() {
-    return id;
-  }
-
-  public boolean isVNFAlarm() {
+  public Boolean isVNFAlarm() {
     return isVNFAlarm;
   }
 
-  public void setVNFAlarm(boolean VNFAlarm) {
-    isVNFAlarm = VNFAlarm;
+  public Boolean getIsVNFAlarm() {
+    return isVNFAlarm;
+  }
+
+  public void setIsVNFAlarm(Boolean isVNFAlarm) {
+    this.isVNFAlarm = isVNFAlarm;
+  }
+
+  public FaultManagementAction getAction() {
+    return action;
+  }
+
+  public void setAction(FaultManagementAction action) {
+    this.action = action;
   }
 
   @Override
   public String toString() {
     return "FaultManagementPolicy{"
-        + "id='"
-        + id
-        + '\''
-        + ", version="
-        + version
-        + ", name='"
+        + "name='"
         + name
         + '\''
         + ", isVNFAlarm="
         + isVNFAlarm
         + ", period="
         + period
+        + ", action="
+        + action
         + ", severity="
         + severity
         + ", criteria="
         + criteria
-        + '}';
+        + "} "
+        + super.toString();
   }
 }

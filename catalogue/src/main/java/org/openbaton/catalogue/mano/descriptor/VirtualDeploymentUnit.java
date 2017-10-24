@@ -27,7 +27,7 @@ import javax.persistence.OneToOne;
 import javax.validation.constraints.Min;
 import org.openbaton.catalogue.mano.common.HighAvailability;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
-import org.openbaton.catalogue.mano.common.faultmanagement.VRFaultManagementPolicy;
+import org.openbaton.catalogue.mano.common.faultmanagement.FaultManagementPolicy;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.util.BaseEntity;
 
@@ -86,7 +86,7 @@ public class VirtualDeploymentUnit extends BaseEntity {
     cascade = {CascadeType.ALL},
     fetch = FetchType.EAGER
   )
-  private Set<VRFaultManagementPolicy> fault_management_policy;
+  private Set<FaultManagementPolicy> fault_management_policy;
   /**
    * Defines minimum and maximum number of instances which can be created to support scale out/in.
    */
@@ -255,11 +255,11 @@ public class VirtualDeploymentUnit extends BaseEntity {
     this.monitoring_parameter = monitoring_parameter;
   }
 
-  public Set<VRFaultManagementPolicy> getFault_management_policy() {
+  public Set<FaultManagementPolicy> getFault_management_policy() {
     return fault_management_policy;
   }
 
-  public void setFault_management_policy(Set<VRFaultManagementPolicy> fault_management_policy) {
+  public void setFault_management_policy(Set<FaultManagementPolicy> fault_management_policy) {
     this.fault_management_policy = fault_management_policy;
   }
 

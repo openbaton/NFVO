@@ -242,21 +242,6 @@ public class RepositoriesClassSuiteTest {
                         j])
                 .getHigh_availability()
                 .getResiliencyLevel());
-        Assert.assertEquals(
-            ((VirtualDeploymentUnit)
-                    ((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i])
-                            .getVdu()
-                            .toArray()[
-                        j])
-                .getHigh_availability()
-                .isGeoRedundancy(),
-            ((VirtualDeploymentUnit)
-                    ((VirtualNetworkFunctionDescriptor) nsd_new.getVnfd().toArray()[i])
-                            .getVdu()
-                            .toArray()[
-                        j])
-                .getHigh_availability()
-                .isGeoRedundancy());
       }
     }
 
@@ -297,7 +282,6 @@ public class RepositoriesClassSuiteTest {
           }
         });
     HighAvailability highAvailability = new HighAvailability();
-    highAvailability.setGeoRedundancy(false);
     highAvailability.setRedundancyScheme("1:N");
     highAvailability.setResiliencyLevel(ResiliencyLevel.ACTIVE_STANDBY_STATELESS);
     vdu.setHigh_availability(highAvailability);

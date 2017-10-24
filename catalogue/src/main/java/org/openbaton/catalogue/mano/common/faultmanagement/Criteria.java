@@ -17,18 +17,12 @@
 
 package org.openbaton.catalogue.mano.common.faultmanagement;
 
-import java.io.Serializable;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import javax.persistence.Version;
-import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by mob on 29.10.15. */
 @Entity
-public class Criteria implements Serializable {
-  @Id private String id;
-  @Version private int version = 0;
+public class Criteria extends BaseEntity {
 
   private String name;
   private String parameter_ref;
@@ -38,11 +32,6 @@ public class Criteria implements Serializable {
   private String threshold;
 
   public Criteria() {}
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
 
   public String getName() {
     return name;
@@ -66,22 +55,6 @@ public class Criteria implements Serializable {
 
   public void setComparison_operator(String comparison_operator) {
     this.comparison_operator = comparison_operator;
-  }
-
-  public int getVersion() {
-    return version;
-  }
-
-  public void setVersion(int version) {
-    this.version = version;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
   }
 
   public String getFunction() {
@@ -111,12 +84,7 @@ public class Criteria implements Serializable {
   @Override
   public String toString() {
     return "Criteria{"
-        + "id='"
-        + id
-        + '\''
-        + ", version="
-        + version
-        + ", name='"
+        + "name='"
         + name
         + '\''
         + ", parameter_ref='"
@@ -133,6 +101,7 @@ public class Criteria implements Serializable {
         + ", threshold='"
         + threshold
         + '\''
-        + '}';
+        + "} "
+        + super.toString();
   }
 }

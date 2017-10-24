@@ -131,7 +131,6 @@ public class VNFLifecycleOperationGrantingClassSuiteTest {
     vdu.setId("" + Math.random() * 100000);
     vdu.setHostname("mocked_vdu_hostname_" + suffix);
     HighAvailability highAvailability = new HighAvailability();
-    highAvailability.setGeoRedundancy(false);
     highAvailability.setRedundancyScheme("1:N");
     highAvailability.setResiliencyLevel(ResiliencyLevel.ACTIVE_STANDBY_STATELESS);
     vdu.setHigh_availability(highAvailability);
