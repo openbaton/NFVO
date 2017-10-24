@@ -242,19 +242,6 @@ public class RepositoriesClassSuiteTest {
                         j])
                 .getHigh_availability()
                 .getResiliencyLevel());
-        Assert.assertEquals(
-            ((VirtualDeploymentUnit)
-                    ((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i])
-                            .getVdu()
-                            .toArray()[
-                        j])
-                .getHigh_availability(),
-            ((VirtualDeploymentUnit)
-                    ((VirtualNetworkFunctionDescriptor) nsd_new.getVnfd().toArray()[i])
-                            .getVdu()
-                            .toArray()[
-                        j])
-                .getHigh_availability());
       }
     }
 
