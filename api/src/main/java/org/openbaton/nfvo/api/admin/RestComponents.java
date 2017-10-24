@@ -165,6 +165,26 @@ public class RestComponents {
     componentManager.removeService(id);
   }
 
+  /** Delete multiple Services. */
+  @ApiOperation(
+    value = "Delete multiple Services",
+    notes = "In the Request Body pass a list of service ids that have to be deleted"
+  )
+  @RequestMapping(
+    value = "/services/multipledelete",
+    method = RequestMethod.POST,
+    produces = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void multipleDelete(@RequestBody @Valid List<String> ids) throws IOException {
+    if (componentManager != null) {
+      for (String id : ids) {
+        log.info("Removing Service with id: " + id);
+        componentManager.removeService(id);
+      }
+    }
+  }
+
   /** Enable a new Service. */
   @ApiOperation(value = "List Services", notes = "List all services")
   @RequestMapping(
