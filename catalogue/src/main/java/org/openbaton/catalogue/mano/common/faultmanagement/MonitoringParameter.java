@@ -19,14 +19,11 @@ package org.openbaton.catalogue.mano.common.faultmanagement;
 
 import java.util.Map;
 import javax.persistence.*;
-import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by mob on 29.10.15. */
 @Entity
-public class MonitoringParameter {
-
-  @Id private String id;
-  @Version private int version = 0;
+public class MonitoringParameter extends BaseEntity {
 
   private Metric metric;
 
@@ -34,11 +31,6 @@ public class MonitoringParameter {
   private Map<String, String> params;
 
   public MonitoringParameter() {}
-
-  @PrePersist
-  public void ensureId() {
-    id = IdGenerator.createUUID();
-  }
 
   public Metric getMetric() {
     return metric;
@@ -59,15 +51,11 @@ public class MonitoringParameter {
   @Override
   public String toString() {
     return "MonitoringParameter{"
-        + "id='"
-        + id
-        + '\''
-        + ", version="
-        + version
-        + ", metric="
+        + "metric="
         + metric
         + ", params="
         + params
-        + '}';
+        + "} "
+        + super.toString();
   }
 }
