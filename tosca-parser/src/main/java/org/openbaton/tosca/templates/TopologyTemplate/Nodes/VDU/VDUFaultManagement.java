@@ -3,16 +3,13 @@ package org.openbaton.tosca.templates.TopologyTemplate.Nodes.VDU;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import org.openbaton.catalogue.mano.common.faultmanagement.Criteria;
-import org.openbaton.catalogue.mano.common.faultmanagement.FaultManagementAction;
-import org.openbaton.catalogue.mano.common.faultmanagement.VNFCSelector;
-import org.openbaton.catalogue.mano.common.faultmanagement.VRFaultManagementPolicy;
+import org.openbaton.catalogue.mano.common.faultmanagement.*;
 import org.openbaton.catalogue.mano.common.monitoring.PerceivedSeverity;
 
 /** Created by rvl on 06.02.17. */
 public class VDUFaultManagement {
 
-  private Set<VRFaultManagementPolicy> faultManagementPolicies;
+  private Set<FaultManagementPolicy> faultManagementPolicies;
 
   @SuppressWarnings({"unsafe", "unchecked"})
   public VDUFaultManagement(Object o) {
@@ -21,22 +18,22 @@ public class VDUFaultManagement {
     Map<String, Object> fmMap = (Map<String, Object>) o;
     for (String key : fmMap.keySet()) {
 
-      VRFaultManagementPolicy vrFaultManagementPolicy = new VRFaultManagementPolicy();
-      vrFaultManagementPolicy.setName(key);
+      FaultManagementPolicy faultManagementPolicy = new FaultManagementPolicy();
+      faultManagementPolicy.setName(key);
       Map<String, Object> policyMap = (Map<String, Object>) fmMap.get(key);
 
       if (policyMap.containsKey("isVNFAlarm")) {
-        vrFaultManagementPolicy.setVNFAlarm((Boolean) policyMap.get("isVNFAlarm"));
+        faultManagementPolicy.setIsVNFAlarm((Boolean) policyMap.get("isVNFAlarm"));
       }
       if (policyMap.containsKey("period")) {
-        vrFaultManagementPolicy.setPeriod((Integer) policyMap.get("period"));
+        faultManagementPolicy.setPeriod((Integer) policyMap.get("period"));
       }
       if (policyMap.containsKey("severity")) {
-        vrFaultManagementPolicy.setSeverity(
+        faultManagementPolicy.setSeverity(
             PerceivedSeverity.valueOf(((String) policyMap.get("severity")).toUpperCase()));
       }
       if (policyMap.containsKey("action")) {
-        vrFaultManagementPolicy.setAction(
+        faultManagementPolicy.setAction(
             FaultManagementAction.valueOf(((String) policyMap.get("action")).toUpperCase()));
       }
       if (policyMap.containsKey("criteria")) {
@@ -66,14 +63,14 @@ public class VDUFaultManagement {
           criterias.add(criteria);
         }
 
-        vrFaultManagementPolicy.setCriteria(criterias);
+        faultManagementPolicy.setCriteria(criterias);
       }
 
-      faultManagementPolicies.add(vrFaultManagementPolicy);
+      faultManagementPolicies.add(faultManagementPolicy);
     }
   }
 
-  public Set<VRFaultManagementPolicy> getFaultManagementPolicies() {
+  public Set<FaultManagementPolicy> getFaultManagementPolicies() {
     return faultManagementPolicies;
   }
 }
