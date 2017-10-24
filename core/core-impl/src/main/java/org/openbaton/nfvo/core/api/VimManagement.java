@@ -206,7 +206,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
       } catch (NullPointerException ignored) {
 
       }
-      if (lastUpdated != 0 && lastUpdated > (new Date().getTime() + refreshCacheTimeout)) {
+      if (lastUpdated != 0 && (lastUpdated + refreshCacheTimeout) >= new Date().getTime()) {
         return vimInstance;
       }
     }
