@@ -28,7 +28,6 @@ import org.openbaton.catalogue.util.BaseEntity;
 @Entity
 public class HighAvailability extends BaseEntity {
   private ResiliencyLevel resiliencyLevel;
-  private boolean geoRedundancy;
   private String redundancyScheme;
 
   public ResiliencyLevel getResiliencyLevel() {
@@ -37,14 +36,6 @@ public class HighAvailability extends BaseEntity {
 
   public void setResiliencyLevel(ResiliencyLevel resiliencyLevel) {
     this.resiliencyLevel = resiliencyLevel;
-  }
-
-  public boolean isGeoRedundancy() {
-    return geoRedundancy;
-  }
-
-  public void setGeoRedundancy(boolean geoRedundancy) {
-    this.geoRedundancy = geoRedundancy;
   }
 
   public String getRedundancyScheme() {
@@ -60,11 +51,10 @@ public class HighAvailability extends BaseEntity {
     return "HighAvailability{"
         + "resiliencyLevel="
         + resiliencyLevel
-        + ", geoRedundancy="
-        + geoRedundancy
         + ", redundancyScheme='"
         + redundancyScheme
         + '\''
-        + '}';
+        + "} "
+        + super.toString();
   }
 }
