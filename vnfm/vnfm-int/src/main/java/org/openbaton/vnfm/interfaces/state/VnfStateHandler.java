@@ -16,7 +16,7 @@ import org.springframework.scheduling.annotation.Async;
 
 /** Created by lto on 29.05.17. */
 public interface VnfStateHandler {
-  Future<Void> handleVNF(
+  void handleVNF(
       NetworkServiceDescriptor networkServiceDescriptor,
       NetworkServiceRecord networkServiceRecord,
       DeployNSRBody body,
@@ -25,11 +25,11 @@ public interface VnfStateHandler {
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 
   @Async
-  Future<String> executeAction(Future<NFVMessage> nfvMessage)
+  Future<NFVMessage> executeAction(Future<NFVMessage> nfvMessage)
       throws ExecutionException, InterruptedException;
 
   @Async
-  Future<String> executeAction(NFVMessage nfvMessage)
+  Future<NFVMessage> executeAction(NFVMessage nfvMessage)
       throws ExecutionException, InterruptedException;
 
   void terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
