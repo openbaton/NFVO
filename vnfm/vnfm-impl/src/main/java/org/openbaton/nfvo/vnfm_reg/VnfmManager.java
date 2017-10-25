@@ -156,7 +156,7 @@ public class VnfmManager
       log.debug(
           "Parameter ordered set to "
               + ordered
-              + ".Consider changing it directly into the openbaton.properties file");
+              + ". Consider changing it directly in the openbaton.properties file.");
       if (ordered) {
         vnfrNames.put(networkServiceRecord.getId(), new HashMap<String, Integer>());
         Map<String, Integer> vnfrNamesWeighted = vnfrNames.get(networkServiceRecord.getId());
