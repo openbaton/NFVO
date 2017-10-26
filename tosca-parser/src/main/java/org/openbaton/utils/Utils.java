@@ -19,14 +19,19 @@ package org.openbaton.utils;
 
 import java.io.*;
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.tosca.templates.NSDTemplate;
 import org.openbaton.tosca.templates.VNFDTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
 /** Created by dbo on 31/01/16. */
 public final class Utils {
+
+  private static final Logger log = LoggerFactory.getLogger(Utils.class);
 
   public static void copy(InputStream in, OutputStream out) throws IOException {
     byte[] buffer = new byte[1024];
@@ -73,7 +78,7 @@ public final class Utils {
     return yaml.loadAs(new ByteArrayInputStream(b.toByteArray()), VNFDTemplate.class);
   }
 
-  public static NSDTemplate bytesToNSDTemplate(ByteArrayOutputStream b) {
+  public static NSDTemplate bytesToNSDTemplate(ByteArrayOutputStream b) throws BadFormatException {
 
     Constructor constructor = new Constructor(NSDTemplate.class);
     TypeDescription projectDesc = new TypeDescription(NSDTemplate.class);
@@ -81,6 +86,12 @@ public final class Utils {
     constructor.addTypeDescription(projectDesc);
 
     Yaml yaml = new Yaml(constructor);
-    return yaml.loadAs(new ByteArrayInputStream(b.toByteArray()), NSDTemplate.class);
+    try {
+      return yaml.loadAs(new ByteArrayInputStream(b.toByteArray()), NSDTemplate.class);
+    } catch (Exception e) {
+      log.error(e.getLocalizedMessage());
+      throw new BadFormatException(
+          "Problem parsing the descriptor. Check if yaml is formatted correctly.");
+    }
   }
 }
