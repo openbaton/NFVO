@@ -200,7 +200,7 @@ public class ScalingTask extends AbstractTask {
       }
     } else {
       log.warn(
-          "Please consider turning the check quota (nfvo.quota.check in openbaton.properties) to true.");
+          "Please consider turning the check quota (nfvo.quota.check in openbaton-nfvo.properties) to true.");
       try {
         if (vimInstance == null) {
           log.debug(

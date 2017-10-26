@@ -24,7 +24,7 @@ task exe(dependsOn: [dependsOn: [jar, build]]) {
 		innoSetupDir.mkdir();
 		copy {
 			from("${rootProject.projectDir}/gradle/innosetup/start.bat")
-			from("${rootProject.projectDir}/gradle/innosetup/openbaton.properties")
+			from("${rootProject.projectDir}/gradle/innosetup/openbaton-nfvo.properties")
 			from("${rootProject.projectDir}/gradle/innosetup/iscc.sh")
 			from("${rootProject.projectDir}/gradle/innosetup/start_plugin.bat")
 
