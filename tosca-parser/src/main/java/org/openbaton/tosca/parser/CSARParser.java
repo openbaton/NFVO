@@ -21,18 +21,15 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.NFVImage;
@@ -55,11 +52,12 @@ import org.openbaton.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.json.YamlJsonParser;
 import org.springframework.stereotype.Service;
+import org.yaml.snakeyaml.Yaml;
 
 /** Created by rvl on 12.09.16. */
 @Service
+@SuppressWarnings({"unsafe", "unchecked"})
 public class CSARParser {
 
   @Autowired private VNFDRepository vnfdRepository;
@@ -193,8 +191,8 @@ public class CSARParser {
     Map<String, Object> imageDetails = new HashMap<>();
     byte[] imageFile = null;
 
-    YamlJsonParser yaml = new YamlJsonParser();
-    metadata = yaml.parseMap(new String(this.vnfMetadata.toByteArray()));
+    Yaml yaml = new Yaml();
+    metadata = yaml.loadAs(new String(this.vnfMetadata.toByteArray()), Map.class);
     //Get configuration for NFVImage
     imageDetails = vnfPackageManagement.handleMetadata(metadata, vnfPackage, imageDetails, image);
 
@@ -211,7 +209,10 @@ public class CSARParser {
   }
 
   private String saveVNFD(
-      VirtualNetworkFunctionDescriptor vnfd, String projectId, Set<Script> vnfScripts)
+      VirtualNetworkFunctionDescriptor vnfd,
+      String projectId,
+      Set<Script> vnfScripts,
+      String scriptsLink)
       throws PluginException, VimException, NotFoundException, IncompatibleVNFPackage,
           BadRequestException, IOException, AlreadyExistingException, InterruptedException,
           EntityUnreachableException, BadFormatException {
@@ -219,17 +220,22 @@ public class CSARParser {
     VNFPackage vnfPackage = new VNFPackage();
 
     vnfPackage.setImage(getImage(vnfPackage, vnfd, projectId));
-    vnfPackage.setScripts(vnfScripts);
+    if (vnfScripts != null) {
+      vnfPackage.setScripts(vnfScripts);
+    } else if (scriptsLink != null) vnfPackage.setScriptsLink(scriptsLink);
     vnfPackage.setName(vnfd.getName());
     vnfPackage.setProjectId(projectId);
 
-    vnfPackageRepository.save(vnfPackage);
+    VNFPackage savedPackage = vnfPackageRepository.save(vnfPackage);
 
+    vnfd.setVnfPackageLocation(savedPackage.getId());
+    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+    vnfd.setCreatedAt(format.format(new Date()));
+    vnfd.setUpdatedAt(format.format(new Date()));
     vnfd.setProjectId(projectId);
-    vnfd.setVnfPackageLocation(vnfPackage.getId());
     vnfdRepository.save(vnfd);
 
-    return vnfPackage.getId();
+    return savedPackage.getId();
   }
 
   /*
@@ -244,20 +250,21 @@ public class CSARParser {
           AlreadyExistingException, BadFormatException, InterruptedException,
           EntityUnreachableException {
 
-    File temp = File.createTempFile("CSAR", null);
-    FileOutputStream fos = new FileOutputStream(temp);
-    fos.write(bytes);
-    InputStream input = new FileInputStream(temp);
+    InputStream input = new ByteArrayInputStream(bytes);
 
     readFiles(input);
 
     VNFDTemplate vnfdt = Utils.bytesToVNFDTemplate(this.template);
     VirtualNetworkFunctionDescriptor vnfd = toscaParser.parseVNFDTemplate(vnfdt);
 
-    saveVNFD(vnfd, projectId, scripts);
+    String scriptsLink = null;
+    UrlValidator urlValidator = new UrlValidator();
+    if (urlValidator.isValid(vnfd.getVnfPackageLocation())) {
+      scriptsLink = vnfd.getVnfPackageLocation();
+    }
+    saveVNFD(vnfd, projectId, scripts, scriptsLink);
 
     input.close();
-    fos.close();
     this.template.close();
     this.metadata.close();
 
@@ -270,10 +277,7 @@ public class CSARParser {
           AlreadyExistingException, BadFormatException, InterruptedException,
           EntityUnreachableException {
 
-    File temp = File.createTempFile("CSAR", null);
-    FileOutputStream fos = new FileOutputStream(temp);
-    fos.write(bytes);
-    InputStream input = new FileInputStream(temp);
+    InputStream input = new ByteArrayInputStream(bytes);
     ArrayList<String> ids = new ArrayList<>();
 
     readFiles(input);
@@ -282,33 +286,42 @@ public class CSARParser {
     NetworkServiceDescriptor nsd = toscaParser.parseNSDTemplate(nsdTemplate);
 
     for (VirtualNetworkFunctionDescriptor vnfd : nsd.getVnfd()) {
+      Set<Script> vnfScripts = null;
+      String link = null;
       if (!folderNames.contains(vnfd.getType())) {
-        log.warn("No Scripts specified for the VNFD of type: " + vnfd.getType());
-      }
-      Set<Script> vnfScripts = new HashSet<>();
-      for (Script script : scripts) {
-        String[] splitted_name = script.getName().split("!_!");
-        log.debug(splitted_name[0]);
-        log.debug(script.getName());
+        UrlValidator urlValidator = new UrlValidator();
+        if (urlValidator.isValid(vnfd.getVnfPackageLocation())) {
+          link = vnfd.getVnfPackageLocation();
+        } else
+          log.warn(
+              "No Scripts specified for the VNFD of type: "
+                  + vnfd.getType()
+                  + " and scripts link not valid");
+      } else {
+        vnfScripts = new HashSet<>();
+        for (Script script : scripts) {
+          String[] splitted_name = script.getName().split("!_!");
+          log.debug(splitted_name[0]);
+          log.debug(script.getName());
 
-        if (splitted_name.length == 2) {
-          String folder_name = splitted_name[0];
-          if (folder_name.equals(vnfd.getType())) {
-            Script s = new Script();
-            s.setName(splitted_name[1]);
-            s.setPayload(script.getPayload());
-            vnfScripts.add(s);
+          if (splitted_name.length == 2) {
+            String folder_name = splitted_name[0];
+            if (folder_name.equals(vnfd.getType())) {
+              Script s = new Script();
+              s.setName(splitted_name[1]);
+              s.setPayload(script.getPayload());
+              vnfScripts.add(s);
+            }
           }
         }
       }
-      ids.add(saveVNFD(vnfd, projectId, vnfScripts));
+      ids.add(saveVNFD(vnfd, projectId, vnfScripts, link));
     }
     nsd.getVnfd().clear();
 
     for (String id : ids) {
 
       String vnfdId = "";
-
       Iterable<VirtualNetworkFunctionDescriptor> vnfds = vnfdRepository.findByProjectId(projectId);
       for (VirtualNetworkFunctionDescriptor vnfd : vnfds) {
         if (vnfd.getVnfPackageLocation().equals(id)) {
@@ -323,7 +336,6 @@ public class CSARParser {
     }
 
     input.close();
-    fos.close();
     this.template.close();
     this.metadata.close();
 

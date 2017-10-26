@@ -22,7 +22,7 @@ dependencies {
     compile project(':repository')
     compile project(":core-impl")
 
-    compile 'org.yaml:snakeyaml:1.17'
+    compile 'org.yaml:snakeyaml:1.19'
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'commons-io:commons-io:2.5'
     compile 'org.springframework.boot:spring-boot-starter-amqp'

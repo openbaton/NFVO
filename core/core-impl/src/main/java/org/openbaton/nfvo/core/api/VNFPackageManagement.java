@@ -717,7 +717,8 @@ public class VNFPackageManagement
       vnfPackage.setScriptsLink((String) metadata.get("scripts-link"));
     }
     if (metadata.containsKey("vim_types")) {
-      Set<String> vimTypes = (Set<String>) metadata.get("vim_types");
+      LinkedHashSet<String> vimTypes = new LinkedHashSet<>();
+      vimTypes.addAll((ArrayList) metadata.get("vim_types"));
       vnfPackage.setVimTypes(vimTypes);
     } else {
       log.warn("vim_types is not specified! it is not possible to check the vim");

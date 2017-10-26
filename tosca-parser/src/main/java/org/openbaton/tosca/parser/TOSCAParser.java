@@ -196,6 +196,8 @@ public class TOSCAParser {
       }
     }
 
+    virtualLinkReferences.addAll(vnf.getRequirements().getVirtualLinks());
+
     // ADD VLs
     //ArrayList<String> vl_list = vnf.getRequirements().getVirtualLinks();
     Set<InternalVirtualLink> vls = new HashSet<>();
