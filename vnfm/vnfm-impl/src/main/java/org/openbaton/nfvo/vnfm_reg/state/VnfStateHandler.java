@@ -1,11 +1,9 @@
 package org.openbaton.nfvo.vnfm_reg.state;
 
-import com.google.gson.Gson;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -27,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -48,80 +45,10 @@ public class VnfStateHandler implements org.openbaton.vnfm.interfaces.state.VnfS
   @Autowired private NetworkServiceDescriptorRepository nsdRepository;
   @Autowired private VnfPackageRepository vnfPackageRepository;
 
-  private ThreadPoolTaskExecutor asyncExecutor;
-
-  @Value("${nfvo.vmanager.executor.maxpoolsize:30}")
-  private int maxPoolSize;
-
-  @Value("${nfvo.vmanager.executor.corepoolsize:5}")
-  private int corePoolSize;
-
-  @Value("${nfvo.vmanager.executor.queuecapacity:100}")
-  private int queueCapacity;
-
-  @Value("${nfvo.vmanager.executor.keepalive:20}")
-  private int keepAliveSeconds;
-
-  @Autowired private Gson gson;
-
-  public int getCorePoolSize() {
-    return corePoolSize;
-  }
-
-  public void setCorePoolSize(int corePoolSize) {
-    this.corePoolSize = corePoolSize;
-  }
-
-  public int getKeepAliveSeconds() {
-    return keepAliveSeconds;
-  }
-
-  public void setKeepAliveSeconds(int keepAliveSeconds) {
-    this.keepAliveSeconds = keepAliveSeconds;
-  }
-
-  public int getQueueCapacity() {
-    return queueCapacity;
-  }
-
-  public void setQueueCapacity(int queueCapacity) {
-    this.queueCapacity = queueCapacity;
-  }
-
-  public int getMaxPoolSize() {
-    return maxPoolSize;
-  }
-
-  public void setMaxPoolSize(int maxPoolSize) {
-    this.maxPoolSize = maxPoolSize;
-  }
-
-  @PostConstruct
-  public void init() {
-
-    /** Asynchronous thread executor configuration */
-    this.asyncExecutor = new ThreadPoolTaskExecutor();
-    this.asyncExecutor.setThreadNamePrefix("OpenbatonTask-");
-    this.asyncExecutor.setMaxPoolSize(maxPoolSize);
-    this.asyncExecutor.setCorePoolSize(corePoolSize);
-    this.asyncExecutor.setQueueCapacity(queueCapacity);
-    this.asyncExecutor.setKeepAliveSeconds(keepAliveSeconds);
-    this.asyncExecutor.initialize();
-
-    log.debug("AsyncExecutor is: " + asyncExecutor);
-
-    log.trace("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-    log.trace("ThreadPollTaskExecutor configuration:");
-    log.trace("MaxPoolSize = " + this.asyncExecutor.getMaxPoolSize());
-    log.trace("CorePoolSize = " + this.asyncExecutor.getCorePoolSize());
-    log.trace("QueueCapacity = " + this.asyncExecutor.getThreadPoolExecutor().getQueue().size());
-    log.trace("KeepAlive = " + this.asyncExecutor.getKeepAliveSeconds());
-    log.trace("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-  }
+  @Autowired private ThreadPoolTaskExecutor asyncExecutor;
 
   @Override
-  @Async
-  public Future<Void> handleVNF(
+  public void handleVNF(
       NetworkServiceDescriptor networkServiceDescriptor,
       NetworkServiceRecord networkServiceRecord,
       DeployNSRBody body,
@@ -142,7 +69,6 @@ public class VnfStateHandler implements org.openbaton.vnfm.interfaces.state.VnfS
     log.debug("----------Executing ACTION: " + message.getAction());
     executeAction(vnfmSender.sendCommand(message, endpoint));
     log.info("Sent " + message.getAction() + " to VNF: " + vnfd.getName());
-    return new AsyncResult<>(null);
   }
 
   private void newExecuteAction(NFVMessage nfvMessage) {}
@@ -161,15 +87,20 @@ public class VnfStateHandler implements org.openbaton.vnfm.interfaces.state.VnfS
 
   @Override
   @Async
-  public Future<String> executeAction(Future<NFVMessage> nfvMessageFuture)
+  public Future<NFVMessage> executeAction(Future<NFVMessage> nfvMessageFuture)
       throws ExecutionException, InterruptedException {
     NFVMessage nfvMessage = nfvMessageFuture.get();
-    return executeAction(nfvMessage);
+    return executeActionNotAsync(nfvMessage);
   }
 
   @Override
   @Async
-  public Future<String> executeAction(NFVMessage nfvMessage)
+  public Future<NFVMessage> executeAction(NFVMessage nfvMessage)
+      throws ExecutionException, InterruptedException {
+    return executeActionNotAsync(nfvMessage);
+  }
+
+  private Future<NFVMessage> executeActionNotAsync(NFVMessage nfvMessage)
       throws ExecutionException, InterruptedException {
     //    log.debug("-----------Finished ACTION: " + nfvMessage.getAction());
     String actionName = nfvMessage.getAction().toString().replace("_", "").toLowerCase();
@@ -211,10 +142,11 @@ public class VnfStateHandler implements org.openbaton.vnfm.interfaces.state.VnfS
               + ". Cyclic="
               + virtualNetworkFunctionRecord.hasCyclicDependency());
     }
-    log.trace("AsyncExecutor is: " + asyncExecutor);
+    log.trace("AsyncExecutor pool size: " + asyncExecutor.getPoolSize());
+    log.trace("AsyncExecutor active count: " + asyncExecutor.getActiveCount());
 
     if (isaReturningTask(nfvMessage.getAction())) {
-      return new AsyncResult<>(gson.toJson(asyncExecutor.submit(task).get()));
+      return asyncExecutor.submit(task);
     } else {
       asyncExecutor.submit(task);
       return null;
