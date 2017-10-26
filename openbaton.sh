@@ -5,7 +5,7 @@ source ./gradle.properties
 _version=${version}
 
 _openbaton_base="/opt/openbaton/"
-_openbaton_config_file="/etc/openbaton/openbaton.properties"
+_openbaton_config_file="/etc/openbaton/openbaton-nfvo.properties"
 _openbaton_plugins="http://get.openbaton.org/plugins/stable/"
 _message_queue_base="apache-activemq-5.11.3"
 _nfvo="${_openbaton_base}/nfvo"

@@ -66,7 +66,7 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
   @Value("${nfvo.plugin.install:true}")
   private boolean installPlugin;
 
-  @Value("${spring.config.location:/etc/openbaton/openbaton.properties}")
+  @Value("${spring.config.location:/etc/openbaton/openbaton-nfvo.properties}")
   private String propFileLocation;
 
   @Value("${nfvo.plugin.log.path:./plugin-logs}")

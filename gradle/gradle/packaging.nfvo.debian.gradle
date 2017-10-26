@@ -69,20 +69,17 @@ task makeDeb(type: Deb, dependsOn: [jar, build, logDebianPackageJavaDependency])
     requires('openbaton-plugin-vimdriver-test>=4.0.1')
 
     // Copy files from "from path" to "into path" 
-    from("etc/keystore.p12") 			                                { into "/etc/openbaton/" }                              // keystore file
-    from("etc/openbaton.properties") {                                                                                          // properties file
-        into "${propertiesDir}" 
-        rename("openbaton.properties", "${fullName}.properties")
-    }
+    from("etc/keystore.p12") 			                                { into "${propertiesDir}" }                             // keystore file
+    from("main/src/main/resources/${fullName}.properties")              { into "${propertiesDir}" }                             // properties file
     from(jar.outputs.files) {                                                                                                   // jar file
         into "${baseBinaryDir}/${jarSubpathName}"
         rename("(.*)","${fullName}-${version}.jar")
     }
-    from("gradle/gradle/scripts/${fullName}") 	                        { into "/usr/bin/"}                                     // executable to run the Component
-    from("gradle/gradle/scripts/${fullName}") 	                        { into "/etc/init.d/"}                                  // executable to run the Component as a service (SysV)
-    from("gradle/gradle/scripts/${fullName}.conf") 	                    { into "/etc/init/"}                                    // conf file to run the Component as a service (Upstart)
-    from("gradle/gradle/scripts/systemd/${fullName}.service") 	        { into "/usr/lib/systemd/system/"}                      // executable to run the Component as a service (Systemd)
-    from("gradle/gradle/scripts/systemd/${fullName}.env") 	            { into "/usr/lib/openbaton/systemd/env/"}               // environment file to run the Component as a service (Systemd)
-    from("gradle/gradle/scripts/systemd/${fullName}.preexecstart") 	    { into "/usr/lib/openbaton/systemd/preexecstart/"}      // preexecstart file to run the Component as a service (Systemd)
+    from("gradle/gradle/scripts/${fullName}") 	                        { into "/usr/bin/" }                                    // executable to run the Component
+    from("gradle/gradle/scripts/${fullName}") 	                        { into "/etc/init.d/" }                                 // executable to run the Component as a service (SysV)
+    from("gradle/gradle/scripts/${fullName}.conf") 	                    { into "/etc/init/" }                                   // conf file to run the Component as a service (Upstart)
+    from("gradle/gradle/scripts/systemd/${fullName}.service") 	        { into "/usr/lib/systemd/system/" }                     // executable to run the Component as a service (Systemd)
+    from("gradle/gradle/scripts/systemd/${fullName}.env") 	            { into "/usr/lib/openbaton/systemd/env/" }              // environment file to run the Component as a service (Systemd)
+    from("gradle/gradle/scripts/systemd/${fullName}.preexecstart") 	    { into "/usr/lib/openbaton/systemd/preexecstart/" }     // preexecstart file to run the Component as a service (Systemd)
 }
 

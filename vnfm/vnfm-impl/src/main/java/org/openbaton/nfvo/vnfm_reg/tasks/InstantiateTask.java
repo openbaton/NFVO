@@ -109,7 +109,7 @@ public class InstantiateTask extends AbstractTask {
 
     if (ordered != null && Boolean.parseBoolean(ordered)) {
       log.debug(
-          "Ordered deployments of VNF is enabled in the openbaton.properties file, in case you want to speed up the "
+          "Ordered deployments of VNF is enabled in the openbaton-nfvo.properties file, in case you want to speed up the "
               + "deployment, please disable it");
       if (dep == 0) {
         virtualNetworkFunctionRecord.setStatus(Status.INACTIVE);

@@ -20,7 +20,7 @@ apply plugin: "application"
 distributions {
     main {
         contents {
-            from { 'etc/openbaton.properties' }
+            from { 'main/src/main/resources/openbaton-nfvo.properties' }
         }
     }
 }

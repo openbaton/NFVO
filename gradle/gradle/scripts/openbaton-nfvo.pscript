@@ -1,5 +1,5 @@
 APP_NAME="Open Baton NFVO"
-CONFIG_FILE="$APP_HOME/openbaton.properties"
+CONFIG_FILE="$APP_HOME/openbaton-nfvo.properties"
 PID_FILE=~/.openbaton-nfvo.pid
 APP_ARGS_TRIMMED=$(echo $APP_ARGS | tr -d '\n' | tr -d '\' | tr -d \' | tr -d '[:space:]')
 START_ARGUMENTS=${@#$APP_ARGS_TRIMMED}

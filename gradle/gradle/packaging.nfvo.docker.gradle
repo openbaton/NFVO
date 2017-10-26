@@ -17,6 +17,7 @@
 ext {
     baseName = 'openbaton'
     componentName = "nfvo"
+    fullName = "${baseName}-${componentName}"
     versionName = "${version}".replaceAll("-SNAPSHOT", "")
 }
 
@@ -27,15 +28,15 @@ task buildDocker(type: Docker) {
     tag = "${baseName}/${componentName}"
     addFile {
         from jar
-        rename {"${componentName}.jar"}
+        rename {"${fullName}.jar"}
     }
     runCommand('apk add -u --no-cache wget &&' +
             'mkdir -p /usr/lib/openbaton/plugins/vim-drivers &&' +
             'wget -qnH --cut-dirs 2 -r --no-parent  --reject "index.html*" "http://get.openbaton.org/plugins/stable/" -P "/usr/lib/openbaton/plugins/vim-drivers"&&' +
             'mkdir -p /var/log/openbaton')
-    addFile("etc/openbaton.properties", "/etc/openbaton/${componentName}.properties")
+    addFile("main/src/main/resources/openbaton-nfvo.properties", "/etc/openbaton/${fullName}.properties")
     setEnvironment('NFVO_PLUGIN_INSTALLATION-DIR', '/usr/lib/openbaton/plugins')
-    entryPoint(["java", "-jar", "/${componentName}.jar", "--spring.config.location=file:/etc/openbaton/${componentName}.properties"])
+    entryPoint(["java", "-jar", "/${fullName}.jar", "--spring.config.location=file:/etc/openbaton/${fullName}.properties"])
     exposePort(8080)
     exposePort(8443)
 }

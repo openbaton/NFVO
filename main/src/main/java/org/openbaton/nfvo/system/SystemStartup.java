@@ -82,7 +82,7 @@ class SystemStartup implements CommandLineRunner {
   @Value("${nfvo.plugin.install:true}")
   private boolean installPlugin;
 
-  @Value("${spring.config.location:/etc/openbaton/openbaton.properties}")
+  @Value("${spring.config.location:/etc/openbaton/openbaton-nfvo.properties}")
   private String propFileLocation;
 
   @Value("${nfvo.plugin.log.path:./plugin-logs}")
