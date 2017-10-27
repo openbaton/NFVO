@@ -68,6 +68,7 @@ ext {
     junitVersion = '4.12'
 }
 
+ext['flyway.version'] = '4.2.0'
 
 apply from: 'gradle/gradle/application.java.gradle'
 apply from: 'gradle/gradle/git.release.gradle'
