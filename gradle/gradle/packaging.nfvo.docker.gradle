@@ -34,7 +34,7 @@ task buildDocker(type: Docker) {
             'mkdir -p /usr/lib/openbaton/plugins/vim-drivers &&' +
             'wget -qnH --cut-dirs 2 -r --no-parent  --reject "index.html*" "http://get.openbaton.org/plugins/stable/" -P "/usr/lib/openbaton/plugins/vim-drivers"&&' +
             'mkdir -p /var/log/openbaton')
-    addFile("main/src/main/resources/openbaton-nfvo.properties", "/etc/openbaton/${fullName}.properties")
+    addFile("main/src/main/resources/application.properties", "/etc/openbaton/${fullName}.properties")
     setEnvironment('NFVO_PLUGIN_INSTALLATION-DIR', '/usr/lib/openbaton/plugins')
     entryPoint(["java", "-jar", "/${fullName}.jar", "--spring.config.location=file:/etc/openbaton/${fullName}.properties"])
     exposePort(8080)
