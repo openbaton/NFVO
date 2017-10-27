@@ -70,7 +70,10 @@ task makeDeb(type: Deb, dependsOn: [jar, build, logDebianPackageJavaDependency])
 
     // Copy files from "from path" to "into path" 
     from("etc/keystore.p12") 			                                { into "${propertiesDir}" }                             // keystore file
-    from("main/src/main/resources/${fullName}.properties")              { into "${propertiesDir}" }                             // properties file
+    from("main/src/main/resources/application.properties") {                                                                    // properties file
+        into "${propertiesDir}"
+        rename("application.properties", "${fullName}.properties")
+    }
     from(jar.outputs.files) {                                                                                                   // jar file
         into "${baseBinaryDir}/${jarSubpathName}"
         rename("(.*)","${fullName}-${version}.jar")
