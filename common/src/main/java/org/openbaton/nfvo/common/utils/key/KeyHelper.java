@@ -10,7 +10,14 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.security.*;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.SecureRandom;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Base64;
 import javax.crypto.BadPaddingException;
@@ -36,10 +43,8 @@ public class KeyHelper {
    * Generates a random String containing 16 alphanumerical characters.
    *
    * @return a String containing 16 alphanumerical characters
-   * @throws NoSuchAlgorithmException
-   * @throws IOException
    */
-  public static String genKey() throws NoSuchAlgorithmException, IOException {
+  public static String genKey() {
     SecureRandom secureRandom = new SecureRandom();
     StringBuilder stringBuilder = new StringBuilder(16);
     for (int i = 0; i < 16; i++) {
@@ -91,8 +96,7 @@ public class KeyHelper {
   }
 
   private static Key generateKey(byte[] keyValue) {
-    Key key = new SecretKeySpec(keyValue, AES_ALGORITHM);
-    return key;
+    return new SecretKeySpec(keyValue, AES_ALGORITHM);
   }
 
   private static String decrypt(byte[] bytes, Key key)
@@ -141,15 +145,15 @@ public class KeyHelper {
     MessageDigest digest = MessageDigest.getInstance("SHA1");
 
     String start = Hex.encodeHexString(digest.digest(publicKey));
-    String res = new String();
+    StringBuilder res = new StringBuilder();
     for (int i = 0; i < start.length(); i++) {
       if (i != 0 && i % 2 == 0) {
-        res += ":";
+        res.append(":");
       }
-      res += start.charAt(i);
+      res.append(start.charAt(i));
     }
-    log.debug(res);
-    return res;
+    log.debug(res.toString());
+    return res.toString();
   }
 
   public static byte[] parsePublicKey(String decodedKey) throws UnsupportedEncodingException {
@@ -200,8 +204,7 @@ public class KeyHelper {
   public static KeyPair generateRSAKey() throws NoSuchAlgorithmException {
     KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
     keyGen.initialize(2048);
-    KeyPair keyPair = keyGen.genKeyPair();
-    return keyPair;
+    return keyGen.genKeyPair();
   }
 
   public static void main(String[] args) throws Exception {

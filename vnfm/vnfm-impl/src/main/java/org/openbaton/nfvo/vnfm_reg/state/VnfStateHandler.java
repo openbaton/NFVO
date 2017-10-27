@@ -15,9 +15,7 @@ import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
-import org.openbaton.nfvo.repositories.VnfPackageRepository;
 import org.openbaton.nfvo.vnfm_reg.tasks.ReleaseresourcesTask;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
@@ -42,13 +40,12 @@ public class VnfStateHandler implements org.openbaton.vnfm.interfaces.state.VnfS
   @Autowired private org.openbaton.vnfm.interfaces.manager.MessageGenerator generator;
   @Autowired private ConfigurableApplicationContext context;
   @Autowired private NetworkServiceRecordRepository nsrRepository;
-  @Autowired private NetworkServiceDescriptorRepository nsdRepository;
-  @Autowired private VnfPackageRepository vnfPackageRepository;
 
   @Autowired private ThreadPoolTaskExecutor asyncExecutor;
 
   @Override
-  public void handleVNF(
+  @Async
+  public Future<Void> handleVNF(
       NetworkServiceDescriptor networkServiceDescriptor,
       NetworkServiceRecord networkServiceRecord,
       DeployNSRBody body,
@@ -69,9 +66,8 @@ public class VnfStateHandler implements org.openbaton.vnfm.interfaces.state.VnfS
     log.debug("----------Executing ACTION: " + message.getAction());
     executeAction(vnfmSender.sendCommand(message, endpoint));
     log.info("Sent " + message.getAction() + " to VNF: " + vnfd.getName());
+    return new AsyncResult<>(null);
   }
-
-  private void newExecuteAction(NFVMessage nfvMessage) {}
 
   private boolean isaReturningTask(Action action) {
     switch (action) {

@@ -39,7 +39,7 @@ import org.springframework.scheduling.annotation.Async;
 public interface VnfmManager {
   Map<String, Map<String, Integer>> getVnfrNames();
 
-  Future<Void> deploy(
+  void deploy(
       NetworkServiceDescriptor networkServiceDescriptor,
       NetworkServiceRecord networkServiceRecord,
       DeployNSRBody body,

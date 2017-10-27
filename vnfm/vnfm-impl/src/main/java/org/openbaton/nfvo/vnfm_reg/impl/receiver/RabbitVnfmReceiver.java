@@ -45,10 +45,10 @@ public class RabbitVnfmReceiver implements VnfmReceiver {
     NFVMessage message = gson.fromJson(nfvMessage, NFVMessage.class);
     log.debug("NFVO - core module received (via MB): " + message.getAction());
 
-    log.debug("----------Executing ACTION: " + message.getAction());
+    log.debug("Received ACTION: " + message.getAction());
     Future<NFVMessage> res = stateHandler.executeAction(message);
     String result = gson.toJson(res.get());
-    log.debug("-----------Finished ACTION: " + message.getAction());
+    log.debug("Concluded ACTION: " + message.getAction());
 
     return result;
     //    return "";
