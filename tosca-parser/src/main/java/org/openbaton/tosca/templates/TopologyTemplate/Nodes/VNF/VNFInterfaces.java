@@ -36,7 +36,7 @@ public class VNFInterfaces {
   @SuppressWarnings({"unsafe", "unchecked"})
   public Set<LifecycleEvent> getOpLifecycle() {
 
-    Map<String, Object> lifecycleMap = (Map<String, Object>) lifecycle;
+    Map<String, ArrayList> lifecycleMap = (Map<String, ArrayList>) lifecycle;
     Set<LifecycleEvent> lifecycleEvents = new HashSet<>();
 
     if (lifecycle != null) {
@@ -62,12 +62,9 @@ public class VNFInterfaces {
             break;
         }
 
-        lifecycleEvent.setLifecycle_events(
-            new ArrayList<String>() {
-              {
-                lifecycleMap.get(lifecycleName);
-              }
-            });
+        ArrayList<String> cmds = new ArrayList<>();
+        cmds.addAll(lifecycleMap.get(lifecycleName));
+        lifecycleEvent.setLifecycle_events(cmds);
 
         lifecycleEvents.add(lifecycleEvent);
       }
