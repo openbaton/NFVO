@@ -21,6 +21,7 @@ import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.Null;
 import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by lto on 11/05/15. */
@@ -29,10 +30,10 @@ public class NFVImage extends BaseEntity {
 
   private String extId;
   private String name;
-  private long minRam; //in MB
-  private long minDiskSpace; //in GB
+  private Long minRam; //in MB
+  private Long minDiskSpace; //in GB
   private String minCPU;
-  private boolean isPublic;
+  @Null private Boolean isPublic = false;
   private String diskFormat;
   private String containerFormat;
 
@@ -102,11 +103,19 @@ public class NFVImage extends BaseEntity {
     this.updated = updated;
   }
 
-  public boolean isPublic() {
+  public Boolean isPublic() {
     return isPublic;
   }
 
-  public void setIsPublic(boolean isPublic) {
+  public Boolean getIsPublic() {
+    return isPublic;
+  }
+
+  public void setIsPublic(Boolean isPublic) {
+    this.isPublic = isPublic;
+  }
+
+  public void setPublic(Boolean isPublic) {
     this.isPublic = isPublic;
   }
 

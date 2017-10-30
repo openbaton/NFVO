@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Created by lto on 19/10/15. */
 @RestController
 @RequestMapping("/api/v1/security")
 @ConfigurationProperties(prefix = "nfvo.security")
@@ -45,7 +44,7 @@ public class RestSecurity {
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
   @ResponseStatus(HttpStatus.OK)
   private String isSecurityEnabled() {
-    log.debug("is Security enabled? " + enabled);
+    log.trace("is Security enabled? " + enabled);
     return String.valueOf(enabled).toLowerCase();
   }
 }

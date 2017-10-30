@@ -54,9 +54,14 @@ public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
       throws Exception {
 
     String requestURL = request.getRequestURL().toString();
+    String requestMethod = request.getMethod();
+    log.trace("Validation of schema for " + requestMethod + " on url: " + request.getRequestURI());
     if (request.getRequestURI().equalsIgnoreCase("/error")) {
       return true;
     }
+    //    if (requestMethod.equalsIgnoreCase("put")) {
+    //      return true;
+    //    }
     CustomHttpServletRequestWrapper wrapper = new CustomHttpServletRequestWrapper(request);
     String requestBody = wrapper.getBody();
     String classSchema = null;
@@ -148,13 +153,14 @@ public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
       }
     } else {
       if (!requestURL.contains("/api/v1")
-          && !request.getMethod().equalsIgnoreCase("get")
-          && !request.getMethod().equalsIgnoreCase("delete")) {
+          && !requestMethod.equalsIgnoreCase("get")
+          && !requestMethod.equalsIgnoreCase("delete")) {
         log.warn("Not able to generate schema for url ...");
         log.warn("URL: " + requestURL);
       }
     }
-    return super.preHandle(wrapper, response, handler);
+    boolean b = super.preHandle(wrapper, response, handler);
+    return b;
   }
 
   private void handleErrorMessages(
@@ -186,7 +192,7 @@ public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
     JsonSchemaGenerator schemaGen = new JsonSchemaGenerator(mapper);
     JsonNode jsonSchema = schemaGen.generateJsonSchema(javaClass);
     String jsonSchemaAsString = mapper.writeValueAsString(jsonSchema);
-    log.trace(jsonSchemaAsString);
+    log.trace("The schema is: " + jsonSchemaAsString);
     return jsonSchemaAsString;
   }
 }
