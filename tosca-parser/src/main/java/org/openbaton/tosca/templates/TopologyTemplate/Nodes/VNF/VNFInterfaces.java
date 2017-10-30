@@ -62,7 +62,9 @@ public class VNFInterfaces {
             break;
         }
 
-        lifecycleEvent.setLifecycle_events(lifecycleMap.get(lifecycleName));
+        ArrayList<String> cmds = new ArrayList<>();
+        cmds.addAll(lifecycleMap.get(lifecycleName));
+        lifecycleEvent.setLifecycle_events(cmds);
 
         lifecycleEvents.add(lifecycleEvent);
       }
