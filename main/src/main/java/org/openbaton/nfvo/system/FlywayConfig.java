@@ -61,16 +61,6 @@ class schema_version implements Serializable {
 
   private String version;
 
-  public int getVersion_rank() {
-    return version_rank;
-  }
-
-  public void setVersion_rank(int version_rank) {
-    this.version_rank = version_rank;
-  }
-
-  private int version_rank;
-
   private String description;
 
   private String type;
