@@ -59,9 +59,10 @@ public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
     if (request.getRequestURI().equalsIgnoreCase("/error")) {
       return true;
     }
-    //    if (requestMethod.equalsIgnoreCase("put")) {
-    //      return true;
-    //    }
+    //TODO fix the date of the image
+    if (request.getRequestURI().contains("/datacenters") && requestMethod.equalsIgnoreCase("put")) {
+      return true;
+    }
     CustomHttpServletRequestWrapper wrapper = new CustomHttpServletRequestWrapper(request);
     String requestBody = wrapper.getBody();
     String classSchema = null;
