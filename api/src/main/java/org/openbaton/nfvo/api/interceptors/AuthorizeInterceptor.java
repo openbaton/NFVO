@@ -171,9 +171,7 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
         || (request.getMethod().equalsIgnoreCase("post")
             && request.getRequestURI().startsWith("/admin/v1/vnfm-core-"))
         || (request.getMethod().equalsIgnoreCase("post")
-            && request.getRequestURI().equals("/api/v1/components/services/register"))
-        || (request.getMethod().equalsIgnoreCase("get")
-            && request.getRequestURI().equals("/api/v1/security"));
+            && request.getRequestURI().equals("/api/v1/components/services/register"));
   }
 
   //TODO realize this configurable
