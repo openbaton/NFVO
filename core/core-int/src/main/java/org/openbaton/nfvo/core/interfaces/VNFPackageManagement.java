@@ -26,7 +26,19 @@ import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VNFPackageMetadata;
-import org.openbaton.exceptions.*;
+import org.openbaton.exceptions.AlreadyExistingException;
+import org.openbaton.exceptions.BadFormatException;
+import org.openbaton.exceptions.BadRequestException;
+import org.openbaton.exceptions.DescriptorWrongFormat;
+import org.openbaton.exceptions.EntityUnreachableException;
+import org.openbaton.exceptions.ExistingVNFPackage;
+import org.openbaton.exceptions.IncompatibleVNFPackage;
+import org.openbaton.exceptions.NetworkServiceIntegrityException;
+import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.PluginException;
+import org.openbaton.exceptions.VNFPackageFormatException;
+import org.openbaton.exceptions.VimException;
+import org.openbaton.exceptions.WrongAction;
 
 /** Created by mpa on 05/05/15. */
 public interface VNFPackageManagement {
@@ -58,7 +70,8 @@ public interface VNFPackageManagement {
       throws IOException, VimException, NotFoundException, SQLException, PluginException,
           ExistingVNFPackage, DescriptorWrongFormat, VNFPackageFormatException,
           IncompatibleVNFPackage, BadRequestException, AlreadyExistingException,
-          NetworkServiceIntegrityException, EntityUnreachableException, InterruptedException;
+          NetworkServiceIntegrityException, EntityUnreachableException, InterruptedException,
+          BadFormatException;
 
   /**
    * This operation handles the data about the image of the vnf package

@@ -29,7 +29,9 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -109,7 +111,7 @@ public class VNFPackageManagement
   @Value("${vnfd.vnfp.cascade.delete:false}")
   private boolean cascadeDelete;
   // This is only in case you run the NFVO from IDE
-  @Value("${nfvo.version:null}")
+  @Value("${nfvo.version:}")
   private String nfvoVersion;
 
   private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -288,7 +290,7 @@ public class VNFPackageManagement
       throw e2;
     }
 
-    vnfPackageRepository.save(vnfPackage);
+    vnfPackage = vnfPackageRepository.save(vnfPackage);
     virtualNetworkFunctionDescriptor.setVnfPackageLocation(vnfPackage.getId());
     virtualNetworkFunctionDescriptor = vnfdRepository.save(virtualNetworkFunctionDescriptor);
     log.trace("Persisted " + virtualNetworkFunctionDescriptor);
@@ -305,7 +307,8 @@ public class VNFPackageManagement
       throws IOException, VimException, NotFoundException, SQLException, PluginException,
           ExistingVNFPackage, DescriptorWrongFormat, VNFPackageFormatException,
           IncompatibleVNFPackage, BadRequestException, AlreadyExistingException,
-          NetworkServiceIntegrityException, EntityUnreachableException, InterruptedException {
+          NetworkServiceIntegrityException, EntityUnreachableException, InterruptedException,
+          BadFormatException {
 
     CheckVNFPackage.checkStructure(pack, isImageIncluded, fromMarketPlace);
 
@@ -495,10 +498,14 @@ public class VNFPackageManagement
         imageDetails,
         projectId);
 
+    if (virtualNetworkFunctionDescriptor.getVnfPackageLocation() != null) {
+      throw new BadFormatException("VnfPackageLocation must be empty");
+    }
+
     if (vnfPackage.getScriptsLink() != null
         && (vnfPackage.getScripts() != null && vnfPackage.getScripts().size() > 0)) {
       log.debug("Remove scripts got by scripts/ because the scripts-link is defined");
-      vnfPackage.setScripts(new HashSet<Script>());
+      vnfPackage.setScripts(new HashSet<>());
     }
 
     Map<String, Object> vnfPackageMetadataParameters = new HashMap<>();
@@ -546,6 +553,7 @@ public class VNFPackageManagement
     }
 
     nsdUtils.checkIntegrity(virtualNetworkFunctionDescriptor);
+
     // check if it is the first and set to default
     //    if(!vnfPackageMetadataRepository.findAllByNameAndVendor(vnfPackageMetadata.getName(),vnfPackageMetadata.getVendor()).iterator().hasNext()){
     //      log.debug("Setting VNF package to default");
@@ -553,11 +561,16 @@ public class VNFPackageManagement
     //    }
     //    else vnfPackageMetadata.setDefaultFlag(false);
     //vnfPackageMetadataRepository.save(vnfPackageMetadata);
+    /* Done in the nsdCheckutils */
     vnfPackage = vnfPackageRepository.save(vnfPackage);
+    //    vnfPackage = vnfPackageRepository.findFirstById(virtualNetworkFunctionDescriptor.getVnfPackageLocation());
     log.trace("Persisted " + vnfPackage);
     vnfPackageMetadataRepository.setVNFPackageId(vnfPackage.getId());
 
     virtualNetworkFunctionDescriptor.setVnfPackageLocation(vnfPackage.getId());
+    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+    virtualNetworkFunctionDescriptor.setCreatedAt(format.format(new Date()));
+    virtualNetworkFunctionDescriptor.setUpdatedAt(format.format(new Date()));
     virtualNetworkFunctionDescriptor = setIPConfigurations(virtualNetworkFunctionDescriptor);
     virtualNetworkFunctionDescriptor = vnfdRepository.save(virtualNetworkFunctionDescriptor);
     log.trace("Persisted " + virtualNetworkFunctionDescriptor);
@@ -1118,6 +1131,7 @@ public class VNFPackageManagement
     } catch (SQLException
         | ExistingVNFPackage
         | DescriptorWrongFormat
+        | BadFormatException
         | VNFPackageFormatException e) {
       if (log.isDebugEnabled()) log.error(e.getMessage(), e);
       else log.error(e.getMessage());
@@ -1134,10 +1148,13 @@ public class VNFPackageManagement
     String version = VNFPackageManagement.class.getPackage().getImplementationVersion();
     //this is because you are running it into an IDE
     if (version == null) {
-      if (nfvoVersion.equals("null"))
+      if (nfvoVersion == null || nfvoVersion.equals("null") || nfvoVersion.isEmpty()) {
         throw new NotFoundException(
-            "The NFVO version number is not available, seems you are running the NFVO from the IDE. Set nfvo.version property into the NFVO property file.");
-      else version = nfvoVersion;
+            "The NFVO version number is not available, seems you are running the NFVO from the IDE. Set nfvo.version "
+                + "property into the NFVO property file.");
+      } else {
+        version = nfvoVersion;
+      }
     }
     return version.lastIndexOf("-SNAPSHOT") != -1
         ? version.substring(0, version.lastIndexOf("-SNAPSHOT"))

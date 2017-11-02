@@ -732,7 +732,7 @@ public class NSDUtils {
         vnfPackage.setScriptsLink(virtualNetworkFunctionDescriptor.getVnfPackageLocation());
         vnfPackage.setName(virtualNetworkFunctionDescriptor.getName());
         vnfPackage.setProjectId(virtualNetworkFunctionDescriptor.getProjectId());
-        vnfPackage = vnfPackageRepository.save(vnfPackage);
+        if (vnfPackage.getId() == null) vnfPackage = vnfPackageRepository.save(vnfPackage);
         virtualNetworkFunctionDescriptor.setVnfPackageLocation(vnfPackage.getId());
       }
     } else {
