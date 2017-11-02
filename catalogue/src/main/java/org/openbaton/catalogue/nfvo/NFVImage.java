@@ -29,8 +29,8 @@ public class NFVImage extends BaseEntity {
 
   private String extId;
   private String name;
-  private Long minRam; //in MB
-  private Long minDiskSpace; //in GB
+  private Long minRam = 0L;; //in MB
+  private Long minDiskSpace = 0L; //in GB
   private String minCPU;
   private Boolean isPublic = false;
   private String diskFormat;
