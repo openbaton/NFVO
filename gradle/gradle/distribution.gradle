@@ -32,7 +32,7 @@ startScripts {
 
         def unixTextTmp = ""
         def unixText = unixFile.text
-        def unixDaemonScript = new File("${rootProject.projectDir}/gradle/gradle/scripts/openbaton-nfvo.pscript").text
+        def unixDaemonScript = new File("${rootProject.projectDir}/gradle/gradle/scripts/launch-script.pscript").text
 
         unixText.readLines().each {
             line ->
@@ -46,5 +46,3 @@ startScripts {
         unixFile.renameTo("${startScripts.outputDir}/openbaton-nfvo")
     }
 }
-
-applicationDefaultJvmArgs = ["-Djava.security.egd=file:/dev/./urandom"]

@@ -81,7 +81,6 @@ apply from: 'gradle/gradle/distribution.gradle'
 
 apply from: 'gradle/gradle/dependencies.updater.gradle'
 
-apply from: 'gradle/gradle/brew.formula.creator.gradle'
 apply from: 'gradle/gradle/licenses.gradle'
 
 repositories {
