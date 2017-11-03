@@ -242,8 +242,11 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
         throw new BadRequestException("Email is not well formatted");
       }
     }
+    if (user.isEnabled() == null)
+      throw new BadRequestException(
+          "The user's isEnabled property has to be set to true or false.");
     Set<String> assignedProjects = new HashSet<>();
-    if (user.getRoles().isEmpty()) {
+    if (user.getRoles() == null || user.getRoles().isEmpty()) {
       throw new BadRequestException("At least one role must be provided");
     }
     for (Role role : user.getRoles()) {
