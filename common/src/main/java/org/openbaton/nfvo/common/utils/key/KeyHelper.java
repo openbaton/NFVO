@@ -26,6 +26,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.binary.Hex;
+import org.openbaton.exceptions.BadFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -156,8 +157,13 @@ public class KeyHelper {
     return res.toString();
   }
 
-  public static byte[] parsePublicKey(String decodedKey) throws UnsupportedEncodingException {
-    decodedKey = decodedKey.split(" ")[1];
+  public static byte[] parsePublicKey(String decodedKey)
+      throws UnsupportedEncodingException, BadFormatException {
+    String[] decodedKeyArray = decodedKey.split(" ");
+    if (decodedKeyArray.length <= 1)
+      throw new BadFormatException(
+          "The public key must have the following format: ssh-rsa [the_public_key]");
+    decodedKey = decodedKeyArray[1];
     return Base64.getDecoder().decode(decodedKey);
   }
 
