@@ -24,7 +24,13 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.MalformedJsonException;
 import com.kjetland.jackson.jsonSchema.JsonSchemaGenerator;
 import com.networknt.schema.ValidationMessage;
-
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Modifier;
+import java.util.HashSet;
+import java.util.Set;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
@@ -38,15 +44,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Modifier;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 @Service
 public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
@@ -149,8 +146,10 @@ public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
       } catch (BadRequestException e) {
         response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
         return false;
-      }catch (JsonSyntaxException | MalformedJsonException e) {
-        response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage().split(":")[1].replace("$.", " ").replaceAll("\\[[0-9]\\]",""));
+      } catch (JsonSyntaxException | MalformedJsonException e) {
+        response.sendError(
+            HttpServletResponse.SC_BAD_REQUEST,
+            e.getMessage().split(":")[1].replace("$.", " ").replaceAll("\\[[0-9]\\]", ""));
         return false;
       }
       if (validationMessages.size() > 0) {
