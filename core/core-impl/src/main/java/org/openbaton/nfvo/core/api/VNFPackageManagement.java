@@ -21,25 +21,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.networknt.schema.ValidationMessage;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.regex.Pattern;
+
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
@@ -98,6 +80,26 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.error.YAMLException;
+
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
 
 /** Created by lto on 22/07/15. */
 @Service
@@ -876,11 +878,11 @@ public class VNFPackageManagement
                 image = vim.add(vimInstance, image, vnfPackage.getImageLink());
 
                 if (vdu.getVm_image() == null) {
-                  vdu.setVm_image(new HashSet<String>());
+                  vdu.setVm_image(new HashSet<>());
                 }
                 vdu.getVm_image().add(image.getExtId());
                 vimInstances.add(vimInstance.getId());
-                vimManagement.refresh(vimInstance, false);
+                vimManagement.refresh(vimInstance, true);
 
                 imageChecker.checkImageStatus(vimInstance);
               }
@@ -908,11 +910,11 @@ public class VNFPackageManagement
                         + vimInstance.getName());
                 image = vim.add(vimInstance, image, imageFile);
                 if (vdu.getVm_image() == null) {
-                  vdu.setVm_image(new HashSet<String>());
+                  vdu.setVm_image(new HashSet<>());
                 }
                 vdu.getVm_image().add(image.getExtId());
                 vimInstances.add(vimInstance.getId());
-                vimManagement.refresh(vimInstance, false);
+                vimManagement.refresh(vimInstance, true);
 
                 imageChecker.checkImageStatus(vimInstance);
               }
@@ -1008,11 +1010,11 @@ public class VNFPackageManagement
                           + vimInstance.getName());
                   image = vim.add(vimInstance, image, vnfPackage.getImageLink());
                   if (vdu.getVm_image() == null) {
-                    vdu.setVm_image(new HashSet<String>());
+                    vdu.setVm_image(new HashSet<>());
                   }
                   vdu.getVm_image().add(image.getExtId());
                   vimInstances.add(vimInstance.getId());
-                  vimManagement.refresh(vimInstance, false);
+                  vimManagement.refresh(vimInstance, true);
 
                   imageChecker.checkImageStatus(vimInstance);
                 }
@@ -1030,7 +1032,7 @@ public class VNFPackageManagement
                   }
                   vimInstances.add(vimInstance.getId());
                   vdu.getVm_image().add(image.getExtId());
-                  vimManagement.refresh(vimInstance, false);
+                  vimManagement.refresh(vimInstance, true);
 
                   imageChecker.checkImageStatus(vimInstance);
                 }

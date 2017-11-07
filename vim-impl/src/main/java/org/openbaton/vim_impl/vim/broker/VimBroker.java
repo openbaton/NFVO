@@ -153,27 +153,9 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
     return this.clientInterfaces.get(type);
   }
 
-  //  @Deprecated
-  //  @Override
-  //  public Vim getVim(String type, String name) throws PluginException {
-  //    if (type.contains(".")) {
-  //      type = type.split("\\.")[0];
-  //    }
-  //    switch (type) {
-  //      case "test":
-  //        return (Vim) context.getBean("testVIM", type, name, this.managementPort);
-  //      case "openstack":
-  //        return (Vim) context.getBean("openstackVIM", type, name, this.managementPort, context);
-  //      case "amazon":
-  //        return (Vim) context.getBean("amazonVIM", type, name, this.managementPort);
-  //      default:
-  //        return new GenericVIM(name, type, context);
-  //    }
-  //  }
-
   @Override
   public Vim getVim(String type) throws PluginException {
-    /** Needed only for test */
+    /* Needed only for test */
     try {
       port = String.valueOf(Integer.parseInt(port));
     } catch (NumberFormatException e) {
@@ -241,7 +223,7 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
     }
 
     List<Server> servers = vim.queryResources(vimInstance);
-    log.info("MaximalQuota is: " + maximalQuota);
+    log.debug("MaximalQuota is: " + maximalQuota);
     //Calculate used resource by servers (cpus, ram)
     for (Server server : servers) {
       //Subtract instances
