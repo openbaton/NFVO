@@ -69,7 +69,8 @@ public class NetworkServiceRecord extends BaseEntity {
       /*CascadeType.PERSIST, CascadeType.MERGE*/
       CascadeType.ALL
     },
-    fetch = FetchType.EAGER
+    fetch = FetchType.EAGER,
+    orphanRemoval = true
   )
   private Set<VirtualNetworkFunctionRecord> vnfr;
 
