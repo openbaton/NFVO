@@ -167,8 +167,7 @@ public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
         log.warn("URL: " + requestURL);
       }
     }
-    boolean b = super.preHandle(wrapper, response, handler);
-    return b;
+    return super.preHandle(wrapper, response, handler);
   }
 
   private void handleErrorMessages(
