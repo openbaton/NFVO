@@ -17,6 +17,9 @@
 
 package org.openbaton.vim_impl.vim.broker;
 
+import java.util.HashMap;
+import java.util.List;
+import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.nfvo.Quota;
 import org.openbaton.catalogue.nfvo.Server;
@@ -34,11 +37,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
 
 /** Created by lto on 20/05/15. */
 @Service
@@ -288,8 +286,12 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
       maximalQuota.setInstances(maximalQuota.getInstances() - 1);
       //Subtract used ram and cpus
       DeploymentFlavour flavor = server.getFlavor();
-      maximalQuota.setRam(maximalQuota.getRam() - (flavor != null ? flavor.getRam() : 0));
-      maximalQuota.setCores(maximalQuota.getCores() - (flavor != null ? flavor.getVcpus() : 0));
+      maximalQuota.setRam(
+          maximalQuota.getRam()
+              - (flavor != null && flavor.getRam() != null ? flavor.getRam() : 0));
+      maximalQuota.setCores(
+          maximalQuota.getCores()
+              - (flavor != null && flavor.getVcpus() != null ? flavor.getVcpus() : 0));
       // TODO add floating ips when quota command will work...
     }
     return maximalQuota;
