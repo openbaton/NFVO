@@ -107,14 +107,14 @@ class SystemStartup implements CommandLineRunner {
     Properties properties = new Properties();
     properties.load(is);
 
-    log.debug("Config Values are: " + properties.values());
+    log.trace("Config Values are: " + properties.values());
 
     Configuration c = new Configuration();
 
     c.setName("system");
-    c.setConfigurationParameters(new HashSet<ConfigurationParameter>());
+    c.setConfigurationParameters(new HashSet<>());
 
-    /** Adding properties from file */
+    /* Adding properties from file */
     for (Entry<Object, Object> entry : properties.entrySet()) {
       ConfigurationParameter cp = new ConfigurationParameter();
       cp.setConfKey((String) entry.getKey());
@@ -122,7 +122,7 @@ class SystemStartup implements CommandLineRunner {
       c.getConfigurationParameters().add(cp);
     }
 
-    /** Adding system properties */
+    /* Adding system properties */
     Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
     for (NetworkInterface netint : Collections.list(nets)) {
       ConfigurationParameter cp = new ConfigurationParameter();

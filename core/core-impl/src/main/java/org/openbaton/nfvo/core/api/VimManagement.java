@@ -17,19 +17,6 @@
 
 package org.openbaton.nfvo.core.api;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
@@ -61,6 +48,20 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /** Created by lto on 13/05/15. */
 @Service
@@ -138,13 +139,6 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
         }
       }
     }
-    //    for (VirtualNetworkFunctionDescriptor vnfd : vnfdRepository.findByProjectId(projectId)) {
-    //      for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
-    //        if (vdu.getVimInstanceName().contains(vimInstance.getName())) {
-    //          vdu.getVimInstanceName().remove(vimInstance.getName());
-    //        }
-    //      }
-    //    }
     vimRepository.delete(vimInstance);
   }
 
