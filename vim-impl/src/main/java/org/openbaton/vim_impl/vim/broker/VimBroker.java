@@ -203,45 +203,6 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
         Integer.parseInt(pluginTimeout));
   }
 
-  //  @Override
-  //  public Vim getVim(String type, int port) throws PluginException {
-  //    String name = null;
-  //    if (type.contains(".")) {
-  //      String[] split = type.split("\\.");
-  //      type = split[0];
-  //      name = split[1];
-  //    }
-  //    switch (type) {
-  //      case "test":
-  //        return (Vim) context.getBean("testVIM", port, this.managementPort);
-  //      case "openstack":
-  //        return (Vim) context.getBean("openstackVIM", port, this.managementPort, context);
-  //      case "amazon":
-  //        return (Vim) context.getBean("amazonVIM", port, this.managementPort);
-  //      default:
-  //        return new GenericVIM(type + "." + name, this.brokerIp, port, this.managementPort, context);
-  //    }
-  //  }
-
-  //  @Override
-  //  public Vim getVim(String type, String name, String port) {
-  //    if (type.contains(".")) type = type.split("\\.")[0];
-  //    switch (type) {
-  //      case "test":
-  //        return (Vim)
-  //            context.getBean("testVIM", type, name, Integer.parseInt(port), this.managementPort);
-  //      case "openstack":
-  //        return (Vim)
-  //            context.getBean(
-  //                "openstackVIM", type, name, Integer.parseInt(port), this.managementPort, context);
-  //      case "amazon":
-  //        return (Vim)
-  //            context.getBean("amazonVIM", type, name, Integer.parseInt(port), this.managementPort);
-  //      default:
-  //        throw new UnsupportedOperationException();
-  //    }
-  //  }
-
   @Override
   public Quota getLeftQuota(VimInstance vimInstance) throws VimException, PluginException {
     Vim vim = getVim(vimInstance.getType());
@@ -280,6 +241,7 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
     }
 
     List<Server> servers = vim.queryResources(vimInstance);
+    log.info("MaximalQuota is: " + maximalQuota);
     //Calculate used resource by servers (cpus, ram)
     for (Server server : servers) {
       //Subtract instances

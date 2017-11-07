@@ -54,7 +54,7 @@ public abstract class Plugin {
     } catch (Exception ignored) {
 
     }
-    log.debug("Loaded properties: " + properties);
+    log.trace("Loaded properties: " + properties);
   }
 
   public Properties getProperties() {
