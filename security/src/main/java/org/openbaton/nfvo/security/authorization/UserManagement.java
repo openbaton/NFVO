@@ -17,9 +17,6 @@
 
 package org.openbaton.nfvo.security.authorization;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.Pattern;
 import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
 import org.openbaton.catalogue.security.User;
@@ -43,6 +40,10 @@ import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserExc
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Pattern;
+
 /** Created by lto on 25/02/16. */
 @Service
 @ConfigurationProperties
@@ -50,6 +51,10 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
 
   @Value("${nfvo.users.password.strength:true}")
   private boolean checkStrength;
+
+  @Value("${nfvo.users.email.check:true}")
+  private boolean checkEmail;
+
 
   @Autowired private UserRepository userRepository;
 
@@ -234,7 +239,7 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
     if (user.getPassword() == null || user.getPassword().equals("")) {
       throw new BadRequestException("Password must be provided");
     }
-    if (user.getEmail() != null && !user.getEmail().equals("")) {
+    if (checkEmail && user.getEmail() != null && !user.getEmail().equals("")) {
       String EMAIL_PATTERN =
           "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
       Pattern pattern = Pattern.compile(EMAIL_PATTERN);

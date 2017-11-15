@@ -17,7 +17,11 @@
 
 package org.openbaton.catalogue.nfvo;
 
+import org.openbaton.catalogue.mano.common.DeploymentFlavour;
+import org.openbaton.catalogue.util.BaseEntity;
+
 import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -28,13 +32,11 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import org.openbaton.catalogue.mano.common.DeploymentFlavour;
-import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by lto on 12/05/15. */
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"name", "projectId"}))
-public class VimInstance extends BaseEntity {
+public class BaseVimInstance extends BaseEntity {
 
   @NotNull
   @Size(min = 1)
@@ -78,7 +80,7 @@ public class VimInstance extends BaseEntity {
 
   private Boolean active = true;
 
-  public VimInstance() {}
+  public BaseVimInstance() {}
 
   public String getName() {
     return name;
