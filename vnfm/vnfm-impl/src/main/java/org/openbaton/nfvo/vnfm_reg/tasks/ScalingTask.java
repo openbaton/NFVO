@@ -28,10 +28,10 @@ import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.nfvo.Action;
-import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.core.interfaces.ResourceManagement;
@@ -55,7 +55,7 @@ public class ScalingTask extends AbstractTask {
   private boolean checkQuota;
 
   @Autowired private VnfPlacementManagement vnfPlacementManagement;
-  private VimInstance vimInstance;
+  private BaseVimInstance vimInstance;
 
   public void setUserdata(String userdata) {
     this.userdata = userdata;
@@ -108,7 +108,7 @@ public class ScalingTask extends AbstractTask {
             + virtualNetworkFunctionRecord.getId()
             + ") is: "
             + componentToAdd);
-    Map<String, VimInstance> vimInstanceMap = new HashMap<>();
+    Map<String, BaseVimInstance> vimInstanceMap = new HashMap<>();
     if (checkQuota) {
       if (vimInstance == null) {
         vimInstanceMap =
@@ -279,11 +279,11 @@ public class ScalingTask extends AbstractTask {
     description = "The resources of this VNFR are scaling at the moment";
   }
 
-  public void setVimInstance(VimInstance vimInstance) {
+  public void setVimInstance(BaseVimInstance vimInstance) {
     this.vimInstance = vimInstance;
   }
 
-  public VimInstance getVimInstance() {
+  public BaseVimInstance getVimInstance() {
     return vimInstance;
   }
 }

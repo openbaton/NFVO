@@ -23,10 +23,10 @@ import java.util.Map;
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.Status;
-import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGrantLifecycleOperationMessage;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
 import org.openbaton.nfvo.core.interfaces.VnfPlacementManagement;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
@@ -97,9 +97,9 @@ public class GrantoperationTask extends AbstractTask {
                 + " possible vim instances are: "
                 + virtualDeploymentUnit.getVimInstanceName());
       }
-      Map<String, VimInstance> vimInstancesChosen =
+      Map<String, BaseVimInstance> vimInstancesChosen =
           lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord);
-      for (Map.Entry<String, VimInstance> entry : vimInstancesChosen.entrySet())
+      for (Map.Entry<String, BaseVimInstance> entry : vimInstancesChosen.entrySet())
         log.info("VimInstances chosen are: " + entry.getKey() + ": " + entry.getValue().getName());
       log.trace("VimInstances chosen are: " + vimInstancesChosen);
       log.debug(vimInstancesChosen.size() + " == " + virtualNetworkFunctionRecord.getVdu().size());

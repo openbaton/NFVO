@@ -43,10 +43,13 @@ import org.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.VNFPackage;
-import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
+import org.openbaton.catalogue.nfvo.images.DockerImage;
+import org.openbaton.catalogue.nfvo.images.NFVImage;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
+import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.CyclicDependenciesException;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
@@ -219,7 +222,7 @@ public class NSDUtils {
 
   public void fetchVimInstances(VirtualNetworkFunctionDescriptor vnfd, String projectId)
       throws NotFoundException {
-    Iterable<VimInstance> vimInstances = vimRepository.findByProjectId(projectId);
+    Iterable<BaseVimInstance> vimInstances = vimRepository.findByProjectId(projectId);
     if (!vimInstances.iterator().hasNext()) {
       throw new NotFoundException("No VimInstances in the Database");
     }
@@ -228,7 +231,7 @@ public class NSDUtils {
         for (String name : vdu.getVimInstanceName()) {
           log.debug("vim instance name=" + name);
           boolean fetched = false;
-          for (VimInstance vimInstance : vimInstances) {
+          for (BaseVimInstance vimInstance : vimInstances) {
             if ((vimInstance.getName() != null
                 && vimInstance.getName().equals(name)) /*|| (vimInstance.getId() !=
             null && vimInstance.getId().equals(name_id))
@@ -491,7 +494,7 @@ public class NSDUtils {
           if (virtualDeploymentUnit.getVimInstanceName() != null
               && !virtualDeploymentUnit.getVimInstanceName().isEmpty()) {
             for (String vimName : virtualDeploymentUnit.getVimInstanceName()) {
-              VimInstance vimInstance =
+              BaseVimInstance vimInstance =
                   checkIntegrityVimInstance(
                       virtualNetworkFunctionDescriptor, virtualDeploymentUnit, vimName);
 
@@ -516,13 +519,13 @@ public class NSDUtils {
     }
   }
 
-  private VimInstance checkIntegrityVimInstance(
+  private BaseVimInstance checkIntegrityVimInstance(
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
       VirtualDeploymentUnit virtualDeploymentUnit,
       String vimName)
       throws NetworkServiceIntegrityException {
-    VimInstance vimInstance = null;
-    for (VimInstance vi :
+    BaseVimInstance vimInstance = null;
+    for (BaseVimInstance vi :
         vimRepository.findByProjectId(virtualNetworkFunctionDescriptor.getProjectId())) {
       if (vimName.equals(vi.getName())) {
         vimInstance = vi;
@@ -743,12 +746,13 @@ public class NSDUtils {
   private void checkIntegrityImages(
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
       VirtualDeploymentUnit virtualDeploymentUnit,
-      VimInstance vimInstance)
+      BaseVimInstance vimInstance)
       throws NetworkServiceIntegrityException {
     Set<String> imageNames = new HashSet<>();
     Set<String> imageIds = new HashSet<>();
-    for (NFVImage image : vimInstance.getImages()) {
-      imageNames.add(image.getName());
+    for (BaseNfvImage image : vimInstance.getImages()) {
+      if (image instanceof NFVImage) imageNames.add(((NFVImage) image).getName());
+      else if (image instanceof DockerImage) imageNames.addAll(((DockerImage) image).getTags());
       imageIds.add(image.getExtId());
     }
 
@@ -802,7 +806,8 @@ public class NSDUtils {
   }
 
   private void checkFlavourIntegrity(
-      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor, VimInstance vimInstance)
+      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
+      BaseVimInstance vimInstance)
       throws NetworkServiceIntegrityException {
     Set<String> flavourNames = new HashSet<>();
     if (virtualNetworkFunctionDescriptor.getDeployment_flavour() != null
@@ -834,25 +839,28 @@ public class NSDUtils {
       }
     }
 
-    Set<String> flavors = new HashSet<>();
-    if (vimInstance.getFlavours() == null) {
-      throw new NetworkServiceIntegrityException(
-          "No flavours found on your VIM instance, therefore it is not possible to on board your NSD");
-    }
-    for (DeploymentFlavour deploymentFlavour : vimInstance.getFlavours()) {
-      flavors.add(deploymentFlavour.getFlavour_key());
-    }
-    //All "names" must be contained in the "flavors"
-    if (!flavors.containsAll(flavourNames)) {
-      throw new NetworkServiceIntegrityException(
-          "Regarding the VirtualNetworkFunctionDescriptor "
-              + virtualNetworkFunctionDescriptor.getName()
-              + ": in one of the VirtualDeploymentUnit, not all "
-              + "DeploymentFlavour"
-              + flavourNames
-              + " are contained into the flavors of the vimInstance "
-              + "chosen. Please choose one from: "
-              + flavors);
+    //    if (vimInstance.getFlavours() == null) {
+    //      throw new NetworkServiceIntegrityException(
+    //          "No flavours found on your VIM instance, therefore it is not possible to on board your NSD");
+    //    }
+    if (vimInstance instanceof OpenstackVimInstance) {
+      Set<String> flavors = new HashSet<>();
+      for (DeploymentFlavour deploymentFlavour :
+          ((OpenstackVimInstance) vimInstance).getFlavours()) {
+        flavors.add(deploymentFlavour.getFlavour_key());
+      }
+      //All "names" must be contained in the "flavors"
+      if (!flavors.containsAll(flavourNames)) {
+        throw new NetworkServiceIntegrityException(
+            "Regarding the VirtualNetworkFunctionDescriptor "
+                + virtualNetworkFunctionDescriptor.getName()
+                + ": in one of the VirtualDeploymentUnit, not all "
+                + "DeploymentFlavour"
+                + flavourNames
+                + " are contained into the flavors of the vimInstance "
+                + "chosen. Please choose one from: "
+                + flavors);
+      }
     }
   }
 }

@@ -19,7 +19,7 @@ package org.openbaton.nfvo.core.interfaces;
 
 import java.util.Map;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 
@@ -30,11 +30,11 @@ public interface VNFLifecycleOperationGranting {
    * This operation allows requesting the permission to perform a certain VNF lifecycle operation on
    * a new or existing VNF. The sub-type of lifecycle operation is parameterized in the operation.
    */
-  Map<String, VimInstance> grantLifecycleOperation(
+  Map<String, BaseVimInstance> grantLifecycleOperation(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
       throws VimException, PluginException;
 
-  VimInstance checkQuotaOnVimInstance(
-      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VimInstance vimInstance)
+  BaseVimInstance checkQuotaOnVimInstance(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, BaseVimInstance vimInstance)
       throws VimException, PluginException;
 }

@@ -32,9 +32,10 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
+import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
+import org.openbaton.catalogue.nfvo.images.NFVImage;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
@@ -178,7 +179,7 @@ public class CSARParser {
     return toscaParser.parseNSDTemplate(nsdTemplate);
   }
 
-  private NFVImage getImage(
+  private BaseNfvImage getImage(
       VNFPackage vnfPackage,
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
       String projectId)

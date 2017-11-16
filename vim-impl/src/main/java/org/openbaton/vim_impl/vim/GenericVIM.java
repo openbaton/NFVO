@@ -32,16 +32,20 @@ import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.NFVImage;
-import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.Quota;
 import org.openbaton.catalogue.nfvo.Server;
-import org.openbaton.catalogue.nfvo.Subnet;
-import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
+import org.openbaton.catalogue.nfvo.images.NFVImage;
+import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
+import org.openbaton.catalogue.nfvo.networks.Network;
+import org.openbaton.catalogue.nfvo.networks.Subnet;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
+import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
+import org.openbaton.nfvo.common.utils.viminstance.VimInstanceUtils;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
@@ -82,7 +86,7 @@ public class GenericVIM extends Vim {
   public GenericVIM() {}
 
   @Override
-  public DeploymentFlavour add(VimInstance vimInstance, DeploymentFlavour deploymentFlavour)
+  public DeploymentFlavour add(BaseVimInstance vimInstance, DeploymentFlavour deploymentFlavour)
       throws VimException {
     try {
       log.debug(
@@ -128,7 +132,7 @@ public class GenericVIM extends Vim {
   }
 
   @Override
-  public void delete(VimInstance vimInstance, DeploymentFlavour deploymentFlavour)
+  public void delete(BaseVimInstance vimInstance, DeploymentFlavour deploymentFlavour)
       throws VimException {
     boolean isDeleted = false;
     try {
@@ -187,7 +191,7 @@ public class GenericVIM extends Vim {
   }
 
   @Override
-  public DeploymentFlavour update(VimInstance vimInstance, DeploymentFlavour deploymentFlavour)
+  public DeploymentFlavour update(BaseVimInstance vimInstance, DeploymentFlavour deploymentFlavour)
       throws VimException {
     try {
       log.debug(
@@ -233,7 +237,7 @@ public class GenericVIM extends Vim {
   }
 
   @Override
-  public List<DeploymentFlavour> queryDeploymentFlavors(VimInstance vimInstance)
+  public List<DeploymentFlavour> queryDeploymentFlavors(BaseVimInstance vimInstance)
       throws VimException {
     try {
       log.debug("Listing DeploymentFlavors of VimInstance " + vimInstance.getName());
@@ -266,7 +270,7 @@ public class GenericVIM extends Vim {
   }
 
   @Override
-  public NFVImage add(VimInstance vimInstance, NFVImage image, byte[] imageFile)
+  public NFVImage add(BaseVimInstance vimInstance, NFVImage image, byte[] imageFile)
       throws VimException {
     try {
       log.debug(
@@ -310,7 +314,7 @@ public class GenericVIM extends Vim {
   }
 
   @Override
-  public NFVImage add(VimInstance vimInstance, NFVImage image, String image_url)
+  public NFVImage add(BaseVimInstance vimInstance, NFVImage image, String image_url)
       throws VimException {
     try {
       log.debug(
@@ -355,7 +359,7 @@ public class GenericVIM extends Vim {
   }
 
   @Override
-  public void delete(VimInstance vimInstance, NFVImage image) throws VimException {
+  public void delete(BaseVimInstance vimInstance, NFVImage image) throws VimException {
     boolean isDeleted = false;
     try {
       log.debug(
@@ -413,14 +417,14 @@ public class GenericVIM extends Vim {
   }
 
   @Override
-  public NFVImage update(VimInstance vimInstance, NFVImage image) throws VimException {
+  public BaseNfvImage update(BaseVimInstance vimInstance, NFVImage image) throws VimException {
     try {
       log.debug(
           "Updating image with name: "
               + image.getName()
               + " on VimInstance "
               + vimInstance.getName());
-      NFVImage updatedImage = client.updateImage(vimInstance, image);
+      BaseNfvImage updatedImage = client.updateImage(vimInstance, image);
       log.info(
           "Updated Image with name: "
               + image.getName()
@@ -458,15 +462,14 @@ public class GenericVIM extends Vim {
   }
 
   @Override
-  public List<NFVImage> queryImages(VimInstance vimInstance) throws VimException {
+  public List<BaseNfvImage> queryImages(BaseVimInstance vimInstance) throws VimException {
     log.debug("Listing all Images of VimInstance " + vimInstance.getName());
     try {
       log.trace("Client is: " + client);
 
-      List<NFVImage> images = client.listImages(vimInstance);
+      List<BaseNfvImage> images = client.listImages(vimInstance);
 
       log.info("Listed Images of VimInstance " + vimInstance.getName());
-      for (NFVImage image : images) log.debug("\t" + image.getName());
       return images;
     } catch (Exception e) {
       if (log.isDebugEnabled()) {
@@ -493,7 +496,8 @@ public class GenericVIM extends Vim {
   }
 
   @Override
-  public void copy(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException {
+  public void copy(BaseVimInstance vimInstance, NFVImage image, byte[] imageFile)
+      throws VimException {
     try {
       log.debug(
           "Copying image with name "
@@ -538,7 +542,7 @@ public class GenericVIM extends Vim {
   }
 
   @Override
-  public Network add(VimInstance vimInstance, Network network) throws VimException {
+  public Network add(BaseVimInstance vimInstance, Network network) throws VimException {
     Network createdNetwork;
     try {
       log.debug(
@@ -654,7 +658,7 @@ public class GenericVIM extends Vim {
   }
 
   @Override
-  public void delete(VimInstance vimInstance, Network network) throws VimException {
+  public void delete(BaseVimInstance vimInstance, BaseNetwork network) throws VimException {
     boolean isDeleted;
     try {
       log.debug(
@@ -712,12 +716,12 @@ public class GenericVIM extends Vim {
   }
 
   @Override
-  public List<Network> queryNetwork(VimInstance vimInstance) throws VimException {
+  public List<BaseNetwork> queryNetwork(BaseVimInstance vimInstance) throws VimException {
     try {
       log.debug("Listing all Networks of VimInstance " + vimInstance.getName());
-      List<Network> networks = client.listNetworks(vimInstance);
+      List<BaseNetwork> networks = client.listNetworks(vimInstance);
       log.info("Listed Networks of VimInstance " + vimInstance.getName());
-      for (Network network : networks) log.debug("\t" + network.getName());
+      for (BaseNetwork network : networks) log.debug("\t" + network.getName());
       return networks;
     } catch (Exception e) {
       if (log.isDebugEnabled()) {
@@ -744,11 +748,11 @@ public class GenericVIM extends Vim {
   }
 
   @Override
-  public Network query(VimInstance vimInstance, String extId) throws VimException {
+  public BaseNetwork query(BaseVimInstance vimInstance, String extId) throws VimException {
     try {
       log.debug(
           "Finding Network with extId: " + extId + " on VimInstance " + vimInstance.getName());
-      Network network = client.getNetworkById(vimInstance, extId);
+      BaseNetwork network = client.getNetworkById(vimInstance, extId);
       log.info(
           "Found Network with extId: "
               + network.getId()
@@ -787,7 +791,8 @@ public class GenericVIM extends Vim {
     }
   }
 
-  protected String getFlavorExtID(String key, VimInstance vimInstance) throws VimException {
+  protected String getFlavorExtID(String key, OpenstackVimInstance vimInstance)
+      throws VimException {
     log.debug(
         "Finding DeploymentFlavor with name: " + key + " on VimInstance " + vimInstance.getName());
     for (DeploymentFlavour deploymentFlavour : vimInstance.getFlavours()) {
@@ -816,30 +821,23 @@ public class GenericVIM extends Vim {
             + vimInstance.getName());
   }
 
-  protected String chooseImage(Collection<String> vm_images, VimInstance vimInstance)
+  protected String chooseImage(Collection<String> vmImages, BaseVimInstance vimInstance)
       throws VimException {
     log.debug("Choosing Image...");
-    log.debug("Requested: " + vm_images);
-    List<String> available = new ArrayList<>();
-    for (NFVImage image : vimInstance.getImages()) available.add(image.getName());
-    log.debug("Available: " + available);
+    log.debug("Requested: " + vmImages);
 
-    if (vm_images != null && !vm_images.isEmpty()) {
-      for (String image : vm_images) {
-        for (NFVImage nfvImage : vimInstance.getImages()) {
-          if (image.equals(nfvImage.getName()) || image.equals(nfvImage.getExtId())) {
-            log.info(
-                "Image choosed with name: "
-                    + nfvImage.getName()
-                    + " and ExtId: "
-                    + nfvImage.getExtId());
-            return nfvImage.getExtId();
-          }
+    if (vmImages != null && !vmImages.isEmpty()) {
+      for (String image : vmImages) {
+        Collection<BaseNfvImage> imagesByName =
+            VimInstanceUtils.findActiveImagesByName(vimInstance, image);
+        if (imagesByName.size() > 0) {
+          //TODO implement choose
+          return imagesByName.iterator().next().getExtId();
         }
       }
       throw new VimException(
           "Not found any Image with name: "
-              + vm_images
+              + vmImages
               + " on VimInstance "
               + vimInstance.getName());
     }
@@ -847,7 +845,7 @@ public class GenericVIM extends Vim {
   }
 
   @Override
-  public List<Server> queryResources(VimInstance vimInstance) throws VimException {
+  public List<Server> queryResources(BaseVimInstance vimInstance) throws VimException {
     log.debug("Listing all VMs of VimInstance " + vimInstance.getName());
     try {
       List<Server> servers = client.listServer(vimInstance);
@@ -899,7 +897,7 @@ public class GenericVIM extends Vim {
 
   @Override
   @Async
-  public Future<Void> release(VNFCInstance vnfcInstance, VimInstance vimInstance)
+  public Future<Void> release(VNFCInstance vnfcInstance, BaseVimInstance vimInstance)
       throws VimException {
     log.debug(
         "Removing VM with ExtId: "
@@ -965,45 +963,33 @@ public class GenericVIM extends Vim {
   }
 
   @Override
-  public Quota getQuota(VimInstance vimInstance) throws VimException {
-    log.debug(
-        "Listing Quota for Tenant "
-            + vimInstance.getTenant()
-            + " of VimInstance "
-            + vimInstance.getName());
+  public Quota getQuota(BaseVimInstance vimInstance) throws VimException {
+    log.debug("Listing Quota for Tenant of VimInstance " + vimInstance.getName());
     Quota quota = null;
     try {
       quota = client.getQuota(vimInstance);
       log.info(
-          "Listed Quota successfully for Tenant "
-              + vimInstance.getTenant()
-              + " of VimInstance "
+          "Listed Quota successfully for Tenant of VimInstance "
               + vimInstance.getName()
               + " -> Quota: "
               + quota);
     } catch (Exception e) {
       if (log.isDebugEnabled()) {
         log.error(
-            "Not listed Quota successfully for Tenant "
-                + vimInstance.getTenant()
-                + " of VimInstance "
+            "Not listed Quota successfully of VimInstance "
                 + vimInstance.getName()
                 + ". Caused by: "
                 + e.getMessage(),
             e);
       } else {
         log.error(
-            "Not listed Quota successfully for Tenant "
-                + vimInstance.getTenant()
-                + " of VimInstance "
+            "Not listed Quota successfully for Tenant of VimInstance "
                 + vimInstance.getName()
                 + ". Caused by: "
                 + e.getMessage());
       }
       throw new VimException(
-          "Not listed Quota successfully for Tenant "
-              + vimInstance.getTenant()
-              + " of VimInstance "
+          "Not listed Quota successfully for Tenant of VimInstance "
               + vimInstance.getName()
               + ". Caused by: "
               + e.getMessage(),
@@ -1013,7 +999,7 @@ public class GenericVIM extends Vim {
   }
 
   @Override
-  public Network update(VimInstance vimInstance, Network network) throws VimException {
+  public Network update(BaseVimInstance vimInstance, Network network) throws VimException {
     Network updatedNetwork = null;
     try {
       log.debug(
@@ -1284,7 +1270,7 @@ public class GenericVIM extends Vim {
   @Override
   @Async
   public Future<VNFCInstance> allocate(
-      VimInstance vimInstance,
+      BaseVimInstance vimInstance,
       VirtualDeploymentUnit vdu,
       VirtualNetworkFunctionRecord vnfr,
       VNFComponent vnfComponent,
@@ -1296,16 +1282,12 @@ public class GenericVIM extends Vim {
     log.debug("VDU is : " + vdu.toString());
     log.debug("VNFR is : " + vnfr.toString());
     log.debug("VNFC is : " + vnfComponent.toString());
-    /** *) choose image *) ...? */
+    /* *) choose image *) ...? */
     String image = this.chooseImage(vdu.getVm_image(), vimInstance);
 
     log.debug("Finding Networks...");
     Set<VNFDConnectionPoint> networks = new HashSet<>();
-    for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point()) {
-      //      for (Network net : vimInstance.getNetworks())
-      //        if (vnfdConnectionPoint.getVirtual_link_reference().equals(net.getName()))
-      networks.add(vnfdConnectionPoint);
-    }
+    networks.addAll(vnfComponent.getConnection_point());
     log.debug("Found Networks with ExtIds: " + networks);
     String flavorKey = null;
     if (vdu.getComputation_requirement() != null && !vdu.getComputation_requirement().isEmpty()) {
@@ -1313,7 +1295,10 @@ public class GenericVIM extends Vim {
     } else {
       flavorKey = vnfr.getDeployment_flavour_key();
     }
-    String flavorExtId = getFlavorExtID(flavorKey, vimInstance);
+    String flavorExtId;
+    if (vimInstance instanceof OpenstackVimInstance)
+      flavorExtId = getFlavorExtID(flavorKey, (OpenstackVimInstance) vimInstance);
+    else flavorExtId = "";
 
     log.debug("Generating Hostname...");
     vdu.setHostname(vnfr.getName());
@@ -1322,21 +1307,8 @@ public class GenericVIM extends Vim {
 
     userdata = userdata.replace("#Hostname=", "Hostname=" + hostname);
 
-    log.debug("Using SecurityGroups: " + vimInstance.getSecurityGroups());
+    Set<String> securityGroups = null;
 
-    log.debug(
-        "Launching VM with params: "
-            + hostname
-            + " - "
-            + image
-            + " - "
-            + flavorExtId
-            + " - "
-            + vimInstance.getKeyPair()
-            + " - "
-            + networks
-            + " - "
-            + vimInstance.getSecurityGroups());
     Server server = null;
     VNFCInstance vnfcInstance = null;
     try {
@@ -1344,24 +1316,46 @@ public class GenericVIM extends Vim {
       if (hostname == null) throw new NullPointerException("hostname is null");
       if (image == null) throw new NullPointerException("image is null");
       if (flavorExtId == null) throw new NullPointerException("flavorExtId is null");
-      if (vimInstance.getKeyPair() == null) {
-        log.debug("vimInstance.getKeyPair() is null");
-        vimInstance.setKeyPair("");
+      String keyPair = "";
+      if (vimInstance instanceof OpenstackVimInstance) {
+        if (((OpenstackVimInstance) vimInstance).getKeyPair() == null) {
+          log.debug("vimInstance.getKeyPair() is null");
+          keyPair = "";
+        } else {
+          keyPair = ((OpenstackVimInstance) vimInstance).getKeyPair();
+        }
       }
-      if (networks == null || networks.isEmpty())
+      if (networks == null || networks.isEmpty()) {
         throw new NullPointerException("networks is null");
-      if (vimInstance.getSecurityGroups() == null)
-        throw new NullPointerException("vimInstance.getSecurityGroups() is null");
-
+      }
+      if (vimInstance instanceof OpenstackVimInstance) {
+        if (((OpenstackVimInstance) vimInstance).getSecurityGroups() == null) {
+          securityGroups = new HashSet<>();
+        } else securityGroups = ((OpenstackVimInstance) vimInstance).getSecurityGroups();
+      }
+      log.debug("Using SecurityGroups: " + securityGroups);
+      log.debug(
+          "Launching VM with params: "
+              + hostname
+              + " - "
+              + image
+              + " - "
+              + flavorExtId
+              + " - "
+              + keyPair
+              + " - "
+              + networks
+              + " - "
+              + securityGroups);
       server =
           client.launchInstanceAndWait(
               vimInstance,
               hostname,
               image,
               flavorExtId,
-              vimInstance.getKeyPair(),
+              keyPair,
               vnfComponent.getConnection_point(),
-              vimInstance.getSecurityGroups(),
+              securityGroups,
               userdata,
               floatingIps,
               new HashSet<>(keys));
@@ -1461,7 +1455,7 @@ public class GenericVIM extends Vim {
   }
 
   protected VNFCInstance getVnfcInstance(
-      VimInstance vimInstance,
+      BaseVimInstance vimInstance,
       VNFComponent vnfComponent,
       String hostname,
       Server server,

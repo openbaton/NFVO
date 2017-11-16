@@ -15,20 +15,16 @@
  *
  */
 
-package org.openbaton.catalogue.nfvo;
+package org.openbaton.catalogue.nfvo.networks;
 
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
-import org.openbaton.catalogue.util.BaseEntity;
 
-/** Created by lto on 20/05/15. */
 @Entity
-public class Network extends BaseEntity {
-  private String name;
-  private String extId;
+public class Network extends BaseNetwork {
   private Boolean external = false;
   private Boolean extShared = false;
 
@@ -62,22 +58,6 @@ public class Network extends BaseEntity {
         + subnets
         + "} "
         + super.toString();
-  }
-
-  public String getExtId() {
-    return extId;
-  }
-
-  public void setExtId(String extId) {
-    this.extId = extId;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
   }
 
   public Boolean getExtShared() {

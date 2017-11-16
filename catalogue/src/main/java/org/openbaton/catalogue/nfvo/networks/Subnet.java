@@ -15,12 +15,11 @@
  *
  */
 
-package org.openbaton.catalogue.nfvo;
+package org.openbaton.catalogue.nfvo.networks;
 
 import javax.persistence.Entity;
 import org.openbaton.catalogue.util.BaseEntity;
 
-/** Created by mpa on 28.05.15. */
 @Entity
 public class Subnet extends BaseEntity {
   private String name;

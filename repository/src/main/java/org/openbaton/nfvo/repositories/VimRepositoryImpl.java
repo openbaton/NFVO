@@ -17,7 +17,7 @@
 
 package org.openbaton.nfvo.repositories;
 
-import org.openbaton.catalogue.nfvo.NFVImage;
+import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,9 +30,9 @@ public class VimRepositoryImpl implements VimRepositoryCustom {
 
   @Override
   @Transactional
-  public NFVImage addImage(String id, NFVImage image) {
+  public BaseNfvImage addImage(String id, BaseNfvImage image) {
     image = imageRepository.save(image);
-    vimRepository.findFirstById(id).getImages().add(image);
+    vimRepository.findFirstById(id).addImage(image);
     return image;
   }
 

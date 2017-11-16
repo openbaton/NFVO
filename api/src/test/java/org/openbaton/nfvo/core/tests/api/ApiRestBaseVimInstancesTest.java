@@ -34,7 +34,8 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
+import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
@@ -48,7 +49,7 @@ import org.openbaton.nfvo.security.components.ComponentManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ApiRestVimInstancesTest {
+public class ApiRestBaseVimInstancesTest {
 
   @InjectMocks RestVimInstances restVimInstances;
   private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -64,7 +65,7 @@ public class ApiRestVimInstancesTest {
   public void findAllVimInstances()
       throws NoSuchAlgorithmException, InvalidKeyException, BadPaddingException,
           NoSuchPaddingException, IllegalBlockSizeException, BadFormatException {
-    when(mock.queryByProjectId("pi")).thenReturn(new ArrayList<VimInstance>());
+    when(mock.queryByProjectId("pi")).thenReturn(new ArrayList<>());
     assertEquals(mock.queryByProjectId("pi"), restVimInstances.findAll("pi", "Bearer token"));
   }
 
@@ -72,7 +73,7 @@ public class ApiRestVimInstancesTest {
   public void createVimInstance()
       throws VimException, PluginException, IOException, EntityUnreachableException,
           BadRequestException, AlreadyExistingException, NotFoundException {
-    VimInstance datacenter = new VimInstance();
+    OpenstackVimInstance datacenter = new OpenstackVimInstance();
     datacenter.setId("123");
     datacenter.setName("DC-1");
     datacenter.setType("OpenStack");
@@ -82,7 +83,7 @@ public class ApiRestVimInstancesTest {
     datacenter.setPassword("");
     when(mock.add(any(datacenter.getClass()), anyString())).thenReturn(datacenter);
     log.info("" + restVimInstances.create(datacenter, "pi"));
-    VimInstance datacenter2 = restVimInstances.create(datacenter, "pi");
+    BaseVimInstance datacenter2 = restVimInstances.create(datacenter, "pi");
     assertEquals(datacenter, datacenter2);
   }
 
@@ -90,7 +91,7 @@ public class ApiRestVimInstancesTest {
   public void findByIdVimInstance()
       throws NoSuchAlgorithmException, InvalidKeyException, BadPaddingException,
           NoSuchPaddingException, IllegalBlockSizeException, NotFoundException, BadFormatException {
-    VimInstance datacenter = new VimInstance();
+    OpenstackVimInstance datacenter = new OpenstackVimInstance();
     datacenter.setId("123");
     datacenter.setName("DC-1");
     datacenter.setType("OpenStack");
@@ -103,7 +104,7 @@ public class ApiRestVimInstancesTest {
   public void updateVimInstance()
       throws VimException, PluginException, IOException, EntityUnreachableException,
           BadRequestException, AlreadyExistingException, NotFoundException {
-    VimInstance datacenter = new VimInstance();
+    OpenstackVimInstance datacenter = new OpenstackVimInstance();
     datacenter.setId("123");
     datacenter.setName("DC-1");
     datacenter.setType("OpenStack");

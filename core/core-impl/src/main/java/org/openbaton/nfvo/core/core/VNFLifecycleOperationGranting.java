@@ -27,7 +27,8 @@ import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Quota;
-import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
+import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.repositories.VimRepository;
@@ -57,22 +58,22 @@ public class VNFLifecycleOperationGranting
   private boolean failingQuotaCheckOnException;
 
   @Override
-  public Map<String, VimInstance> grantLifecycleOperation(
+  public Map<String, BaseVimInstance> grantLifecycleOperation(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
       throws VimException, PluginException {
-    Map<String, VimInstance> result = new HashMap<>();
+    Map<String, BaseVimInstance> result = new HashMap<>();
 
     //HashMap holds how many VNFCInstances are needed to deploy on a specific VimInstance
-    HashMap<VimInstance, Integer> countVDUsOnVimInstances = new HashMap<>();
+    HashMap<BaseVimInstance, Integer> countVDUsOnVimInstances = new HashMap<>();
 
     //Find how many VNFCInstances are needed to deploy on a specific VimInstance
     log.info("Granting Lifecycle Operation for vnfr: " + virtualNetworkFunctionRecord.getName());
     for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
       for (String vimName : vdu.getVimInstanceName()) {
 
-        VimInstance vimInstance = null;
+        BaseVimInstance vimInstance = null;
 
-        for (VimInstance vi : vimInstanceRepository.findByProjectId(vdu.getProjectId())) {
+        for (BaseVimInstance vi : vimInstanceRepository.findByProjectId(vdu.getProjectId())) {
           if (vimName.equals(vi.getName())) vimInstance = vi;
         }
 
@@ -99,7 +100,7 @@ public class VNFLifecycleOperationGranting
     //Check if enough resources are available for the deployment
     log.debug("Checking if enough resources are available on the defined VimInstance.");
     for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
-      VimInstance vimInstanceChosen =
+      BaseVimInstance vimInstanceChosen =
           pickVimInstance(
               virtualDeploymentUnit.getVimInstanceName(),
               countVDUsOnVimInstances,
@@ -115,12 +116,12 @@ public class VNFLifecycleOperationGranting
     return result;
   }
 
-  private VimInstance pickVimInstance(
+  private BaseVimInstance pickVimInstance(
       Collection<String> vimInstanceNames,
-      HashMap<VimInstance, Integer> countVDUsOnVimInstances,
+      HashMap<BaseVimInstance, Integer> countVDUsOnVimInstances,
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
       throws VimException, PluginException {
-    List<VimInstance> vimInstances = null;
+    List<BaseVimInstance> vimInstances = null;
     if (countVDUsOnVimInstances.isEmpty()) {
       vimInstances =
           vimInstanceRepository.findByProjectId(virtualNetworkFunctionRecord.getProjectId());
@@ -131,7 +132,7 @@ public class VNFLifecycleOperationGranting
     }
     if (isQuotaCheckEnabled) {
       try {
-        for (VimInstance vimInstance : vimInstances) {
+        for (BaseVimInstance vimInstance : vimInstances) {
           if (!countVDUsOnVimInstances.isEmpty()) {
             if (!vimInstanceNames.contains(vimInstance.getName())) {
               break;
@@ -163,53 +164,55 @@ public class VNFLifecycleOperationGranting
   }
 
   @Override
-  public VimInstance checkQuotaOnVimInstance(
-      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VimInstance vimInstance)
+  public BaseVimInstance checkQuotaOnVimInstance(
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, BaseVimInstance vimInstance)
       throws VimException, PluginException {
-    Quota leftQuota = vimBroker.getLeftQuota(vimInstance);
-    log.debug("Left Quota on VimInstance " + vimInstance.getName() + " at start is " + leftQuota);
+    if (vimInstance instanceof OpenstackVimInstance) {
+      Quota leftQuota = vimBroker.getLeftQuota(vimInstance);
+      log.debug("Left Quota on VimInstance " + vimInstance.getName() + " at start is " + leftQuota);
 
-    //Fetch the Flavor for getting allocated resources needed
-    DeploymentFlavour flavor = null;
-    for (DeploymentFlavour currentFlavor : vimInstance.getFlavours()) {
-      if (currentFlavor
-          .getFlavour_key()
-          .equals(virtualNetworkFunctionRecord.getDeployment_flavour_key())) {
-        flavor = currentFlavor;
-        break;
+      //Fetch the Flavor for getting allocated resources needed
+      DeploymentFlavour flavor = null;
+      for (DeploymentFlavour currentFlavor : ((OpenstackVimInstance) vimInstance).getFlavours()) {
+        if (currentFlavor
+            .getFlavour_key()
+            .equals(virtualNetworkFunctionRecord.getDeployment_flavour_key())) {
+          flavor = currentFlavor;
+          break;
+        }
       }
-    }
-    if (flavor == null)
-      throw new VimException(
-          "deployment flavor object is null, it means that there is no PoP supporting the deployment flavour selected");
-    //Subtract needed resources from the left resources
-    int nc = 0;
+      if (flavor == null)
+        throw new VimException(
+            "deployment flavor object is null, it means that there is no PoP supporting the deployment flavour selected");
+      //Subtract needed resources from the left resources
+      int nc = 0;
 
-    for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
-      for (VNFComponent ignored : virtualDeploymentUnit.getVnfc()) {
-        nc++;
+      for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
+        for (VNFComponent ignored : virtualDeploymentUnit.getVnfc()) {
+          nc++;
+        }
       }
-    }
 
-    for (int i = 1; i <= nc; i++) {
-      leftQuota.setInstances(leftQuota.getInstances() - 1);
-      leftQuota.setCores(leftQuota.getCores() - flavor.getVcpus());
-      leftQuota.setRam(leftQuota.getRam() - flavor.getRam());
-      log.debug(
-          "Left Quota on VimInstance "
-              + vimInstance.getName()
-              + " after considering VDU is "
-              + leftQuota);
-    }
+      for (int i = 1; i <= nc; i++) {
+        leftQuota.setInstances(leftQuota.getInstances() - 1);
+        leftQuota.setCores(leftQuota.getCores() - flavor.getVcpus());
+        leftQuota.setRam(leftQuota.getRam() - flavor.getRam());
+        log.debug(
+            "Left Quota on VimInstance "
+                + vimInstance.getName()
+                + " after considering VDU is "
+                + leftQuota);
+      }
 
-    //If one value is negative, it is not possible to deploy the VNFR on (at least on one VimInstance) -> return false
-    if (leftQuota.getInstances() < 0 || leftQuota.getRam() < 0 || leftQuota.getCores() < 0) {
-      log.error(
-          "Not enough resources are available to deploy VNFR "
-              + virtualNetworkFunctionRecord.getName());
-      throw new VimException(
-          "Not enough resources are available to deploy VNFR "
-              + virtualNetworkFunctionRecord.getName());
+      //If one value is negative, it is not possible to deploy the VNFR on (at least on one VimInstance) -> return false
+      if (leftQuota.getInstances() < 0 || leftQuota.getRam() < 0 || leftQuota.getCores() < 0) {
+        log.error(
+            "Not enough resources are available to deploy VNFR "
+                + virtualNetworkFunctionRecord.getName());
+        throw new VimException(
+            "Not enough resources are available to deploy VNFR "
+                + virtualNetworkFunctionRecord.getName());
+      }
     }
     return vimInstance;
   }

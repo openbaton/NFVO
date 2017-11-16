@@ -17,11 +17,19 @@
 
 package org.openbaton.vim_impl.vim.test;
 
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyMap;
+import static org.mockito.Matchers.anySet;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.rmi.RemoteException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.junit.Assert;
@@ -40,10 +48,11 @@ import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.NFVImage;
-import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.Server;
-import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.images.NFVImage;
+import org.openbaton.catalogue.nfvo.networks.Network;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
+import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimDriverException;
@@ -149,7 +158,7 @@ public class VimTestSuiteClass {
     server.setFloatingIps(new HashMap<String, String>());
     //TODO use the method launchInstanceAndWait properly
     when(vimDriverCaller.launchInstanceAndWait(
-            any(VimInstance.class),
+            any(BaseVimInstance.class),
             anyString(),
             anyString(),
             anyString(),
@@ -160,7 +169,7 @@ public class VimTestSuiteClass {
             anyMap(),
             anySet()))
         .thenReturn(server);
-    VimInstance vimInstance = createVIM();
+    BaseVimInstance vimInstance = createVIM();
     try {
 
       Future<VNFCInstance> id =
@@ -207,7 +216,7 @@ public class VimTestSuiteClass {
 
   private VirtualDeploymentUnit createVDU() {
     VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
-    VimInstance vimInstance = createVIM();
+    OpenstackVimInstance vimInstance = createVIM();
     HashSet<VNFComponent> vnfcs = new HashSet<>();
     VNFComponent vnfc = new VNFComponent();
     Set<VNFDConnectionPoint> vnfdCps = new HashSet<>();
@@ -234,8 +243,8 @@ public class VimTestSuiteClass {
     return vdu;
   }
 
-  private VimInstance createVIM() {
-    VimInstance vimInstance = new VimInstance();
+  private OpenstackVimInstance createVIM() {
+    OpenstackVimInstance vimInstance = new OpenstackVimInstance();
     vimInstance.setName("mock_vim_instance");
     vimInstance.setSecurityGroups(
         new HashSet<String>() {

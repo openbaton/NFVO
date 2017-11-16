@@ -24,10 +24,9 @@ import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.nfvo.Action;
-import org.openbaton.catalogue.nfvo.NFVImage;
-import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.openbaton.nfvo.repositories.VimRepository;
@@ -41,9 +40,8 @@ import org.springframework.stereotype.Service;
 @Scope("prototype")
 public class AllocateresourcesTask extends AbstractTask {
   @Autowired private ResourceManagement resourceManagement;
-  private Map<String, VimInstance> vims;
+  private Map<String, BaseVimInstance> vims;
   private String userData;
-  private Set<Key> keys;
   @Autowired private VimRepository vimRepository;
 
   @Override
@@ -69,7 +67,7 @@ public class AllocateresourcesTask extends AbstractTask {
             + virtualNetworkFunctionRecord.getHbVersion());
 
     for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
-      VimInstance vimInstance = vims.get(vdu.getId());
+      BaseVimInstance vimInstance = vims.get(vdu.getId());
       if (vimInstance == null) {
         throw new NullPointerException(
             "Our algorithms are too complex, even for us, this is what abnormal IQ means :" + "(");
@@ -82,9 +80,7 @@ public class AllocateresourcesTask extends AbstractTask {
               + vimInstance.getName()
               + " - id: "
               + vimInstance.getId());
-      for (NFVImage image : vimInstance.getImages()) {
-        log.trace("Available image name: " + image.getName());
-      }
+
       for (VNFComponent vnfc : vdu.getVnfc()) {
         resourceManagement
             .allocate(vdu, virtualNetworkFunctionRecord, vnfc, vimInstance, userData)
@@ -110,7 +106,7 @@ public class AllocateresourcesTask extends AbstractTask {
     return true;
   }
 
-  public void setVims(Map<String, VimInstance> vimChosen) {
+  public void setVims(Map<String, BaseVimInstance> vimChosen) {
     this.vims = vimChosen;
   }
 
@@ -118,7 +114,5 @@ public class AllocateresourcesTask extends AbstractTask {
     this.userData = userData;
   }
 
-  public void setKeys(Set<Key> keys) {
-    this.keys = keys;
-  }
+  public void setKeys(Set<Key> keys) {}
 }

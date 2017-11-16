@@ -17,28 +17,15 @@
 
 package org.openbaton.nfvo.core.api;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.ImageStatus;
-import org.openbaton.catalogue.nfvo.NFVImage;
-import org.openbaton.catalogue.nfvo.Network;
-import org.openbaton.catalogue.nfvo.Subnet;
-import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
+import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
+import org.openbaton.catalogue.nfvo.viminstances.DockerVimInstance;
+import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.EntityUnreachableException;
@@ -61,6 +48,24 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import static org.openbaton.nfvo.common.utils.viminstance.VimInstanceUtils.updateBaseNetworks;
+import static org.openbaton.nfvo.common.utils.viminstance.VimInstanceUtils.updateNfvImage;
+import static org.openbaton.nfvo.common.utils.viminstance.VimInstanceUtils.updatePrivateInfo;
 
 /** Created by lto on 13/05/15. */
 @Service
@@ -112,7 +117,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   }
 
   @Override
-  public VimInstance add(VimInstance vimInstance, String projectId)
+  public BaseVimInstance add(BaseVimInstance vimInstance, String projectId)
       throws VimException, PluginException, IOException, BadRequestException,
           AlreadyExistingException {
     validateVimInstance(vimInstance);
@@ -124,7 +129,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   @Override
   public void delete(String id, String projectId) throws NotFoundException, BadRequestException {
 
-    VimInstance vimInstance = vimRepository.findFirstByIdAndProjectId(id, projectId);
+    BaseVimInstance vimInstance = vimRepository.findFirstByIdAndProjectId(id, projectId);
     if (vimInstance == null) {
       throw new NotFoundException("Vim Instance with id " + id + " was not found");
     }
@@ -142,12 +147,12 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   }
 
   @Override
-  public VimInstance update(VimInstance vimInstance, String id, String projectId)
+  public BaseVimInstance update(BaseVimInstance vimInstance, String id, String projectId)
       throws VimException, PluginException, IOException, BadRequestException,
           AlreadyExistingException, NotFoundException {
     validateVimInstance(vimInstance);
     //    vimInstance = vimRepository.save(vimInstance);
-    VimInstance vimInstanceOld = vimRepository.findFirstByIdAndProjectId(id, projectId);
+    BaseVimInstance vimInstanceOld = vimRepository.findFirstByIdAndProjectId(id, projectId);
     if (vimInstanceOld == null)
       throw new NotFoundException("VIM Instance with ID " + id + " not found.");
     if (!vimInstanceOld.getName().equals(vimInstance.getName())) {
@@ -170,20 +175,18 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     }
     vimInstance.setProjectId(vimInstanceOld.getProjectId());
     vimInstance.setId(vimInstanceOld.getId());
-    if (vimInstance.getPassword().equals("**********")) {
-      vimInstance.setPassword(vimInstanceOld.getPassword());
-    }
+    updatePrivateInfo(vimInstance, vimInstanceOld);
     return refresh(vimInstance, true);
     //    return vimInstance;
   }
 
   @Override
-  public VimInstance query(String id, String projectId) {
+  public BaseVimInstance query(String id, String projectId) {
     return vimRepository.findFirstByIdAndProjectId(id, projectId);
   }
 
   @Override
-  public synchronized VimInstance refresh(VimInstance vimInstance, boolean force)
+  public synchronized BaseVimInstance refresh(BaseVimInstance vimInstance, boolean force)
       throws VimException, PluginException, IOException, BadRequestException,
           AlreadyExistingException {
 
@@ -218,9 +221,9 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     }
 
     log.info("Updating images");
-    Future<Set<NFVImage>> futureImages = asyncVimManagement.updateImages(vimInstance);
+    Future<Set<BaseNfvImage>> futureImages = asyncVimManagement.updateImages(vimInstance);
     log.info("Updating networks");
-    Future<Set<Network>> futureNetworks = asyncVimManagement.updateNetworks(vimInstance);
+    Future<Set<BaseNetwork>> futureNetworks = asyncVimManagement.updateNetworks(vimInstance);
     log.info("Updating flavors");
     Future<Set<DeploymentFlavour>> futureFlavors = asyncVimManagement.updateFlavors(vimInstance);
 
@@ -240,9 +243,10 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     return vimInstance;
   }
 
-  private boolean vimInstanceWithSameNameExists(VimInstance vimInstance) {
+  private boolean vimInstanceWithSameNameExists(BaseVimInstance vimInstance) {
     if (vimInstance.getId() == null) {
-      for (VimInstance vimInstance1 : vimRepository.findByProjectId(vimInstance.getProjectId())) {
+      for (BaseVimInstance vimInstance1 :
+          vimRepository.findByProjectId(vimInstance.getProjectId())) {
         if (vimInstance1.getName().equals(vimInstance.getName())) {
           return true;
         }
@@ -259,10 +263,10 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
    * @return NFVImage
    */
   @Override
-  public NFVImage addImage(String id, NFVImage image, String projectId)
+  public BaseNfvImage addImage(String id, BaseNfvImage image, String projectId)
       throws VimException, PluginException, EntityUnreachableException, IOException,
           BadRequestException, AlreadyExistingException, NotFoundException {
-    VimInstance vimInstance = vimRepository.findFirstByIdAndProjectId(id, projectId);
+    BaseVimInstance vimInstance = vimRepository.findFirstByIdAndProjectId(id, projectId);
     if (vimInstance == null) throw new NotFoundException("No VIMInstance found with ID " + id);
     if (!vimInstance.isActive()) {
       throw new EntityUnreachableException(
@@ -273,9 +277,9 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     return image;
   }
 
-  public NFVImage queryImage(String idVim, String idImage, String projectId)
+  public BaseNfvImage queryImage(String idVim, String idImage, String projectId)
       throws EntityUnreachableException, NotFoundException {
-    VimInstance vimInstance = vimRepository.findFirstByIdAndProjectId(idVim, projectId);
+    BaseVimInstance vimInstance = vimRepository.findFirstByIdAndProjectId(idVim, projectId);
     if (vimInstance == null)
       throw new NotFoundException("VIM Instance with ID " + idVim + " not found.");
     if (!vimInstance.isActive()) {
@@ -292,7 +296,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
               + idImage);
       e.printStackTrace();
     }
-    for (NFVImage image : vimInstance.getImages()) {
+    for (BaseNfvImage image : vimInstance.getImages()) {
       if (image.getId().equals(idImage)) return imageRepository.findOne(idImage);
     }
     throw new NotFoundException(
@@ -309,7 +313,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   public void deleteImage(String idVim, String idImage, String projectId)
       throws VimException, PluginException, EntityUnreachableException, IOException,
           BadRequestException, AlreadyExistingException, NotFoundException {
-    VimInstance vimInstance = vimRepository.findFirstByIdAndProjectId(idVim, projectId);
+    BaseVimInstance vimInstance = vimRepository.findFirstByIdAndProjectId(idVim, projectId);
     if (vimInstance == null)
       throw new NotFoundException("VIM Instance with ID " + idVim + " not found.");
     if (!vimInstance.isActive()) {
@@ -321,7 +325,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   }
 
   @Override
-  public Iterable<VimInstance> queryByProjectId(String projectId) {
+  public Iterable<BaseVimInstance> queryByProjectId(String projectId) {
     return vimRepository.findByProjectId(projectId);
   }
 
@@ -333,7 +337,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   public synchronized void checkVimInstances() throws IOException {
 
     if (vimCheck) {
-      for (VimInstance vimInstance : vimRepository.findAll()) {
+      for (BaseVimInstance vimInstance : vimRepository.findAll()) {
         if (vimInstance.getType().equals("test")) {
           continue;
         }
@@ -376,10 +380,10 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   }
 
   @Override
-  public Set<NFVImage> queryImagesDirectly(VimInstance vimInstance)
+  public Set<BaseNfvImage> queryImagesDirectly(BaseVimInstance vimInstance)
       throws PluginException, VimException {
 
-    Set<NFVImage> images = new HashSet<>();
+    Set<BaseNfvImage> images = new HashSet<>();
     images.addAll(vimBroker.getVim(vimInstance.getType()).queryImages(vimInstance));
 
     return images;
@@ -393,199 +397,150 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   public class AsyncVimManagement {
 
     @Async
-    public Future<Set<NFVImage>> updateImages(VimInstance vimInstance)
+    public Future<Set<BaseNfvImage>> updateImages(BaseVimInstance vimInstance)
         throws PluginException, VimException {
       //Refreshing Images
-      Set<NFVImage> images_refreshed = new HashSet<>();
-      Set<NFVImage> images_new = new HashSet<>();
-      Set<NFVImage> images_old = new HashSet<>();
-      images_refreshed.addAll(vimBroker.getVim(vimInstance.getType()).queryImages(vimInstance));
+      Set<BaseNfvImage> baseNfvImagesRefreshed = new HashSet<>();
+      Set<BaseNfvImage> imagesNew = new HashSet<>();
+      Set<BaseNfvImage> imagesOld = new HashSet<>();
+      baseNfvImagesRefreshed.addAll(
+          vimBroker.getVim(vimInstance.getType()).queryImages(vimInstance));
       if (vimInstance.getImages() == null) {
-        vimInstance.setImages(new HashSet<>());
+        vimInstance.addAllImages(new HashSet<>());
       }
-      for (NFVImage image_new : images_refreshed) {
+      for (BaseNfvImage nfvImageNew : baseNfvImagesRefreshed) {
         boolean found = false;
-        for (NFVImage nfvImage_nfvo : vimInstance.getImages()) {
-          if (nfvImage_nfvo.getExtId().equals(image_new.getExtId())) {
-            nfvImage_nfvo.setName(image_new.getName());
-            nfvImage_nfvo.setIsPublic(image_new.isPublic());
-            nfvImage_nfvo.setMinRam(image_new.getMinRam());
-            nfvImage_nfvo.setMinCPU(image_new.getMinCPU());
-            nfvImage_nfvo.setMinDiskSpace(image_new.getMinDiskSpace());
-            nfvImage_nfvo.setDiskFormat(image_new.getDiskFormat());
-            nfvImage_nfvo.setContainerFormat(image_new.getContainerFormat());
-            nfvImage_nfvo.setCreated(image_new.getCreated());
-            nfvImage_nfvo.setUpdated(image_new.getUpdated());
-            ImageStatus imageStatus = image_new.getStatus();
-            if (imageStatus != null) {
-              nfvImage_nfvo.setStatus(imageStatus.toString());
-            } else {
-              nfvImage_nfvo.setStatus(ImageStatus.ACTIVE.toString());
-            }
+        for (BaseNfvImage nfvImageOld : vimInstance.getImages()) {
+          if (nfvImageOld.getExtId().equals(nfvImageNew.getExtId())) {
+            updateNfvImage(nfvImageNew, nfvImageOld);
             found = true;
             break;
           }
         }
         if (!found) {
-          images_new.add(image_new);
+          imagesNew.add(nfvImageNew);
         }
       }
-      for (NFVImage nfvImage_nfvo : vimInstance.getImages()) {
+      for (BaseNfvImage imageNfvo : vimInstance.getImages()) {
         boolean found = false;
-        for (NFVImage image_new : images_refreshed) {
-          if (nfvImage_nfvo.getExtId().equals(image_new.getExtId())) {
+        for (BaseNfvImage imageNew : baseNfvImagesRefreshed) {
+          if (imageNfvo.getExtId().equals(imageNew.getExtId())) {
             found = true;
             break;
           }
         }
         if (!found) {
-          images_old.add(nfvImage_nfvo);
+          imagesOld.add(imageNfvo);
         }
       }
-      vimInstance.getImages().addAll(images_new);
-      vimInstance.getImages().removeAll(images_old);
-      //      imageRepository.delete(images_old);
+      vimInstance.addAllImages(imagesNew);
+      vimInstance.getImages().removeAll(imagesOld);
+      //      imageRepository.delete(imagesOld);
 
-      return new AsyncResult<>(images_new);
+      return new AsyncResult<>(imagesNew);
     }
 
     @Async
-    public Future<Set<Network>> updateNetworks(VimInstance vimInstance)
+    public Future<Set<BaseNetwork>> updateNetworks(BaseVimInstance vimInstance)
         throws PluginException, VimException, BadRequestException {
       //Refreshing Networks
-      Set<Network> networks_refreshed = new HashSet<>();
-      Set<Network> networks_new = new HashSet<>();
-      Set<Network> networks_old = new HashSet<>();
-      networks_refreshed.addAll(vimBroker.getVim(vimInstance.getType()).queryNetwork(vimInstance));
+      Set<BaseNetwork> networksRefreshed = new HashSet<>();
+      Set<BaseNetwork> networksNew = new HashSet<>();
+      Set<BaseNetwork> networksOld = new HashSet<>();
+      networksRefreshed.addAll(vimBroker.getVim(vimInstance.getType()).queryNetwork(vimInstance));
       if (vimInstance.getNetworks() == null) {
-        vimInstance.setNetworks(new HashSet<Network>());
+        if (OpenstackVimInstance.class.isInstance(vimInstance))
+          ((OpenstackVimInstance) vimInstance).setNetworks(new HashSet<>());
+        else if (DockerVimInstance.class.isInstance(vimInstance))
+          ((DockerVimInstance) vimInstance).setNetworks(new HashSet<>());
       }
-      for (Network network_new : networks_refreshed) {
+      for (BaseNetwork networkNew : networksRefreshed) {
         boolean found = false;
-        for (Network network_nfvo : vimInstance.getNetworks()) {
-          log.trace("" + network_nfvo.getExtId() + " == " + network_new.getExtId());
-          if (network_nfvo.getExtId() != null && network_new.getExtId() != null) {
-            if (network_nfvo.getExtId().equals(network_new.getExtId())) {
-              network_nfvo.setName(network_new.getName());
-              network_nfvo.setExternal(network_new.getExternal());
-              network_nfvo.setExtShared(network_new.getExternal());
-              Set<Subnet> subnets_refreshed = new HashSet<>();
-              Set<Subnet> subnets_new = new HashSet<>();
-              Set<Subnet> subnets_old = new HashSet<>();
-              if (network_new.getSubnets() == null) {
-                throw new BadRequestException(
-                    "New network: " + network_new.getName() + " has no subnets");
-              } else if (network_new.getSubnets() == null) {
-                network_new.setSubnets(new HashSet<Subnet>());
-              }
-              subnets_refreshed.addAll(network_new.getSubnets());
-              if (network_nfvo.getSubnets() == null) {
-                network_nfvo.setSubnets(new HashSet<Subnet>());
-              }
-              for (Subnet subnet_new : subnets_refreshed) {
-                boolean found_subnet = false;
-                for (Subnet subnet_nfvo : network_nfvo.getSubnets()) {
-                  if (subnet_nfvo.getExtId().equals(subnet_new.getExtId())) {
-                    subnet_nfvo.setName(subnet_new.getName());
-                    subnet_nfvo.setNetworkId(subnet_new.getNetworkId());
-                    subnet_nfvo.setGatewayIp(subnet_new.getGatewayIp());
-                    subnet_nfvo.setCidr(subnet_new.getCidr());
-                    found_subnet = true;
-                    break;
-                  }
-                }
-                if (!found_subnet) {
-                  subnets_new.add(subnet_new);
-                }
-              }
-              for (Subnet subnet_nfvo : network_nfvo.getSubnets()) {
-                boolean found_subnet = false;
-                for (Subnet subnet_new : subnets_refreshed) {
-                  if (subnet_nfvo.getExtId().equals(subnet_new.getExtId())) {
-                    found_subnet = true;
-                    break;
-                  }
-                }
-                if (!found_subnet) {
-                  subnets_old.add(subnet_nfvo);
-                }
-              }
-              network_nfvo.getSubnets().addAll(subnets_new);
-              network_nfvo.getSubnets().removeAll(subnets_old);
+        for (BaseNetwork networkOld : vimInstance.getNetworks()) {
+          log.trace("" + networkOld.getExtId() + " == " + networkNew.getExtId());
+          if (networkOld.getExtId() != null && networkNew.getExtId() != null) {
+            if (networkOld.getExtId().equals(networkNew.getExtId())) {
+              updateBaseNetworks(networkOld, networkNew);
               found = true;
               break;
             }
           }
         }
         if (!found) {
-          networks_new.add(network_new);
+          networksNew.add(networkNew);
         }
       }
-      for (Network network_nfvo : vimInstance.getNetworks()) {
+      for (BaseNetwork networkNfvo : vimInstance.getNetworks()) {
         boolean found = false;
-        for (Network network_new : networks_refreshed) {
-          if ((network_nfvo.getExtId() == null || network_new.getExtId() == null)
-              || network_nfvo.getExtId().equals(network_new.getExtId())) {
+        for (BaseNetwork network_new : networksRefreshed) {
+          if ((networkNfvo.getExtId() == null || network_new.getExtId() == null)
+              || networkNfvo.getExtId().equals(network_new.getExtId())) {
             found = true;
             break;
           }
         }
         if (!found) {
-          networks_old.add(network_nfvo);
+          networksOld.add(networkNfvo);
         }
       }
-      log.debug("Removing old networks: " + networks_old.size());
-      vimInstance.getNetworks().removeAll(networks_old);
-      log.debug("Adding new networks: " + networks_new.size());
-      vimInstance.getNetworks().addAll(networks_new);
+      log.debug("Removing old networks: " + networksOld.size());
+      vimInstance.getNetworks().removeAll(networksOld);
+      log.debug("Adding new networks: " + networksNew.size());
+      vimInstance.addAllNetworks(networksNew);
       //      vimRepository.save(vimInstance);
-      //      networkRepository.delete(networks_old);
-      return new AsyncResult<>(networks_new);
+      //      networkRepository.delete(networksOld);
+      return new AsyncResult<>(networksNew);
     }
 
     @Async
-    public Future<Set<DeploymentFlavour>> updateFlavors(VimInstance vimInstance)
+    public Future<Set<DeploymentFlavour>> updateFlavors(BaseVimInstance baseVimInstance)
         throws PluginException, VimException, BadRequestException {
       //Refreshing Flavors
-      Set<DeploymentFlavour> flavors_refreshed = new HashSet<>();
-      Set<DeploymentFlavour> flavors_new = new HashSet<>();
-      Set<DeploymentFlavour> flavors_old = new HashSet<>();
-      flavors_refreshed.addAll(
-          vimBroker.getVim(vimInstance.getType()).queryDeploymentFlavors(vimInstance));
-      if (vimInstance.getFlavours() == null) {
-        vimInstance.setFlavours(new HashSet<DeploymentFlavour>());
-      }
-      for (DeploymentFlavour flavor_new : flavors_refreshed) {
-        boolean found = false;
-        for (DeploymentFlavour flavor_nfvo : vimInstance.getFlavours()) {
-          if (flavor_nfvo.getExtId().equals(flavor_new.getExtId())) {
-            flavor_nfvo.setFlavour_key(flavor_new.getFlavour_key());
-            flavor_nfvo.setDisk(flavor_new.getDisk());
-            flavor_nfvo.setRam(flavor_new.getRam());
-            flavor_nfvo.setVcpus(flavor_new.getVcpus());
-            found = true;
-            break;
-          }
+      Set<DeploymentFlavour> flavorsNew = new HashSet<>();
+      if (baseVimInstance
+          .getClass()
+          .getCanonicalName()
+          .equals(OpenstackVimInstance.class.getCanonicalName())) {
+        OpenstackVimInstance vimInstance = (OpenstackVimInstance) baseVimInstance;
+        Set<DeploymentFlavour> flavors_refreshed = new HashSet<>();
+        Set<DeploymentFlavour> flavors_old = new HashSet<>();
+        flavors_refreshed.addAll(
+            vimBroker.getVim(vimInstance.getType()).queryDeploymentFlavors(vimInstance));
+        if (vimInstance.getFlavours() == null) {
+          vimInstance.setFlavours(new HashSet<>());
         }
-        if (!found) {
-          flavors_new.add(flavor_new);
-        }
-      }
-      for (DeploymentFlavour flavor_nfvo : vimInstance.getFlavours()) {
-        boolean found = false;
         for (DeploymentFlavour flavor_new : flavors_refreshed) {
-          if (flavor_nfvo.getExtId().equals(flavor_new.getExtId())) {
-            found = true;
-            break;
+          boolean found = false;
+          for (DeploymentFlavour flavorNfvo : vimInstance.getFlavours()) {
+            if (flavorNfvo.getExtId().equals(flavor_new.getExtId())) {
+              flavorNfvo.setFlavour_key(flavor_new.getFlavour_key());
+              flavorNfvo.setDisk(flavor_new.getDisk());
+              flavorNfvo.setRam(flavor_new.getRam());
+              flavorNfvo.setVcpus(flavor_new.getVcpus());
+              found = true;
+              break;
+            }
+          }
+          if (!found) {
+            flavorsNew.add(flavor_new);
           }
         }
-        if (!found) {
-          flavors_old.add(flavor_nfvo);
+        for (DeploymentFlavour flavorNfvo : vimInstance.getFlavours()) {
+          boolean found = false;
+          for (DeploymentFlavour flavor_new : flavors_refreshed) {
+            if (flavorNfvo.getExtId().equals(flavor_new.getExtId())) {
+              found = true;
+              break;
+            }
+          }
+          if (!found) {
+            flavors_old.add(flavorNfvo);
+          }
         }
+        vimInstance.getFlavours().addAll(flavorsNew);
+        vimInstance.getFlavours().removeAll(flavors_old);
       }
-      vimInstance.getFlavours().addAll(flavors_new);
-      vimInstance.getFlavours().removeAll(flavors_old);
-      return new AsyncResult<>(flavors_new);
+      return new AsyncResult<>(flavorsNew);
     }
   }
 
@@ -595,17 +550,21 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
    * @param vimInstance
    * @throws BadRequestException
    */
-  private void validateVimInstance(VimInstance vimInstance) throws BadRequestException {
+  private void validateVimInstance(BaseVimInstance vimInstance) throws BadRequestException {
     if (Objects.equals(vimInstance.getName(), "") || vimInstance.getName() == null)
       throw new BadRequestException("The VIM's name must not be empty or null.");
-    if (Objects.equals(vimInstance.getTenant(), "") || vimInstance.getTenant() == null)
-      throw new BadRequestException("The VIM's tenant must not be empty or null.");
-    if (Objects.equals(vimInstance.getKeyPair(), ""))
-      throw new BadRequestException("The VIM's key pair must not be empty or null.");
-    if (Objects.equals(vimInstance.getUsername(), "") || vimInstance.getUsername() == null)
-      throw new BadRequestException("The VIM's username must not be empty or null.");
-    if (vimInstance.getPassword() == null)
-      throw new BadRequestException("The VIM's password must not be empty or null.");
+    if (OpenstackVimInstance.class.isInstance(vimInstance)) {
+      if (Objects.equals(((OpenstackVimInstance) vimInstance).getTenant(), "")
+          || ((OpenstackVimInstance) vimInstance).getTenant() == null)
+        throw new BadRequestException("The VIM's tenant must not be empty or null.");
+      if (Objects.equals(((OpenstackVimInstance) vimInstance).getKeyPair(), ""))
+        throw new BadRequestException("The VIM's key pair must not be empty or null.");
+      if (Objects.equals(((OpenstackVimInstance) vimInstance).getUsername(), "")
+          || ((OpenstackVimInstance) vimInstance).getUsername() == null)
+        throw new BadRequestException("The VIM's username must not be empty or null.");
+      if (((OpenstackVimInstance) vimInstance).getPassword() == null)
+        throw new BadRequestException("The VIM's password must not be empty or null.");
+    }
     if (Objects.equals(vimInstance.getType(), "") || vimInstance.getType() == null)
       throw new BadRequestException("The VIM's type must not be empty or null.");
   }

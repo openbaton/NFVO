@@ -16,6 +16,8 @@
 
 package org.openbaton.nfvo.api.admin;
 
+import static org.openbaton.nfvo.common.utils.viminstance.VimInstanceUtils.handlePrivateInfo;
+
 import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -26,8 +28,8 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.validation.Valid;
-import org.openbaton.catalogue.nfvo.NFVImage;
-import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
@@ -74,8 +76,8 @@ public class RestVimInstances {
     produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.CREATED)
-  public VimInstance create(
-      @RequestBody @Valid VimInstance vimInstance,
+  public BaseVimInstance create(
+      @RequestBody @Valid BaseVimInstance vimInstance,
       @RequestHeader(value = "project-id") String projectId)
       throws VimException, PluginException, EntityUnreachableException, IOException,
           BadRequestException, AlreadyExistingException, NotFoundException {
@@ -110,7 +112,7 @@ public class RestVimInstances {
         "This method returns the list of all the VimInstances on-boarded in this project identified by the header project-id"
   )
   @RequestMapping(method = RequestMethod.GET)
-  public List<VimInstance> findAll(
+  public List<BaseVimInstance> findAll(
       @RequestHeader(value = "project-id") String projectId,
       @RequestHeader(value = "authorization") String token)
       throws IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException,
@@ -118,13 +120,13 @@ public class RestVimInstances {
     String[] tokenArray = token.split(" ");
     if (tokenArray.length < 2) throw new BadFormatException("The passed token has a wrong format.");
     token = tokenArray[1];
-    Iterable<VimInstance> vimInstances = vimManagement.queryByProjectId(projectId);
+    Iterable<BaseVimInstance> vimInstances = vimManagement.queryByProjectId(projectId);
     if (!componentManager.isService(token))
-      for (VimInstance vim : vimInstances) {
-        vim.setPassword("**********");
+      for (BaseVimInstance vim : vimInstances) {
+        handlePrivateInfo(vim);
       }
 
-    return (List<VimInstance>) vimInstances;
+    return (List<BaseVimInstance>) vimInstances;
   }
 
   /**
@@ -138,22 +140,21 @@ public class RestVimInstances {
     notes = "Returns the Vim Instance JSON belonging to the id specified in the URL"
   )
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
-  public VimInstance findById(
+  public BaseVimInstance findById(
       @PathVariable("id") String id,
       @RequestHeader(value = "project-id") String projectId,
       @RequestHeader(value = "authorization") String token)
       throws IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException,
           NoSuchAlgorithmException, InvalidKeyException, NotFoundException, BadFormatException {
-    VimInstance vimInstance = vimManagement.query(id, projectId);
-    if (vimInstance == null)
-      throw new NotFoundException("VIM Instance with ID " + id + " not found.");
+    BaseVimInstance vim = vimManagement.query(id, projectId);
+    if (vim == null) throw new NotFoundException("VIM Instance with ID " + id + " not found.");
     String[] tokenArray = token.split(" ");
     if (tokenArray.length < 2) throw new BadFormatException("The passed token has a wrong format.");
     token = tokenArray[1];
     if (!componentManager.isService(token)) {
-      vimInstance.setPassword("**********");
+      handlePrivateInfo(vim);
     }
-    return vimInstance;
+    return vim;
   }
 
   /**
@@ -175,8 +176,8 @@ public class RestVimInstances {
     produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.ACCEPTED)
-  public VimInstance update(
-      @RequestBody @Valid VimInstance new_vimInstance,
+  public BaseVimInstance update(
+      @RequestBody @Valid BaseVimInstance new_vimInstance,
       @PathVariable("id") String id,
       @RequestHeader(value = "project-id") String projectId)
       throws VimException, PluginException, EntityUnreachableException, IOException,
@@ -195,10 +196,10 @@ public class RestVimInstances {
     notes = "Retrieve the data for all images on the Vim Instance which id is specified in the URL"
   )
   @RequestMapping(value = "{id}/images", method = RequestMethod.GET)
-  public Set<NFVImage> getAllImages(
+  public Set<? extends BaseNfvImage> getAllImages(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException {
-    VimInstance vimInstance = vimManagement.query(id, projectId);
+    BaseVimInstance vimInstance = vimManagement.query(id, projectId);
     if (vimInstance == null)
       throw new NotFoundException("VIM Instance with ID " + id + " not found.");
     return vimInstance.getImages();
@@ -217,7 +218,7 @@ public class RestVimInstances {
         "Retrieve the data for a specific image on the Vim Instance which id is specified in the URL"
   )
   @RequestMapping(value = "{idVim}/images/{idImage}", method = RequestMethod.GET)
-  public NFVImage getImage(
+  public BaseNfvImage getImage(
       @PathVariable("idVim") String idVim,
       @PathVariable("idImage") String idImage,
       @RequestHeader(value = "project-id") String projectId)
@@ -238,9 +239,9 @@ public class RestVimInstances {
     notes = "Adds an image to the Vim Instance with id specified in the URL"
   )
   @RequestMapping(value = "{id}/images", method = RequestMethod.POST)
-  public NFVImage addImage(
+  public BaseNfvImage addImage(
       @PathVariable("id") String id,
-      NFVImage nfvImage,
+      BaseNfvImage nfvImage,
       @RequestHeader(value = "project-id") String projectId)
       throws VimException, PluginException, EntityUnreachableException, IOException,
           BadRequestException, AlreadyExistingException, NotFoundException {
@@ -260,9 +261,9 @@ public class RestVimInstances {
     notes = "Updates an image to the Vim Instance with id specified in the URL"
   )
   @RequestMapping(value = "{idVim}/images/{idImage}", method = RequestMethod.PUT)
-  public NFVImage updateImage(
+  public BaseNfvImage updateImage(
       @PathVariable("idVim") String idVim,
-      @RequestBody @Valid NFVImage image,
+      @RequestBody @Valid BaseNfvImage image,
       @RequestHeader(value = "project-id") String projectId)
       throws VimException, PluginException, EntityUnreachableException, IOException,
           BadRequestException, AlreadyExistingException, NotFoundException {
@@ -301,11 +302,11 @@ public class RestVimInstances {
     notes = "Refreshes the data about the Vim Instance and returns it"
   )
   @RequestMapping(value = "{id}/refresh", method = RequestMethod.GET)
-  public VimInstance refresh(
+  public BaseVimInstance refresh(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
       throws VimException, PluginException, EntityUnreachableException, IOException,
           BadRequestException, AlreadyExistingException, NotFoundException {
-    VimInstance vimInstance = vimManagement.query(id, projectId);
+    BaseVimInstance vimInstance = vimManagement.query(id, projectId);
     if (vimInstance == null)
       throw new NotFoundException("VIM Instance with ID " + id + " not found.");
     vimManagement.refresh(vimInstance, true);
