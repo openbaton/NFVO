@@ -1,15 +1,8 @@
 package org.openbaton.catalogue.nfvo.viminstances;
 
-import org.openbaton.catalogue.mano.common.DeploymentFlavour;
-import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
-import org.openbaton.catalogue.nfvo.images.NFVImage;
-import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
-import org.openbaton.catalogue.nfvo.networks.Network;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -17,6 +10,11 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import org.openbaton.catalogue.mano.common.DeploymentFlavour;
+import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
+import org.openbaton.catalogue.nfvo.images.NFVImage;
+import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
+import org.openbaton.catalogue.nfvo.networks.Network;
 
 @Entity
 public class OpenstackVimInstance extends BaseVimInstance {
@@ -96,6 +94,9 @@ public class OpenstackVimInstance extends BaseVimInstance {
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<Network> networks;
 
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  private Set<AvailabilityZone> zones;
+
   @Override
   public String toString() {
     return "OpenstackVimInstance{"
@@ -125,18 +126,14 @@ public class OpenstackVimInstance extends BaseVimInstance {
 
   @Override
   public void addAllNetworks(Collection<BaseNetwork> networks) {
-    if (this.networks == null)
-      this.networks = new HashSet<>();
-    this.networks.forEach(n -> this.networks.add((Network) n));
-    //    this.networks.addAll((Collection<? extends Network>) networks);
+    if (this.networks == null) this.networks = new HashSet<>();
+    networks.forEach(n -> this.networks.add((Network) n));
   }
 
   @Override
   public void addAllImages(Collection<BaseNfvImage> images) {
-    if (this.images == null)
-      this.images = new HashSet<>();
-    this.images.forEach(i -> this.images.add((NFVImage) i));
-    //    this.images.addAll((Collection<? extends NFVImage>) images);
+    if (this.images == null) this.images = new HashSet<>();
+    images.forEach(i -> this.images.add((NFVImage) i));
   }
 
   @Override
@@ -176,5 +173,13 @@ public class OpenstackVimInstance extends BaseVimInstance {
   public void addNetwork(BaseNetwork network) {
     //TODO check cast
     this.networks.add((Network) network);
+  }
+
+  public Set<AvailabilityZone> getZones() {
+    return zones;
+  }
+
+  public void setZones(Set<AvailabilityZone> zones) {
+    this.zones = zones;
   }
 }

@@ -33,11 +33,15 @@ import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.nfvo.Quota;
 import org.openbaton.catalogue.nfvo.Server;
 import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
+import org.openbaton.catalogue.nfvo.images.DockerImage;
 import org.openbaton.catalogue.nfvo.images.NFVImage;
 import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
+import org.openbaton.catalogue.nfvo.networks.DockerNetwork;
 import org.openbaton.catalogue.nfvo.networks.Network;
 import org.openbaton.catalogue.nfvo.networks.Subnet;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
+import org.openbaton.catalogue.nfvo.viminstances.DockerVimInstance;
+import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
@@ -123,7 +127,14 @@ public class VimDriverCaller extends VimDriver {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
     Serializable res;
-    Type listType = new TypeToken<ArrayList<BaseNfvImage>>() {}.getType();
+    Type listType;
+    if (vimInstance instanceof OpenstackVimInstance) {
+      listType = new TypeToken<ArrayList<NFVImage>>() {}.getType();
+    } else if (vimInstance instanceof DockerVimInstance) {
+      listType = new TypeToken<ArrayList<DockerImage>>() {}.getType();
+    } else {
+      listType = new TypeToken<ArrayList<BaseNfvImage>>() {}.getType();
+    }
     try {
       res = pluginCaller.executeRPC("listImages", params, listType);
     } catch (IOException | PluginException | InterruptedException e) {
@@ -152,7 +163,12 @@ public class VimDriverCaller extends VimDriver {
     params.add(vimInstance);
     Serializable res;
     try {
-      Type listType = new TypeToken<ArrayList<BaseNetwork>>() {}.getType();
+      Type listType;
+      if (vimInstance instanceof OpenstackVimInstance)
+        listType = new TypeToken<ArrayList<Network>>() {}.getType();
+      else if (vimInstance instanceof DockerVimInstance)
+        listType = new TypeToken<ArrayList<DockerNetwork>>() {}.getType();
+      else listType = new TypeToken<ArrayList<BaseNetwork>>() {}.getType();
       res = pluginCaller.executeRPC("listNetworks", params, listType);
     } catch (IOException | PluginException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());

@@ -1,18 +1,16 @@
 package org.openbaton.catalogue.nfvo.viminstances;
 
-import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
-import org.openbaton.catalogue.nfvo.images.DockerImage;
-import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
-import org.openbaton.catalogue.nfvo.networks.DockerNetwork;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
+import org.openbaton.catalogue.nfvo.images.DockerImage;
+import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
+import org.openbaton.catalogue.nfvo.networks.DockerNetwork;
 
 @Entity
 public class DockerVimInstance extends BaseVimInstance {
@@ -66,18 +64,14 @@ public class DockerVimInstance extends BaseVimInstance {
 
   @Override
   public void addAllNetworks(Collection<BaseNetwork> networks) {
-    if (this.networks == null)
-      this.networks = new HashSet<>();
-    this.networks.forEach(n -> this.networks.add((DockerNetwork) n));
-    //    this.networks.addAll((Collection<? extends DockerNetwork>) networks);
+    if (this.networks == null) this.networks = new HashSet<>();
+    networks.forEach(n -> this.networks.add((DockerNetwork) n));
   }
 
   @Override
   public void addAllImages(Collection<BaseNfvImage> images) {
-    if (this.images == null)
-      this.images = new HashSet<>();
-    this.images.forEach(n -> this.images.add((DockerImage) n));
-    //    this.images.addAll((Collection<? extends DockerImage>) images);
+    if (this.images == null) this.images = new HashSet<>();
+    images.forEach(n -> this.images.add((DockerImage) n));
   }
 
   @Override
