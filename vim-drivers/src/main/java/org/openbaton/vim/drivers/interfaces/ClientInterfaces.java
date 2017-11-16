@@ -50,13 +50,15 @@ public interface ClientInterfaces {
       String userData)
       throws VimDriverException;
 
-  List<BaseNfvImage> listImages(BaseVimInstance vimInstance) throws VimDriverException;
-
   List<Server> listServer(BaseVimInstance vimInstance) throws VimDriverException;
 
   List<BaseNetwork> listNetworks(BaseVimInstance vimInstance) throws VimDriverException;
 
+  List<BaseNfvImage> listImages(BaseVimInstance vimInstance) throws VimDriverException;
+
   List<DeploymentFlavour> listFlavors(BaseVimInstance vimInstance) throws VimDriverException;
+
+  BaseVimInstance refresh(BaseVimInstance vimInstance) throws VimDriverException;
 
   Server launchInstanceAndWait(
       BaseVimInstance vimInstance,

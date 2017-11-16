@@ -123,6 +123,33 @@ public class VimDriverCaller extends VimDriver {
   }
 
   @Override
+  public List<Server> listServer(BaseVimInstance vimInstance) throws VimDriverException {
+    List<Serializable> params = new LinkedList<>();
+    params.add(vimInstance);
+    Serializable res;
+    try {
+      Type listType = new TypeToken<ArrayList<Server>>() {}.getType();
+      res = pluginCaller.executeRPC("listServer", params, listType);
+    } catch (IOException | PluginException | InterruptedException e) {
+      throw new VimDriverException(e.getMessage());
+    }
+    return (List<Server>) res;
+  }
+
+  @Override
+  public BaseVimInstance refresh(BaseVimInstance vimInstance) throws VimDriverException {
+    List<Serializable> params = new LinkedList<>();
+    params.add(vimInstance);
+    Serializable res;
+    try {
+      res = pluginCaller.executeRPC("refresh", params, BaseVimInstance.class);
+    } catch (IOException | PluginException | InterruptedException e) {
+      throw new VimDriverException(e.getMessage());
+    }
+    return (BaseVimInstance) res;
+  }
+
+  @Override
   public List<BaseNfvImage> listImages(BaseVimInstance vimInstance) throws VimDriverException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
@@ -141,20 +168,6 @@ public class VimDriverCaller extends VimDriver {
       throw new VimDriverException(e.getMessage());
     }
     return (List<BaseNfvImage>) res;
-  }
-
-  @Override
-  public List<Server> listServer(BaseVimInstance vimInstance) throws VimDriverException {
-    List<Serializable> params = new LinkedList<>();
-    params.add(vimInstance);
-    Serializable res;
-    try {
-      Type listType = new TypeToken<ArrayList<Server>>() {}.getType();
-      res = pluginCaller.executeRPC("listServer", params, listType);
-    } catch (IOException | PluginException | InterruptedException e) {
-      throw new VimDriverException(e.getMessage());
-    }
-    return (List<Server>) res;
   }
 
   @Override

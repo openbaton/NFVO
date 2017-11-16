@@ -999,6 +999,17 @@ public class GenericVIM extends Vim {
   }
 
   @Override
+  public BaseVimInstance refresh(BaseVimInstance vimInstance) throws VimException {
+    try {
+      return client.refresh(vimInstance);
+    } catch (VimDriverException e) {
+      throw new VimException(
+          "Vim instance Not refreshed " + vimInstance.getName() + ". Caused by: " + e.getMessage(),
+          e);
+    }
+  }
+
+  @Override
   public Network update(BaseVimInstance vimInstance, Network network) throws VimException {
     Network updatedNetwork = null;
     try {

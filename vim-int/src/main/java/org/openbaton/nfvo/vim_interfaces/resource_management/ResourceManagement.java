@@ -153,4 +153,6 @@ public interface ResourceManagement {
    * @throws VimException in case of exception
    */
   Quota getQuota(BaseVimInstance vimInstance) throws VimException;
+
+  BaseVimInstance refresh(BaseVimInstance vimInstance) throws VimException;
 }

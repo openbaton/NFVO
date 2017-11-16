@@ -45,9 +45,12 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeoutException;
 import org.apache.commons.codec.binary.Base64;
 import org.openbaton.catalogue.nfvo.PluginMessage;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimDriverException;
+import org.openbaton.nfvo.common.configuration.NfvoGsonDeserializerVimInstance;
+import org.openbaton.nfvo.common.configuration.NfvoGsonSerializerVimInstance;
 import org.openbaton.nfvo.common.utils.rabbit.RabbitManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +68,8 @@ public class PluginCaller {
   private Gson gson =
       new GsonBuilder()
           .registerTypeHierarchyAdapter(byte[].class, new ByteArrayToBase64TypeAdapter())
+          .registerTypeAdapter(BaseVimInstance.class, new NfvoGsonDeserializerVimInstance())
+          .registerTypeAdapter(BaseVimInstance.class, new NfvoGsonSerializerVimInstance())
           .setPrettyPrinting()
           .create();
   private Logger log = LoggerFactory.getLogger(this.getClass());
