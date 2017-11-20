@@ -54,7 +54,7 @@ CONFIGURE_RABBITMQ_FOR_OPENBATON=${CONFIGURE_RABBITMQ_FOR_OPENBATON:-$CONFIGURE_
 OPENBATON_COMPONENT_AUTOSTART_DEFAULT=true
 OPENBATON_COMPONENT_AUTOSTART=${OPENBATON_COMPONENT_AUTOSTART:-$OPENBATON_COMPONENT_AUTOSTART_DEFAULT}
 
-DEBIAN_FRONTEND_DEFAULT=interactive
+DEBIAN_FRONTEND_DEFAULT=dialog
 DEBIAN_FRONTEND=${DEBIAN_FRONTEND:-$DEBIAN_FRONTEND_DEFAULT}
 
 RABBITMQ_BROKER_IP_DEFAULT=localhost
@@ -93,8 +93,20 @@ configure_rabbitmq () {
 
         # In case of "noninteractive" FRONTEND either the value from the configuration file or the default value will be used (DEFAULT: rabbitmq_broker_ip=localhost ; rabbitmq_management_port=15672)
         if [ "${DEBIAN_FRONTEND}" != "Noninteractive" -a "${DEBIAN_FRONTEND}" != "noninteractive" ]; then
-            read -p "Enter the rabbitmq broker ip [localhost]: " rabbitmq_broker_ip
-            read -p "Enter the rabbitmq management port [15672]: " rabbitmq_management_port
+            rabbitmq_broker_ip=$(whiptail --inputbox "\nEnter the RabbitMQ broker IP:" 8 140 localhost --title "Open Baton ${OPENBATON_COMPONENT_NAME_FANCY} configuration" 3>&1 1>&2 2>&3)
+            exit_status="$?"
+            if [ ${exit_status} != 0 ]; then
+                echo ""
+                log_warning_msg "Aborting Open Baton installation"
+                exit 1
+            fi
+            rabbitmq_management_port=$(whiptail --inputbox "\nEnter the RabbitMQ management port:" 8 140 15672 --title "Open Baton ${OPENBATON_COMPONENT_NAME_FANCY}configuration" 3>&1 1>&2 2>&3)
+            exit_status="$?"
+            if [ ${exit_status} != 0 ]; then
+                echo ""
+                log_warning_msg "Aborting Open Baton installation"
+                exit 1
+            fi
         fi
 
         # Set the rabbitmq broker ip
@@ -134,16 +146,22 @@ set_plugins_log_folder () {
 configure_nfvo_admin_credentials () {
     # In case of "noninteractive" FRONTEND either the value from the configuration file or the default value will be used (DEFAULT: openbaton_admin_password=openbaton)
     if [ "${DEBIAN_FRONTEND}" != "Noninteractive" -a "${DEBIAN_FRONTEND}" != "noninteractive" ]; then
-        # Turning echo ON and OFF between password reading
-        stty -echo
-        read -p "Provide the new password for 'admin' user of Open Baton [openbaton]: " openbaton_admin_password ; echo
-        stty echo
+        openbaton_admin_password=$(whiptail --passwordbox "\nProvide the new password for 'admin' user of open baton [openbaton]:" 8 140 openbaton --title "Open Baton ${OPENBATON_COMPONENT_NAME_FANCY} configuration" 3>&1 1>&2 2>&3)
+        exit_status="$?"
+        if [ ${exit_status} != 0 ]; then
+            echo ""
+            log_warning_msg "Aborting Open Baton installation"
+            exit 1
+        fi
 
         if [ "${openbaton_admin_password}" != "" ]; then
-            # Turning echo ON and OFF between password reading
-            stty -echo
-            read -p "Repeat the 'admin' password: " openbaton_admin_password_again ; echo
-            stty echo
+            openbaton_admin_password_again=$(whiptail --passwordbox "\nRepeat the 'admin' password:" 8 140 --title "Open Baton ${OPENBATON_COMPONENT_NAME_FANCY} configuration" 3>&1 1>&2 2>&3)
+            exit_status="$?"
+            if [ ${exit_status} != 0 ]; then
+               echo ""
+               log_warning_msg "Aborting open baton installation"
+               exit 1
+            fi
             if [ "${openbaton_admin_password}" != "${openbaton_admin_password_again}" ]; then
                 configure_nfvo_admin_credentials
             fi
