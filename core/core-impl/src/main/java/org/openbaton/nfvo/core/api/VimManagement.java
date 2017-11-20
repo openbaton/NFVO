@@ -17,6 +17,21 @@
 
 package org.openbaton.nfvo.core.api;
 
+import static org.openbaton.nfvo.common.utils.viminstance.VimInstanceUtils.updateBaseNetworks;
+import static org.openbaton.nfvo.common.utils.viminstance.VimInstanceUtils.updateNfvImage;
+import static org.openbaton.nfvo.common.utils.viminstance.VimInstanceUtils.updatePrivateInfo;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
@@ -48,22 +63,6 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
-
-import static org.openbaton.nfvo.common.utils.viminstance.VimInstanceUtils.updateBaseNetworks;
-import static org.openbaton.nfvo.common.utils.viminstance.VimInstanceUtils.updateNfvImage;
-import static org.openbaton.nfvo.common.utils.viminstance.VimInstanceUtils.updatePrivateInfo;
 
 /** Created by lto on 13/05/15. */
 @Service

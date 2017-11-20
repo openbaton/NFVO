@@ -28,7 +28,8 @@ import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.*;
+import org.openbaton.catalogue.nfvo.Quota;
+import org.openbaton.catalogue.nfvo.Server;
 import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
 import org.openbaton.catalogue.nfvo.images.NFVImage;
 import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
@@ -174,5 +175,10 @@ public class MyVim extends Vim {
   @Override
   public Quota getQuota(BaseVimInstance vimInstance) {
     return null;
+  }
+
+  @Override
+  public BaseVimInstance refresh(BaseVimInstance vimInstance) throws VimException {
+    return vimInstance;
   }
 }

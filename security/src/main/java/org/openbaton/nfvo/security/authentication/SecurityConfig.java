@@ -17,6 +17,8 @@
 
 package org.openbaton.nfvo.security.authentication;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Properties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -31,6 +33,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -51,7 +56,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    http.antMatcher("/**").authorizeRequests().anyRequest().authenticated();
+    http.antMatcher("/**")
+        .authorizeRequests()
+        .anyRequest()
+        .authenticated()
+        .and()
+        .csrf()
+        .and()
+        .cors();
   }
 
   @Override
@@ -63,5 +75,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   @Bean(name = "inMemManager")
   public UserDetailsManager userDetailsManager() {
     return new InMemoryUserDetailsManager(new Properties());
+  }
+
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowedOrigins(Collections.singletonList("*"));
+    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "OPTIONS", "DELETE"));
+    configuration.addAllowedHeader("*");
+    configuration.setAllowCredentials(false);
+    configuration.setMaxAge(180000L);
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    source.registerCorsConfiguration("/oauth/token", configuration);
+    return source;
   }
 }

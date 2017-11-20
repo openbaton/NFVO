@@ -32,6 +32,7 @@ import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.ManagerCredentialsRepository;
+import org.openbaton.nfvo.repositories.VduRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
 import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
@@ -80,6 +81,8 @@ public class MessageGenerator implements org.openbaton.vnfm.interfaces.manager.M
 
   @Value("${spring.rabbitmq.port:5672}")
   private String brokerPort;
+
+  @Autowired private VduRepository vduRepository;
 
   @Override
   public VnfmSender getVnfmSender(EndpointType endpointType) throws BeansException {
@@ -138,12 +141,19 @@ public class MessageGenerator implements org.openbaton.vnfm.interfaces.manager.M
             "deployment procedure for (" + vnfd.getName() + "). Looking for " + vimInstanceName);
         BaseVimInstance vimInstance = null;
 
-        for (BaseVimInstance vi : vimInstanceRepository.findByProjectId(vdu.getProjectId())) {
-          if (vimInstanceName.equals(vi.getName())) {
-            vimInstance = vi;
-            break;
+        String name;
+        if (vimInstanceName.contains(":")) {
+          name = vimInstanceName.split(":")[0];
+          if (vdu.getMetadata() == null) {
+            vdu.setMetadata(new HashMap<>());
           }
+          String az = vimInstanceName.split(":")[1];
+          vdu.getMetadata().put("az", az);
+          //          vdu = vduRepository.save(vdu);
+        } else {
+          name = vimInstanceName;
         }
+        vimInstance = vimInstanceRepository.findByProjectIdAndName(vdu.getProjectId(), name);
 
         vimInstances.get(vdu.getId()).add(vimInstance);
       }

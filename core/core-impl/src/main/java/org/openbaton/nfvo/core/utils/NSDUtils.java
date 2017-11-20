@@ -136,8 +136,8 @@ public class NSDUtils {
   public List<String> fetchExistingVnfd(
       NetworkServiceDescriptor networkServiceDescriptor, String projectId)
       throws NotFoundException {
-    Set<VirtualNetworkFunctionDescriptor> vnfd_add = new HashSet<>();
-    Set<VirtualNetworkFunctionDescriptor> vnfd_remove = new HashSet<>();
+    Set<VirtualNetworkFunctionDescriptor> vnfdAdd = new HashSet<>();
+    Set<VirtualNetworkFunctionDescriptor> vnfdRemove = new HashSet<>();
     List<String> marketIds = new ArrayList<>();
 
     for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
@@ -157,8 +157,8 @@ public class NSDUtils {
           if (!log.isTraceEnabled()) {
             log.debug("Fetched VNFD: " + vnfdNew.getName());
           }
-          vnfd_add.add(vnfdNew);
-          vnfd_remove.add(vnfd);
+          vnfdAdd.add(vnfdNew);
+          vnfdRemove.add(vnfd);
         } else {
           String[] id_split = vnfd.getId().split("/");
           if (id_split.length >= 3) {
@@ -201,22 +201,22 @@ public class NSDUtils {
                         + " ID at all");
               }
             } else {
-              vnfd_add.add(vnfdNew);
+              vnfdAdd.add(vnfdNew);
             }
             if (!log.isTraceEnabled()) {
               if (vnfdNew != null) {
                 log.debug("Fetched VNFD: " + vnfdNew.getName());
               }
             }
-            vnfd_remove.add(vnfd);
+            vnfdRemove.add(vnfd);
           } else {
             throw new NotFoundException("VNFD ID must be either in the format vendor/name/version");
           }
         }
       }
     }
-    networkServiceDescriptor.getVnfd().removeAll(vnfd_remove);
-    networkServiceDescriptor.getVnfd().addAll(vnfd_add);
+    networkServiceDescriptor.getVnfd().removeAll(vnfdRemove);
+    networkServiceDescriptor.getVnfd().addAll(vnfdAdd);
     return marketIds;
   }
 

@@ -59,15 +59,15 @@ public class RabbitVnfmSender implements VnfmSender {
             + " to destination: "
             + destinationName);
     log.trace("nfvMessage is: " + nfvMessage);
-    log.trace("gson is: " + gson);
-    log.trace("RabbitTemplate is: " + rabbitTemplate);
+    //    log.trace("gson is: " + gson);
+    //    log.trace("RabbitTemplate is: " + rabbitTemplate);
     String json = null;
     try {
       json = gson.toJson(nfvMessage);
     } catch (Exception e) {
       e.printStackTrace();
     }
-    log.trace("Json is: " + json);
+    //    log.trace("Json is: " + json);
     rabbitTemplate.setReplyTimeout(-1);
     Object receive =
         rabbitTemplate.convertSendAndReceive("openbaton-exchange", destinationName, json);

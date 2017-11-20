@@ -275,23 +275,23 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
             else endpoint = gson.fromJson(vnfmManagerEndpoint, VnfmManagerEndpoint.class);
         }
 
-        //          String regexOpenbaton = "(^nfvo)";
-        //          String regexManager = "(^" + username + ")|(openbaton-exchange)";
-        //          String regexBoth = regexOpenbaton + "|" + regexManager;
-
+        String type =
+            vnfmManagerEndpoint != null
+                ? vnfmManagerEndpoint.getAsJsonObject().get("endpoint").getAsString()
+                : username;
         String configurePermissions =
-            "^amq\\.gen.*|amq\\.default$|(" + username + ")|(nfvo." + username + ".actions)";
+            "^amq\\.gen.*|amq\\.default$|(" + type + ")|(nfvo." + type + ".actions)";
         String writePermissions =
             "^amq\\.gen.*|amq\\.default$|("
-                + username
+                + type
                 + ")|(vnfm.nfvo.actions)|(vnfm.nfvo.actions.reply)|(nfvo."
-                + username
+                + type
                 + ".actions)|(openbaton-exchange)";
         String readPermissions =
             "^amq\\.gen.*|amq\\.default$|(nfvo."
-                + username
+                + type
                 + ".actions)|("
-                + username
+                + type
                 + ")|(openbaton-exchange)";
 
         createRabbitMqUser(

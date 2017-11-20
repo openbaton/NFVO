@@ -19,6 +19,7 @@ package org.openbaton.vim_impl.vim;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -1290,8 +1291,8 @@ public class GenericVIM extends Vim {
       Set<Key> keys)
       throws VimException {
     log.debug("Launching new VM on VimInstance: " + vimInstance.getName());
-    log.debug("VDU is : " + vdu.toString());
-    log.debug("VNFR is : " + vnfr.toString());
+    log.debug("VDU is : " + vdu.getName());
+    log.debug("VNFR is : " + vnfr.getName());
     log.debug("VNFC is : " + vnfComponent.toString());
     /* *) choose image *) ...? */
     String image = this.chooseImage(vdu.getVm_image(), vimInstance);
@@ -1323,8 +1324,6 @@ public class GenericVIM extends Vim {
     Server server = null;
     VNFCInstance vnfcInstance = null;
     try {
-      if (vimInstance == null) throw new NullPointerException("VimInstance is null");
-      if (hostname == null) throw new NullPointerException("hostname is null");
       if (image == null) throw new NullPointerException("image is null");
       if (flavorExtId == null) throw new NullPointerException("flavorExtId is null");
       String keyPair = "";
@@ -1336,13 +1335,17 @@ public class GenericVIM extends Vim {
           keyPair = ((OpenstackVimInstance) vimInstance).getKeyPair();
         }
       }
-      if (networks == null || networks.isEmpty()) {
-        throw new NullPointerException("networks is null");
+      if (networks.isEmpty()) {
+        throw new NullPointerException("networks is empty");
       }
       if (vimInstance instanceof OpenstackVimInstance) {
         if (((OpenstackVimInstance) vimInstance).getSecurityGroups() == null) {
           securityGroups = new HashSet<>();
         } else securityGroups = ((OpenstackVimInstance) vimInstance).getSecurityGroups();
+        if (vdu.getMetadata().containsKey("az")) {
+          if (vimInstance.getMetadata() == null) vimInstance.setMetadata(new HashMap<>());
+          vimInstance.getMetadata().put("az", vdu.getMetadata().get("az"));
+        }
       }
       log.debug("Using SecurityGroups: " + securityGroups);
       log.debug(

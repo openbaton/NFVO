@@ -17,13 +17,18 @@
 
 package org.openbaton.nfvo.repositories;
 
+import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.springframework.transaction.annotation.Transactional;
 
 /** Created by mob on 04.09.15. */
 public interface NetworkServiceRecordRepositoryCustom {
 
   VirtualNetworkFunctionRecord addVnfr(VirtualNetworkFunctionRecord vnfr, String id);
+
+  @Transactional
+  NetworkServiceRecord saveCascade(NetworkServiceRecord networkServiceRecord);
 
   void deleteVNFRecord(String idNsd, String idVnfd);
 

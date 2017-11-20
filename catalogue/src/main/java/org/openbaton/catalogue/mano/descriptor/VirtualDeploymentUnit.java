@@ -129,52 +129,6 @@ public class VirtualDeploymentUnit extends BaseEntity {
     this.vnfc_instance = vnfc_instance;
   }
 
-  @Override
-  public String toString() {
-    return "VirtualDeploymentUnit{"
-        + "name='"
-        + name
-        + '\''
-        + ", vm_image="
-        + vm_image
-        + ", parent_vdu='"
-        + parent_vdu
-        + '\''
-        + ", computation_requirement='"
-        + computation_requirement
-        + '\''
-        + ", virtual_memory_resource_element='"
-        + virtual_memory_resource_element
-        + '\''
-        + ", virtual_network_bandwidth_resource='"
-        + virtual_network_bandwidth_resource
-        + '\''
-        + ", lifecycle_event="
-        + lifecycle_event
-        + ", vdu_constraint='"
-        + vdu_constraint
-        + '\''
-        + ", high_availability="
-        + high_availability
-        + ", fault_management_policy="
-        + fault_management_policy
-        + ", scale_in_out="
-        + scale_in_out
-        + ", vnfc="
-        + vnfc
-        + ", vnfc_instance="
-        + vnfc_instance
-        + ", monitoring_parameter="
-        + monitoring_parameter
-        + ", hostname='"
-        + hostname
-        + '\''
-        + ", vimInstanceName="
-        + vimInstanceName
-        + "} "
-        + super.toString();
-  }
-
   public Set<String> getVm_image() {
     return vm_image;
   }
@@ -285,5 +239,51 @@ public class VirtualDeploymentUnit extends BaseEntity {
 
   public void setHostname(String hostname) {
     this.hostname = hostname;
+  }
+
+  @Override
+  public String toString() {
+    return "VirtualDeploymentUnit{"
+        + "name='"
+        + name
+        + '\''
+        + ", vm_image="
+        + vm_image
+        + ", parent_vdu='"
+        + parent_vdu
+        + '\''
+        + ", computation_requirement='"
+        + computation_requirement
+        + '\''
+        + ", virtual_memory_resource_element='"
+        + virtual_memory_resource_element
+        + '\''
+        + ", virtual_network_bandwidth_resource='"
+        + virtual_network_bandwidth_resource
+        + '\''
+        + ", lifecycle_event="
+        + lifecycle_event
+        + ", vdu_constraint='"
+        + vdu_constraint
+        + '\''
+        + ", high_availability="
+        + high_availability
+        + ", fault_management_policy="
+        + fault_management_policy
+        + ", scale_in_out="
+        + scale_in_out
+        + ", vnfc="
+        + vnfc
+        + ", vnfc_instance="
+        + vnfc_instance
+        + ", monitoring_parameter="
+        + monitoring_parameter
+        + ", hostname='"
+        + hostname
+        + '\''
+        + ", vimInstanceName="
+        + vimInstanceName
+        + "} "
+        + super.toString();
   }
 }

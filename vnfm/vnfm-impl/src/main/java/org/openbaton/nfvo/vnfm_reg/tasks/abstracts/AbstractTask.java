@@ -17,13 +17,6 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks.abstracts;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.locks.ReentrantLock;
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
@@ -61,6 +54,14 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.locks.ReentrantLock;
 
 /** Created by lto on 06/08/15. */
 
@@ -181,7 +182,7 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
     } catch (Exception e) {
       genericExceptionHandling(e);
     }
-    /** Send event finish */
+    /* Send event finish */
     if (result == null) {
       if ((action.ordinal() != Action.ALLOCATE_RESOURCES.ordinal())
           && (action.ordinal() != Action.GRANT_OPERATION.ordinal())) {
@@ -192,7 +193,6 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
               action, virtualNetworkFunctionRecord, virtualNetworkFunctionRecord.getProjectId());
       EventNFVO eventNFVO = new EventNFVO(this);
       eventNFVO.setEventNFVO(eventPublic);
-      log.trace("Publishing event: " + eventPublic);
       publisher.publishEvent(eventNFVO);
       return null;
     } else {
@@ -466,4 +466,43 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
     virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
     log.debug("Added lifecycle event history: " + lifecycleEvent);
   }
+
+  protected void printOldAndNewHibernateVersion() {
+    VirtualNetworkFunctionRecord existing =
+        vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
+
+    log.trace(
+        this.event + ": VDU ("
+        + virtualNetworkFunctionRecord.getId()
+        + ") received with hibernate version = "
+        + virtualNetworkFunctionRecord.getHbVersion());
+    log.trace(
+        this.event + ": VDU ("
+        + existing.getId()
+        + ") existing hibernate version is = "
+        + existing.getHbVersion());
+
+    virtualNetworkFunctionRecord
+        .getVdu()
+        .forEach(
+            vdu -> {
+              log.trace(
+                  this.event + ": VDU ("
+                  + vdu.getId()
+                  + ") received with hibernate version = "
+                  + vdu.getHbVersion());
+            });
+
+    existing
+        .getVdu()
+        .forEach(
+            vdu -> {
+              log.trace(
+                  this.event + ": VDU ("
+                  + vdu.getId()
+                  + ") existing hibernate version is = "
+                  + vdu.getHbVersion());
+            });
+  }
+
 }

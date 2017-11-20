@@ -291,10 +291,9 @@ public class NetworkServiceRecordManagement
           BadRequestException, IOException, AlreadyExistingException, BadFormatException,
           ExecutionException, InterruptedException {
     networkServiceDescriptor.setProjectId(projectId);
-    //    nsdUtils.fetchVimInstances(networkServiceDescriptor, projectId);
     DeployNSRBody body = new DeployNSRBody();
     if (vduVimInstances == null) {
-      body.setVduVimInstances(new HashMap<String, Set<String>>());
+      body.setVduVimInstances(new HashMap<>());
     } else {
       body.setVduVimInstances(vduVimInstances);
     }
@@ -338,7 +337,7 @@ public class NetworkServiceRecordManagement
         nsr.setStatus(vnfr.getStatus());
       }
     }
-    nsrRepository.save(nsr);
+    nsrRepository.saveCascade(nsr);
   }
 
   /**
@@ -385,7 +384,7 @@ public class NetworkServiceRecordManagement
     }
 
     nsr.getVnf_dependency().remove(vnfDependency);
-    nsrRepository.save(nsr);
+    nsrRepository.saveCascade(nsr);
   }
 
   @Override
@@ -450,7 +449,7 @@ public class NetworkServiceRecordManagement
         "A new VNFCInstance will be added to the VDU with ID " + virtualDeploymentUnit.getId());
 
     networkServiceRecord.setStatus(Status.SCALING);
-    networkServiceRecord = nsrRepository.save(networkServiceRecord);
+    networkServiceRecord = nsrRepository.saveCascade(networkServiceRecord);
     scaleOUT(
         networkServiceRecord,
         virtualNetworkFunctionRecord,
@@ -511,7 +510,7 @@ public class NetworkServiceRecordManagement
         "A new VNFCInstance will be added to the VDU with id " + virtualDeploymentUnit.getId());
 
     networkServiceRecord.setStatus(Status.SCALING);
-    networkServiceRecord = nsrRepository.save(networkServiceRecord);
+    networkServiceRecord = nsrRepository.saveCascade(networkServiceRecord);
     scaleOUT(
         networkServiceRecord,
         virtualNetworkFunctionRecord,
@@ -576,7 +575,7 @@ public class NetworkServiceRecordManagement
 
     //        virtualDeploymentUnit.getVnfc().add(component);
     vnfcRepository.save(component);
-    nsrRepository.save(networkServiceRecord);
+    nsrRepository.saveCascade(networkServiceRecord);
     log.debug("new VNFComponent is " + component);
 
     VNFRecordDependency dependencyTarget =
@@ -639,7 +638,7 @@ public class NetworkServiceRecordManagement
     VNFCInstance vnfcInstance = getVNFCInstance(virtualDeploymentUnit, null);
 
     networkServiceRecord.setStatus(Status.SCALING);
-    networkServiceRecord = nsrRepository.save(networkServiceRecord);
+    networkServiceRecord = nsrRepository.saveCascade(networkServiceRecord);
     scaleIn(
         networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, vnfcInstance);
   }
@@ -679,7 +678,7 @@ public class NetworkServiceRecordManagement
     VNFCInstance vnfcInstance = getVNFCInstance(virtualDeploymentUnit, null);
 
     networkServiceRecord.setStatus(Status.SCALING);
-    networkServiceRecord = nsrRepository.save(networkServiceRecord);
+    networkServiceRecord = nsrRepository.saveCascade(networkServiceRecord);
     scaleIn(
         networkServiceRecord, virtualNetworkFunctionRecord, virtualDeploymentUnit, vnfcInstance);
   }
@@ -721,7 +720,7 @@ public class NetworkServiceRecordManagement
     }
 
     networkServiceRecord.setStatus(Status.SCALING);
-    networkServiceRecord = nsrRepository.save(networkServiceRecord);
+    networkServiceRecord = nsrRepository.saveCascade(networkServiceRecord);
     scaleIn(
         networkServiceRecord,
         virtualNetworkFunctionRecord,
@@ -868,7 +867,7 @@ public class NetworkServiceRecordManagement
     }
 
     //save the new state of the failedVnfcInstance
-    nsrRepository.save(networkServiceRecord);
+    nsrRepository.saveCascade(networkServiceRecord);
 
     OrVnfmHealVNFRequestMessage healMessage = new OrVnfmHealVNFRequestMessage();
     healMessage.setAction(Action.HEAL);
@@ -937,10 +936,6 @@ public class NetworkServiceRecordManagement
             }
           }
         }
-        //        for (String paramToRemove : paramsToRemove) {
-        //          dependency.getVnfcParameters().remove(paramToRemove);
-        //        }
-
         vnfRecordDependencyRepository.save(dependency);
       }
     }
@@ -999,7 +994,7 @@ public class NetworkServiceRecordManagement
       networkServiceRecord.setStatus(Status.ACTIVE);
       networkServiceRecord.setTask("Scaled in");
     }
-    nsrRepository.save(networkServiceRecord);
+    nsrRepository.saveCascade(networkServiceRecord);
   }
 
   private VirtualDeploymentUnit getVirtualDeploymentUnit(
@@ -1076,8 +1071,12 @@ public class NetworkServiceRecordManagement
                 (key, value) -> {
                   if (value != null && value.size() > 0) {
                     value.forEach(
-                        s -> {
-                          if (s.equals(vimInstance.getName())) {
+                        vimInstanceName -> {
+                          if ((vimInstanceName.contains(":")
+                                  && vimInstanceName.split(":")[0].equals(vimInstance.getName()))
+                              || (!vimInstanceName.contains(":")
+                                  && vimInstanceName.equals(vimInstance.getName()))) {
+
                             try {
                               vimManagement.refresh(vimInstance, false);
                             } catch (VimException
@@ -1158,14 +1157,11 @@ public class NetworkServiceRecordManagement
           vduVimInstances.put(vdu.getId(), instanceNames);
           for (String vimInstanceName : instanceNames) {
 
-            BaseVimInstance vimInstance = null;
+            String name =
+                vimInstanceName.contains(":") ? vimInstanceName.split(":")[0] : vimInstanceName;
 
-            for (BaseVimInstance vi : vimInstanceRepository.findByProjectId(vdu.getProjectId())) {
-              if (vimInstanceName.equals(vi.getName())) {
-                vimInstance = vi;
-                break;
-              }
-            }
+            BaseVimInstance vimInstance =
+                vimInstanceRepository.findByProjectIdAndName(vdu.getProjectId(), name);
 
             if (vimInstance == null) {
               throw new NotFoundException("Not found VIM instance: " + vimInstanceName);
@@ -1193,7 +1189,6 @@ public class NetworkServiceRecordManagement
             //check networks
             for (VNFComponent vnfc : vdu.getVnfc()) {
               for (VNFDConnectionPoint vnfdConnectionPoint : vnfc.getConnection_point()) {
-                //                if (vnfdConnectionPoint.getVirtual_link_reference().equals(vlr.getName())) {
                 boolean networkExists = false;
                 if (vimInstance.getNetworks() == null) {
                   throw new VimException(
@@ -1236,7 +1231,7 @@ public class NetworkServiceRecordManagement
 
       networkServiceRecord.setProjectId(projectID);
       try {
-        networkServiceRecord = nsrRepository.save(networkServiceRecord);
+        networkServiceRecord = nsrRepository.saveCascade(networkServiceRecord);
         savedNsrSuccessfully = true;
         log.debug(
             "Persisted NSR "
@@ -1274,27 +1269,26 @@ public class NetworkServiceRecordManagement
           && !vnfdConnectionPoint.getFixedIp().equals("")) {
         if (network instanceof Network) {
           Network osNet = (Network) network;
-          if (osNet.getSubnets() != null && osNet.getSubnets().size() > 0) {
-            return osNet
-                .getSubnets()
-                .stream()
-                .anyMatch(
-                    subnet ->
-                        new SubnetUtils(subnet.getCidr())
-                            .getInfo()
-                            .isInRange(vnfdConnectionPoint.getFixedIp()));
-          }
-        }
-      } else if (network instanceof DockerNetwork) {
-        DockerNetwork dockerNetwork = (DockerNetwork) network;
-        return new SubnetUtils(dockerNetwork.getSubnet())
-            .getInfo()
-            .isInRange(vnfdConnectionPoint.getFixedIp());
+          return osNet.getSubnets() == null
+              || osNet.getSubnets().size() <= 0
+              || osNet
+                  .getSubnets()
+                  .stream()
+                  .anyMatch(
+                      subnet ->
+                          new SubnetUtils(subnet.getCidr())
+                              .getInfo()
+                              .isInRange(vnfdConnectionPoint.getFixedIp()));
+        } else if (network instanceof DockerNetwork) {
+          DockerNetwork dockerNetwork = (DockerNetwork) network;
+          return new SubnetUtils(dockerNetwork.getSubnet())
+              .getInfo()
+              .isInRange(vnfdConnectionPoint.getFixedIp());
+        } else return true;
+      } else {
+        return true;
       }
-    } else {
-      return true;
-    }
-    return false;
+    } else return false;
   }
 
   private String getCidrFromVLName(
@@ -1908,22 +1902,10 @@ public class NetworkServiceRecordManagement
     }
   }
 
-  //  public int getTimeout() {
-  //    return timeout;
-  //  }
-  //
-  //  public void setTimeout(int timeout) {
-  //    this.timeout = timeout;
-  //  }
-
   @ConfigurationProperties
   class VNFRTerminator implements Runnable {
 
     private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
-
-    //    public VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord() {
-    //      return virtualNetworkFunctionRecord;
-    //    }
 
     void setVirtualNetworkFunctionRecord(
         VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {

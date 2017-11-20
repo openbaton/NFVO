@@ -123,22 +123,11 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
     return tokenServices;
   }
 
-  //
-  //  @Bean
-  //  public DefaultTokenServices serviceTokenServices() {
-  //    DefaultTokenServices tokenServices = new DefaultTokenServices();
-  //    tokenServices.setSupportRefreshToken(true);
-  //    tokenServices.setTokenStore(tokenStore);
-  //    tokenServices.setAccessTokenValiditySeconds(serviceTokenValidityDuration);
-  //    return tokenServices;
-  //  }
-
   public OAuth2AccessToken getNewServiceToken(String serviceName) {
     Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
     authorities.add(new SimpleGrantedAuthority("ADMIN"));
 
     Map<String, String> requestParameters = new HashMap<>();
-    boolean approved = true;
     Set<String> scope = new HashSet<>();
     scope.add("write");
     scope.add("read");
@@ -165,11 +154,6 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
     UsernamePasswordAuthenticationToken authenticationToken =
         new UsernamePasswordAuthenticationToken(userPrincipal, null, authorities);
     OAuth2Authentication auth = new OAuth2Authentication(oAuth2Request, authenticationToken);
-
-    //          DefaultTokenServices tokenServices = new DefaultTokenServices();
-    //          tokenServices.setSupportRefreshToken(true);
-    //          tokenServices.setTokenStore(tokenStore);
-    //          tokenServices.setAccessTokenValiditySeconds(serviceTokenValidityDuration);
 
     OAuth2AccessToken token = serviceTokenServices.createAccessToken(auth);
     log.trace("New Service token: " + token);
