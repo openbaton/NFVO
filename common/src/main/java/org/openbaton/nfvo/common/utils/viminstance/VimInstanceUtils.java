@@ -1,10 +1,5 @@
 package org.openbaton.nfvo.common.utils.viminstance;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.openbaton.catalogue.nfvo.ImageStatus;
 import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
 import org.openbaton.catalogue.nfvo.images.DockerImage;
@@ -17,6 +12,12 @@ import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.nfvo.viminstances.DockerVimInstance;
 import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
 import org.openbaton.exceptions.BadRequestException;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class VimInstanceUtils {
   public static void handlePrivateInfo(BaseVimInstance vim) {
@@ -138,10 +139,14 @@ public class VimInstanceUtils {
 
   public static Collection<BaseNfvImage> findActiveImagesByName(
       BaseVimInstance vimInstance, String imageName) {
-    Stream<? extends BaseNfvImage> stream =
-        vimInstance.getImages().stream().filter(i -> i.getExtId().equals(imageName));
-    if (stream.count() > 0) {
-      return stream.collect(Collectors.toList());
+    List<BaseNfvImage> stream =
+        vimInstance
+            .getImages()
+            .stream()
+            .filter(i -> i.getExtId().equals(imageName))
+            .collect(Collectors.toList());
+    if (stream.size() > 0) {
+      return stream;
     }
 
     if (vimInstance instanceof OpenstackVimInstance) {

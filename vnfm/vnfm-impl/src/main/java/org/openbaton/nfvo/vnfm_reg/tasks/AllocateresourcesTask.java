@@ -17,10 +17,12 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
+import java.util.Date;
+import java.util.Map;
+import java.util.Set;
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
@@ -32,10 +34,6 @@ import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-
-import java.util.Date;
-import java.util.Map;
-import java.util.Set;
 
 /** Created by lto on 06/08/15. */
 @Service
@@ -104,7 +102,6 @@ public class AllocateresourcesTask extends AbstractTask {
         "Finished task: AllocateResources for VNFR: " + virtualNetworkFunctionRecord.getName());
     return orVnfmGenericMessage;
   }
-
 
   @Override
   public boolean isAsync() {
