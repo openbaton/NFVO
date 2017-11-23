@@ -24,7 +24,6 @@ import static org.openbaton.nfvo.core.test.TestUtils.createMaxQuota;
 import static org.openbaton.nfvo.core.test.TestUtils.createMinQuota;
 import static org.openbaton.nfvo.core.test.TestUtils.createVimInstance;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -81,18 +80,13 @@ public class VNFLifecycleOperationGrantingClassSuiteTest {
   @Test
   public void vnfLifecycleOperationGrantingTest() throws VimException, PluginException {
     VirtualNetworkFunctionRecord vnfr = createVirtualNetworkFunctionRecord();
-    Map<String, BaseVimInstance> granted;
 
-    when(vimInstanceRepository.findByProjectId(anyString()))
-        .thenReturn(
-            new ArrayList<BaseVimInstance>() {
-              {
-                add(createVimInstance());
-              }
-            });
+    when(vimInstanceRepository.findByProjectIdAndName(anyString(), anyString()))
+        .thenReturn(createVimInstance());
     when(vimBroker.getLeftQuota(any(BaseVimInstance.class))).thenReturn(createMaxQuota());
 
-    granted = vnfLifecycleOperationGranting.grantLifecycleOperation(vnfr);
+    Map<String, BaseVimInstance> granted =
+        vnfLifecycleOperationGranting.grantLifecycleOperation(vnfr);
     log.debug(granted.size() + " == " + vnfr.getVdu().size());
     Assert.assertTrue(granted.size() == vnfr.getVdu().size());
 
@@ -113,7 +107,7 @@ public class VNFLifecycleOperationGrantingClassSuiteTest {
         });
     VNFDeploymentFlavour vdf = new VNFDeploymentFlavour();
     vdf.setExtId("mocked_vdu_ext_id");
-    vdf.setFlavour_key("mocked_flavor_name_1");
+    vdf.setFlavour_key("m1.tiny");
     virtualNetworkFunctionRecord.setName("mocked_vnfr");
     virtualNetworkFunctionRecord.setDeployment_flavour_key(vdf.getFlavour_key());
     virtualNetworkFunctionRecord.setVdu(new HashSet<VirtualDeploymentUnit>());

@@ -39,8 +39,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
-import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
 import org.openbaton.catalogue.nfvo.images.NFVImage;
 import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
@@ -106,7 +104,7 @@ public class VimManagementClassSuiteTest {
           BadRequestException, AlreadyExistingException {
     initMocks();
     BaseVimInstance vimInstance = createVimInstance();
-    when(vimRepository.save(vimInstance)).thenReturn(vimInstance);
+    when(vimRepository.save(any(BaseVimInstance.class))).thenReturn(vimInstance);
     vimManagement.refresh(vimInstance, false);
 
     //    Assert.assertEquals(2, vimInstance.getFlavours().size());
@@ -127,11 +125,9 @@ public class VimManagementClassSuiteTest {
     vimInstance_new.setName("UpdatedName");
     vimInstance_new.setTenant("UpdatedTenant");
     vimInstance_new.setUsername("UpdatedUsername");
-    when(vimRepository.save(vimInstance_new)).thenReturn(vimInstance_new);
-    when(vnfdRepository.findByProjectId(anyString()))
-        .thenReturn(new ArrayList<VirtualNetworkFunctionDescriptor>());
-    when(vnfrRepository.findByProjectId(anyString()))
-        .thenReturn(new ArrayList<VirtualNetworkFunctionRecord>());
+    when(vimRepository.save(any(BaseVimInstance.class))).thenReturn(vimInstance_new);
+    when(vnfdRepository.findByProjectId(anyString())).thenReturn(new ArrayList<>());
+    when(vnfrRepository.findByProjectId(anyString())).thenReturn(new ArrayList<>());
 
     vimInstanceExp =
         (OpenstackVimInstance)

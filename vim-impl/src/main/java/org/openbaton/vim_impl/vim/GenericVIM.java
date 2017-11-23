@@ -1342,7 +1342,7 @@ public class GenericVIM extends Vim {
         if (((OpenstackVimInstance) vimInstance).getSecurityGroups() == null) {
           securityGroups = new HashSet<>();
         } else securityGroups = ((OpenstackVimInstance) vimInstance).getSecurityGroups();
-        if (vdu.getMetadata().containsKey("az")) {
+        if (vdu.getMetadata() != null && vdu.getMetadata().containsKey("az")) {
           if (vimInstance.getMetadata() == null) vimInstance.setMetadata(new HashMap<>());
           vimInstance.getMetadata().put("az", vdu.getMetadata().get("az"));
         }

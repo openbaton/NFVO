@@ -71,11 +71,8 @@ public class VNFLifecycleOperationGranting
     for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
       for (String vimName : vdu.getVimInstanceName()) {
 
-        BaseVimInstance vimInstance = null;
-
-        for (BaseVimInstance vi : vimInstanceRepository.findByProjectId(vdu.getProjectId())) {
-          if (vimName.equals(vi.getName())) vimInstance = vi;
-        }
+        BaseVimInstance vimInstance =
+            vimInstanceRepository.findByProjectIdAndName(vdu.getProjectId(), vimName);
 
         if (countVDUsOnVimInstances.containsKey(vimInstance)) {
           countVDUsOnVimInstances.put(

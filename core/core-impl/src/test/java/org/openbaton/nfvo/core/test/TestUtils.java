@@ -9,6 +9,7 @@ import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.nfvo.Location;
 import org.openbaton.catalogue.nfvo.Quota;
 import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
 import org.openbaton.catalogue.nfvo.images.NFVImage;
@@ -71,8 +72,17 @@ public class TestUtils {
 
   public static OpenstackVimInstance createVimInstance() {
     OpenstackVimInstance vimInstance = new OpenstackVimInstance();
+    vimInstance.setId("vim_instance_id");
     vimInstance.setName("vim_instance");
+    vimInstance.setTenant("tenant");
+    vimInstance.setUsername("username");
+    vimInstance.setPassword("password");
     vimInstance.setType("test");
+    Location location = new Location();
+    location.setName("Location");
+    location.setLatitude("8463947");
+    location.setLongitude("-857638");
+    vimInstance.setLocation(location);
     vimInstance.setNetworks(
         new HashSet<Network>() {
           {

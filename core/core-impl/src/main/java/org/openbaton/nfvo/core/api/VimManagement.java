@@ -218,38 +218,18 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     }
 
     log.info("Refreshing vim");
-    //    Future<Set<BaseNfvImage>> futureImages = asyncVimManagement.updateImages(vimInstance);
-    //    log.info("Updating networks");
-    //    Future<Set<BaseNetwork>> futureNetworks = asyncVimManagement.updateNetworks(vimInstance);
-    //    log.info("Updating flavors");
-    //    Future<Set<DeploymentFlavour>> futureFlavors = asyncVimManagement.updateFlavors(vimInstance);
+
     vimInstance = vimBroker.getVim(vimInstance.getType()).refresh(vimInstance);
 
-    //    try {
-    //      futureImages.get(refreshTimeout, TimeUnit.SECONDS);
-    //      futureFlavors.get(refreshTimeout, TimeUnit.SECONDS);
-    //      futureNetworks.get(refreshTimeout, TimeUnit.SECONDS);
-    //    } catch (TimeoutException e) {
-    //      throw new VimException("Refreshing VIM went in timout: " + e.getLocalizedMessage());
-    //    } catch (Exception e) {
-    //      e.printStackTrace();
-    //      throw new VimException("Refreshing VIM caused following error: " + e.getMessage());
-    //    }
     vimInstance = vimRepository.save(vimInstance);
     lastUpdateVim.put(vimInstance.getId(), (new Date()).getTime());
     return vimInstance;
   }
 
   private boolean vimInstanceWithSameNameExists(BaseVimInstance vimInstance) {
-    if (vimInstance.getId() == null) {
-      for (BaseVimInstance vimInstance1 :
-          vimRepository.findByProjectId(vimInstance.getProjectId())) {
-        if (vimInstance1.getName().equals(vimInstance.getName())) {
-          return true;
-        }
-      }
-    }
-    return false;
+    return vimInstance.getId() == null
+        && vimRepository.findByProjectIdAndName(vimInstance.getProjectId(), vimInstance.getName())
+            == null;
   }
 
   /**

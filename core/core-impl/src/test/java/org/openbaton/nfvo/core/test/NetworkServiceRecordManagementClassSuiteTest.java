@@ -47,7 +47,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.openbaton.catalogue.mano.common.AutoScalePolicy;
 import org.openbaton.catalogue.mano.common.ConnectionPoint;
@@ -151,7 +150,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
             any(BaseVimInstance.class),
             anyString(),
             anySet()))
-        .thenReturn(new AsyncResult<List<String>>(new ArrayList<String>()));
+        .thenReturn(new AsyncResult<List<String>>(new ArrayList<>()));
     when(vimBroker.getVim(anyString())).thenReturn(vim);
     when(vimBroker.getLeftQuota(any(BaseVimInstance.class))).thenReturn(createQuota());
     VNFCInstance vnfcInstance = new VNFCInstance();
@@ -231,7 +230,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
         .thenReturn(new AsyncResult<Void>(null));
     when(nsrRepository.findFirstByIdAndProjectId(nsd_exp.getId(), projectId)).thenReturn(nsd_exp);
     Configuration system = new Configuration();
-    system.setConfigurationParameters(new HashSet<ConfigurationParameter>());
+    system.setConfigurationParameters(new HashSet<>());
     ConfigurationParameter configurationParameter = new ConfigurationParameter();
     configurationParameter.setConfKey("delete-on-all-status");
     configurationParameter.setValue("true");
@@ -248,21 +247,22 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     final NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
     when(nsrRepository.save(any(NetworkServiceRecord.class)))
         .thenAnswer(
-            new Answer<NetworkServiceRecord>() {
-              @Override
-              public NetworkServiceRecord answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                return (NetworkServiceRecord) args[0];
-              }
-            });
+            (Answer<NetworkServiceRecord>)
+                invocation -> {
+                  Object[] args = invocation.getArguments();
+                  return (NetworkServiceRecord) args[0];
+                });
 
-    when(vimRepository.findByProjectId(anyString()))
-        .thenReturn(
-            new ArrayList<BaseVimInstance>() {
-              {
-                add(createVimInstance());
-              }
-            });
+    when(nsrRepository.saveCascade(any(NetworkServiceRecord.class)))
+        .thenAnswer(
+            (Answer<NetworkServiceRecord>)
+                invocation -> {
+                  Object[] args = invocation.getArguments();
+                  return (NetworkServiceRecord) args[0];
+                });
+
+    when(vimRepository.findByProjectIdAndName(anyString(), anyString()))
+        .thenReturn(createVimInstance());
 
     when(vimRepository.findAll())
         .thenReturn(
@@ -294,17 +294,24 @@ public class NetworkServiceRecordManagementClassSuiteTest {
           PluginException, MissingParameterException, BadRequestException, IOException,
           AlreadyExistingException {
     /** Initial settings */
+    when(vimRepository.findByProjectIdAndName(anyString(), anyString()))
+        .thenReturn(createVimInstance());
     NetworkServiceDescriptor networkServiceDescriptor = createNetworkServiceDescriptor();
 
     when(nsrRepository.save(any(NetworkServiceRecord.class)))
         .thenAnswer(
-            new Answer<NetworkServiceRecord>() {
-              @Override
-              public NetworkServiceRecord answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                return (NetworkServiceRecord) args[0];
-              }
-            });
+            (Answer<NetworkServiceRecord>)
+                invocation -> {
+                  Object[] args = invocation.getArguments();
+                  return (NetworkServiceRecord) args[0];
+                });
+    when(nsrRepository.saveCascade(any(NetworkServiceRecord.class)))
+        .thenAnswer(
+            (Answer<NetworkServiceRecord>)
+                invocation -> {
+                  Object[] args = invocation.getArguments();
+                  return (NetworkServiceRecord) args[0];
+                });
 
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
         networkServiceDescriptor.getVnfd().iterator().next();
@@ -353,15 +360,22 @@ public class NetworkServiceRecordManagementClassSuiteTest {
           PluginException, MissingParameterException, BadRequestException, IOException,
           AlreadyExistingException {
     /** Initial settings */
+    when(vimRepository.findByProjectIdAndName(anyString(), anyString()))
+        .thenReturn(createVimInstance());
     when(nsrRepository.save(any(NetworkServiceRecord.class)))
         .thenAnswer(
-            new Answer<NetworkServiceRecord>() {
-              @Override
-              public NetworkServiceRecord answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                return (NetworkServiceRecord) args[0];
-              }
-            });
+            (Answer<NetworkServiceRecord>)
+                invocation -> {
+                  Object[] args = invocation.getArguments();
+                  return (NetworkServiceRecord) args[0];
+                });
+    when(nsrRepository.saveCascade(any(NetworkServiceRecord.class)))
+        .thenAnswer(
+            (Answer<NetworkServiceRecord>)
+                invocation -> {
+                  Object[] args = invocation.getArguments();
+                  return (NetworkServiceRecord) args[0];
+                });
     NetworkServiceDescriptor networkServiceDescriptor = createNetworkServiceDescriptor();
     when(nsdRepository.findFirstByIdAndProjectId(anyString(), eq(projectId)))
         .thenReturn(networkServiceDescriptor);
