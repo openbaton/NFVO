@@ -10,6 +10,7 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import org.openbaton.catalogue.keys.PopKeypair;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
 import org.openbaton.catalogue.nfvo.images.NFVImage;
@@ -33,6 +34,12 @@ public class OpenstackVimInstance extends BaseVimInstance {
 
   @ElementCollection(fetch = FetchType.EAGER)
   private Set<String> securityGroups;
+
+  @OneToMany(
+    fetch = FetchType.EAGER,
+    cascade = {CascadeType.ALL}
+  )
+  private Set<PopKeypair> keys;
 
   @OneToMany(
     fetch = FetchType.EAGER,
@@ -181,5 +188,13 @@ public class OpenstackVimInstance extends BaseVimInstance {
 
   public void setZones(Set<AvailabilityZone> zones) {
     this.zones = zones;
+  }
+
+  public Set<PopKeypair> getKeys() {
+    return keys;
+  }
+
+  public void setKeys(Set<PopKeypair> keys) {
+    this.keys = keys;
   }
 }
