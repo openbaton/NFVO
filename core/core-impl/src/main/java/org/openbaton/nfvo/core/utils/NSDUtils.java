@@ -839,10 +839,6 @@ public class NSDUtils {
       }
     }
 
-    //    if (vimInstance.getFlavours() == null) {
-    //      throw new NetworkServiceIntegrityException(
-    //          "No flavours found on your VIM instance, therefore it is not possible to on board your NSD");
-    //    }
     if (vimInstance instanceof OpenstackVimInstance) {
       Set<String> flavors = new HashSet<>();
       for (DeploymentFlavour deploymentFlavour :

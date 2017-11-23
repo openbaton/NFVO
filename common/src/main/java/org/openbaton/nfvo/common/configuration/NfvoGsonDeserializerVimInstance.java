@@ -25,6 +25,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
+import org.openbaton.catalogue.nfvo.viminstances.GenericVimInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class NfvoGsonDeserializerVimInstance implements JsonDeserializer<BaseVimInstance> {
 
-  private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+  private Gson gson =
+      new GsonBuilder()
+          //          .registerTypeAdapter(BaseNetwork.class, new NfvoGsonDeserializerNetwork())
+          //          .registerTypeAdapter(BaseNfvImage.class, new NfvoGsonDeserializerImage())
+          .setPrettyPrinting()
+          .create();
 
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -53,7 +59,7 @@ public class NfvoGsonDeserializerVimInstance implements JsonDeserializer<BaseVim
           (Class<? extends BaseVimInstance>) Class.forName(className);
       result = gson.fromJson(json, clz);
     } catch (ClassNotFoundException e) {
-      result = gson.fromJson(json, BaseVimInstance.class);
+      result = gson.fromJson(json, GenericVimInstance.class);
     }
 
     log.trace("Deserialized message is " + result);

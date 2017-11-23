@@ -102,15 +102,16 @@ public class MyVim extends Vim {
       throws VimException {}
 
   @Override
-  public Network add(BaseVimInstance vimInstance, Network network) throws VimException {
-    return network;
+  public BaseNetwork add(BaseVimInstance vimInstance, BaseNetwork network) throws VimException {
+    return (Network) network;
   }
 
   @Override
   public void delete(BaseVimInstance vimInstance, BaseNetwork network) throws VimException {}
 
   @Override
-  public Network update(BaseVimInstance vimInstance, Network updatingNetwork) throws VimException {
+  public BaseNetwork update(BaseVimInstance vimInstance, Network updatingNetwork)
+      throws VimException {
     return updatingNetwork;
   }
 

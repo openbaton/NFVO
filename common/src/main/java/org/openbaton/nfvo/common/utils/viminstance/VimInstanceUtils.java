@@ -160,7 +160,12 @@ public class VimInstanceUtils {
           .stream()
           .filter(i -> ((DockerImage) i).getTags().contains(imageName))
           .collect(Collectors.toList());
+    } else {
+      return vimInstance
+          .getImages()
+          .stream()
+          .filter(i -> i.getExtId().equals(imageName))
+          .collect(Collectors.toList());
     }
-    throw new UnsupportedOperationException("Not yet implemented");
   }
 }

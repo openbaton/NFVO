@@ -1202,19 +1202,12 @@ public class NetworkServiceRecordManagement
                   }
                 }
                 if (!networkExists) {
-                  Network network = new Network();
-                  network.setName(vnfdConnectionPoint.getVirtual_link_reference());
-                  HashSet<Subnet> subnets = new HashSet<>();
-                  Subnet subnet = new Subnet();
-                  subnet.setName(
-                      String.format("%s_subnet", vnfdConnectionPoint.getVirtual_link_reference()));
-                  subnet.setCidr(
-                      getCidrFromVLName(
-                          vnfdConnectionPoint.getVirtual_link_reference(),
+                  BaseNetwork network =
+                      createBaseNetwork(
                           networkServiceDescriptor,
-                          virtualNetworkFunctionDescriptor));
-                  subnets.add(subnet);
-                  network.setSubnets(subnets);
+                          virtualNetworkFunctionDescriptor,
+                          vnfdConnectionPoint,
+                          vimInstance.getType());
                   network = networkManagement.add(vimInstance, network);
                   vnfdConnectionPoint.setVirtual_link_reference_id(network.getExtId());
                 }
@@ -1259,6 +1252,38 @@ public class NetworkServiceRecordManagement
         networkServiceDescriptor, networkServiceRecord, body, vduVimInstances, monitoringIp);
     log.debug("Returning NSR " + networkServiceRecord.getName());
     return networkServiceRecord;
+  }
+
+  private BaseNetwork createBaseNetwork(
+      NetworkServiceDescriptor networkServiceDescriptor,
+      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
+      VNFDConnectionPoint vnfdConnectionPoint,
+      String type)
+      throws BadRequestException {
+    BaseNetwork network;
+    switch (type) {
+      case "openstack":
+        network = new Network();
+        HashSet<Subnet> subnets = new HashSet<>();
+        Subnet subnet = new Subnet();
+        subnet.setName(String.format("%s_subnet", vnfdConnectionPoint.getVirtual_link_reference()));
+        subnet.setCidr(
+            getCidrFromVLName(
+                vnfdConnectionPoint.getVirtual_link_reference(),
+                networkServiceDescriptor,
+                virtualNetworkFunctionDescriptor));
+        subnets.add(subnet);
+        ((Network) network).setSubnets(subnets);
+        break;
+      case "docker":
+        network = new DockerNetwork();
+        break;
+      default:
+        network = new BaseNetwork();
+        break;
+    }
+    network.setName(vnfdConnectionPoint.getVirtual_link_reference());
+    return network;
   }
 
   private boolean isVNFDConnectionPointExisting(

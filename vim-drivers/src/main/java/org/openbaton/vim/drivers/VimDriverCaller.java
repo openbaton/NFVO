@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -217,6 +218,9 @@ public class VimDriverCaller extends VimDriver {
       Map<String, String> floatingIps,
       Set<Key> keys)
       throws VimDriverException {
+    if (securityGroups == null) {
+      securityGroups = new HashSet<>();
+    }
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
     params.add(hostname);
@@ -284,19 +288,19 @@ public class VimDriverCaller extends VimDriver {
   }
 
   @Override
-  public Network createNetwork(BaseVimInstance vimInstance, BaseNetwork network)
+  public BaseNetwork createNetwork(BaseVimInstance vimInstance, BaseNetwork network)
       throws VimDriverException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
     params.add(network);
     Serializable res;
     try {
-      res = pluginCaller.executeRPC("createNetwork", params, Network.class);
+      res = pluginCaller.executeRPC("createNetwork", params, BaseNetwork.class);
     } catch (IOException | PluginException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());
     }
 
-    return (Network) res;
+    return (BaseNetwork) res;
   }
 
   @Override
@@ -422,19 +426,19 @@ public class VimDriverCaller extends VimDriver {
   }
 
   @Override
-  public Network updateNetwork(BaseVimInstance vimInstance, BaseNetwork network)
+  public BaseNetwork updateNetwork(BaseVimInstance vimInstance, BaseNetwork network)
       throws VimDriverException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);
     params.add(network);
     Serializable res;
     try {
-      res = pluginCaller.executeRPC("updateNetwork", params, Network.class);
+      res = pluginCaller.executeRPC("updateNetwork", params, BaseNetwork.class);
     } catch (IOException | PluginException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());
     }
 
-    return (Network) res;
+    return (BaseNetwork) res;
   }
 
   @Override
@@ -523,7 +527,7 @@ public class VimDriverCaller extends VimDriver {
     params.add(id);
     Serializable res;
     try {
-      res = pluginCaller.executeRPC("getNetworkById", params, Network.class);
+      res = pluginCaller.executeRPC("getNetworkById", params, BaseNetwork.class);
     } catch (IOException | PluginException | InterruptedException e) {
       throw new VimDriverException(e.getMessage());
     }

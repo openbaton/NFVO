@@ -99,11 +99,11 @@ public class NetworkManagementClassSuiteTest {
     //		Vim vim = vimBroker.getVim("mocked_vim");
     //		when(vim.update(any(VimInstance.class), any(Network.class))).thenReturn(network);
 
-    Network updated_network = networkManagement.update(createVimInstance(), network);
+    BaseNetwork updated_network = networkManagement.update(createVimInstance(), network);
 
     Assert.assertEquals(updated_network.getName(), network.getName());
     Assert.assertEquals(updated_network.getExtId(), network.getExtId());
-    Assert.assertEquals(updated_network.getExternal(), network.getExternal());
+    //    Assert.assertEquals(updated_network.getExternal(), network.getExternal());
   }
 
   private Network createNetwork() {
@@ -136,12 +136,11 @@ public class NetworkManagementClassSuiteTest {
     when(networkRepository.save(any(Network.class))).thenReturn(network_exp);
     when(vimBroker.getVim(anyString())).thenReturn(myVim);
 
-    Network network_new = networkManagement.add(createVimInstance(), network_exp);
+    BaseNetwork network_new = networkManagement.add(createVimInstance(), network_exp);
 
     Assert.assertEquals(network_exp.getId(), network_new.getId());
     Assert.assertEquals(network_exp.getName(), network_new.getName());
     Assert.assertEquals(network_exp.getExtId(), network_new.getExtId());
-    Assert.assertEquals(network_exp.getExternal(), network_new.getExternal());
   }
 
   @Test

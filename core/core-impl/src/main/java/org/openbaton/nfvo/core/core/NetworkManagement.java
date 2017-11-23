@@ -48,7 +48,7 @@ public class NetworkManagement implements org.openbaton.nfvo.core.interfaces.Net
   @Autowired private NetworkRepository networkRepository;
 
   @Override
-  public Network add(BaseVimInstance vimInstance, Network network)
+  public BaseNetwork add(BaseVimInstance vimInstance, BaseNetwork network)
       throws VimException, PluginException, BadRequestException {
     log.info("Creating network " + network.getName() + " on vim " + vimInstance.getName());
     org.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement vim;
@@ -56,26 +56,30 @@ public class NetworkManagement implements org.openbaton.nfvo.core.interfaces.Net
     //Define Network if values are null or empty
     if (network.getName() == null || network.getName().isEmpty())
       network.setName(IdGenerator.createUUID());
-    if (network.getSubnets().isEmpty()) {
-      //Define Subnet
-      Subnet subnet = new Subnet();
-      subnet.setName(network.getName() + "_subnet");
-      subnet.setCidr("192.168." + (int) (Math.random() * 255) + ".0/24");
-      //Define list of Subnets for Network
-      Set<Subnet> subnets = new HashSet<>();
-      subnets.add(subnet);
-      network.setSubnets(subnets);
-    } else {
-      for (Subnet subnet : network.getSubnets()) {
-        if (subnet.getName() == null || subnet.getName().equals(""))
-          subnet.setName(network.getName() + "_subnet");
-        if (subnet.getCidr() == null || subnet.getCidr().equals(""))
-          subnet.setCidr("192.168." + (int) (Math.random() * 255) + ".0/24");
-        try {
-          new SubnetUtils(subnet.getCidr());
-        } catch (IllegalArgumentException e) {
-          log.error(String.format("Cidr : %s is not valid", subnet.getCidr()));
-          throw new BadRequestException(String.format("Cidr : %s is not valid", subnet.getCidr()));
+    if (network instanceof Network) {
+      Network osNetwork = (Network) network;
+      if (osNetwork.getSubnets().isEmpty()) {
+        //Define Subnet
+        Subnet subnet = new Subnet();
+        subnet.setName(network.getName() + "_subnet");
+        subnet.setCidr("192.168." + (int) (Math.random() * 255) + ".0/24");
+        //Define list of Subnets for Network
+        Set<Subnet> subnets = new HashSet<>();
+        subnets.add(subnet);
+        osNetwork.setSubnets(subnets);
+      } else {
+        for (Subnet subnet : osNetwork.getSubnets()) {
+          if (subnet.getName() == null || subnet.getName().equals(""))
+            subnet.setName(network.getName() + "_subnet");
+          if (subnet.getCidr() == null || subnet.getCidr().equals(""))
+            subnet.setCidr("192.168." + (int) (Math.random() * 255) + ".0/24");
+          try {
+            new SubnetUtils(subnet.getCidr());
+          } catch (IllegalArgumentException e) {
+            log.error(String.format("Cidr : %s is not valid", subnet.getCidr()));
+            throw new BadRequestException(
+                String.format("Cidr : %s is not valid", subnet.getCidr()));
+          }
         }
       }
     }
@@ -103,7 +107,7 @@ public class NetworkManagement implements org.openbaton.nfvo.core.interfaces.Net
   }
 
   @Override
-  public Network update(BaseVimInstance vimInstance, Network updatingNetwork)
+  public BaseNetwork update(BaseVimInstance vimInstance, Network updatingNetwork)
       throws VimException, PluginException {
     //Fetch Vim
     org.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement vim;

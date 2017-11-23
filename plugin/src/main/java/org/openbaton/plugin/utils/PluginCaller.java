@@ -45,10 +45,14 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeoutException;
 import org.apache.commons.codec.binary.Base64;
 import org.openbaton.catalogue.nfvo.PluginMessage;
+import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
+import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimDriverException;
+import org.openbaton.nfvo.common.configuration.NfvoGsonDeserializerImage;
+import org.openbaton.nfvo.common.configuration.NfvoGsonDeserializerNetwork;
 import org.openbaton.nfvo.common.configuration.NfvoGsonDeserializerVimInstance;
 import org.openbaton.nfvo.common.configuration.NfvoGsonSerializerVimInstance;
 import org.openbaton.nfvo.common.utils.rabbit.RabbitManager;
@@ -68,6 +72,8 @@ public class PluginCaller {
   private Gson gson =
       new GsonBuilder()
           .registerTypeHierarchyAdapter(byte[].class, new ByteArrayToBase64TypeAdapter())
+          .registerTypeAdapter(BaseNetwork.class, new NfvoGsonDeserializerNetwork())
+          .registerTypeAdapter(BaseNfvImage.class, new NfvoGsonDeserializerImage())
           .registerTypeAdapter(BaseVimInstance.class, new NfvoGsonDeserializerVimInstance())
           .registerTypeAdapter(BaseVimInstance.class, new NfvoGsonSerializerVimInstance())
           .setPrettyPrinting()
@@ -138,12 +144,6 @@ public class PluginCaller {
     if (virtualHost != null && !"".equals(virtualHost)) {
       factory.setVirtualHost(virtualHost);
     }
-    //connection = factory.newConnection();
-
-    //        replyQueueName = channel.queueDeclare().getQueue();
-    //        channel.queueBind(replyQueueName,exchange,replyQueueName);
-    //        consumer = new QueueingConsumer(channel);
-    //        channel.basicConsume(replyQueueName, true, consumer);
   }
 
   public void close() throws IOException {
@@ -192,21 +192,19 @@ public class PluginCaller {
 
     final BlockingQueue<String> response = new ArrayBlockingQueue<String>(1);
 
-    //    QueueingConsumer consumer = new QueueingConsumer(channel);
-    String consumerTag =
-        channel.basicConsume(
-            replyQueueName,
-            true,
-            new DefaultConsumer(channel) {
-              @Override
-              public void handleDelivery(
-                  String consumerTag, Envelope envelope, BasicProperties properties, byte[] body)
-                  throws IOException {
-                if (properties.getCorrelationId().equals(corrId)) {
-                  response.offer(new String(body, "UTF-8"));
-                }
-              }
-            });
+    channel.basicConsume(
+        replyQueueName,
+        true,
+        new DefaultConsumer(channel) {
+          @Override
+          public void handleDelivery(
+              String consumerTag, Envelope envelope, BasicProperties properties, byte[] body)
+              throws IOException {
+            if (properties.getCorrelationId().equals(corrId)) {
+              response.offer(new String(body, "UTF-8"));
+            }
+          }
+        });
 
     //Check if plugin is still up
     if (!RabbitManager.getQueues(brokerIp, username, password, virtualHost, managementPort)

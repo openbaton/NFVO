@@ -25,9 +25,7 @@ import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.nfvo.Quota;
 import org.openbaton.catalogue.nfvo.Server;
 import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
-import org.openbaton.catalogue.nfvo.images.NFVImage;
 import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
-import org.openbaton.catalogue.nfvo.networks.Network;
 import org.openbaton.catalogue.nfvo.networks.Subnet;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.security.Key;
@@ -86,15 +84,16 @@ public interface ClientInterfaces {
 
   void deleteServerByIdAndWait(BaseVimInstance vimInstance, String id) throws VimDriverException;
 
-  Network createNetwork(BaseVimInstance vimInstance, BaseNetwork network) throws VimDriverException;
+  BaseNetwork createNetwork(BaseVimInstance vimInstance, BaseNetwork network)
+      throws VimDriverException;
 
   DeploymentFlavour addFlavor(BaseVimInstance vimInstance, DeploymentFlavour deploymentFlavour)
       throws VimDriverException;
 
-  NFVImage addImage(BaseVimInstance vimInstance, BaseNfvImage image, byte[] imageFile)
+  BaseNfvImage addImage(BaseVimInstance vimInstance, BaseNfvImage image, byte[] imageFile)
       throws VimDriverException;
 
-  NFVImage addImage(BaseVimInstance vimInstance, BaseNfvImage image, String image_url)
+  BaseNfvImage addImage(BaseVimInstance vimInstance, BaseNfvImage image, String image_url)
       throws VimDriverException;
 
   BaseNfvImage updateImage(BaseVimInstance vimInstance, BaseNfvImage image)
@@ -113,7 +112,8 @@ public interface ClientInterfaces {
   Subnet createSubnet(BaseVimInstance vimInstance, BaseNetwork createdNetwork, Subnet subnet)
       throws VimDriverException;
 
-  Network updateNetwork(BaseVimInstance vimInstance, BaseNetwork network) throws VimDriverException;
+  BaseNetwork updateNetwork(BaseVimInstance vimInstance, BaseNetwork network)
+      throws VimDriverException;
 
   Subnet updateSubnet(BaseVimInstance vimInstance, BaseNetwork updatedNetwork, Subnet subnet)
       throws VimDriverException;

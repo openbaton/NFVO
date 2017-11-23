@@ -33,7 +33,7 @@ public interface NetworkManagement {
    * @return the {@link Network} added
    * @throws VimException in case of exception
    */
-  Network add(BaseVimInstance vimInstance, Network network) throws VimException;
+  BaseNetwork add(BaseVimInstance vimInstance, BaseNetwork network) throws VimException;
 
   /**
    * This operation allows deleting in the Networks from the network repository.
@@ -52,7 +52,7 @@ public interface NetworkManagement {
    * @return the {@link Network} updated
    * @throws VimException in case of exception
    */
-  Network update(BaseVimInstance vimInstance, Network updatingNetwork) throws VimException;
+  BaseNetwork update(BaseVimInstance vimInstance, Network updatingNetwork) throws VimException;
 
   /**
    * This operation allows querying the information of the Networks in the network repository.

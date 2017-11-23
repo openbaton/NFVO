@@ -209,13 +209,13 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
       return vimInstance;
     }
 
-    if (vimInstanceWithSameNameExists(vimInstance)) {
-      throw new AlreadyExistingException(
-          "VimInstance with name \""
-              + vimInstance.getName()
-              + "\" already exists in project with id: "
-              + vimInstance.getProjectId());
-    }
+    //    if (vimInstanceWithSameNameExists(vimInstance)) {
+    //      throw new AlreadyExistingException(
+    //          "VimInstance with name \""
+    //              + vimInstance.getName()
+    //              + "\" already exists in project with id: "
+    //              + vimInstance.getProjectId());
+    //    }
 
     log.info("Refreshing vim");
 
@@ -227,9 +227,9 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   }
 
   private boolean vimInstanceWithSameNameExists(BaseVimInstance vimInstance) {
-    return vimInstance.getId() == null
+    return vimInstance.getId() != null
         && vimRepository.findByProjectIdAndName(vimInstance.getProjectId(), vimInstance.getName())
-            == null;
+            != null;
   }
 
   /**

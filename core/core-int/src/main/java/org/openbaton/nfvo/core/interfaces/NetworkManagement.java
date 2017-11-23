@@ -28,7 +28,7 @@ import org.openbaton.exceptions.VimException;
 public interface NetworkManagement {
 
   /** This operation allows adding new VNF software images to the image repository. */
-  Network add(BaseVimInstance vimInstance, Network network)
+  BaseNetwork add(BaseVimInstance vimInstance, BaseNetwork network)
       throws VimException, PluginException, BadRequestException;
 
   /** This operation allows deleting in the VNF software images from the image repository. */
@@ -36,7 +36,7 @@ public interface NetworkManagement {
       throws VimException, PluginException;
 
   /** This operation allows updating the VNF software images in the image repository. */
-  Network update(BaseVimInstance vimInstance, Network new_network)
+  BaseNetwork update(BaseVimInstance vimInstance, Network new_network)
       throws VimException, PluginException;
 
   /**

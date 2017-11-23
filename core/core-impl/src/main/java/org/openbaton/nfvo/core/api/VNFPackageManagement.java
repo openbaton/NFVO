@@ -1050,7 +1050,7 @@ public class VNFPackageManagement
               } else if (nfvImage instanceof DockerImage) {
                 DockerImage dockerImage = (DockerImage) nfvImage;
                 return dockerImage.getTags().contains(name);
-              } else return false;
+              } else return nfvImage.getExtId().equals(name);
             });
   }
 
