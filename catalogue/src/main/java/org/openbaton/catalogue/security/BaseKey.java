@@ -35,7 +35,7 @@ public abstract class BaseKey extends BaseEntity {
 
   @NotNull
   @Size(min = 1)
-  @Column(length = 500)
+  @Column(length = 1500)
   private String publicKey;
 
   private String fingerprint;
