@@ -31,4 +31,6 @@ public interface VimRepository
   List<BaseVimInstance> findByProjectId(String projectId);
 
   BaseVimInstance findByProjectIdAndName(String projectId, String name);
+
+  List<BaseVimInstance> findByType(String type);
 }

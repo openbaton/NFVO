@@ -21,6 +21,7 @@ dependencies {
     compile project(':exception')
     compile project(':common')
     compile project(':vnfm-int')
+    compile project(':core-int')
 
     compile 'org.springframework.boot:spring-boot-starter-web:' + springBootVersion
     compile 'org.springframework.boot:spring-boot-starter-security:'+ springBootVersion

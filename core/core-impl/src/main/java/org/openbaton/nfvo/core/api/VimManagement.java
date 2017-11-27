@@ -209,14 +209,6 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
       return vimInstance;
     }
 
-    //    if (vimInstanceWithSameNameExists(vimInstance)) {
-    //      throw new AlreadyExistingException(
-    //          "VimInstance with name \""
-    //              + vimInstance.getName()
-    //              + "\" already exists in project with id: "
-    //              + vimInstance.getProjectId());
-    //    }
-
     log.info("Refreshing vim");
 
     vimInstance = vimBroker.getVim(vimInstance.getType()).refresh(vimInstance);
