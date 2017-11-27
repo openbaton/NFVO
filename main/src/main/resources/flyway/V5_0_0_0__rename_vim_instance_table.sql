@@ -25,3 +25,9 @@ INSERT openstack_vim_instance SELECT * FROM vim_instance where type="openstack";
 INSERT docker_vim_instance SELECT * FROM vim_instance where type="docker";
 INSERT docker_vim_instance SELECT * FROM vim_instance where type!="docker" AND type!="openstack";
 # RENAME TABLE vim_instance TO ;
+
+DROP TABLE vim_instance;
+
+SELECT CONCAT( 'DROP TABLE ', GROUP_CONCAT(table_name) , ';' )
+  AS statement FROM information_schema.tables
+WHERE table_schema = 'openbaton' AND table_name LIKE 'vim_instance_%';
