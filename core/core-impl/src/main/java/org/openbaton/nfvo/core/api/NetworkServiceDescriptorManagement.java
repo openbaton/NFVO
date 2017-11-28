@@ -154,9 +154,6 @@ public class NetworkServiceDescriptorManagement
     nsdUtils.checkEndpoint(networkServiceDescriptor, endpoints);
 
     log.trace("Creating " + networkServiceDescriptor);
-    //    log.trace("Fetching Data");
-    //    nsdUtils.fetchVimInstances(networkServiceDescriptor, projectId);
-    //    log.trace("Fetched Data");
 
     for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
       vnfd.setCreatedAt(format.format(new Date()));

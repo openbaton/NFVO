@@ -98,7 +98,6 @@ public class VnfStateHandler implements org.openbaton.vnfm.interfaces.state.VnfS
 
   private Future<NFVMessage> executeActionNotAsync(NFVMessage nfvMessage)
       throws ExecutionException, InterruptedException {
-    //    log.debug("-----------Finished ACTION: " + nfvMessage.getAction());
     String actionName = nfvMessage.getAction().toString().replace("_", "").toLowerCase();
     String beanName = actionName + "Task";
     log.debug("Looking for bean called: " + beanName);

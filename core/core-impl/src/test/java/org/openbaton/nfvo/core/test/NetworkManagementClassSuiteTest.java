@@ -20,10 +20,10 @@ package org.openbaton.nfvo.core.test;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.openbaton.nfvo.core.test.TestUtils.createVimInstance;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Set;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -34,17 +34,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.openbaton.catalogue.mano.common.DeploymentFlavour;
-import org.openbaton.catalogue.mano.common.HighAvailability;
-import org.openbaton.catalogue.mano.common.ResiliencyLevel;
-import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
-import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.openbaton.catalogue.nfvo.NFVImage;
-import org.openbaton.catalogue.nfvo.Network;
-import org.openbaton.catalogue.nfvo.Subnet;
-import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
+import org.openbaton.catalogue.nfvo.networks.Network;
+import org.openbaton.catalogue.nfvo.networks.Subnet;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
@@ -107,11 +99,11 @@ public class NetworkManagementClassSuiteTest {
     //		Vim vim = vimBroker.getVim("mocked_vim");
     //		when(vim.update(any(VimInstance.class), any(Network.class))).thenReturn(network);
 
-    Network updated_network = networkManagement.update(createVimInstance(), network);
+    BaseNetwork updated_network = networkManagement.update(createVimInstance(), network);
 
     Assert.assertEquals(updated_network.getName(), network.getName());
     Assert.assertEquals(updated_network.getExtId(), network.getExtId());
-    Assert.assertEquals(updated_network.getExternal(), network.getExternal());
+    //    Assert.assertEquals(updated_network.getExternal(), network.getExternal());
   }
 
   private Network createNetwork() {
@@ -144,133 +136,36 @@ public class NetworkManagementClassSuiteTest {
     when(networkRepository.save(any(Network.class))).thenReturn(network_exp);
     when(vimBroker.getVim(anyString())).thenReturn(myVim);
 
-    Network network_new = networkManagement.add(createVimInstance(), network_exp);
+    BaseNetwork network_new = networkManagement.add(createVimInstance(), network_exp);
 
     Assert.assertEquals(network_exp.getId(), network_new.getId());
     Assert.assertEquals(network_exp.getName(), network_new.getName());
     Assert.assertEquals(network_exp.getExtId(), network_new.getExtId());
-    Assert.assertEquals(network_exp.getExternal(), network_new.getExternal());
   }
 
   @Test
   public void networkManagementQueryTest() {
-    when(networkRepository.findAll()).thenReturn(new ArrayList<Network>());
+    when(networkRepository.findAll()).thenReturn(new ArrayList<>());
 
     //Assert.assertEquals(0, networkManagement.query().size());
 
     Network network_exp = createNetwork();
     when(networkRepository.findOne(network_exp.getId())).thenReturn(network_exp);
-    Network network_new = networkManagement.query(network_exp.getId());
-    Assert.assertEquals(network_exp.getId(), network_new.getId());
-    Assert.assertEquals(network_exp.getName(), network_new.getName());
-    Assert.assertEquals(network_exp.getExtId(), network_new.getExtId());
-    Assert.assertEquals(network_exp.getExternal(), network_new.getExternal());
+    BaseNetwork networkNew = networkManagement.query(network_exp.getId());
+    Assert.assertEquals(network_exp.getId(), networkNew.getId());
+    Assert.assertEquals(network_exp.getName(), networkNew.getName());
+    Assert.assertEquals(network_exp.getExtId(), networkNew.getExtId());
+    //    Assert.assertEquals(network_exp.getExternal(), networkNew.getExternal());
   }
 
   @Test
   public void networkManagementDeleteTest() throws VimException, PluginException {
-    Network network_exp = createNetwork();
+    BaseNetwork network_exp = createNetwork();
     when(vimBroker.getVim(anyString())).thenReturn(myVim);
     when(networkRepository.findOne(network_exp.getId())).thenReturn(network_exp);
     networkManagement.delete(createVimInstance(), network_exp);
     when(networkRepository.findOne(anyString())).thenReturn(null);
-    Network network_new = networkManagement.query(network_exp.getId());
+    BaseNetwork network_new = networkManagement.query(network_exp.getId());
     Assert.assertNull(network_new);
-  }
-
-  private NFVImage createNfvImage() {
-    NFVImage nfvImage = new NFVImage();
-    nfvImage.setName("image_name");
-    nfvImage.setExtId("ext_id");
-    nfvImage.setMinCPU("1");
-    nfvImage.setMinRam(1024);
-    return nfvImage;
-  }
-
-  private NetworkServiceDescriptor createNetworkServiceDescriptor() {
-    final NetworkServiceDescriptor nsd = new NetworkServiceDescriptor();
-    nsd.setVendor("FOKUS");
-    Set<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new HashSet<>();
-    VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
-        new VirtualNetworkFunctionDescriptor();
-    virtualNetworkFunctionDescriptor.setMonitoring_parameter(
-        new HashSet<String>() {
-          {
-            add("monitor1");
-            add("monitor2");
-            add("monitor3");
-          }
-        });
-    virtualNetworkFunctionDescriptor.setDeployment_flavour(
-        new HashSet<VNFDeploymentFlavour>() {
-          {
-            VNFDeploymentFlavour vdf = new VNFDeploymentFlavour();
-            vdf.setExtId("ext_id");
-            vdf.setFlavour_key("flavor_name");
-            add(vdf);
-          }
-        });
-    virtualNetworkFunctionDescriptor.setVdu(
-        new HashSet<VirtualDeploymentUnit>() {
-          {
-            VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
-            HighAvailability highAvailability = new HighAvailability();
-            highAvailability.setRedundancyScheme("1:N");
-            highAvailability.setResiliencyLevel(ResiliencyLevel.ACTIVE_STANDBY_STATELESS);
-            vdu.setHigh_availability(highAvailability);
-            vdu.setComputation_requirement("high_requirements");
-            VimInstance vimInstance = new VimInstance();
-            vimInstance.setName("vim_instance");
-            vimInstance.setType("test");
-            add(vdu);
-          }
-        });
-    virtualNetworkFunctionDescriptors.add(virtualNetworkFunctionDescriptor);
-    nsd.setVnfd(virtualNetworkFunctionDescriptors);
-    return nsd;
-  }
-
-  private VimInstance createVimInstance() {
-    VimInstance vimInstance = new VimInstance();
-    vimInstance.setName("vim_instance");
-    vimInstance.setType("test");
-    vimInstance.setNetworks(
-        new HashSet<Network>() {
-          {
-            Network network = new Network();
-            network.setExtId("ext_id");
-            network.setName("network_name");
-            add(network);
-          }
-        });
-    vimInstance.setFlavours(
-        new HashSet<DeploymentFlavour>() {
-          {
-            DeploymentFlavour deploymentFlavour = new DeploymentFlavour();
-            deploymentFlavour.setExtId("ext_id_1");
-            deploymentFlavour.setFlavour_key("flavor_name");
-            add(deploymentFlavour);
-
-            deploymentFlavour = new DeploymentFlavour();
-            deploymentFlavour.setExtId("ext_id_2");
-            deploymentFlavour.setFlavour_key("m1.tiny");
-            add(deploymentFlavour);
-          }
-        });
-    vimInstance.setImages(
-        new HashSet<NFVImage>() {
-          {
-            NFVImage image = new NFVImage();
-            image.setExtId("ext_id_1");
-            image.setName("ubuntu-14.04-server-cloudimg-amd64-disk1");
-            add(image);
-
-            image = new NFVImage();
-            image.setExtId("ext_id_2");
-            image.setName("image_name_1");
-            add(image);
-          }
-        });
-    return vimInstance;
   }
 }

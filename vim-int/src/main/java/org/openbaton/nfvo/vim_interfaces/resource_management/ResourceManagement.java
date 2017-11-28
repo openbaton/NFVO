@@ -27,7 +27,7 @@ import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Quota;
 import org.openbaton.catalogue.nfvo.Server;
-import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.VimException;
 
@@ -37,7 +37,7 @@ public interface ResourceManagement {
    * This operation allows requesting the instantiation and assignment of a virtualised resource to
    * the VNF, as indicated by the consumer functional block.
    *
-   * @param vimInstance the {@link VimInstance} on which allocate the resource
+   * @param vimInstance the {@link BaseVimInstance} on which allocate the resource
    * @param vdu the {@link VirtualDeploymentUnit}
    * @param virtualNetworkFunctionRecord the {@link VirtualNetworkFunctionRecord}
    * @param vnfComponent the {@link VNFComponent}
@@ -49,7 +49,7 @@ public interface ResourceManagement {
    * @throws VimException in case of exception
    */
   Future<VNFCInstance> allocate(
-      VimInstance vimInstance,
+      BaseVimInstance vimInstance,
       VirtualDeploymentUnit vdu,
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
       VNFComponent vnfComponent,
@@ -62,11 +62,11 @@ public interface ResourceManagement {
    * This operation allows querying a virtualised resource, i.e. retrieve information about an
    * instantiated virtualised resource.
    *
-   * @param vimInstance the {@link VimInstance} on which query the list of {@link Server}s
+   * @param vimInstance the {@link BaseVimInstance} on which query the list of {@link Server}s
    * @return the list of deplyed {@link Server}s
    * @throws VimException in case of exception
    */
-  List<Server> queryResources(VimInstance vimInstance) throws VimException;
+  List<Server> queryResources(BaseVimInstance vimInstance) throws VimException;
 
   /**
    * This operation allows updating the configuration and/or parameterization of an instantiated
@@ -108,11 +108,11 @@ public interface ResourceManagement {
    * operation frees resources and returns them to the NFVI resource pool.
    *
    * @param vnfcInstance the {@link VNFCInstance} to deallocate
-   * @param vimInstance the {@link VimInstance} on which deallocate the resource
+   * @param vimInstance the {@link BaseVimInstance} on which deallocate the resource
    * @return Future of {@link Void}
    * @throws VimException in case of exception
    */
-  Future<Void> release(VNFCInstance vnfcInstance, VimInstance vimInstance) throws VimException;
+  Future<Void> release(VNFCInstance vnfcInstance, BaseVimInstance vimInstance) throws VimException;
 
   /**
    * This operation allows requesting the reservation of a set of virtualised resources to a
@@ -148,9 +148,11 @@ public interface ResourceManagement {
   /**
    * This operations return the maximal Quotas allowed to allocate.
    *
-   * @param vimInstance the {@link VimInstance} on which requesting the quota
-   * @return quota the {@link Quota} for that specific {@link VimInstance}
+   * @param vimInstance the {@link BaseVimInstance} on which requesting the quota
+   * @return quota the {@link Quota} for that specific {@link BaseVimInstance}
    * @throws VimException in case of exception
    */
-  Quota getQuota(VimInstance vimInstance) throws VimException;
+  Quota getQuota(BaseVimInstance vimInstance) throws VimException;
+
+  BaseVimInstance refresh(BaseVimInstance vimInstance) throws VimException;
 }

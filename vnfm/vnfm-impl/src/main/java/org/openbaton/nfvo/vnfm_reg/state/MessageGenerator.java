@@ -17,7 +17,6 @@ import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.openbaton.catalogue.nfvo.EndpointType;
 import org.openbaton.catalogue.nfvo.VNFPackage;
-import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmInstantiateMessage;
@@ -29,9 +28,11 @@ import org.openbaton.catalogue.nfvo.messages.VnfmOrInstantiateMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrScaledMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrScalingMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrStartStopMessage;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.ManagerCredentialsRepository;
+import org.openbaton.nfvo.repositories.VduRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
 import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
@@ -81,6 +82,8 @@ public class MessageGenerator implements org.openbaton.vnfm.interfaces.manager.M
   @Value("${spring.rabbitmq.port:5672}")
   private String brokerPort;
 
+  @Autowired private VduRepository vduRepository;
+
   @Override
   public VnfmSender getVnfmSender(EndpointType endpointType) throws BeansException {
     String senderName = endpointType.toString().toLowerCase() + "VnfmSender";
@@ -128,7 +131,7 @@ public class MessageGenerator implements org.openbaton.vnfm.interfaces.manager.M
       NetworkServiceRecord networkServiceRecord,
       DeployNSRBody body)
       throws NotFoundException {
-    Map<String, Collection<VimInstance>> vimInstances = new HashMap<>();
+    Map<String, Collection<BaseVimInstance>> vimInstances = new HashMap<>();
 
     for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
       vimInstances.put(vdu.getId(), new LinkedHashSet<>());
@@ -136,14 +139,21 @@ public class MessageGenerator implements org.openbaton.vnfm.interfaces.manager.M
       for (String vimInstanceName : vimInstanceNames) {
         log.debug(
             "deployment procedure for (" + vnfd.getName() + "). Looking for " + vimInstanceName);
-        VimInstance vimInstance = null;
+        BaseVimInstance vimInstance = null;
 
-        for (VimInstance vi : vimInstanceRepository.findByProjectId(vdu.getProjectId())) {
-          if (vimInstanceName.equals(vi.getName())) {
-            vimInstance = vi;
-            break;
+        String name;
+        if (vimInstanceName.contains(":")) {
+          name = vimInstanceName.split(":")[0];
+          if (vdu.getMetadata() == null) {
+            vdu.setMetadata(new HashMap<>());
           }
+          String az = vimInstanceName.split(":")[1];
+          vdu.getMetadata().put("az", az);
+          //          vdu = vduRepository.save(vdu);
+        } else {
+          name = vimInstanceName;
         }
+        vimInstance = vimInstanceRepository.findByProjectIdAndName(vdu.getProjectId(), name);
 
         vimInstances.get(vdu.getId()).add(vimInstance);
       }
@@ -269,7 +279,7 @@ public class MessageGenerator implements org.openbaton.vnfm.interfaces.manager.M
           (VnfmOrAllocateResourcesMessage) nfvMessage;
       virtualNetworkFunctionRecord =
           vnfmOrAllocateResourcesMessage.getVirtualNetworkFunctionRecord();
-      Map<String, VimInstance> vimChosen = vnfmOrAllocateResourcesMessage.getVimInstances();
+      Map<String, BaseVimInstance> vimChosen = vnfmOrAllocateResourcesMessage.getVimInstances();
       ((AllocateresourcesTask) task).setVims(vimChosen);
       ((AllocateresourcesTask) task)
           .setKeys(new HashSet<>(vnfmOrAllocateResourcesMessage.getKeyPairs()));

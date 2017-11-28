@@ -20,13 +20,13 @@ package org.openbaton.catalogue.nfvo.messages;
 import java.util.Map;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
-import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 
 /** Created by mob on 15.09.15. */
 public class OrVnfmGrantLifecycleOperationMessage extends OrVnfmMessage {
   private boolean grantAllowed;
-  private Map<String, VimInstance> vduVim;
+  private Map<String, BaseVimInstance> vduVim;
 
   @Override
   public String toString() {
@@ -63,11 +63,11 @@ public class OrVnfmGrantLifecycleOperationMessage extends OrVnfmMessage {
     this.grantAllowed = grantAllowed;
   }
 
-  public Map<String, VimInstance> getVduVim() {
+  public Map<String, BaseVimInstance> getVduVim() {
     return vduVim;
   }
 
-  public void setVduVim(Map<String, VimInstance> vduVim) {
+  public void setVduVim(Map<String, BaseVimInstance> vduVim) {
     this.vduVim = vduVim;
   }
 }

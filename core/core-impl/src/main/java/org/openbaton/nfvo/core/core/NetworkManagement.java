@@ -20,9 +20,10 @@ package org.openbaton.nfvo.core.core;
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.commons.net.util.SubnetUtils;
-import org.openbaton.catalogue.nfvo.Network;
-import org.openbaton.catalogue.nfvo.Subnet;
-import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
+import org.openbaton.catalogue.nfvo.networks.Network;
+import org.openbaton.catalogue.nfvo.networks.Subnet;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.util.IdGenerator;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.PluginException;
@@ -47,7 +48,7 @@ public class NetworkManagement implements org.openbaton.nfvo.core.interfaces.Net
   @Autowired private NetworkRepository networkRepository;
 
   @Override
-  public Network add(VimInstance vimInstance, Network network)
+  public BaseNetwork add(BaseVimInstance vimInstance, BaseNetwork network)
       throws VimException, PluginException, BadRequestException {
     log.info("Creating network " + network.getName() + " on vim " + vimInstance.getName());
     org.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement vim;
@@ -55,26 +56,30 @@ public class NetworkManagement implements org.openbaton.nfvo.core.interfaces.Net
     //Define Network if values are null or empty
     if (network.getName() == null || network.getName().isEmpty())
       network.setName(IdGenerator.createUUID());
-    if (network.getSubnets().isEmpty()) {
-      //Define Subnet
-      Subnet subnet = new Subnet();
-      subnet.setName(network.getName() + "_subnet");
-      subnet.setCidr("192.168." + (int) (Math.random() * 255) + ".0/24");
-      //Define list of Subnets for Network
-      Set<Subnet> subnets = new HashSet<>();
-      subnets.add(subnet);
-      network.setSubnets(subnets);
-    } else {
-      for (Subnet subnet : network.getSubnets()) {
-        if (subnet.getName() == null || subnet.getName().equals(""))
-          subnet.setName(network.getName() + "_subnet");
-        if (subnet.getCidr() == null || subnet.getCidr().equals(""))
-          subnet.setCidr("192.168." + (int) (Math.random() * 255) + ".0/24");
-        try {
-          new SubnetUtils(subnet.getCidr());
-        } catch (IllegalArgumentException e) {
-          log.error(String.format("Cidr : %s is not valid", subnet.getCidr()));
-          throw new BadRequestException(String.format("Cidr : %s is not valid", subnet.getCidr()));
+    if (network instanceof Network) {
+      Network osNetwork = (Network) network;
+      if (osNetwork.getSubnets().isEmpty()) {
+        //Define Subnet
+        Subnet subnet = new Subnet();
+        subnet.setName(network.getName() + "_subnet");
+        subnet.setCidr("192.168." + (int) (Math.random() * 255) + ".0/24");
+        //Define list of Subnets for Network
+        Set<Subnet> subnets = new HashSet<>();
+        subnets.add(subnet);
+        osNetwork.setSubnets(subnets);
+      } else {
+        for (Subnet subnet : osNetwork.getSubnets()) {
+          if (subnet.getName() == null || subnet.getName().equals(""))
+            subnet.setName(network.getName() + "_subnet");
+          if (subnet.getCidr() == null || subnet.getCidr().equals(""))
+            subnet.setCidr("192.168." + (int) (Math.random() * 255) + ".0/24");
+          try {
+            new SubnetUtils(subnet.getCidr());
+          } catch (IllegalArgumentException e) {
+            log.error(String.format("Cidr : %s is not valid", subnet.getCidr()));
+            throw new BadRequestException(
+                String.format("Cidr : %s is not valid", subnet.getCidr()));
+          }
         }
       }
     }
@@ -83,14 +88,14 @@ public class NetworkManagement implements org.openbaton.nfvo.core.interfaces.Net
     //Create Network in NetworkRepository
     network = networkRepository.save(network);
     //Add network to VimInstance
-    vimInstance.getNetworks().add(network);
+    vimInstance.addNetwork(network);
     log.info("Created Network " + network.getName());
     log.debug("Network details: " + network);
     return network;
   }
 
   @Override
-  public void delete(VimInstance vimInstance, Network network)
+  public void delete(BaseVimInstance vimInstance, BaseNetwork network)
       throws VimException, PluginException {
     //Fetch Vim
     org.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement vim;
@@ -102,7 +107,7 @@ public class NetworkManagement implements org.openbaton.nfvo.core.interfaces.Net
   }
 
   @Override
-  public Network update(VimInstance vimInstance, Network updatingNetwork)
+  public BaseNetwork update(BaseVimInstance vimInstance, Network updatingNetwork)
       throws VimException, PluginException {
     //Fetch Vim
     org.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement vim;
@@ -112,12 +117,12 @@ public class NetworkManagement implements org.openbaton.nfvo.core.interfaces.Net
   }
 
   @Override
-  public Iterable<Network> query() {
+  public Iterable<BaseNetwork> query() {
     return networkRepository.findAll();
   }
 
   @Override
-  public Network query(String id) {
+  public BaseNetwork query(String id) {
     return networkRepository.findOne(id);
   }
 }

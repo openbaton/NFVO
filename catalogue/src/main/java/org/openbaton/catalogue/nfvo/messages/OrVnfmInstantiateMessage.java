@@ -25,8 +25,8 @@ import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.VNFPackage;
-import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.security.Key;
 
 /** Created by mob on 14.09.15. */
@@ -36,7 +36,7 @@ public class OrVnfmInstantiateMessage extends OrVnfmMessage {
   private String vnfInstanceName;
   private Set<VirtualLinkRecord> vlrs;
   private Map<String, String> extension;
-  private Map<String, Collection<VimInstance>> vimInstances;
+  private Map<String, Collection<BaseVimInstance>> vimInstances;
   private VNFPackage vnfPackage;
 
   public Set<Key> getKeys() {
@@ -59,7 +59,7 @@ public class OrVnfmInstantiateMessage extends OrVnfmMessage {
       String vnfInstanceName,
       Set<VirtualLinkRecord> vlrs,
       Map<String, String> extension,
-      Map<String, Collection<VimInstance>> vimInstances,
+      Map<String, Collection<BaseVimInstance>> vimInstances,
       Set<Key> keys,
       VNFPackage vnfPackage) {
     this.vnfd = vnfd;
@@ -73,11 +73,11 @@ public class OrVnfmInstantiateMessage extends OrVnfmMessage {
     this.vnfPackage = vnfPackage;
   }
 
-  public Map<String, Collection<VimInstance>> getVimInstances() {
+  public Map<String, Collection<BaseVimInstance>> getVimInstances() {
     return vimInstances;
   }
 
-  public void setVimInstances(Map<String, Collection<VimInstance>> vimInstances) {
+  public void setVimInstances(Map<String, Collection<BaseVimInstance>> vimInstances) {
     this.vimInstances = vimInstances;
   }
 

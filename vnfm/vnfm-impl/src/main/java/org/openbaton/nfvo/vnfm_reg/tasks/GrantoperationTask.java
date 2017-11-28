@@ -23,10 +23,11 @@ import java.util.Map;
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.Status;
-import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGrantLifecycleOperationMessage;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
 import org.openbaton.nfvo.core.interfaces.VnfPlacementManagement;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
@@ -59,6 +60,7 @@ public class GrantoperationTask extends AbstractTask {
 
   @Override
   protected NFVMessage doWork() throws Exception {
+    if (virtualNetworkFunctionRecord.getName().contains("client")) log.info("client");
     log.info("Executing task: GrantOperation on VNFR: " + virtualNetworkFunctionRecord.getName());
 
     if (!checkQuota) {
@@ -70,6 +72,32 @@ public class GrantoperationTask extends AbstractTask {
               + virtualNetworkFunctionRecord.getId()
               + ") received hibernate version is: "
               + virtualNetworkFunctionRecord.getHbVersion());
+
+      VirtualNetworkFunctionRecord existing =
+          vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
+
+      virtualNetworkFunctionRecord
+          .getVdu()
+          .forEach(
+              vdu -> {
+                log.trace(
+                    "VDU ("
+                        + vdu.getId()
+                        + ") received with hibernate version = "
+                        + vdu.getHbVersion());
+              });
+
+      existing
+          .getVdu()
+          .forEach(
+              vdu -> {
+                log.trace(
+                    "VDU ("
+                        + vdu.getId()
+                        + ") existing hibernate version is = "
+                        + vdu.getHbVersion());
+              });
+
       OrVnfmGrantLifecycleOperationMessage nfvMessage = new OrVnfmGrantLifecycleOperationMessage();
       nfvMessage.setGrantAllowed(true);
       nfvMessage.setVduVim(new HashMap<>());
@@ -83,8 +111,6 @@ public class GrantoperationTask extends AbstractTask {
                     virtualNetworkFunctionRecord.getProjectId()));
       }
       nfvMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
-      //                OrVnfmGenericMessage nfvMessage = new OrVnfmGenericMessage(virtualNetworkFunctionRecord,
-      // Action.GRANT_OPERATION);
       return nfvMessage;
     } else {
       //Save the vnfr since in the grantLifecycleOperation method we use vdu.getId()
@@ -97,9 +123,9 @@ public class GrantoperationTask extends AbstractTask {
                 + " possible vim instances are: "
                 + virtualDeploymentUnit.getVimInstanceName());
       }
-      Map<String, VimInstance> vimInstancesChosen =
+      Map<String, BaseVimInstance> vimInstancesChosen =
           lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord);
-      for (Map.Entry<String, VimInstance> entry : vimInstancesChosen.entrySet())
+      for (Map.Entry<String, BaseVimInstance> entry : vimInstancesChosen.entrySet())
         log.info("VimInstances chosen are: " + entry.getKey() + ": " + entry.getValue().getName());
       log.trace("VimInstances chosen are: " + vimInstancesChosen);
       log.debug(vimInstancesChosen.size() + " == " + virtualNetworkFunctionRecord.getVdu().size());
@@ -118,8 +144,6 @@ public class GrantoperationTask extends AbstractTask {
         nfvMessage.setGrantAllowed(true);
         nfvMessage.setVduVim(vimInstancesChosen);
         nfvMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
-        //                OrVnfmGenericMessage nfvMessage = new OrVnfmGenericMessage(virtualNetworkFunctionRecord,
-        // Action.GRANT_OPERATION);
         return nfvMessage;
       } else {
         // there are not enough resources for deploying VNFR

@@ -26,7 +26,7 @@ import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Server;
-import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimDriverException;
@@ -41,7 +41,7 @@ public interface ResourceManagement {
   Future<List<String>> allocate(
       VirtualDeploymentUnit virtualDeploymentUnit,
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
-      VimInstance vimInstance,
+      BaseVimInstance vimInstance,
       String userdata,
       Set<Key> keys)
       throws ExecutionException, InterruptedException, VimException, PluginException;
@@ -50,7 +50,7 @@ public interface ResourceManagement {
    * This operation allows querying a virtualised resource, i.e. retrieve information about an
    * instantiated virtualised resource.
    */
-  List<Server> query(VimInstance vimInstance) throws VimException, PluginException;
+  List<Server> query(BaseVimInstance vimInstance) throws VimException, PluginException;
 
   /**
    * This operation allows updating the configuration and/or parameterization of an instantiated
@@ -114,7 +114,7 @@ public interface ResourceManagement {
       VirtualDeploymentUnit vdu,
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
       VNFComponent componentToAdd,
-      VimInstance vimInstance,
+      BaseVimInstance vimInstance,
       String userdata)
       throws InterruptedException, ExecutionException, PluginException, VimException,
           VimDriverException;

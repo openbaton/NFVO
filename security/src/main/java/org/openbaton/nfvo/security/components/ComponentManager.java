@@ -13,6 +13,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.regex.Pattern;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -21,12 +24,18 @@ import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
 import org.openbaton.catalogue.security.ServiceMetadata;
+import org.openbaton.exceptions.AlreadyExistingException;
+import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.PluginException;
+import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.common.utils.key.KeyHelper;
+import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.openbaton.nfvo.repositories.ManagerCredentialsRepository;
 import org.openbaton.nfvo.repositories.ProjectRepository;
 import org.openbaton.nfvo.repositories.ServiceRepository;
+import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
 import org.openbaton.nfvo.security.authentication.OAuth2AuthorizationServerConfig;
 import org.openbaton.vnfm.interfaces.register.VnfmRegister;
@@ -38,9 +47,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.stereotype.Service;
 
-//import java.util.Base64;
-
-/** Created by lto on 04/04/2017. */
+//TODO place this class somewhere else
 @Service
 @ConfigurationProperties
 public class ComponentManager implements org.openbaton.nfvo.security.interfaces.ComponentManager {
@@ -71,8 +78,13 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
   @Value("${spring.rabbitmq.virtual-host:/}")
   private String vhost;
 
+  @Value("${nfvo.plugin.refresh.delay:700}")
+  private int delayRefresh;
+
   @Autowired private VnfmEndpointRepository vnfmManagerEndpointRepository;
   @Autowired private ProjectRepository projectRepository;
+  @Autowired private VimRepository vimRepository;
+  @Autowired private VimManagement vimManagement;
 
   /*
    * Service related operations
@@ -263,35 +275,39 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
         ManagerCredentials managerCredentials =
             managerCredentialsRepository.findFirstByRabbitUsername(username);
         VnfmManagerEndpoint endpoint = null;
+        boolean isManager = vnfmManagerEndpoint != null;
         if (managerCredentials != null) {
           log.warn("Manager already registered.");
           return gson.toJson(managerCredentials);
         } else {
           managerCredentials = new ManagerCredentials();
-          if (vnfmManagerEndpoint != null)
-            if (vnfmManagerEndpoint.isJsonPrimitive())
+          if (isManager) {
+            if (vnfmManagerEndpoint.isJsonPrimitive()) {
               endpoint =
                   gson.fromJson(vnfmManagerEndpoint.getAsString(), VnfmManagerEndpoint.class);
-            else endpoint = gson.fromJson(vnfmManagerEndpoint, VnfmManagerEndpoint.class);
+            } else {
+              endpoint = gson.fromJson(vnfmManagerEndpoint, VnfmManagerEndpoint.class);
+            }
+          }
         }
 
-        //          String regexOpenbaton = "(^nfvo)";
-        //          String regexManager = "(^" + username + ")|(openbaton-exchange)";
-        //          String regexBoth = regexOpenbaton + "|" + regexManager;
-
+        String type =
+            isManager
+                ? vnfmManagerEndpoint.getAsJsonObject().get("endpoint").getAsString()
+                : username;
         String configurePermissions =
-            "^amq\\.gen.*|amq\\.default$|(" + username + ")|(nfvo." + username + ".actions)";
+            "^amq\\.gen.*|amq\\.default$|(" + type + ")|(nfvo." + type + ".actions)";
         String writePermissions =
             "^amq\\.gen.*|amq\\.default$|("
-                + username
+                + type
                 + ")|(vnfm.nfvo.actions)|(vnfm.nfvo.actions.reply)|(nfvo."
-                + username
+                + type
                 + ".actions)|(openbaton-exchange)";
         String readPermissions =
             "^amq\\.gen.*|amq\\.default$|(nfvo."
-                + username
+                + type
                 + ".actions)|("
-                + username
+                + type
                 + ")|(openbaton-exchange)";
 
         createRabbitMqUser(
@@ -322,6 +338,9 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
         managerCredentials = managerCredentialsRepository.save(managerCredentials);
         if (endpoint != null) vnfmManagerEndpointRepository.save(endpoint);
         log.info("Registered a new manager.");
+        if (!isManager) {
+          this.refreshVims(username);
+        }
         return gson.toJson(managerCredentials);
       } else if (body.get("action").getAsString().toLowerCase().equals("unregister")
           || body.get("action").getAsString().toLowerCase().equals("deregister")) {
@@ -358,6 +377,45 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
       log.error("Exception while enabling manager or plugin.");
       e.printStackTrace();
       return null;
+    }
+  }
+
+  private void refreshVims(String username) throws InterruptedException {
+    if (delayRefresh > 0) {
+      Timer timer = new Timer();
+
+      TimerTask action =
+          new TimerTask() {
+            public void run() {
+              if (username.contains(".")) {
+                String[] pluginId = username.split(Pattern.quote("."));
+                if (pluginId.length == 3 && pluginId[0].equals("vim-drivers")) {
+                  String vimType = pluginId[1];
+                  log.debug(String.format("Refreshing vims of type %s", vimType));
+                  vimRepository
+                      .findByType(vimType)
+                      .forEach(
+                          vim -> {
+                            try {
+                              vimManagement.refresh(vim, false);
+                            } catch (VimException
+                                | PluginException
+                                | IOException
+                                | AlreadyExistingException
+                                | BadRequestException e) {
+
+                              log.warn(
+                                  String.format(
+                                      "Error while refreshing vim %s of type %s after plugin registration",
+                                      vim.getName(), vim.getType()));
+                            }
+                          });
+                }
+              }
+            }
+          };
+
+      timer.schedule(action, delayRefresh);
     }
   }
 

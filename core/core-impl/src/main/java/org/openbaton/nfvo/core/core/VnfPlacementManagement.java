@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.slf4j.Logger;
@@ -40,13 +40,13 @@ public class VnfPlacementManagement
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Override
-  public VimInstance choseRandom(Set<String> vimInstanceName, String projectId) {
+  public BaseVimInstance choseRandom(Set<String> vimInstanceName, String projectId) {
     if (!vimInstanceName.isEmpty()) {
       String name =
           vimInstanceName.toArray(new String[0])[
               (int) (Math.random() * 1000) % vimInstanceName.size()];
-      VimInstance vimInstance = null;
-      for (VimInstance vimInstance1 : vimInstanceRepository.findByProjectId(projectId))
+      BaseVimInstance vimInstance = null;
+      for (BaseVimInstance vimInstance1 : vimInstanceRepository.findByProjectId(projectId))
         if (vimInstance1.getName().equals(name)) {
           vimInstance = vimInstance1;
           break;
@@ -54,7 +54,7 @@ public class VnfPlacementManagement
       log.info("Chosen VimInstance: " + vimInstance.getName());
       return vimInstance;
     } else {
-      List<VimInstance> vimInstances = vimInstanceRepository.findByProjectId(projectId);
+      List<BaseVimInstance> vimInstances = vimInstanceRepository.findByProjectId(projectId);
 
       return vimInstances.get((int) (Math.random() * 1000) % vimInstances.size());
     }
@@ -66,17 +66,17 @@ public class VnfPlacementManagement
       Set<String> vimTypes,
       String projectId)
       throws NotFoundException {
-    List<VimInstance> vimInstances = vimInstanceRepository.findByProjectId(projectId);
+    List<BaseVimInstance> vimInstances = vimInstanceRepository.findByProjectId(projectId);
     List<String> vimInstancesChosen = new ArrayList<>();
     if (vimTypes != null && !vimTypes.isEmpty()) {
-      for (VimInstance vimInstance : vimInstances) {
+      for (BaseVimInstance vimInstance : vimInstances) {
         if (vimTypes.contains(vimInstance.getType())) {
           vimInstancesChosen.add(vimInstance.getName());
           return vimInstancesChosen;
         }
       }
     } else {
-      for (VimInstance vimInstance : vimInstances) {
+      for (BaseVimInstance vimInstance : vimInstances) {
         vimInstancesChosen.add(vimInstance.getName());
         return vimInstancesChosen;
       }

@@ -33,6 +33,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
 import org.openbaton.catalogue.util.BaseEntity;
 import org.openbaton.catalogue.util.IdGenerator;
 
@@ -66,7 +67,7 @@ public class VNFPackageMetadata extends BaseEntity {
   private VirtualNetworkFunctionDescriptor vnfd;
 
   @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-  private NFVImage nfvImage;
+  private BaseNfvImage nfvImage;
 
   @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   private ImageMetadata imageMetadata;
@@ -157,11 +158,11 @@ public class VNFPackageMetadata extends BaseEntity {
     this.vnfd = vnfd;
   }
 
-  public NFVImage getNfvImage() {
+  public BaseNfvImage getNfvImage() {
     return nfvImage;
   }
 
-  public void setNfvImage(NFVImage nfvImage) {
+  public void setNfvImage(BaseNfvImage nfvImage) {
     this.nfvImage = nfvImage;
   }
 

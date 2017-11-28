@@ -21,6 +21,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
+import static org.openbaton.nfvo.core.test.TestUtils.createVimInstance;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,7 +37,6 @@ import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.HighAvailability;
 import org.openbaton.catalogue.mano.common.ResiliencyLevel;
 import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
@@ -47,11 +47,10 @@ import org.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
-import org.openbaton.catalogue.nfvo.NFVImage;
-import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.VNFPackage;
-import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
+import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
@@ -126,7 +125,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
     NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
     when(vimRepository.findByProjectId(anyString()))
         .thenReturn(
-            new ArrayList<VimInstance>() {
+            new ArrayList<BaseVimInstance>() {
               {
                 add(createVimInstance());
               }
@@ -153,14 +152,14 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
     nsd_exp.setEnabled(true);
     when(vimRepository.findAll())
         .thenReturn(
-            new ArrayList<VimInstance>() {
+            new ArrayList<BaseVimInstance>() {
               {
                 add(createVimInstance());
               }
             });
     when(vimRepository.findByProjectId(anyString()))
         .thenReturn(
-            new ArrayList<VimInstance>() {
+            new ArrayList<BaseVimInstance>() {
               {
                 add(createVimInstance());
               }
@@ -264,7 +263,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
 
     when(vimRepository.findAll())
         .thenReturn(
-            new ArrayList<VimInstance>() {
+            new ArrayList<BaseVimInstance>() {
               {
                 add(createVimInstance());
               }
@@ -350,7 +349,7 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
             highAvailability.setResiliencyLevel(ResiliencyLevel.ACTIVE_STANDBY_STATELESS);
             vdu.setHigh_availability(highAvailability);
             vdu.setComputation_requirement("high_requirements");
-            VimInstance vimInstance = new VimInstance();
+            BaseVimInstance vimInstance = new OpenstackVimInstance();
             vimInstance.setName("vim_instance");
             vimInstance.setType("test");
             Set<VNFComponent> vnfcs = new HashSet<VNFComponent>();
@@ -367,49 +366,5 @@ public class NetworkServiceDescriptorManagementClassSuiteTest {
         });
     virtualNetworkFunctionDescriptor.setVnfPackageLocation("http://an.ip.here.com");
     return virtualNetworkFunctionDescriptor;
-  }
-
-  private VimInstance createVimInstance() {
-    VimInstance vimInstance = new VimInstance();
-    vimInstance.setName("vim_instance");
-    vimInstance.setType("test");
-    vimInstance.setNetworks(
-        new HashSet<Network>() {
-          {
-            Network network = new Network();
-            network.setExtId("ext_id");
-            network.setName("network_name");
-            add(network);
-          }
-        });
-    vimInstance.setFlavours(
-        new HashSet<DeploymentFlavour>() {
-          {
-            DeploymentFlavour deploymentFlavour = new DeploymentFlavour();
-            deploymentFlavour.setExtId("ext_id_1");
-            deploymentFlavour.setFlavour_key("flavor_name");
-            add(deploymentFlavour);
-
-            deploymentFlavour = new DeploymentFlavour();
-            deploymentFlavour.setExtId("ext_id_2");
-            deploymentFlavour.setFlavour_key("m1.tiny");
-            add(deploymentFlavour);
-          }
-        });
-    vimInstance.setImages(
-        new HashSet<NFVImage>() {
-          {
-            NFVImage image = new NFVImage();
-            image.setExtId("ext_id_1");
-            image.setName("ubuntu-14.04-server-cloudimg-amd64-disk1");
-            add(image);
-
-            image = new NFVImage();
-            image.setExtId("ext_id_2");
-            image.setName("image_name_1");
-            add(image);
-          }
-        });
-    return vimInstance;
   }
 }

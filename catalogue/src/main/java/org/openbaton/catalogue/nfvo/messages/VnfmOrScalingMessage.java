@@ -19,14 +19,14 @@ package org.openbaton.catalogue.nfvo.messages;
 
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
-import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.VnfmOrMessage;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 
 /** Created by lto on 13/04/16. */
 public class VnfmOrScalingMessage extends VnfmOrMessage {
   private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
   private String userData;
-  private VimInstance vimInstance;
+  private BaseVimInstance vimInstance;
 
   public VnfmOrScalingMessage(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, String userData) {
@@ -68,11 +68,11 @@ public class VnfmOrScalingMessage extends VnfmOrMessage {
     this.userData = userData;
   }
 
-  public void setVimInstance(VimInstance vimInstance) {
+  public void setVimInstance(BaseVimInstance vimInstance) {
     this.vimInstance = vimInstance;
   }
 
-  public VimInstance getVimInstance() {
+  public BaseVimInstance getVimInstance() {
     return vimInstance;
   }
 }

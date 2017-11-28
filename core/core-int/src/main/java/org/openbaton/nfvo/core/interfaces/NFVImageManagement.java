@@ -17,7 +17,8 @@
 
 package org.openbaton.nfvo.core.interfaces;
 
-import org.openbaton.catalogue.nfvo.NFVImage;
+import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
+import org.openbaton.catalogue.nfvo.images.NFVImage;
 
 /** Created by mpa on 30/04/15. */
 public interface NFVImageManagement {
@@ -35,13 +36,13 @@ public interface NFVImageManagement {
    * This operation allows querying the information of the VNF software images in the image
    * repository.
    */
-  Iterable<NFVImage> query();
+  Iterable<BaseNfvImage> query();
 
   /**
    * This operation allows querying the information of the VNF software image in the image
    * repository.
    */
-  NFVImage query(String id);
+  BaseNfvImage query(String id);
 
   /** This operation allows copying images from a VIM to another. */
   void copy();

@@ -24,6 +24,8 @@ import static org.mockito.Matchers.anySet;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
+import static org.openbaton.nfvo.core.test.TestUtils.createQuota;
+import static org.openbaton.nfvo.core.test.TestUtils.createVimInstance;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,11 +47,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.openbaton.catalogue.mano.common.AutoScalePolicy;
 import org.openbaton.catalogue.mano.common.ConnectionPoint;
-import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.common.HighAvailability;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
@@ -70,12 +70,10 @@ import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.ConfigurationParameter;
-import org.openbaton.catalogue.nfvo.NFVImage;
-import org.openbaton.catalogue.nfvo.Network;
-import org.openbaton.catalogue.nfvo.Quota;
 import org.openbaton.catalogue.nfvo.VNFPackage;
-import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
+import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
@@ -143,21 +141,21 @@ public class NetworkServiceRecordManagementClassSuiteTest {
       throws ExecutionException, InterruptedException, VimDriverException, VimException,
           PluginException, BadRequestException, IOException, AlreadyExistingException {
     MockitoAnnotations.initMocks(this);
-    VimInstance vimInstance = createVimInstance();
+    BaseVimInstance vimInstance = createVimInstance();
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionRecord =
         createVirtualNetworkFunctionDescriptor();
     when(resourceManagement.allocate(
             any(VirtualDeploymentUnit.class),
             any(VirtualNetworkFunctionRecord.class),
-            any(VimInstance.class),
+            any(BaseVimInstance.class),
             anyString(),
             anySet()))
-        .thenReturn(new AsyncResult<List<String>>(new ArrayList<String>()));
+        .thenReturn(new AsyncResult<List<String>>(new ArrayList<>()));
     when(vimBroker.getVim(anyString())).thenReturn(vim);
-    when(vimBroker.getLeftQuota(any(VimInstance.class))).thenReturn(createQuota());
+    when(vimBroker.getLeftQuota(any(BaseVimInstance.class))).thenReturn(createQuota());
     VNFCInstance vnfcInstance = new VNFCInstance();
     when(vim.allocate(
-            any(VimInstance.class),
+            any(BaseVimInstance.class),
             any(VirtualDeploymentUnit.class),
             any(VirtualNetworkFunctionRecord.class),
             any(VNFComponent.class),
@@ -165,7 +163,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
             anyMap(),
             anySet()))
         .thenReturn(new AsyncResult<>(vnfcInstance));
-    Map<String, VimInstance> res = new HashMap<>();
+    Map<String, BaseVimInstance> res = new HashMap<>();
     for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
       res.put(vdu.getId(), vimInstance);
     }
@@ -185,7 +183,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
                 add(vnfmManagerEndpoint);
               }
             });
-    when(vimManagement.refresh(any(VimInstance.class), anyBoolean())).thenReturn(vimInstance);
+    when(vimManagement.refresh(any(BaseVimInstance.class), anyBoolean())).thenReturn(vimInstance);
     when(vnfPackageRepository.findFirstById(anyString())).thenReturn(createVNFPackage());
     log.info("Starting test");
   }
@@ -232,7 +230,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
         .thenReturn(new AsyncResult<Void>(null));
     when(nsrRepository.findFirstByIdAndProjectId(nsd_exp.getId(), projectId)).thenReturn(nsd_exp);
     Configuration system = new Configuration();
-    system.setConfigurationParameters(new HashSet<ConfigurationParameter>());
+    system.setConfigurationParameters(new HashSet<>());
     ConfigurationParameter configurationParameter = new ConfigurationParameter();
     configurationParameter.setConfKey("delete-on-all-status");
     configurationParameter.setValue("true");
@@ -249,25 +247,26 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     final NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
     when(nsrRepository.save(any(NetworkServiceRecord.class)))
         .thenAnswer(
-            new Answer<NetworkServiceRecord>() {
-              @Override
-              public NetworkServiceRecord answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                return (NetworkServiceRecord) args[0];
-              }
-            });
+            (Answer<NetworkServiceRecord>)
+                invocation -> {
+                  Object[] args = invocation.getArguments();
+                  return (NetworkServiceRecord) args[0];
+                });
 
-    when(vimRepository.findByProjectId(anyString()))
-        .thenReturn(
-            new ArrayList<VimInstance>() {
-              {
-                add(createVimInstance());
-              }
-            });
+    when(nsrRepository.saveCascade(any(NetworkServiceRecord.class)))
+        .thenAnswer(
+            (Answer<NetworkServiceRecord>)
+                invocation -> {
+                  Object[] args = invocation.getArguments();
+                  return (NetworkServiceRecord) args[0];
+                });
+
+    when(vimRepository.findByProjectIdAndName(anyString(), anyString()))
+        .thenReturn(createVimInstance());
 
     when(vimRepository.findAll())
         .thenReturn(
-            new ArrayList<VimInstance>() {
+            new ArrayList<BaseVimInstance>() {
               {
                 add(createVimInstance());
               }
@@ -295,17 +294,24 @@ public class NetworkServiceRecordManagementClassSuiteTest {
           PluginException, MissingParameterException, BadRequestException, IOException,
           AlreadyExistingException {
     /** Initial settings */
+    when(vimRepository.findByProjectIdAndName(anyString(), anyString()))
+        .thenReturn(createVimInstance());
     NetworkServiceDescriptor networkServiceDescriptor = createNetworkServiceDescriptor();
 
     when(nsrRepository.save(any(NetworkServiceRecord.class)))
         .thenAnswer(
-            new Answer<NetworkServiceRecord>() {
-              @Override
-              public NetworkServiceRecord answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                return (NetworkServiceRecord) args[0];
-              }
-            });
+            (Answer<NetworkServiceRecord>)
+                invocation -> {
+                  Object[] args = invocation.getArguments();
+                  return (NetworkServiceRecord) args[0];
+                });
+    when(nsrRepository.saveCascade(any(NetworkServiceRecord.class)))
+        .thenAnswer(
+            (Answer<NetworkServiceRecord>)
+                invocation -> {
+                  Object[] args = invocation.getArguments();
+                  return (NetworkServiceRecord) args[0];
+                });
 
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
         networkServiceDescriptor.getVnfd().iterator().next();
@@ -314,7 +320,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     event.setLifecycle_events(new ArrayList<>());
     event.getLifecycle_events().add("command_1");
     virtualNetworkFunctionDescriptor.getLifecycle_event().add(event);
-    final VimInstance vimInstance = createVimInstance();
+    final BaseVimInstance vimInstance = createVimInstance();
     when(vnfmManagerEndpointRepository.findAll())
         .thenReturn(
             new ArrayList<VnfmManagerEndpoint>() {
@@ -331,14 +337,14 @@ public class NetworkServiceRecordManagementClassSuiteTest {
         .thenReturn(networkServiceDescriptor);
     when(vimRepository.findAll())
         .thenReturn(
-            new ArrayList<VimInstance>() {
+            new ArrayList<BaseVimInstance>() {
               {
                 add(vimInstance);
               }
             });
     when(vimRepository.findByProjectId(anyString()))
         .thenReturn(
-            new ArrayList<VimInstance>() {
+            new ArrayList<BaseVimInstance>() {
               {
                 add(createVimInstance());
               }
@@ -354,15 +360,22 @@ public class NetworkServiceRecordManagementClassSuiteTest {
           PluginException, MissingParameterException, BadRequestException, IOException,
           AlreadyExistingException {
     /** Initial settings */
+    when(vimRepository.findByProjectIdAndName(anyString(), anyString()))
+        .thenReturn(createVimInstance());
     when(nsrRepository.save(any(NetworkServiceRecord.class)))
         .thenAnswer(
-            new Answer<NetworkServiceRecord>() {
-              @Override
-              public NetworkServiceRecord answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                return (NetworkServiceRecord) args[0];
-              }
-            });
+            (Answer<NetworkServiceRecord>)
+                invocation -> {
+                  Object[] args = invocation.getArguments();
+                  return (NetworkServiceRecord) args[0];
+                });
+    when(nsrRepository.saveCascade(any(NetworkServiceRecord.class)))
+        .thenAnswer(
+            (Answer<NetworkServiceRecord>)
+                invocation -> {
+                  Object[] args = invocation.getArguments();
+                  return (NetworkServiceRecord) args[0];
+                });
     NetworkServiceDescriptor networkServiceDescriptor = createNetworkServiceDescriptor();
     when(nsdRepository.findFirstByIdAndProjectId(anyString(), eq(projectId)))
         .thenReturn(networkServiceDescriptor);
@@ -373,17 +386,17 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     event.setLifecycle_events(new ArrayList<>());
     event.getLifecycle_events().add("command_1");
     virtualNetworkFunctionDescriptor.getLifecycle_event().add(event);
-    final VimInstance vimInstance = createVimInstance();
+    final BaseVimInstance vimInstance = createVimInstance();
     when(vimRepository.findAll())
         .thenReturn(
-            new ArrayList<VimInstance>() {
+            new ArrayList<BaseVimInstance>() {
               {
                 add(vimInstance);
               }
             });
     when(vimRepository.findByProjectId(anyString()))
         .thenReturn(
-            new ArrayList<VimInstance>() {
+            new ArrayList<BaseVimInstance>() {
               {
                 add(vimInstance);
               }
@@ -511,7 +524,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
                     add("monitor3");
                   }
                 });
-            VimInstance vimInstance = new VimInstance();
+            BaseVimInstance vimInstance = new OpenstackVimInstance();
             vimInstance.setName("vim_instance");
             vimInstance.setType("test");
             Set<String> vimInstanceNames = new LinkedHashSet<>();
@@ -574,7 +587,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
                     add("monitor3");
                   }
                 });
-            VimInstance vimInstance = new VimInstance();
+            BaseVimInstance vimInstance = new OpenstackVimInstance();
             vimInstance.setName("vim_instance");
             vimInstance.setType("test");
             add(vdu);
@@ -583,58 +596,5 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     virtualNetworkFunctionRecords.add(virtualNetworkFunctionRecord);
     nsr.setVnfr(virtualNetworkFunctionRecords);
     return nsr;
-  }
-
-  private VimInstance createVimInstance() {
-    VimInstance vimInstance = new VimInstance();
-    vimInstance.setProjectId(projectId);
-    vimInstance.setName("vim_instance");
-    vimInstance.setType("test");
-    vimInstance.setNetworks(
-        new HashSet<Network>() {
-          {
-            Network network = new Network();
-            network.setExtId("ext_id");
-            network.setName("network_name");
-            add(network);
-          }
-        });
-    vimInstance.setFlavours(
-        new HashSet<DeploymentFlavour>() {
-          {
-            DeploymentFlavour deploymentFlavour = new DeploymentFlavour();
-            deploymentFlavour.setExtId("ext_id_1");
-            deploymentFlavour.setFlavour_key("flavor_name");
-            add(deploymentFlavour);
-
-            deploymentFlavour = new DeploymentFlavour();
-            deploymentFlavour.setExtId("ext_id_2");
-            deploymentFlavour.setFlavour_key("m1.tiny");
-            add(deploymentFlavour);
-          }
-        });
-    vimInstance.setImages(
-        new HashSet<NFVImage>() {
-          {
-            NFVImage image = new NFVImage();
-            image.setExtId("ext_id_1");
-            image.setName("ubuntu-14.04-server-cloudimg-amd64-disk1");
-            add(image);
-
-            image = new NFVImage();
-            image.setExtId("ext_id_2");
-            image.setName("image_name_1");
-            add(image);
-          }
-        });
-    return vimInstance;
-  }
-
-  private Quota createQuota() {
-    Quota quota = new Quota();
-    quota.setInstances(Integer.MAX_VALUE);
-    quota.setRam(Integer.MAX_VALUE);
-    quota.setCores(Integer.MAX_VALUE);
-    return quota;
   }
 }

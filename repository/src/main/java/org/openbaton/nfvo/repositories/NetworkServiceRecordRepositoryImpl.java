@@ -47,6 +47,13 @@ public class NetworkServiceRecordRepositoryImpl implements NetworkServiceRecordR
 
   @Override
   @Transactional
+  public NetworkServiceRecord saveCascade(NetworkServiceRecord networkServiceRecord) {
+    vnfrRepository.save(networkServiceRecord.getVnfr());
+    return networkServiceRecordRepository.save(networkServiceRecord);
+  }
+
+  @Override
+  @Transactional
   public void deleteVNFRecord(String idNsr, String idVnfr) {
     SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
     NetworkServiceRecord nsr = networkServiceRecordRepository.findFirstById(idNsr);

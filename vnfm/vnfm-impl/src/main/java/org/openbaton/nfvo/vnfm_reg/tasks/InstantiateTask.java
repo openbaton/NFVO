@@ -70,17 +70,29 @@ public class InstantiateTask extends AbstractTask {
             + virtualNetworkFunctionRecord.getParent_ns_id());
     VirtualNetworkFunctionRecord existing =
         vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
-    log.trace(
-        "VNFR ("
-            + virtualNetworkFunctionRecord.getId()
-            + ") received with hibernate version = "
-            + virtualNetworkFunctionRecord.getHbVersion());
+
+    virtualNetworkFunctionRecord
+        .getVdu()
+        .forEach(
+            vdu -> {
+              log.trace(
+                  "INSTANTIATE VDU ("
+                      + vdu.getId()
+                      + ") received with hibernate version = "
+                      + vdu.getHbVersion());
+            });
+
     if (existing != null) {
-      log.trace(
-          "VNFR ("
-              + existing.getId()
-              + ") existing hibernat version is = "
-              + existing.getHbVersion());
+      existing
+          .getVdu()
+          .forEach(
+              vdu -> {
+                log.trace(
+                    "INSTANTIATE VDU ("
+                        + vdu.getId()
+                        + ") existing hibernate version is = "
+                        + vdu.getHbVersion());
+              });
     }
 
     for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {

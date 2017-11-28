@@ -18,8 +18,9 @@
 package org.openbaton.nfvo.vim_interfaces.network_management;
 
 import java.util.List;
-import org.openbaton.catalogue.nfvo.Network;
-import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
+import org.openbaton.catalogue.nfvo.networks.Network;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.exceptions.VimException;
 
 public interface NetworkManagement {
@@ -27,48 +28,48 @@ public interface NetworkManagement {
   /**
    * This operation allows adding new Network to the network repository.
    *
-   * @param vimInstance the {@link VimInstance} to which add the network
+   * @param vimInstance the {@link BaseVimInstance} to which add the network
    * @param network the {@link Network} to add
    * @return the {@link Network} added
    * @throws VimException in case of exception
    */
-  Network add(VimInstance vimInstance, Network network) throws VimException;
+  BaseNetwork add(BaseVimInstance vimInstance, BaseNetwork network) throws VimException;
 
   /**
    * This operation allows deleting in the Networks from the network repository.
    *
-   * @param vimInstance the {@link VimInstance} in which delete the network
+   * @param vimInstance the {@link BaseVimInstance} in which delete the network
    * @param network the {@link Network} to delete
    * @throws VimException in case of exception
    */
-  void delete(VimInstance vimInstance, Network network) throws VimException;
+  void delete(BaseVimInstance vimInstance, BaseNetwork network) throws VimException;
 
   /**
    * This operation allows updating the Network in the network repository.
    *
-   * @param vimInstance the {@link VimInstance} in which update the network
+   * @param vimInstance the {@link BaseVimInstance} in which update the network
    * @param updatingNetwork the {@link Network} to update
    * @return the {@link Network} updated
    * @throws VimException in case of exception
    */
-  Network update(VimInstance vimInstance, Network updatingNetwork) throws VimException;
+  BaseNetwork update(BaseVimInstance vimInstance, Network updatingNetwork) throws VimException;
 
   /**
    * This operation allows querying the information of the Networks in the network repository.
    *
-   * @param vimInstance the {@link VimInstance} to which query the networks
+   * @param vimInstance the {@link BaseVimInstance} to which query the networks
    * @return the list of all networks available
    * @throws VimException in case of exception
    */
-  List<Network> queryNetwork(VimInstance vimInstance) throws VimException;
+  List<BaseNetwork> queryNetwork(BaseVimInstance vimInstance) throws VimException;
 
   /**
    * This operation allows querying the information of the Networks in the network repository.
    *
-   * @param vimInstance the {@link VimInstance} to which query the network
+   * @param vimInstance the {@link BaseVimInstance} to which query the network
    * @param extId the external id of the Network to query
    * @return the {@link Network} queried
    * @throws VimException in case of exception
    */
-  Network query(VimInstance vimInstance, String extId) throws VimException;
+  BaseNetwork query(BaseVimInstance vimInstance, String extId) throws VimException;
 }

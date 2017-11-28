@@ -18,7 +18,7 @@
 package org.openbaton.nfvo.core.api;
 
 import org.openbaton.catalogue.nfvo.Quota;
-import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.repositories.VimRepository;
@@ -35,7 +35,7 @@ public class QuotaManagement implements org.openbaton.nfvo.core.interfaces.Quota
   @Override
   public Quota getAllQuota(String projectId) throws PluginException, VimException {
     Quota result = new Quota();
-    for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId)) {
+    for (BaseVimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId)) {
       if (vimInstance.getType().equals("test")) {
         continue;
       }
@@ -51,7 +51,7 @@ public class QuotaManagement implements org.openbaton.nfvo.core.interfaces.Quota
   @Override
   public Quota getLeftQuota(String projectId) throws VimException, PluginException {
     Quota result = new Quota();
-    for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId)) {
+    for (BaseVimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId)) {
       if (vimInstance.getType().equals("test")) {
         continue;
       }

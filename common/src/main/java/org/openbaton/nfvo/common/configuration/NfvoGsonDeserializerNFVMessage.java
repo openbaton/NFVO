@@ -35,6 +35,7 @@ import org.openbaton.catalogue.nfvo.messages.VnfmOrLogMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrScaledMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrScalingMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrStartStopMessage;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -42,7 +43,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class NfvoGsonDeserializerNFVMessage implements JsonDeserializer<NFVMessage> {
 
-  private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+  private Gson gson =
+      new GsonBuilder()
+          .setPrettyPrinting()
+          .registerTypeAdapter(BaseVimInstance.class, new NfvoGsonDeserializerVimInstance())
+          .registerTypeAdapter(BaseVimInstance.class, new NfvoGsonSerializerVimInstance())
+          .create();
 
   private Logger log = LoggerFactory.getLogger(this.getClass());
 

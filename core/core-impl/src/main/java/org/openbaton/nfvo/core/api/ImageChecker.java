@@ -3,8 +3,9 @@ package org.openbaton.nfvo.core.api;
 import java.io.IOException;
 import java.util.Set;
 import org.openbaton.catalogue.nfvo.ImageStatus;
-import org.openbaton.catalogue.nfvo.NFVImage;
-import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
+import org.openbaton.catalogue.nfvo.images.NFVImage;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.PluginException;
@@ -37,7 +38,7 @@ public class ImageChecker {
   @Autowired private VimManagement vimManagement;
 
   @Async
-  public void checkImageStatus(VimInstance vimInstance)
+  public void checkImageStatus(BaseVimInstance vimInstance)
       throws InterruptedException, AlreadyExistingException, IOException, BadRequestException,
           VimException, PluginException {
 
@@ -46,14 +47,17 @@ public class ImageChecker {
       java.lang.Thread.sleep(imageStatusTimeoutDelay * 1000);
 
       boolean allImagesActive = true;
-      Set<NFVImage> images = vimManagement.queryImagesDirectly(vimInstance);
+      Set<BaseNfvImage> images = vimManagement.queryImagesDirectly(vimInstance);
 
-      for (NFVImage image : images) {
-        if (image.getStatus().equals(ImageStatus.QUEUED)
-            || image.getStatus().equals(ImageStatus.SAVING)) {
+      for (BaseNfvImage image : images) {
+        if (image instanceof NFVImage) {
+          NFVImage nfvImage = (NFVImage) image;
+          if (nfvImage.getStatus().equals(ImageStatus.QUEUED)
+              || nfvImage.getStatus().equals(ImageStatus.SAVING)) {
 
-          log.debug("Image " + image.getName() + " is still not active");
-          allImagesActive = false;
+            log.debug("Image " + nfvImage.getName() + " is still not active");
+            allImagesActive = false;
+          }
         }
       }
 

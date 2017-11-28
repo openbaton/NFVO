@@ -22,12 +22,12 @@ import java.util.Map;
 import java.util.Set;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
-import org.openbaton.catalogue.nfvo.NFVImage;
-import org.openbaton.catalogue.nfvo.Network;
 import org.openbaton.catalogue.nfvo.Quota;
 import org.openbaton.catalogue.nfvo.Server;
-import org.openbaton.catalogue.nfvo.Subnet;
-import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
+import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
+import org.openbaton.catalogue.nfvo.networks.Subnet;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.VimDriverException;
 
@@ -38,7 +38,7 @@ public interface ClientInterfaces {
   String interfaceVersion = "1.0";
 
   Server launchInstance(
-      VimInstance vimInstance,
+      BaseVimInstance vimInstance,
       String name,
       String image,
       String flavor,
@@ -48,16 +48,18 @@ public interface ClientInterfaces {
       String userData)
       throws VimDriverException;
 
-  List<NFVImage> listImages(VimInstance vimInstance) throws VimDriverException;
+  List<Server> listServer(BaseVimInstance vimInstance) throws VimDriverException;
 
-  List<Server> listServer(VimInstance vimInstance) throws VimDriverException;
+  List<BaseNetwork> listNetworks(BaseVimInstance vimInstance) throws VimDriverException;
 
-  List<Network> listNetworks(VimInstance vimInstance) throws VimDriverException;
+  List<BaseNfvImage> listImages(BaseVimInstance vimInstance) throws VimDriverException;
 
-  List<DeploymentFlavour> listFlavors(VimInstance vimInstance) throws VimDriverException;
+  List<DeploymentFlavour> listFlavors(BaseVimInstance vimInstance) throws VimDriverException;
+
+  BaseVimInstance refresh(BaseVimInstance vimInstance) throws VimDriverException;
 
   Server launchInstanceAndWait(
-      VimInstance vimInstance,
+      BaseVimInstance vimInstance,
       String hostname,
       String image,
       String extId,
@@ -70,7 +72,7 @@ public interface ClientInterfaces {
       throws VimDriverException;
 
   Server launchInstanceAndWait(
-      VimInstance vimInstance,
+      BaseVimInstance vimInstance,
       String hostname,
       String image,
       String extId,
@@ -80,50 +82,53 @@ public interface ClientInterfaces {
       String s)
       throws VimDriverException;
 
-  void deleteServerByIdAndWait(VimInstance vimInstance, String id) throws VimDriverException;
+  void deleteServerByIdAndWait(BaseVimInstance vimInstance, String id) throws VimDriverException;
 
-  Network createNetwork(VimInstance vimInstance, Network network) throws VimDriverException;
-
-  DeploymentFlavour addFlavor(VimInstance vimInstance, DeploymentFlavour deploymentFlavour)
+  BaseNetwork createNetwork(BaseVimInstance vimInstance, BaseNetwork network)
       throws VimDriverException;
 
-  NFVImage addImage(VimInstance vimInstance, NFVImage image, byte[] imageFile)
+  DeploymentFlavour addFlavor(BaseVimInstance vimInstance, DeploymentFlavour deploymentFlavour)
       throws VimDriverException;
 
-  NFVImage addImage(VimInstance vimInstance, NFVImage image, String image_url)
+  BaseNfvImage addImage(BaseVimInstance vimInstance, BaseNfvImage image, byte[] imageFile)
       throws VimDriverException;
 
-  NFVImage updateImage(VimInstance vimInstance, NFVImage image) throws VimDriverException;
-
-  NFVImage copyImage(VimInstance vimInstance, NFVImage image, byte[] imageFile)
+  BaseNfvImage addImage(BaseVimInstance vimInstance, BaseNfvImage image, String image_url)
       throws VimDriverException;
 
-  boolean deleteImage(VimInstance vimInstance, NFVImage image) throws VimDriverException;
-
-  DeploymentFlavour updateFlavor(VimInstance vimInstance, DeploymentFlavour deploymentFlavour)
+  BaseNfvImage updateImage(BaseVimInstance vimInstance, BaseNfvImage image)
       throws VimDriverException;
 
-  boolean deleteFlavor(VimInstance vimInstance, String extId) throws VimDriverException;
-
-  Subnet createSubnet(VimInstance vimInstance, Network createdNetwork, Subnet subnet)
+  BaseNfvImage copyImage(BaseVimInstance vimInstance, BaseNfvImage image, byte[] imageFile)
       throws VimDriverException;
 
-  Network updateNetwork(VimInstance vimInstance, Network network) throws VimDriverException;
+  boolean deleteImage(BaseVimInstance vimInstance, BaseNfvImage image) throws VimDriverException;
 
-  Subnet updateSubnet(VimInstance vimInstance, Network updatedNetwork, Subnet subnet)
+  DeploymentFlavour updateFlavor(BaseVimInstance vimInstance, DeploymentFlavour deploymentFlavour)
       throws VimDriverException;
 
-  List<String> getSubnetsExtIds(VimInstance vimInstance, String network_extId)
+  boolean deleteFlavor(BaseVimInstance vimInstance, String extId) throws VimDriverException;
+
+  Subnet createSubnet(BaseVimInstance vimInstance, BaseNetwork createdNetwork, Subnet subnet)
       throws VimDriverException;
 
-  boolean deleteSubnet(VimInstance vimInstance, String existingSubnetExtId)
+  BaseNetwork updateNetwork(BaseVimInstance vimInstance, BaseNetwork network)
       throws VimDriverException;
 
-  boolean deleteNetwork(VimInstance vimInstance, String extId) throws VimDriverException;
+  Subnet updateSubnet(BaseVimInstance vimInstance, BaseNetwork updatedNetwork, Subnet subnet)
+      throws VimDriverException;
 
-  Network getNetworkById(VimInstance vimInstance, String id) throws VimDriverException;
+  List<String> getSubnetsExtIds(BaseVimInstance vimInstance, String network_extId)
+      throws VimDriverException;
 
-  Quota getQuota(VimInstance vimInstance) throws VimDriverException;
+  boolean deleteSubnet(BaseVimInstance vimInstance, String existingSubnetExtId)
+      throws VimDriverException;
 
-  String getType(VimInstance vimInstance) throws VimDriverException;
+  boolean deleteNetwork(BaseVimInstance vimInstance, String extId) throws VimDriverException;
+
+  BaseNetwork getNetworkById(BaseVimInstance vimInstance, String id) throws VimDriverException;
+
+  Quota getQuota(BaseVimInstance vimInstance) throws VimDriverException;
+
+  String getType(BaseVimInstance vimInstance) throws VimDriverException;
 }

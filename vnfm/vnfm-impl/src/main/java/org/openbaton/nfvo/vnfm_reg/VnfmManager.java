@@ -246,6 +246,7 @@ public class VnfmManager
         } catch (NullPointerException ignored) {
           if (networkServiceRecord == null) {
             log.info("The Record was already deleted by a previous task");
+            vnfrRepository.delete(virtualNetworkFunctionRecord);
           } else {
             log.warn("Descriptor was already removed, calculating the status anyway...");
           }

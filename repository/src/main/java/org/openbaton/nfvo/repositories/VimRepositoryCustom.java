@@ -17,11 +17,11 @@
 
 package org.openbaton.nfvo.repositories;
 
-import org.openbaton.catalogue.nfvo.NFVImage;
+import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
 
 /** Created by dbo on 21/09/15. */
 public interface VimRepositoryCustom {
-  NFVImage addImage(String id, NFVImage image);
+  BaseNfvImage addImage(String id, BaseNfvImage image);
 
   void deleteImage(String idVim, String idImage);
 }

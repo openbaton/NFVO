@@ -15,19 +15,18 @@
  *
  */
 
-package org.openbaton.catalogue.nfvo;
+package org.openbaton.catalogue.nfvo.images;
 
 import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import org.openbaton.catalogue.util.BaseEntity;
+import org.openbaton.catalogue.nfvo.ImageStatus;
 
 /** Created by lto on 11/05/15. */
 @Entity
-public class NFVImage extends BaseEntity {
+public class NFVImage extends BaseNfvImage {
 
-  private String extId;
   private String name;
   private Long minRam = 0L;; //in MB
   private Long minDiskSpace = 0L; //in GB
@@ -37,14 +36,9 @@ public class NFVImage extends BaseEntity {
   private String containerFormat;
 
   @Temporal(TemporalType.TIMESTAMP)
-  private Date created;
-
-  @Temporal(TemporalType.TIMESTAMP)
   private Date updated;
 
   private ImageStatus status;
-
-  public NFVImage() {}
 
   public String getName() {
     return name;
@@ -52,14 +46,6 @@ public class NFVImage extends BaseEntity {
 
   public void setName(String name) {
     this.name = name;
-  }
-
-  public String getExtId() {
-    return extId;
-  }
-
-  public void setExtId(String extId) {
-    this.extId = extId;
   }
 
   public long getMinRam() {
@@ -84,14 +70,6 @@ public class NFVImage extends BaseEntity {
 
   public void setMinCPU(String minCPU) {
     this.minCPU = minCPU;
-  }
-
-  public Date getCreated() {
-    return created;
-  }
-
-  public void setCreated(Date created) {
-    this.created = created;
   }
 
   public Date getUpdated() {

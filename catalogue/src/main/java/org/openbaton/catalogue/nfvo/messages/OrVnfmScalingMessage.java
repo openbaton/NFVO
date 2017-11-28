@@ -23,15 +23,15 @@ import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.VNFPackage;
-import org.openbaton.catalogue.nfvo.VimInstance;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 
 /** Created by lto on 13/10/15. */
 public class OrVnfmScalingMessage extends OrVnfmMessage {
 
   private VNFComponent component;
   private VNFCInstance vnfcInstance;
-  private VimInstance vimInstance;
+  private BaseVimInstance vimInstance;
   private VNFPackage vnfPackage;
   private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
   private VNFRecordDependency dependency;
@@ -78,11 +78,11 @@ public class OrVnfmScalingMessage extends OrVnfmMessage {
     this.vnfPackage = vnfPackage;
   }
 
-  public VimInstance getVimInstance() {
+  public BaseVimInstance getVimInstance() {
     return vimInstance;
   }
 
-  public void setVimInstance(VimInstance vimInstance) {
+  public void setVimInstance(BaseVimInstance vimInstance) {
     this.vimInstance = vimInstance;
   }
 

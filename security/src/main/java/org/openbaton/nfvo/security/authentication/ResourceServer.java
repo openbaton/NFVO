@@ -38,7 +38,11 @@ public class ResourceServer extends ResourceServerConfigurerAdapter {
         .antMatchers("/api/**")
         .access("#oauth2.hasScope('write')")
         .and()
-        .exceptionHandling();
+        .exceptionHandling()
+        .and()
+        .csrf()
+        .disable()
+        .cors();
   }
 
   @Override

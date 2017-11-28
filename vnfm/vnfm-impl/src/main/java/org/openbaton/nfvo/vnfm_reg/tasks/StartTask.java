@@ -68,6 +68,28 @@ public class StartTask extends AbstractTask {
     log.trace("VNFR existing hibernate version = " + existing.getHbVersion());
     log.trace("VNFR reiceived hibernate version = " + virtualNetworkFunctionRecord.getHbVersion());
 
+    virtualNetworkFunctionRecord
+        .getVdu()
+        .forEach(
+            vdu -> {
+              log.trace(
+                  "VDU ("
+                      + vdu.getId()
+                      + ") received with hibernate version = "
+                      + vdu.getHbVersion());
+            });
+
+    existing
+        .getVdu()
+        .forEach(
+            vdu -> {
+              log.trace(
+                  "VDU ("
+                      + vdu.getId()
+                      + ") existing hibernate version is = "
+                      + vdu.getHbVersion());
+            });
+
     for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
       for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
         log.trace("VNFCI received hibernate version = " + vnfcInstance.getHbVersion());

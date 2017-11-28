@@ -18,7 +18,8 @@
 package org.openbaton.nfvo.core.api;
 
 import java.util.Date;
-import org.openbaton.catalogue.nfvo.NFVImage;
+import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
+import org.openbaton.catalogue.nfvo.images.NFVImage;
 import org.openbaton.nfvo.repositories.ImageRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,12 +57,12 @@ public class NFVImageManagement implements org.openbaton.nfvo.core.interfaces.NF
   }
 
   @Override
-  public Iterable<NFVImage> query() {
+  public Iterable<BaseNfvImage> query() {
     return imageRepository.findAll();
   }
 
   @Override
-  public NFVImage query(String id) {
+  public BaseNfvImage query(String id) {
     return imageRepository.findOne(id);
   }
 

@@ -24,6 +24,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
 import org.openbaton.catalogue.util.BaseEntity;
 
 /** Created by lto on 22/07/15. */
@@ -59,7 +60,7 @@ public class VNFPackage extends BaseEntity {
     cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST},
     orphanRemoval = true
   )
-  private NFVImage image;
+  private BaseNfvImage image;
 
   @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   private VNFPackageMetadata vnfPackageMetadata;
@@ -102,11 +103,11 @@ public class VNFPackage extends BaseEntity {
     this.name = name;
   }
 
-  public NFVImage getImage() {
+  public BaseNfvImage getImage() {
     return image;
   }
 
-  public void setImage(NFVImage image) {
+  public void setImage(BaseNfvImage image) {
     this.image = image;
   }
 

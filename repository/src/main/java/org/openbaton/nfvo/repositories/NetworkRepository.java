@@ -17,10 +17,10 @@
 
 package org.openbaton.nfvo.repositories;
 
-import org.openbaton.catalogue.nfvo.Network;
+import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
 import org.springframework.data.repository.CrudRepository;
 
 /** Created by lto on 06/05/15. */
-public interface NetworkRepository extends CrudRepository<Network, String> {
+public interface NetworkRepository extends CrudRepository<BaseNetwork, String> {
   //    List<Network> findByProjectId(String projectId);
 }

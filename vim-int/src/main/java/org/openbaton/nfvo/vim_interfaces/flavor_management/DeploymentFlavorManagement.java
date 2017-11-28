@@ -19,7 +19,7 @@ package org.openbaton.nfvo.vim_interfaces.flavor_management;
 
 import java.util.List;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
-import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.exceptions.VimException;
 
 public interface DeploymentFlavorManagement {
@@ -27,7 +27,7 @@ public interface DeploymentFlavorManagement {
    * This operation allows adding new DeploymentFlavor to the repository.
    *
    * @param vimInstance The VimInstance to which the deployment flavor will be added @see {@link
-   *     VimInstance}
+   *     BaseVimInstance}
    * @param deploymentFlavour the deployment flavor to add @see {@link DeploymentFlavour}
    * @return the added DeploymentFalvour @see {@link DeploymentFlavour}
    */
@@ -35,43 +35,43 @@ public interface DeploymentFlavorManagement {
    * * This operation allows adding new DeploymentFlavor to the repository.
    *
    * @param vimInstance The VimInstance to which the deployment flavor will be added @see {@link
-   *     VimInstance}
+   *     BaseVimInstance}
    * @param deploymentFlavour the deployment flavor to add @see {@link DeploymentFlavour}
    * @return the added DeploymentFalvour @see {@link DeploymentFlavour}
    * @throws VimException in case of {@link VimException}
    */
-  DeploymentFlavour add(VimInstance vimInstance, DeploymentFlavour deploymentFlavour)
+  DeploymentFlavour add(BaseVimInstance vimInstance, DeploymentFlavour deploymentFlavour)
       throws VimException;
 
   /**
    * This operation allows deleting in the DeploymentFlavour from the repository.
    *
    * @param vimInstance The VimInstance to which the deployment flavor will be deleted @see {@link
-   *     VimInstance}
+   *     BaseVimInstance}
    * @param deploymentFlavor the deployment flavor to delete @see {@link DeploymentFlavour}
    * @throws VimException in case of {@link VimException}
    */
-  void delete(VimInstance vimInstance, DeploymentFlavour deploymentFlavor) throws VimException;
+  void delete(BaseVimInstance vimInstance, DeploymentFlavour deploymentFlavor) throws VimException;
 
   /**
    * This operation allows updating the DeploymentFlavour in the repository.
    *
    * @param vimInstance The VimInstance to which the deployment flavor will be updated @see {@link
-   *     VimInstance}
+   *     BaseVimInstance}
    * @param deploymentFlavour the deployment flavor to delete @see {@link DeploymentFlavour}
    * @return the updated DeploymentFalvour @see {@link DeploymentFlavour}
    * @throws VimException in case of {@link VimException}
    */
-  DeploymentFlavour update(VimInstance vimInstance, DeploymentFlavour deploymentFlavour)
+  DeploymentFlavour update(BaseVimInstance vimInstance, DeploymentFlavour deploymentFlavour)
       throws VimException;
 
   /**
    * This operation allows querying the information of the DeploymentFlavours in the repository.
    *
    * @param vimInstance the vim instance from which gather the list of deployment flavors @see
-   *     {@link VimInstance}
+   *     {@link BaseVimInstance}
    * @return all available DeploymentFalvours @see {@link DeploymentFlavour}
    * @throws VimException in case of {@link VimException}
    */
-  List<DeploymentFlavour> queryDeploymentFlavors(VimInstance vimInstance) throws VimException;
+  List<DeploymentFlavour> queryDeploymentFlavors(BaseVimInstance vimInstance) throws VimException;
 }

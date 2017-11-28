@@ -28,7 +28,13 @@ import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.*;
+import org.openbaton.catalogue.nfvo.Quota;
+import org.openbaton.catalogue.nfvo.Server;
+import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
+import org.openbaton.catalogue.nfvo.images.NFVImage;
+import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
+import org.openbaton.catalogue.nfvo.networks.Network;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
@@ -45,81 +51,83 @@ public class MyVim extends Vim {
   }
 
   @Override
-  public DeploymentFlavour add(VimInstance vimInstance, DeploymentFlavour deploymentFlavour)
+  public DeploymentFlavour add(BaseVimInstance vimInstance, DeploymentFlavour deploymentFlavour)
       throws VimException {
     return null;
   }
 
   @Override
-  public void delete(VimInstance vimInstance, DeploymentFlavour deploymentFlavor)
+  public void delete(BaseVimInstance vimInstance, DeploymentFlavour deploymentFlavor)
       throws VimException {}
 
   @Override
-  public DeploymentFlavour update(VimInstance vimInstance, DeploymentFlavour deploymentFlavour)
+  public DeploymentFlavour update(BaseVimInstance vimInstance, DeploymentFlavour deploymentFlavour)
       throws VimException {
     return null;
   }
 
   @Override
-  public List<DeploymentFlavour> queryDeploymentFlavors(VimInstance vimInstance)
+  public List<DeploymentFlavour> queryDeploymentFlavors(BaseVimInstance vimInstance)
       throws VimException {
     return null;
   }
 
   @Override
-  public NFVImage add(VimInstance vimInstance, NFVImage image, byte[] imageFile)
+  public NFVImage add(BaseVimInstance vimInstance, NFVImage image, byte[] imageFile)
       throws VimException {
     return null;
   }
 
   @Override
-  public NFVImage add(VimInstance vimInstance, NFVImage image, String image_url)
+  public NFVImage add(BaseVimInstance vimInstance, NFVImage image, String image_url)
       throws VimException {
     return null;
   }
 
   @Override
-  public void delete(VimInstance vimInstance, NFVImage image) throws VimException {}
+  public void delete(BaseVimInstance vimInstance, NFVImage image) throws VimException {}
 
   @Override
-  public NFVImage update(VimInstance vimInstance, NFVImage image) throws VimException {
+  public BaseNfvImage update(BaseVimInstance vimInstance, NFVImage image) throws VimException {
     return null;
   }
 
   @Override
-  public List<NFVImage> queryImages(VimInstance vimInstance) throws VimException {
+  public List<BaseNfvImage> queryImages(BaseVimInstance vimInstance) throws VimException {
     return null;
   }
 
   @Override
-  public void copy(VimInstance vimInstance, NFVImage image, byte[] imageFile) throws VimException {}
+  public void copy(BaseVimInstance vimInstance, NFVImage image, byte[] imageFile)
+      throws VimException {}
 
   @Override
-  public Network add(VimInstance vimInstance, Network network) throws VimException {
-    return network;
+  public BaseNetwork add(BaseVimInstance vimInstance, BaseNetwork network) throws VimException {
+    return (Network) network;
   }
 
   @Override
-  public void delete(VimInstance vimInstance, Network network) throws VimException {}
+  public void delete(BaseVimInstance vimInstance, BaseNetwork network) throws VimException {}
 
   @Override
-  public Network update(VimInstance vimInstance, Network updatingNetwork) throws VimException {
+  public BaseNetwork update(BaseVimInstance vimInstance, Network updatingNetwork)
+      throws VimException {
     return updatingNetwork;
   }
 
   @Override
-  public List<Network> queryNetwork(VimInstance vimInstance) throws VimException {
+  public List<BaseNetwork> queryNetwork(BaseVimInstance vimInstance) throws VimException {
     return null;
   }
 
   @Override
-  public Network query(VimInstance vimInstance, String extId) throws VimException {
+  public BaseNetwork query(BaseVimInstance vimInstance, String extId) throws VimException {
     return null;
   }
 
   @Override
   public Future<VNFCInstance> allocate(
-      VimInstance vimInstance,
+      BaseVimInstance vimInstance,
       VirtualDeploymentUnit vdu,
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
       VNFComponent vnfComponent,
@@ -131,7 +139,7 @@ public class MyVim extends Vim {
   }
 
   @Override
-  public List<Server> queryResources(VimInstance vimInstance) throws VimException {
+  public List<Server> queryResources(BaseVimInstance vimInstance) throws VimException {
     return null;
   }
 
@@ -148,7 +156,7 @@ public class MyVim extends Vim {
   public void operate(VirtualDeploymentUnit vdu, String operation) {}
 
   @Override
-  public Future<Void> release(VNFCInstance vnfcInstance, VimInstance vimInstance)
+  public Future<Void> release(VNFCInstance vnfcInstance, BaseVimInstance vimInstance)
       throws VimException {
     return null;
   }
@@ -166,7 +174,12 @@ public class MyVim extends Vim {
   public void releaseReservation(VirtualDeploymentUnit vdu) {}
 
   @Override
-  public Quota getQuota(VimInstance vimInstance) {
+  public Quota getQuota(BaseVimInstance vimInstance) {
     return null;
+  }
+
+  @Override
+  public BaseVimInstance refresh(BaseVimInstance vimInstance) throws VimException {
+    return vimInstance;
   }
 }

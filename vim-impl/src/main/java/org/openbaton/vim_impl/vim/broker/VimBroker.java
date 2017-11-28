@@ -23,7 +23,7 @@ import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.nfvo.Quota;
 import org.openbaton.catalogue.nfvo.Server;
-import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
@@ -186,7 +186,7 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
   }
 
   @Override
-  public Quota getLeftQuota(VimInstance vimInstance) throws VimException, PluginException {
+  public Quota getLeftQuota(BaseVimInstance vimInstance) throws VimException, PluginException {
     Vim vim = getVim(vimInstance.getType());
 
     Quota maximalQuota = vim.getQuota(vimInstance);

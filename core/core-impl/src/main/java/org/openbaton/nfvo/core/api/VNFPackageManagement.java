@@ -31,6 +31,7 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,12 +55,14 @@ import org.openbaton.catalogue.nfvo.AdditionalRepoInfo;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.openbaton.catalogue.nfvo.ImageMetadata;
-import org.openbaton.catalogue.nfvo.NFVImage;
 import org.openbaton.catalogue.nfvo.PackageType;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VNFPackageMetadata;
-import org.openbaton.catalogue.nfvo.VimInstance;
+import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
+import org.openbaton.catalogue.nfvo.images.DockerImage;
+import org.openbaton.catalogue.nfvo.images.NFVImage;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
@@ -146,7 +149,7 @@ public class VNFPackageManagement
           AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException,
           InterruptedException, EntityUnreachableException, BadFormatException {
     log.info("Onboarding VNF Package...");
-    for (VimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId))
+    for (BaseVimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId))
       vimManagement.refresh(vimInstance, false);
     VNFPackage vnfPackage = new VNFPackage();
     vnfPackage.setScripts(new HashSet<>());
@@ -832,7 +835,7 @@ public class VNFPackageManagement
       } else {
         if (vnfPackage.getVimTypes() != null && !vnfPackage.getVimTypes().isEmpty()) {
           for (String vimInstanceName : vdu.getVimInstanceName()) {
-            for (VimInstance vi : vimInstanceRepository.findByProjectId(projectId)) {
+            for (BaseVimInstance vi : vimInstanceRepository.findByProjectId(projectId)) {
               if (vi.getName().equals(vimInstanceName)) {
                 if (!vnfPackage.getVimTypes().contains(vi.getType())) {
                   throw new BadRequestException(
@@ -858,9 +861,9 @@ public class VNFPackageManagement
         for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
           if (vdu.getVimInstanceName() != null && !vdu.getVimInstanceName().isEmpty()) {
             for (String vimName : vdu.getVimInstanceName()) {
-              VimInstance vimInstance = null;
+              BaseVimInstance vimInstance = null;
 
-              for (VimInstance vi : vimInstanceRepository.findByProjectId(projectId)) {
+              for (BaseVimInstance vi : vimInstanceRepository.findByProjectId(projectId)) {
                 if (vimName.equals(vi.getName())) {
                   vimInstance = vi;
                 }
@@ -875,9 +878,9 @@ public class VNFPackageManagement
         for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
           if (vdu.getVimInstanceName() != null && !vdu.getVimInstanceName().isEmpty()) {
             for (String vimName : vdu.getVimInstanceName()) {
-              VimInstance vimInstance = null;
+              BaseVimInstance vimInstance = null;
 
-              for (VimInstance vi : vimInstanceRepository.findByProjectId(projectId)) {
+              for (BaseVimInstance vi : vimInstanceRepository.findByProjectId(projectId)) {
                 if (vimName.equals(vi.getName())) {
                   vimInstance = vi;
                 }
@@ -917,9 +920,9 @@ public class VNFPackageManagement
 
         for (String vimName : vimInstanceNames) {
 
-          VimInstance vimInstance = null;
+          BaseVimInstance vimInstance = null;
 
-          for (VimInstance vi : vimInstanceRepository.findByProjectId(projectId)) {
+          for (BaseVimInstance vi : vimInstanceRepository.findByProjectId(projectId)) {
             if (vimName.equals(vi.getName())) {
               vimInstance = vi;
             }
@@ -934,7 +937,7 @@ public class VNFPackageManagement
           vimManagement.refresh(vimInstance, false);
           //First, check for image ids
           if (imageDetails.containsKey("ids")) {
-            for (NFVImage nfvImage : vimInstance.getImages()) {
+            for (BaseNfvImage nfvImage : vimInstance.getImages()) {
               if (((List) imageDetails.get("ids")).contains(nfvImage.getExtId())) {
                 if (!found) {
                   vdu.getVm_image().add(nfvImage.getExtId());
@@ -949,10 +952,11 @@ public class VNFPackageManagement
           }
 
           //If no one was found, check for the names
+          List imageNamesMetadata = (List) imageDetails.get("names");
           if (!found) {
             if (imageDetails.containsKey("names")) {
-              for (NFVImage nfvImage : vimInstance.getImages()) {
-                if (((List) imageDetails.get("names")).contains(nfvImage.getName())) {
+              for (BaseNfvImage nfvImage : vimInstance.getImages()) {
+                if (matchNames(imageNamesMetadata, nfvImage)) {
                   if (!found) {
                     vdu.getVm_image().add(nfvImage.getExtId());
                     found = true;
@@ -966,8 +970,8 @@ public class VNFPackageManagement
             }
           }
           if (!found) {
-            for (NFVImage nfvImage : vimInstance.getImages()) {
-              if (vdu.getVm_image().contains(nfvImage.getName())) {
+            for (BaseNfvImage nfvImage : vimInstance.getImages()) {
+              if (matchNames(vdu.getVm_image(), nfvImage)) {
                 if (!found) {
                   found = true;
                 }
@@ -1019,7 +1023,7 @@ public class VNFPackageManagement
 
           //        } else { // vimInstanceName is not defined, just put the name into the vdu
           if (imageDetails.containsKey("names")) {
-            List names = (List) imageDetails.get("names");
+            List names = imageNamesMetadata;
             log.debug("Adding names: " + names);
             vdu.getVm_image().addAll(names);
           } else if (imageDetails.containsKey("ids")) {
@@ -1035,12 +1039,27 @@ public class VNFPackageManagement
     }
   }
 
+  private boolean matchNames(Collection<String> imageNamesMetadata, BaseNfvImage nfvImage) {
+    return imageNamesMetadata
+        .stream()
+        .anyMatch(
+            name -> {
+              if (nfvImage instanceof NFVImage) {
+                NFVImage osImage = (NFVImage) nfvImage;
+                return name.equals(osImage.getName());
+              } else if (nfvImage instanceof DockerImage) {
+                DockerImage dockerImage = (DockerImage) nfvImage;
+                return dockerImage.getTags().contains(name);
+              } else return nfvImage.getExtId().equals(name);
+            });
+  }
+
   private NFVImage addNfvImage(
       VNFPackage vnfPackage,
       NFVImage image,
       List<String> vimInstances,
       VirtualDeploymentUnit vdu,
-      VimInstance vimInstance)
+      BaseVimInstance vimInstance)
       throws PluginException, VimException, IOException, BadRequestException,
           AlreadyExistingException, InterruptedException {
     if (!vimInstances.contains(vimInstance.getId())) { // check if we didn't already upload it
