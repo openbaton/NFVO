@@ -1260,10 +1260,9 @@ public class NetworkServiceRecordManagement
       VNFDConnectionPoint vnfdConnectionPoint,
       String type)
       throws BadRequestException {
-    BaseNetwork network;
     switch (type) {
       case "openstack":
-        network = new Network();
+        Network network = new Network();
         HashSet<Subnet> subnets = new HashSet<>();
         Subnet subnet = new Subnet();
         subnet.setName(String.format("%s_subnet", vnfdConnectionPoint.getVirtual_link_reference()));
@@ -1273,17 +1272,18 @@ public class NetworkServiceRecordManagement
                 networkServiceDescriptor,
                 virtualNetworkFunctionDescriptor));
         subnets.add(subnet);
-        ((Network) network).setSubnets(subnets);
-        break;
+        network.setSubnets(subnets);
+        network.setName(vnfdConnectionPoint.getVirtual_link_reference());
+        return network;
       case "docker":
-        network = new DockerNetwork();
-        break;
+        DockerNetwork networkdc = new DockerNetwork();
+        networkdc.setName(vnfdConnectionPoint.getVirtual_link_reference());
+        return networkdc;
       default:
-        network = new BaseNetwork();
-        break;
+        BaseNetwork networkb = new BaseNetwork();
+        networkb.setName(vnfdConnectionPoint.getVirtual_link_reference());
+        return networkb;
     }
-    network.setName(vnfdConnectionPoint.getVirtual_link_reference());
-    return network;
   }
 
   private boolean isVNFDConnectionPointExisting(
