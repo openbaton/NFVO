@@ -34,7 +34,7 @@ import org.openbaton.catalogue.security.ServiceMetadata;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.nfvo.security.interfaces.ComponentManager;
+import org.openbaton.nfvo.core.interfaces.ComponentManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

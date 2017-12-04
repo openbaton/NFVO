@@ -1,4 +1,4 @@
-package org.openbaton.nfvo.security.components;
+package org.openbaton.nfvo.core.api;
 
 import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.createRabbitMqUser;
 import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.removeRabbitMqUser;
@@ -47,10 +47,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.stereotype.Service;
 
-//TODO place this class somewhere else
 @Service
 @ConfigurationProperties
-public class ComponentManager implements org.openbaton.nfvo.security.interfaces.ComponentManager {
+public class ComponentManager implements org.openbaton.nfvo.core.interfaces.ComponentManager {
 
   private Logger log = LoggerFactory.getLogger(this.getClass());
 

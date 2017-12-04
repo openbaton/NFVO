@@ -15,7 +15,7 @@
  *
  */
 
-package org.openbaton.nfvo.security.authorization;
+package org.openbaton.nfvo.core.api;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -27,8 +27,8 @@ import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.NotAllowedException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PasswordWeakException;
+import org.openbaton.nfvo.core.utils.Utils;
 import org.openbaton.nfvo.repositories.UserRepository;
-import org.openbaton.nfvo.security.authorization.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +45,7 @@ import org.springframework.stereotype.Service;
 /** Created by lto on 25/02/16. */
 @Service
 @ConfigurationProperties
-public class UserManagement implements org.openbaton.nfvo.security.interfaces.UserManagement {
+public class UserManagement implements org.openbaton.nfvo.core.interfaces.UserManagement {
 
   @Value("${nfvo.users.password.strength:true}")
   private boolean checkStrength;
@@ -55,7 +55,7 @@ public class UserManagement implements org.openbaton.nfvo.security.interfaces.Us
 
   @Autowired private UserRepository userRepository;
 
-  @Autowired private org.openbaton.nfvo.security.interfaces.ProjectManagement projectManagement;
+  @Autowired private org.openbaton.nfvo.core.interfaces.ProjectManagement projectManagement;
 
   @Autowired
   @Qualifier("customUserDetailsService")

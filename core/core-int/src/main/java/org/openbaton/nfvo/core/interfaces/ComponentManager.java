@@ -1,4 +1,4 @@
-package org.openbaton.nfvo.security.interfaces;
+package org.openbaton.nfvo.core.interfaces;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;

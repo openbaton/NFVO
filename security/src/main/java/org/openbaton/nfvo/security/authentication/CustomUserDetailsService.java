@@ -23,7 +23,6 @@ import org.openbaton.catalogue.security.Role;
 import org.openbaton.catalogue.security.Role.RoleEnum;
 import org.openbaton.catalogue.security.User;
 import org.openbaton.nfvo.repositories.UserRepository;
-import org.openbaton.nfvo.security.interfaces.ProjectManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,8 +49,6 @@ public class CustomUserDetailsService implements UserDetailsManager {
 
   @Value("${nfvo.security.guest.password:guest}")
   private String guestPwd;
-
-  @Autowired private ProjectManagement projectManagement;
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
