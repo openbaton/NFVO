@@ -589,7 +589,10 @@ public class RestNetworkServiceRecord {
   }
 
   /////// Fault management utilities
-  @ApiOperation(value = "", notes = "", hidden = true)
+  @ApiOperation(
+    value = "Add a VNFC in standby",
+    notes = "Instantiate and configure a new VNFC without start it, namely in standby"
+  )
   @RequestMapping(
     value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}/vnfcinstances/standby",
     method = RequestMethod.POST,
@@ -618,7 +621,11 @@ public class RestNetworkServiceRecord {
         id, idVnf, idVdu, component, "standby", projectId, vimInstanceNames);
   }
 
-  @ApiOperation(value = "", notes = "", hidden = true)
+  @ApiOperation(
+    value = "Execute the switch to standby action on a VNFR",
+    notes =
+        "This action starts the standby VNFC and sets the failed VNFC in failed state. Eventually configures the dependent VNFRs"
+  )
   @RequestMapping(
     value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}/vnfcinstances/{idVNFC}/switchtostandby",
     method = RequestMethod.POST,
