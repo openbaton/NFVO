@@ -77,10 +77,10 @@ public class RabbitManager {
     HttpClient httpclient = HttpClients.createDefault();
     HttpResponse response = httpclient.execute(httpGet);
     HttpEntity entity = response.getEntity();
-
-    InputStreamReader inputStreamReader = new InputStreamReader(entity.getContent());
-
-    JsonArray array = gson.fromJson(inputStreamReader, JsonArray.class);
+    JsonArray array;
+    try (InputStreamReader inputStreamReader = new InputStreamReader(entity.getContent())) {
+      array = gson.fromJson(inputStreamReader, JsonArray.class);
+    }
     if (array != null)
       for (JsonElement queueJson : array) {
         String name = queueJson.getAsJsonObject().get("name").getAsString();
