@@ -117,9 +117,8 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
       }
     }
     path += filename;
-    FileOutputStream out = new FileOutputStream(path);
-    try {
-      BufferedInputStream fileInputStream = new BufferedInputStream(conn.getInputStream());
+    try (FileOutputStream out = new FileOutputStream(path);
+        BufferedInputStream fileInputStream = new BufferedInputStream(conn.getInputStream())) {
       byte[] buf = new byte[8192];
       int bytesread = 0, bytesBuffered = 0;
       while ((bytesread = fileInputStream.read(buf)) > -1) {
@@ -130,8 +129,6 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
           out.flush();
         }
       }
-    } finally {
-      out.flush();
     }
     startPlugin(path, pluginName);
   }
