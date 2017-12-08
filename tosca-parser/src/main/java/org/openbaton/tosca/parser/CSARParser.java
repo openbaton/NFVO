@@ -124,22 +124,18 @@ public class CSARParser {
   }
 
   private void readMetaData() throws IOException {
-
-    BufferedReader br =
+    try (BufferedReader br =
         new BufferedReader(
-            new InputStreamReader(new ByteArrayInputStream(this.metadata.toByteArray())));
-    String strLine;
+            new InputStreamReader(new ByteArrayInputStream(this.metadata.toByteArray())))) {
+      String strLine;
+      String entryDefinition = "Entry-Definitions:";
+      while ((strLine = br.readLine()) != null) {
 
-    String entryDefinition = "Entry-Definitions:";
-
-    while ((strLine = br.readLine()) != null) {
-
-      if (strLine.contains(entryDefinition)) {
-        strLine.substring(entryDefinition.length(), strLine.length());
+        if (strLine.contains(entryDefinition)) {
+          strLine.substring(entryDefinition.length(), strLine.length());
+        }
       }
     }
-
-    br.close();
   }
 
   //TODO what is the need of such method? Only for testing purposes?
