@@ -42,8 +42,9 @@ public abstract class Plugin {
           log.debug(
               "Loading properties from external-properties-file: "
                   + properties.getProperty("external-properties-file"));
-          InputStream is = new FileInputStream(externalPropertiesFile);
-          properties.load(is);
+          try (InputStream is = new FileInputStream(externalPropertiesFile)) {
+            properties.load(is);
+          }
         } else {
           log.debug(
               "external-properties-file: "
