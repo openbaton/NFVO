@@ -77,10 +77,6 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
             pluginTimeout);
   }
 
-  public void stop() throws Exception {
-    pluginCaller.close();
-  }
-
   /*public static void main(String[] args)
     throws IOException, TimeoutException, NotFoundException, ExecutionException,
         InterruptedException {
