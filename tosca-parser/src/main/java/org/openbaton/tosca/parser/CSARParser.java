@@ -141,9 +141,9 @@ public class CSARParser {
   //TODO what is the need of such method? Only for testing purposes?
   public void parseVNFCSAR(String vnfd_csar) throws Exception {
 
-    InputStream csar = new FileInputStream(vnfd_csar);
-    readFiles(csar);
-
+    try (InputStream csar = new FileInputStream(vnfd_csar)) {
+      readFiles(csar);
+    }
     readMetaData();
 
     VNFDTemplate VNFDTemplate = Utils.bytesToVNFDTemplate(this.template);
@@ -152,9 +152,9 @@ public class CSARParser {
 
   public NetworkServiceDescriptor parseNSDCSAR(String nsd_csar) throws Exception {
 
-    InputStream input = new FileInputStream(new File(nsd_csar));
-    readFiles(input);
-
+    try (InputStream input = new FileInputStream(new File(nsd_csar))) {
+      readFiles(input);
+    }
     readMetaData();
     NSDTemplate nsdTemplate = Utils.bytesToNSDTemplate(this.template);
     return toscaParser.parseNSDTemplate(nsdTemplate);
