@@ -588,8 +588,25 @@ public class RestNetworkServiceRecord {
     networkServiceRecordManagement.stopVNFCInstance(id, idVnf, idVdu, idVNFCI, projectId);
   }
 
-  /////// Fault management utilities
-  @ApiOperation(value = "", notes = "", hidden = true)
+  /**
+   * Add a VNF Component (VNFC) in standby to a specific VNF. A standby VNFC is a VNFC instantiated
+   * configured but not started.
+   *
+   * @param body VNF Component to add as JSON.
+   * @param id NSR Id
+   * @param idVnf VNF Id of the target VNF
+   * @param idVdu VDU Id
+   * @param projectId Project Id
+   * @throws NotFoundException
+   * @throws BadFormatException
+   * @throws WrongStatusException
+   * @throws ExecutionException
+   * @throws InterruptedException
+   */
+  @ApiOperation(
+    value = "Add a VNFC in standby",
+    notes = "Instantiate and configure a new VNFC without start it, namely in standby"
+  )
   @RequestMapping(
     value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}/vnfcinstances/standby",
     method = RequestMethod.POST,
@@ -618,7 +635,27 @@ public class RestNetworkServiceRecord {
         id, idVnf, idVdu, component, "standby", projectId, vimInstanceNames);
   }
 
-  @ApiOperation(value = "", notes = "", hidden = true)
+  /**
+   * Execute the switch to standby action on a VNFR. This action starts the standby VNFC and sets
+   * the failed VNFC in failed state. Eventually configures the dependent VNFRs.
+   *
+   * @param failedVnfcInstance failed VNFC instance as JSON
+   * @param id NSR Id
+   * @param idVnf VNFR Id
+   * @param idVdu VDU Id
+   * @param idVNFC VNFC Id of the standby VNFC
+   * @param projectId Project Id
+   * @throws NotFoundException
+   * @throws BadFormatException
+   * @throws WrongStatusException
+   * @throws ExecutionException
+   * @throws InterruptedException
+   */
+  @ApiOperation(
+    value = "Execute the switch to standby action on a VNFR",
+    notes =
+        "This action starts the standby VNFC and sets the failed VNFC in failed state. Eventually configures the dependent VNFRs"
+  )
   @RequestMapping(
     value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}/vnfcinstances/{idVNFC}/switchtostandby",
     method = RequestMethod.POST,
