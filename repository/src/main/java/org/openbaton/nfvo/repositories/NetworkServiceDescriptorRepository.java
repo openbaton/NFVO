@@ -26,6 +26,9 @@ public interface NetworkServiceDescriptorRepository
         NetworkServiceDescriptorRepositoryCustom {
   NetworkServiceDescriptor findFirstById(String id);
 
+  // Finds the NSDs that contains the VNFD with the given id
+  List<NetworkServiceDescriptor> findByVnfd_idAndProjectId(String id, String projectId);
+
   NetworkServiceDescriptor findFirstByIdAndProjectId(String id, String projectId);
 
   List<NetworkServiceDescriptor> findByProjectId(String projectId);
