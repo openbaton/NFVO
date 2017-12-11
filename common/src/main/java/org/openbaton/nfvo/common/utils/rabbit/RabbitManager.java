@@ -32,8 +32,6 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -63,30 +61,30 @@ public class RabbitManager {
       throws IOException {
     List<String> result = new ArrayList<>();
     String encoding = Base64.encodeBase64String((username + ":" + password).getBytes());
-    HttpGet httpGet =
-        new HttpGet(
-            "http://"
-                + brokerIp
-                + ":"
-                + managementPort
-                + "/api/queues/"
-                + virtualHost.replace("/", "%2f"));
-    httpGet.setHeader("Authorization", "Basic " + encoding);
-
-    log.trace("executing request " + httpGet.getRequestLine());
-    HttpClient httpclient = HttpClients.createDefault();
-    HttpResponse response = httpclient.execute(httpGet);
-    HttpEntity entity = response.getEntity();
-    JsonArray array;
-    try (InputStreamReader inputStreamReader = new InputStreamReader(entity.getContent())) {
-      array = gson.fromJson(inputStreamReader, JsonArray.class);
-    }
-    if (array != null)
-      for (JsonElement queueJson : array) {
-        String name = queueJson.getAsJsonObject().get("name").getAsString();
-        result.add(name);
-        log.trace("found queue: " + name);
+    try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+      HttpGet httpGet =
+          new HttpGet(
+              "http://"
+                  + brokerIp
+                  + ":"
+                  + managementPort
+                  + "/api/queues/"
+                  + virtualHost.replace("/", "%2f"));
+      httpGet.setHeader("Authorization", "Basic " + encoding);
+      log.trace("executing request " + httpGet.getRequestLine());
+      CloseableHttpResponse response = httpClient.execute(httpGet);
+      HttpEntity entity = response.getEntity();
+      JsonArray array;
+      try (InputStreamReader inputStreamReader = new InputStreamReader(entity.getContent())) {
+        array = gson.fromJson(inputStreamReader, JsonArray.class);
+        if (array != null)
+          for (JsonElement queueJson : array) {
+            String name = queueJson.getAsJsonObject().get("name").getAsString();
+            result.add(name);
+            log.trace("found queue: " + name);
+          }
       }
+    }
     //TODO check for errors
     log.trace("found queues: " + result.toString());
     return result;
