@@ -15,8 +15,6 @@ public class Utils {
     try (InputStream ios = new ByteArrayInputStream(file)) {
       Yaml yaml = new Yaml();
       result = (Map<String, Object>) yaml.load(ios);
-    } catch (IOException e) {
-      throw e;
     }
     return result;
   }
