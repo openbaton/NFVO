@@ -1,11 +1,10 @@
 package org.openbaton.catalogue.nfvo.viminstances;
 
+import org.openbaton.catalogue.nfvo.images.AWSImage;
 import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
 import org.openbaton.catalogue.nfvo.images.NFVImage;
 import org.openbaton.catalogue.nfvo.networks.AWSNetwork;
 import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
-import org.openbaton.catalogue.nfvo.networks.Network;
-
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.FetchType;
@@ -17,6 +16,7 @@ import java.util.Set;
 
 public class AmazonVimInstance extends BaseVimInstance {
     private String vpcName;
+
     private String vpcId;
 
     @NotNull
@@ -26,8 +26,10 @@ public class AmazonVimInstance extends BaseVimInstance {
 
     private String keyPair;
 
+    private String region;
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<NFVImage> images;
+    private Set<AWSImage> images;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<AWSNetwork> networks;
@@ -117,7 +119,7 @@ public class AmazonVimInstance extends BaseVimInstance {
         this.keyPair = keyPair;
     }
 
-    public void setImages(Set<NFVImage> images) {
+    public void setImages(Set<AWSImage> images) {
         this.images = images;
     }
 
@@ -131,5 +133,13 @@ public class AmazonVimInstance extends BaseVimInstance {
 
     public void setSecurityGroups(Set<String> securityGroups) {
         this.securityGroups = securityGroups;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
     }
 }
