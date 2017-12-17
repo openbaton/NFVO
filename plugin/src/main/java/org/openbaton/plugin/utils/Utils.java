@@ -34,6 +34,12 @@ public class Utils {
       String password,
       String pluginLogPath)
       throws IOException {
+
+    Utils.validatePath(path);
+    Utils.validateInput(name);
+    Utils.validateInput(brokerIp);
+    Utils.validateInput(port);
+
     ProcessBuilder processBuilder =
         new ProcessBuilder(
             //            "java", "-jar", path, name, brokerIp, port, "" + consumers, username, password);
@@ -46,5 +52,41 @@ public class Utils {
     processBuilder.redirectErrorStream(true);
     processBuilder.redirectOutput(ProcessBuilder.Redirect.to(file));
     return processBuilder.start();
+  }
+
+  public static void validateInput(String input) throws IllegalArgumentException {
+    if (input.contains("\\")) {
+      throw new IllegalArgumentException("Illegal character \"\\\" in: " + input);
+    } else if (input.contains("{") || input.contains("}")) {
+      throw new IllegalArgumentException("Illegal character \"{\" or \"}\" in: " + input);
+    } else if (input.contains("/")) {
+      throw new IllegalArgumentException("Illegal character \"/\" in: " + input);
+    } else if (input.contains("[") || input.contains("]")) {
+      throw new IllegalArgumentException("Illegal character \"[\" or \"]\" in: " + input);
+    } else if (input.contains(",")
+        || input.contains(" ")
+        || input.contains("\n")
+        || input.contains("&")
+        || input.contains(";")
+        || input.contains(":")
+        || input.contains("\"")) {
+      throw new IllegalArgumentException("Illegal character in: " + input);
+    }
+  }
+
+  public static void validatePath(String input) throws IllegalArgumentException {
+    if (input.contains("{") || input.contains("}")) {
+      throw new IllegalArgumentException("Illegal character \"{\" or \"}\" in: " + input);
+    } else if (input.contains("[") || input.contains("]")) {
+      throw new IllegalArgumentException("Illegal character \"[\" or \"]\" in: " + input);
+    } else if (input.contains(",")
+        || input.contains(" ")
+        || input.contains("\n")
+        || input.contains("&")
+        || input.contains(";")
+        || input.contains(":")
+        || input.contains("\"")) {
+      throw new IllegalArgumentException("Illegal character in: " + input);
+    }
   }
 }

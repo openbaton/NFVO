@@ -1092,16 +1092,16 @@ public class VNFPackageManagement
       throw new BadFormatException("The provided link " + link + " is not a valid URL.");
     }
 
-    InputStream in = new BufferedInputStream(packageLink.openStream());
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    byte[] bytes = new byte[1024];
-    int n;
-    while (-1 != (n = in.read(bytes))) {
-      out.write(bytes, 0, n);
+    byte[] packageOnboard;
+    try (InputStream in = new BufferedInputStream(packageLink.openStream());
+        ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+      byte[] bytes = new byte[1024];
+      int n;
+      while (-1 != (n = in.read(bytes))) {
+        out.write(bytes, 0, n);
+      }
+      packageOnboard = out.toByteArray();
     }
-    out.close();
-    in.close();
-    byte[] packageOnboard = out.toByteArray();
     log.debug("Downloaded " + packageOnboard.length + " bytes");
     VirtualNetworkFunctionDescriptor vnfd;
     try {
