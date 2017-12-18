@@ -64,7 +64,7 @@ class SystemStartup implements CommandLineRunner {
   @Value("${spring.rabbitmq.password:openbaton}")
   private String password;
 
-  @Value("${nfvo.rabbit.brokerIp:localhost}")
+  @Value("${spring.rabbitmq.host:localhost}")
   private String brokerIp;
 
   @Value("${nfvo.rabbit.management.port:15672}")
