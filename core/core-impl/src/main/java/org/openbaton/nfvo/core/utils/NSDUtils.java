@@ -527,7 +527,8 @@ public class NSDUtils {
     BaseVimInstance vimInstance = null;
     for (BaseVimInstance vi :
         vimRepository.findByProjectId(virtualNetworkFunctionDescriptor.getProjectId())) {
-      if (vimName.equals(vi.getName())) {
+      if ((vimName.contains(":") && vimName.split(":")[0].equals(vi.getName()))
+          || (!vimName.contains(":") && vimName.equals(vi.getName()))) {
         vimInstance = vi;
         log.debug("Got vim with auth: " + vimInstance.getAuthUrl());
         break;
