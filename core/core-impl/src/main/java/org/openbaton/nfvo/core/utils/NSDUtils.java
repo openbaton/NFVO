@@ -564,6 +564,9 @@ public class NSDUtils {
                 + virtualNetworkFunctionDescriptor.getName()
                 + " does not contain an image.");
       }
+      if (vdu.getName() == null || vdu.getName().equalsIgnoreCase("")) {
+        vdu.setName("vdu" + i);
+      }
       vdu.setProjectId(virtualNetworkFunctionDescriptor.getProjectId());
     }
   }
