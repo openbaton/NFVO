@@ -56,7 +56,7 @@ public class TOSCAParser {
 
     InternalVirtualLink vl = new InternalVirtualLink();
     vl.setName(vlNodeTemplate.getName());
-
+    vl.setQos(vlNodeTemplate.getQos());
     return vl;
   }
 
