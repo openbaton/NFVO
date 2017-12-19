@@ -1,49 +1,71 @@
 package org.openbaton.catalogue.nfvo.images;
 
-public class AWSImage extends BaseNfvImage{
-    private String name;
-    private String description;
-    private String hypervisor;
-    private String imageOwner;
-    private boolean isPublic;
+import javax.persistence.Entity;
 
-    public String getName() {
-        return name;
-    }
+@Entity
+public class AWSImage extends BaseNfvImage {
+  private String name;
+  private String description;
+  private String hypervisor;
+  private String imageOwner;
+  private boolean isPublic;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    public String getHypervisor() {
-        return hypervisor;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    public void setHypervisor(String hypervisor) {
-        this.hypervisor = hypervisor;
-    }
+  public String getHypervisor() {
+    return hypervisor;
+  }
 
-    public String getImageOwner() {
-        return imageOwner;
-    }
+  public void setHypervisor(String hypervisor) {
+    this.hypervisor = hypervisor;
+  }
 
-    public void setImageOwner(String imageOwner) {
-        this.imageOwner = imageOwner;
-    }
+  public String getImageOwner() {
+    return imageOwner;
+  }
 
-    public boolean isPublic() {
-        return isPublic;
-    }
+  public void setImageOwner(String imageOwner) {
+    this.imageOwner = imageOwner;
+  }
 
-    public void setPublic(boolean aPublic) {
-        isPublic = aPublic;
-    }
+  public boolean isPublic() {
+    return isPublic;
+  }
+
+  public void setPublic(boolean aPublic) {
+    isPublic = aPublic;
+  }
+
+  @Override
+  public String toString() {
+    return "AWSImage{"
+        + "name='"
+        + name
+        + '\''
+        + ", hypervisor="
+        + hypervisor
+        + '\''
+        + ", imageOwner='"
+        + imageOwner
+        + '\''
+        + ", description='"
+        + description
+        + '\''
+        + "} "
+        + super.toString();
+  }
 }
