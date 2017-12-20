@@ -1,4 +1,6 @@
 package org.openbaton.tosca.templates.TopologyTemplate.Nodes.VDU;
+import org.openbaton.catalogue.mano.common.HighAvailability;
+import org.openbaton.catalogue.mano.common.ResiliencyLevel;
 
 public class VDUHighAvailability {
     private HighAvailability highAvailability;
