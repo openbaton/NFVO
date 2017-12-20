@@ -1,4 +1,6 @@
 package org.openbaton.tosca.templates.TopologyTemplate.Nodes.VDU;
+
+import java.util.Map;
 import org.openbaton.catalogue.mano.common.HighAvailability;
 import org.openbaton.catalogue.mano.common.ResiliencyLevel;
 
