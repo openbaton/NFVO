@@ -25,7 +25,7 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
 
 @Configuration
 @EnableResourceServer
-public class ResourceServer extends ResourceServerConfigurerAdapter {
+public class OAuth2ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
   @Override
   public void configure(HttpSecurity http) throws Exception {
@@ -33,10 +33,8 @@ public class ResourceServer extends ResourceServerConfigurerAdapter {
     http.authorizeRequests()
         .antMatchers("/api/v1/components/services/register", "/api/v1/security")
         .permitAll()
-        .and()
-        .authorizeRequests()
         .antMatchers("/api/**")
-        .access("#oauth2.hasScope('write')")
+        .authenticated()
         .and()
         .exceptionHandling()
         .and()
