@@ -45,8 +45,7 @@ public class RestEventSender implements EventSender {
   @Override
   @Async
   public Future<Void> send(EventEndpoint endpoint, ApplicationEventNFVO event) {
-    try {
-      CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+    try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
       Gson mapper = new GsonBuilder().create();
       String json =
           "{\"action\":\""

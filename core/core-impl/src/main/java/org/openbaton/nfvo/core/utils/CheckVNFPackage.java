@@ -99,11 +99,16 @@ public class CheckVNFPackage {
           byte[] content = new byte[(int) entry.getSize()];
           tarFile.read(content, 0, content.length);
 
-          if (entry.getName().equals("Metadata.yaml")) {
+          if (entry.getName().equalsIgnoreCase("metadata.yaml")) {
             metadataFound = true;
 
-            Map<String, Object> metadata = Utils.getMapFromYamlFile(content);
-
+            Map<String, Object> metadata;
+            try {
+              metadata = Utils.getMapFromYamlFile(content);
+            } catch (IOException ioe) {
+              throw new VNFPackageFormatException(
+                  "Error reading the Metadata.yaml file: " + ioe.getMessage(), ioe);
+            }
             CheckVNFPackage.checkRequiredFirstLevelMetadataKeys(
                 metadata, REQUIRED_VNF_PACKAGE_IDENTIFIER_KEYS);
             CheckVNFPackage.checkRequiredFirstLevelMetadataKeys(

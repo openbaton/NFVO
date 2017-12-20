@@ -103,14 +103,14 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
   }
 
   private boolean checkAuthorization(
-      String project,
+      String projectId,
       HttpServletRequest request,
       String currentUserName,
       HttpServletResponse response)
       throws NotFoundException, NotAllowedException, IOException {
 
     log.trace("Current User: " + currentUserName);
-    log.trace("projectId: \"" + project + "\"");
+    log.trace("projectId: \"" + projectId + "\"");
     log.trace(request.getMethod() + " on URI: " + request.getRequestURI());
     log.trace("UserManagement: " + userManagement);
     BaseUser baseUser;
@@ -126,10 +126,10 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
       }
     }
 
-    if (project != null && !project.isEmpty()) {
+    if (projectId != null) {
 
-      if (projectIsNecessary(request) && !projectManagement.exist(project)) {
-        throw new NotFoundException("Project with id " + project + " was not found");
+      if (projectIsNecessary(request) && !projectManagement.exist(projectId)) {
+        throw new NotFoundException("Project with id '" + projectId + "' was not found");
       }
       for (Role role : baseUser.getRoles()) {
         if (role.getRole().ordinal() == Role.RoleEnum.ADMIN.ordinal()) {
@@ -137,7 +137,7 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
         }
       }
       for (Role role : baseUser.getRoles()) {
-        String pjName = projectManagement.query(project).getName();
+        String pjName = projectManagement.query(projectId).getName();
         log.trace(role.getProject() + " == " + pjName);
         if (role.getProject().equals(pjName)) {
           if (role.getRole().ordinal() == Role.RoleEnum.GUEST.ordinal()

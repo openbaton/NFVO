@@ -34,16 +34,17 @@ public abstract class Plugin {
   public void loadProperties() {
     properties = new Properties();
     log.trace("Loading properties");
-    try {
-      properties.load(this.getClass().getResourceAsStream("/plugin.conf.properties"));
+    try (InputStream inputStream = this.getClass().getResourceAsStream("/plugin.conf.properties")) {
+      properties.load(inputStream);
       if (properties.getProperty("external-properties-file") != null) {
         File externalPropertiesFile = new File(properties.getProperty("external-properties-file"));
         if (externalPropertiesFile.exists()) {
           log.debug(
               "Loading properties from external-properties-file: "
                   + properties.getProperty("external-properties-file"));
-          InputStream is = new FileInputStream(externalPropertiesFile);
-          properties.load(is);
+          try (InputStream is = new FileInputStream(externalPropertiesFile)) {
+            properties.load(is);
+          }
         } else {
           log.debug(
               "external-properties-file: "

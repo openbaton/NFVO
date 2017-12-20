@@ -64,7 +64,7 @@ class SystemStartup implements CommandLineRunner {
   @Value("${spring.rabbitmq.password:openbaton}")
   private String password;
 
-  @Value("${nfvo.rabbit.brokerIp:localhost}")
+  @Value("${spring.rabbitmq.host:localhost}")
   private String brokerIp;
 
   @Value("${nfvo.rabbit.management.port:15672}")
@@ -103,10 +103,10 @@ class SystemStartup implements CommandLineRunner {
     propFileLocation = propFileLocation.replace("file:", "");
     log.debug("Property file: " + propFileLocation);
 
-    InputStream is = new FileInputStream(propFileLocation);
     Properties properties = new Properties();
-    properties.load(is);
-
+    try (InputStream is = new FileInputStream(propFileLocation)) {
+      properties.load(is);
+    }
     log.trace("Config Values are: " + properties.values());
 
     Configuration c = new Configuration();

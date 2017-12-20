@@ -218,12 +218,6 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     return vimInstance;
   }
 
-  private boolean vimInstanceWithSameNameExists(BaseVimInstance vimInstance) {
-    return vimInstance.getId() != null
-        && vimRepository.findByProjectIdAndName(vimInstance.getProjectId(), vimInstance.getName())
-            != null;
-  }
-
   /**
    * Adds a new NFVImage to the VimInstance with id
    *
@@ -516,8 +510,8 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   /**
    * Validate if the Vim instance has all the required fields filled with values.
    *
-   * @param vimInstance
-   * @throws BadRequestException
+   * @param vimInstance the Vim Instance to check
+   * @throws BadRequestException if there is a mistake
    */
   private void validateVimInstance(BaseVimInstance vimInstance) throws BadRequestException {
     if (Objects.equals(vimInstance.getName(), "") || vimInstance.getName() == null)

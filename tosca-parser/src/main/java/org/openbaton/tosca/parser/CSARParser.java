@@ -17,13 +17,7 @@
 
 package org.openbaton.tosca.parser;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.zip.ZipEntry;
@@ -36,14 +30,7 @@ import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
 import org.openbaton.catalogue.nfvo.images.NFVImage;
-import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.exceptions.BadFormatException;
-import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.EntityUnreachableException;
-import org.openbaton.exceptions.IncompatibleVNFPackage;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimException;
+import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.core.interfaces.VNFPackageManagement;
 import org.openbaton.nfvo.repositories.VNFDRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
@@ -81,47 +68,47 @@ public class CSARParser {
 
   private void readFiles(InputStream csar_file) throws IOException, NotFoundException {
 
-    ZipInputStream zipStream = new ZipInputStream(csar_file);
     ZipEntry entry;
     this.scripts.clear();
     this.folderNames.clear();
     this.template = new ByteArrayOutputStream();
     this.metadata = new ByteArrayOutputStream();
+    try (ZipInputStream zipStream = new ZipInputStream(csar_file)) {
+      while ((entry = zipStream.getNextEntry()) != null) {
 
-    while ((entry = zipStream.getNextEntry()) != null) {
+        if (!entry.isDirectory()) {
+          ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-      if (!entry.isDirectory()) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-        int count;
-        byte[] buffer = new byte[1024];
-        while ((count = zipStream.read(buffer)) != -1) {
-          baos.write(buffer, 0, count);
-        }
-
-        String fileName = entry.getName();
-
-        if (fileName.toLowerCase().endsWith(".meta")) {
-          this.metadata = baos;
-        } else if (fileName.toLowerCase().endsWith(".yaml")) {
-          if (fileName.toLowerCase().endsWith("metadata.yaml")) {
-            this.vnfMetadata = baos;
-          } else {
-            this.template = baos;
+          int count;
+          byte[] buffer = new byte[1024];
+          while ((count = zipStream.read(buffer)) != -1) {
+            baos.write(buffer, 0, count);
           }
-        } else {
 
-          Script script = new Script();
-          String[] splittedName = fileName.split("/");
-          if (splittedName.length > 2) {
-            String scriptName = splittedName[1] + "!_!" + splittedName[splittedName.length - 1];
-            folderNames.add(splittedName[1]);
-            script.setName(scriptName);
+          String fileName = entry.getName();
 
-          } else script.setName(splittedName[splittedName.length - 1]);
+          if (fileName.toLowerCase().endsWith(".meta")) {
+            this.metadata = baos;
+          } else if (fileName.toLowerCase().endsWith(".yaml")) {
+            if (fileName.toLowerCase().endsWith("metadata.yaml")) {
+              this.vnfMetadata = baos;
+            } else {
+              this.template = baos;
+            }
+          } else {
 
-          script.setPayload(baos.toByteArray());
-          this.scripts.add(script);
+            Script script = new Script();
+            String[] splittedName = fileName.split("/");
+            if (splittedName.length > 2) {
+              String scriptName = splittedName[1] + "!_!" + splittedName[splittedName.length - 1];
+              folderNames.add(splittedName[1]);
+              script.setName(scriptName);
+
+            } else script.setName(splittedName[splittedName.length - 1]);
+
+            script.setPayload(baos.toByteArray());
+            this.scripts.add(script);
+          }
         }
       }
     }
@@ -134,35 +121,29 @@ public class CSARParser {
     if (this.template == null) {
       throw new NotFoundException("CSARParser: No NSD or VNFD Template found");
     }
-
-    //zipStream.close();
   }
 
   private void readMetaData() throws IOException {
-
-    BufferedReader br =
+    try (BufferedReader br =
         new BufferedReader(
-            new InputStreamReader(new ByteArrayInputStream(this.metadata.toByteArray())));
-    String strLine;
+            new InputStreamReader(new ByteArrayInputStream(this.metadata.toByteArray())))) {
+      String strLine;
+      String entryDefinition = "Entry-Definitions:";
+      while ((strLine = br.readLine()) != null) {
 
-    String entryDefinition = "Entry-Definitions:";
-
-    while ((strLine = br.readLine()) != null) {
-
-      if (strLine.contains(entryDefinition)) {
-        strLine.substring(entryDefinition.length(), strLine.length());
+        if (strLine.contains(entryDefinition)) {
+          strLine.substring(entryDefinition.length(), strLine.length());
+        }
       }
     }
-
-    br.close();
   }
 
   //TODO what is the need of such method? Only for testing purposes?
   public void parseVNFCSAR(String vnfd_csar) throws Exception {
 
-    InputStream csar = new FileInputStream(vnfd_csar);
-    readFiles(csar);
-
+    try (InputStream csar = new FileInputStream(vnfd_csar)) {
+      readFiles(csar);
+    }
     readMetaData();
 
     VNFDTemplate VNFDTemplate = Utils.bytesToVNFDTemplate(this.template);
@@ -171,9 +152,9 @@ public class CSARParser {
 
   public NetworkServiceDescriptor parseNSDCSAR(String nsd_csar) throws Exception {
 
-    InputStream input = new FileInputStream(new File(nsd_csar));
-    readFiles(input);
-
+    try (InputStream input = new FileInputStream(new File(nsd_csar))) {
+      readFiles(input);
+    }
     readMetaData();
     NSDTemplate nsdTemplate = Utils.bytesToNSDTemplate(this.template);
     return toscaParser.parseNSDTemplate(nsdTemplate);

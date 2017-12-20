@@ -11,6 +11,7 @@ _message_queue_base="apache-activemq-5.11.3"
 _nfvo="${_openbaton_base}/nfvo"
 _nfvo_vim_drivers="${_nfvo}/plugins/vim-drivers"
 _tmpfolder=`mktemp -d`
+_screen_session_name="openbaton"
 _screen_name="nfvo"
 
 
@@ -46,13 +47,13 @@ function start_checks {
 
 function start {
     start_checks
-    screen_exists=$(screen -ls | grep openbaton | wc -l);
+    screen_exists=$(screen -ls | grep "\.${_screen_session_name}" | wc -l);
     if [ "${screen_exists}" -eq "0" ]; then
     	echo "Starting the NFVO in a new screen session (attach to the screen with screen -x openbaton)"
-	    screen -c screenrc -d -m -S openbaton -t ${_screen_name} java -jar "build/libs/openbaton-nfvo-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
+	    screen -c screenrc -d -m -S "${_screen_session_name}" -t ${_screen_name} java -jar "build/libs/openbaton-nfvo-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
     else
         echo "Starting the NFVO in the existing screen session (attach to the screen with screen -x openbaton)"
-        screen -S openbaton -X screen -t ${_screen_name} java -jar "build/libs/openbaton-nfvo-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
+        screen -S ${_screen_session_name} -X screen -t ${_screen_name} java -jar "build/libs/openbaton-nfvo-$_version.jar" --spring.config.location=file:${_openbaton_config_file}
     fi
 }
 
@@ -63,8 +64,8 @@ function start_fg {
 
 
 function stop {
-    if screen -list | grep "openbaton" > /dev/null ; then
-	    screen -S openbaton -p ${_screen_name} -X stuff $'\003'
+    if screen -list | grep "\.${_screen_session_name}" > /dev/null ; then
+	    screen -S ${_screen_session_name} -p ${_screen_name} -X stuff $'\003'
     fi
 }
 
