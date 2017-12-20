@@ -99,7 +99,7 @@ public class CheckVNFPackage {
           byte[] content = new byte[(int) entry.getSize()];
           tarFile.read(content, 0, content.length);
 
-          if (entry.getName().equals("Metadata.yaml")) {
+          if (entry.getName().equalsIgnoreCase("metadata.yaml")) {
             metadataFound = true;
 
             Map<String, Object> metadata;

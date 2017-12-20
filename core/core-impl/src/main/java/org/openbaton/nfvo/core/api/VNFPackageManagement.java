@@ -31,13 +31,13 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.ReentrantLock;
@@ -103,7 +103,6 @@ import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserExc
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.error.YAMLException;
 
-/** Created by lto on 22/07/15. */
 @Service
 @Scope
 @ConfigurationProperties
@@ -176,7 +175,7 @@ public class VNFPackageManagement
           log.debug("file inside tar: " + entry.getName());
           byte[] content = new byte[(int) entry.getSize()];
           myTarFile.read(content, 0, content.length);
-          if (entry.getName().equals("Metadata.yaml")) {
+          if (entry.getName().equalsIgnoreCase("metadata.yaml")) {
             YamlJsonParser yaml = new YamlJsonParser();
             try {
               metadata = yaml.parseMap(new String(content));
@@ -335,7 +334,7 @@ public class VNFPackageManagement
         if (entry.isFile() && !entry.getName().startsWith("./._")) {
           byte[] content = new byte[(int) entry.getSize()];
           tarFile.read(content, 0, content.length);
-          if (entry.getName().equals("Metadata.yaml")) {
+          if (entry.getName().equalsIgnoreCase("metadata.yaml")) {
             metadata = Utils.getMapFromYamlFile(content);
             vnfPackage.setName((String) metadata.get("name"));
 
@@ -809,10 +808,10 @@ public class VNFPackageManagement
       throw new NotFoundException("VNFPackageManagement: Not found Metadata.yaml");
     }
     if (vnfPackage.getScriptsLink() != null) {
-      if (!vnfPackage.getScripts().isEmpty()) {
+      if (vnfPackage.getScripts() != null && !vnfPackage.getScripts().isEmpty()) {
         log.debug(
             "VNFPackageManagement: Remove scripts got by scripts/ because the scripts-link is defined");
-        vnfPackage.setScripts(new HashSet<Script>());
+        vnfPackage.setScripts(new HashSet<>());
       }
     }
 
@@ -953,33 +952,20 @@ public class VNFPackageManagement
 
           //If no one was found, check for the names
           List imageNamesMetadata = (List) imageDetails.get("names");
+          Optional<String> imageName = Optional.empty();
           if (!found) {
             if (imageDetails.containsKey("names")) {
-              for (BaseNfvImage nfvImage : vimInstance.getImages()) {
-                if (matchNames(imageNamesMetadata, nfvImage)) {
-                  if (!found) {
-                    vdu.getVm_image().add(nfvImage.getExtId());
-                    found = true;
-                  } else {
-                    throw new NotFoundException(
-                        "VNFPackageManagement: Multiple images found with the same name. Do not know which one to"
-                            + " choose. To avoid this, define the id");
-                  }
-                }
-              }
-            }
-          }
-          if (!found) {
-            for (BaseNfvImage nfvImage : vimInstance.getImages()) {
-              if (matchNames(vdu.getVm_image(), nfvImage)) {
-                if (!found) {
-                  found = true;
-                }
-              }
+              BaseVimInstance finalVimInstance = vimInstance;
+              imageName =
+                  ((List) imageDetails.get("names"))
+                      .stream()
+                      .filter(name -> matchNames(finalVimInstance.getImages(), (String) name))
+                      .findFirst();
+              imageName.ifPresent(n -> vdu.getVm_image().add(n));
             }
           }
           //if no image was found with the defined ids or names, the image doesn't exist
-          if (!found) {
+          if (!imageName.isPresent()) {
             if (imageDetails.get("upload").equals("check")) {
               if (vnfPackage.getImageLink() == null && imageFile == null) {
                 throw new NotFoundException(
@@ -1020,30 +1006,16 @@ public class VNFPackageManagement
                     + vnfPackage.getName()
                     + " is available on VIM");
           }
-
-          //        } else { // vimInstanceName is not defined, just put the name into the vdu
-          if (imageDetails.containsKey("names")) {
-            List names = imageNamesMetadata;
-            log.debug("Adding names: " + names);
-            vdu.getVm_image().addAll(names);
-          } else if (imageDetails.containsKey("ids")) {
-            List ids = (List) imageDetails.get("ids");
-            log.debug("Adding ids: " + ids);
-            vdu.getVm_image().addAll(ids);
-          } else {
-            log.debug(
-                "Neither names or ids are provided in the VNF Package. Just onboard without any images from the package.");
-          }
         }
       }
     }
   }
 
-  private boolean matchNames(Collection<String> imageNamesMetadata, BaseNfvImage nfvImage) {
-    return imageNamesMetadata
+  private boolean matchNames(Set<? extends BaseNfvImage> images, String name) {
+    return images
         .stream()
         .anyMatch(
-            name -> {
+            nfvImage -> {
               if (nfvImage instanceof NFVImage) {
                 NFVImage osImage = (NFVImage) nfvImage;
                 return name.equals(osImage.getName());

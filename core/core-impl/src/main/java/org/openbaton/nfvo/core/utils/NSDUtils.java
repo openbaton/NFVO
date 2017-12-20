@@ -766,19 +766,20 @@ public class NSDUtils {
         log.debug("Checking image: " + image);
         if (imageNames.contains(image) || imageIds.contains(image)) {
           found = true;
+          break;
         }
-        if (!found) {
-          throw new NetworkServiceIntegrityException(
-              "Regarding the VirtualNetworkFunctionDescriptor "
-                  + virtualNetworkFunctionDescriptor.getName()
-                  + ": in one of the VirtualDeploymentUnit, image"
-                  + image
-                  + " is not contained into the images of the vimInstance "
-                  + "chosen. Please choose one from: "
-                  + imageNames
-                  + " or from "
-                  + imageIds);
-        }
+      }
+      if (!found) {
+        throw new NetworkServiceIntegrityException(
+            "Regarding the VirtualNetworkFunctionDescriptor "
+                + virtualNetworkFunctionDescriptor.getName()
+                + ": in one of the VirtualDeploymentUnit, none of the images "
+                + virtualDeploymentUnit.getVm_image()
+                + " is not contained into the images of the vimInstance "
+                + "chosen. Please choose one from: "
+                + imageNames
+                + " or from "
+                + imageIds);
       }
     }
   }
