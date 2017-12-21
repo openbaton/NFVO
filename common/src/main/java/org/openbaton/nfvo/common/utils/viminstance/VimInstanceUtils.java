@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.openbaton.catalogue.nfvo.ImageStatus;
+import org.openbaton.catalogue.nfvo.images.AWSImage;
 import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
 import org.openbaton.catalogue.nfvo.images.DockerImage;
 import org.openbaton.catalogue.nfvo.images.NFVImage;
@@ -13,6 +14,7 @@ import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
 import org.openbaton.catalogue.nfvo.networks.DockerNetwork;
 import org.openbaton.catalogue.nfvo.networks.Network;
 import org.openbaton.catalogue.nfvo.networks.Subnet;
+import org.openbaton.catalogue.nfvo.viminstances.AmazonVimInstance;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.nfvo.viminstances.DockerVimInstance;
 import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
@@ -160,6 +162,12 @@ public class VimInstanceUtils {
           .stream()
           .filter(i -> ((DockerImage) i).getTags().contains(imageName))
           .collect(Collectors.toList());
+    } else if (vimInstance instanceof AmazonVimInstance) {
+      return ((AmazonVimInstance) vimInstance)
+              .getImages()
+              .stream()
+              .filter(i -> ((AWSImage) i).getName().equals(imageName))
+              .collect(Collectors.toList());
     } else {
       return vimInstance
           .getImages()

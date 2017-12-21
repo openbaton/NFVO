@@ -41,12 +41,12 @@ public class AmazonVimInstance extends BaseVimInstance {
 
   @Override
   public Set<? extends BaseNfvImage> getImages() {
-    return null;
+    return images;
   }
 
   @Override
   public Set<? extends BaseNetwork> getNetworks() {
-    return null;
+    return networks;
   }
 
   @Override

@@ -40,6 +40,7 @@ import org.openbaton.catalogue.nfvo.images.NFVImage;
 import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
 import org.openbaton.catalogue.nfvo.networks.Network;
 import org.openbaton.catalogue.nfvo.networks.Subnet;
+import org.openbaton.catalogue.nfvo.viminstances.AmazonVimInstance;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
 import org.openbaton.catalogue.security.Key;
@@ -1316,6 +1317,9 @@ public class GenericVIM extends Vim {
     String flavorExtId;
     if (vimInstance instanceof OpenstackVimInstance)
       flavorExtId = getFlavorExtID(flavorKey, (OpenstackVimInstance) vimInstance);
+    else if (vimInstance instanceof AmazonVimInstance) {
+      flavorExtId = vnfr.getDeployment_flavour_key();
+    }
     else flavorExtId = "";
 
     log.debug("Generating Hostname...");
@@ -1344,10 +1348,16 @@ public class GenericVIM extends Vim {
       if (networks.isEmpty()) {
         throw new NullPointerException("networks is empty");
       }
+      if (vimInstance instanceof AmazonVimInstance) {
+        if (((AmazonVimInstance) vimInstance).getSecurityGroups() == null) {
+          securityGroups = new HashSet<>();
+        } else securityGroups = ((AmazonVimInstance) vimInstance).getSecurityGroups();
+      }
       if (vimInstance instanceof OpenstackVimInstance) {
         if (((OpenstackVimInstance) vimInstance).getSecurityGroups() == null) {
           securityGroups = new HashSet<>();
         } else securityGroups = ((OpenstackVimInstance) vimInstance).getSecurityGroups();
+
         if (vdu.getMetadata() != null && vdu.getMetadata().containsKey("az")) {
           if (vimInstance.getMetadata() == null) vimInstance.setMetadata(new HashMap<>());
           vimInstance.getMetadata().put("az", vdu.getMetadata().get("az"));
