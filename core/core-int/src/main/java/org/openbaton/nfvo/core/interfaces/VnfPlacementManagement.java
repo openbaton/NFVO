@@ -25,7 +25,8 @@ import org.openbaton.exceptions.NotFoundException;
 
 /** Created by lto on 10/03/16. */
 public interface VnfPlacementManagement {
-  BaseVimInstance choseRandom(Set<String> vimInstanceName, String projectId);
+  BaseVimInstance choseRandom(Set<String> vimInstanceName, String projectId)
+      throws NotFoundException;
 
   List<String> chose(
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,

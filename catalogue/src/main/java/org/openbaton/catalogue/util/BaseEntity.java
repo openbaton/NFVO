@@ -12,7 +12,6 @@ import javax.persistence.InheritanceType;
 import javax.persistence.PrePersist;
 import javax.persistence.Version;
 
-/** Created by lto on 04/04/2017. */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class BaseEntity implements Serializable {
