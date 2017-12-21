@@ -230,8 +230,11 @@ public class NSDUtils {
       if (vdu.getVimInstanceName() != null) {
         for (String name : vdu.getVimInstanceName()) {
           String vimName;
-          if (name.contains(":")) vimName = name.split(":")[0];
-          else vimName = name;
+          if (name.contains(":")) {
+            vimName = name.split(":")[0];
+          } else {
+            vimName = name;
+          }
           log.debug("vim instance name=" + vimName);
           boolean fetched = false;
           for (BaseVimInstance vimInstance : vimInstances) {

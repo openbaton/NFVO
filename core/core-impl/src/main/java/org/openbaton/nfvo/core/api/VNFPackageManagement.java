@@ -412,12 +412,12 @@ public class VNFPackageManagement
             if (imageDetails.containsKey("ids")) {
               imageMetadata.setIds(new HashSet<String>((ArrayList) imageDetails.get("ids")));
             } else {
-              imageMetadata.setIds(new HashSet<String>());
+              imageMetadata.setIds(new HashSet<>());
             }
             if (imageDetails.containsKey("names")) {
               imageMetadata.setNames(new HashSet<String>((ArrayList) imageDetails.get("names")));
             } else {
-              imageMetadata.setNames(new HashSet<String>());
+              imageMetadata.setNames(new HashSet<>());
             }
             if (imageDetails.containsKey("link")) {
               imageMetadata.setLink((String) imageDetails.get("link"));
@@ -903,18 +903,27 @@ public class VNFPackageManagement
 
         for (String vimName : vimInstanceNames) {
 
-          BaseVimInstance vimInstance = null;
+          Optional<BaseVimInstance> optVimInstance =
+              vimInstanceRepository
+                  .findByProjectId(projectId)
+                  .stream()
+                  .filter(
+                      v -> {
+                        String name;
+                        if (vimName.contains(":")) {
+                          name = vimName.split(":")[0];
+                        } else {
+                          name = vimName;
+                        }
+                        return v.getName().equals(name);
+                      })
+                  .findFirst();
 
-          for (BaseVimInstance vi : vimInstanceRepository.findByProjectId(projectId)) {
-            if (vimName.equals(vi.getName())) {
-              vimInstance = vi;
-            }
-          }
-
-          if (vimInstance == null) {
+          if (!optVimInstance.isPresent()) {
             throw new NotFoundException(
                 "Vim Instance with name " + vimName + " was not found in project: " + projectId);
           }
+          BaseVimInstance vimInstance = optVimInstance.get();
 
           boolean found = false;
           vimManagement.refresh(vimInstance, false);
