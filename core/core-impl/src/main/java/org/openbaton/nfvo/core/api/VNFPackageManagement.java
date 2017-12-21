@@ -518,15 +518,7 @@ public class VNFPackageManagement
     vnfdParameters.put("vendor", virtualNetworkFunctionDescriptor.getVendor());
     CheckVNFPackage.checkCommonParametersWithVNFD(vnfPackageMetadataParameters, vnfdParameters);
 
-    //vnfPackageMetadata.setVnfPackage(vnfPackage);
-    //vnfPackageMetadata.setNfvImage(image);
-
-    //vnfPackageMetadata.setImageMetadata(imageMetadata);
-
-    //vnfPackageMetadata.setVnfPackageFileName(fileName);
     vnfPackageMetadata.setProjectId(projectId);
-    //vnfPackageMetadata.setVnfPackageFile(pack);
-    //vnfPackageMetadata.setMd5sum(DigestUtils.md5DigestAsHex(pack));
     vnfPackageMetadata.setType("tar");
     vnfPackage.setVnfPackageMetadata(vnfPackageMetadata);
     vnfPackage.setImage(image);
@@ -555,16 +547,8 @@ public class VNFPackageManagement
 
     nsdUtils.checkIntegrity(virtualNetworkFunctionDescriptor);
 
-    // check if it is the first and set to default
-    //    if(!vnfPackageMetadataRepository.findAllByNameAndVendor(vnfPackageMetadata.getName(),vnfPackageMetadata.getVendor()).iterator().hasNext()){
-    //      log.debug("Setting VNF package to default");
-    //      vnfPackageMetadata.setDefaultFlag(true);
-    //    }
-    //    else vnfPackageMetadata.setDefaultFlag(false);
-    //vnfPackageMetadataRepository.save(vnfPackageMetadata);
     /* Done in the nsdCheckutils */
     vnfPackage = vnfPackageRepository.save(vnfPackage);
-    //    vnfPackage = vnfPackageRepository.findFirstById(virtualNetworkFunctionDescriptor.getVnfPackageLocation());
     log.trace("Persisted " + vnfPackage);
     vnfPackageMetadataRepository.setVNFPackageId(vnfPackage.getId());
 

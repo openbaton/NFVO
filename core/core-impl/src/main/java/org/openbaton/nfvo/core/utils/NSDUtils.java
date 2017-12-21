@@ -229,13 +229,13 @@ public class NSDUtils {
     for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
       if (vdu.getVimInstanceName() != null) {
         for (String name : vdu.getVimInstanceName()) {
-          log.debug("vim instance name=" + name);
+          String vimName;
+          if (name.contains(":")) vimName = name.split(":")[0];
+          else vimName = name;
+          log.debug("vim instance name=" + vimName);
           boolean fetched = false;
           for (BaseVimInstance vimInstance : vimInstances) {
-            if ((vimInstance.getName() != null
-                && vimInstance.getName().equals(name)) /*|| (vimInstance.getId() !=
-            null && vimInstance.getId().equals(name_id))
-                                */) {
+            if ((vimInstance.getName() != null && vimInstance.getName().equals(vimName))) {
               log.info("Found vimInstance: " + vimInstance.getName());
               fetched = true;
               break;
@@ -243,7 +243,7 @@ public class NSDUtils {
           }
           if (!fetched) {
             throw new NotFoundException(
-                "Not found VimInstance with name " + name + " in the catalogue");
+                "Not found VimInstance with name " + vimName + " in the catalogue");
           }
         }
       } else {
