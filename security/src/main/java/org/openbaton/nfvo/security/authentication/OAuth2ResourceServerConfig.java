@@ -34,13 +34,7 @@ public class OAuth2ResourceServerConfig extends ResourceServerConfigurerAdapter 
         .antMatchers("/api/v1/components/services/register", "/api/v1/security")
         .permitAll()
         .antMatchers("/api/**")
-        .authenticated()
-        .and()
-        .exceptionHandling()
-        .and()
-        .csrf()
-        .disable()
-        .cors();
+        .authenticated();
   }
 
   @Override

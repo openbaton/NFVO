@@ -22,12 +22,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -62,13 +62,14 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
   @Value("${nfvo.security.service.token.validity:31556952}")
   private int serviceTokenValidityDuration;
 
-  @Bean
-  public DefaultTokenServices serviceTokenServices() {
-    DefaultTokenServices serviceTokenServices = new DefaultTokenServices();
+  private DefaultTokenServices serviceTokenServices;
+
+  @PostConstruct
+  public void init() {
+    serviceTokenServices = new DefaultTokenServices();
     serviceTokenServices.setSupportRefreshToken(true);
     serviceTokenServices.setTokenStore(tokenStore);
     serviceTokenServices.setAccessTokenValiditySeconds(serviceTokenValidityDuration);
-    return serviceTokenServices;
   }
 
   @Override
@@ -127,7 +128,7 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
         new UsernamePasswordAuthenticationToken(userPrincipal, null, authorities);
     OAuth2Authentication auth = new OAuth2Authentication(oAuth2Request, authenticationToken);
 
-    OAuth2AccessToken token = serviceTokenServices().createAccessToken(auth);
+    OAuth2AccessToken token = serviceTokenServices.createAccessToken(auth);
     log.trace("New Service token: " + token);
     return token;
   }
