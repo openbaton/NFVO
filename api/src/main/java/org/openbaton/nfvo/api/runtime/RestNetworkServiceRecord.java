@@ -55,7 +55,6 @@ import org.openbaton.exceptions.QuotaExceededException;
 import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.exceptions.WrongStatusException;
-import org.openbaton.nfvo.api.exceptions.StateException;
 import org.openbaton.nfvo.api.model.DependencyObject;
 import org.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
 import org.slf4j.Logger;
@@ -216,13 +215,8 @@ public class RestNetworkServiceRecord {
   public void delete(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
       throws VimException, InterruptedException, ExecutionException, NotFoundException,
-          BadFormatException {
-    try {
-      networkServiceRecordManagement.delete(id, projectId);
-    } catch (WrongStatusException e) {
-      e.printStackTrace();
-      throw new StateException(id);
-    }
+          BadFormatException, WrongStatusException {
+    networkServiceRecordManagement.delete(id, projectId);
   }
 
   /**
@@ -239,13 +233,8 @@ public class RestNetworkServiceRecord {
   public void resume(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
       throws VimException, InterruptedException, ExecutionException, NotFoundException,
-          BadFormatException {
-    try {
-      networkServiceRecordManagement.resume(id, projectId);
-    } catch (WrongStatusException e) {
-      e.printStackTrace();
-      throw new StateException(id);
-    }
+          BadFormatException, WrongStatusException {
+    networkServiceRecordManagement.resume(id, projectId);
   }
 
   /**
