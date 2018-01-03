@@ -392,6 +392,8 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
                   log.debug(String.format("Refreshing vims of type %s", vimType));
                   vimRepository
                       .findByType(vimType)
+                      .stream()
+                      .parallel()
                       .forEach(
                           vim -> {
                             try {
