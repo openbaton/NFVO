@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
 import javax.persistence.EntityManager;
 import org.apache.commons.net.util.SubnetUtils;
 import org.openbaton.catalogue.api.DeployNSRBody;
@@ -264,9 +265,7 @@ public class NetworkServiceRecordManagement
       NetworkServiceRecord nsr,
       VirtualNetworkFunctionDescriptor vnfd,
       String projectId,
-      DeployNSRBody body)
-      throws NotFoundException, VimException, PluginException, MissingParameterException,
-          BadRequestException {
+      DeployNSRBody body) {
     Map<String, List<String>> vduVimInstances = new HashMap<>();
     log.info("Fetched NetworkServiceDescriptor: " + nsr.getName());
     log.info("VNFD are: ");
@@ -430,20 +429,28 @@ public class NetworkServiceRecordManagement
           "All VirtualDeploymentUnits have reached their maximum number of VNFCInstances");
     }
 
-    Set<String> names = new HashSet<>();
-    for (BaseVimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId)) {
-      names.add(vimInstance.getName());
-    }
     if (vimInstanceNames == null || vimInstanceNames.isEmpty()) {
       vimInstanceNames = new ArrayList<>();
       for (BaseVimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId)) {
         vimInstanceNames.add(vimInstance.getName());
       }
-    }
-    names.retainAll(vimInstanceNames);
-    if (names.size() == 0) {
-      log.error("VimInstance names passed not found: " + vimInstanceNames);
-      throw new NotFoundException("VimInstance names passed not found: " + vimInstanceNames);
+    } else {
+      List<String> finalVimInstanceNames = new ArrayList<>();
+      vimInstanceNames.forEach(
+          n -> {
+            if (n.contains(":")) {
+              finalVimInstanceNames.add(n.split(Pattern.quote(":"))[0]);
+            } else {
+              finalVimInstanceNames.add(n);
+            }
+          });
+      if (vimInstanceRepository
+          .findByProjectId(projectId)
+          .stream()
+          .noneMatch(v -> finalVimInstanceNames.contains(v.getName()))) {
+        log.error("VimInstance names passed not found: " + vimInstanceNames);
+        throw new NotFoundException("VimInstance names passed not found: " + vimInstanceNames);
+      }
     }
     log.debug(
         "A new VNFCInstance will be added to the VDU with ID " + virtualDeploymentUnit.getId());
@@ -527,7 +534,7 @@ public class NetworkServiceRecordManagement
       VNFComponent component,
       String mode,
       List<String> vimInstanceNames)
-      throws BadFormatException, NotFoundException, ExecutionException, InterruptedException {
+      throws BadFormatException, NotFoundException {
 
     networkServiceRecord.setTask("Scaling out");
     List<String> componentNetworks = new ArrayList<>();
@@ -731,16 +738,14 @@ public class NetworkServiceRecordManagement
   @Override
   public void startVNFCInstance(
       String id, String idVnf, String idVdu, String idVNFCI, String projectId)
-      throws NotFoundException, WrongStatusException, BadFormatException, ExecutionException,
-          InterruptedException {
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
     startStopVNFCInstance(id, idVnf, idVdu, idVNFCI, projectId, Action.START);
   }
 
   @Override
   public void stopVNFCInstance(
       String id, String idVnf, String idVdu, String idVNFCI, String projectId)
-      throws NotFoundException, WrongStatusException, BadFormatException, ExecutionException,
-          InterruptedException {
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
     startStopVNFCInstance(id, idVnf, idVdu, idVNFCI, projectId, Action.STOP);
   }
 
@@ -1490,7 +1495,7 @@ public class NetworkServiceRecordManagement
   }
 
   private void checkQuotaForNS(NetworkServiceDescriptor networkServiceDescriptor)
-      throws NotFoundException, VimException, PluginException {
+      throws VimException {
     try {
       if (isQuotaCheckEnabled) {
         Map<BaseVimInstance, Quota> requirements = new HashMap<>();
@@ -1698,6 +1703,8 @@ public class NetworkServiceRecordManagement
    * Triggers the execution of an {@link org.openbaton.catalogue.nfvo.Action} on a specific
    * VNFCInstance.
    *
+   * <p>
+   *
    * <p>Note: Currently only the HEAL action is supported.
    *
    * @param nfvMessage the NFVMessage to send
@@ -1834,8 +1841,7 @@ public class NetworkServiceRecordManagement
 
   @Override
   public void resume(String id, String projectId)
-      throws NotFoundException, WrongStatusException, BadFormatException, ExecutionException,
-          InterruptedException {
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
     NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInAnyState(id, projectId);
 
     log.info("Resuming NSR with id: " + id);

@@ -32,6 +32,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
@@ -52,6 +53,7 @@ import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmLogMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmScalingMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmUpdateMessage;
+import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.common.internal.model.EventFinishNFVO;
@@ -451,10 +453,19 @@ public class VnfmManager
     message.setDependency(dependency);
     message.setMode(mode);
 
-    message.setVimInstance(
+    String az = null;
+    String vimInstanceName = vimInstanceNames.get(new Random().nextInt(vimInstanceNames.size()));
+    if (vimInstanceName.contains(":")) {
+      String[] split = vimInstanceName.split(Pattern.quote(":"));
+      vimInstanceName = split[0];
+      az = split[1];
+    }
+    BaseVimInstance vimInstance =
         vimInstanceRepository.findByProjectIdAndName(
-            virtualNetworkFunctionRecord.getProjectId(),
-            vimInstanceNames.get(new Random().nextInt(vimInstanceNames.size()))));
+            virtualNetworkFunctionRecord.getProjectId(), vimInstanceName);
+    if (vimInstance.getMetadata() == null) vimInstance.setMetadata(new HashMap<>());
+    if (az != null) vimInstance.getMetadata().put("az", az);
+    message.setVimInstance(vimInstance);
 
     log.debug("SCALE_OUT MESSAGE IS: \n" + message);
 

@@ -274,6 +274,7 @@ public class MessageGenerator implements org.openbaton.vnfm.interfaces.manager.M
       VnfmOrScalingMessage vnfmOrScalingMessage = (VnfmOrScalingMessage) nfvMessage;
       virtualNetworkFunctionRecord = vnfmOrScalingMessage.getVirtualNetworkFunctionRecord();
       ((ScalingTask) task).setUserdata(vnfmOrScalingMessage.getUserData());
+      ((ScalingTask) task).setVimInstance(vnfmOrScalingMessage.getVimInstance());
     } else if (nfvMessage.getAction().ordinal() == Action.ALLOCATE_RESOURCES.ordinal()) {
       VnfmOrAllocateResourcesMessage vnfmOrAllocateResourcesMessage =
           (VnfmOrAllocateResourcesMessage) nfvMessage;
