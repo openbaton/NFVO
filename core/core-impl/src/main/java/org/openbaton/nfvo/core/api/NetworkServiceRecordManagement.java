@@ -319,10 +319,9 @@ public class NetworkServiceRecordManagement
       throws NotFoundException {
     //TODO the logic of this request for the moment deletes only the VNFR from the DB, need to be removed from the
     // running NetworkServiceRecord
-    NetworkServiceRecord nsr = query(idNsr, projectId);
     VirtualNetworkFunctionRecord vnfr = vnfrRepository.findOne(idVnf);
     if (vnfr == null) {
-      throw new NotFoundException("No VNFR found with ID: " + idVnf);
+      throw new NotFoundException("Not found VNFR with ID: " + idVnf);
     }
     if (!vnfr.getParent_ns_id().equals(idNsr)) {
       throw new NotFoundException("Not found VNFR " + idVnf + " in the given NSR " + idNsr);
@@ -331,12 +330,17 @@ public class NetworkServiceRecordManagement
       throw new UnauthorizedUserException("VNFR not contained in the chosen project.");
     }
     nsrRepository.deleteVNFRecord(idNsr, idVnf);
-    for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : nsr.getVnfr()) {
-      if (nsr.getStatus().ordinal() > virtualNetworkFunctionRecord.getStatus().ordinal()) {
-        nsr.setStatus(vnfr.getStatus());
+    NetworkServiceRecord nsr = query(idNsr, projectId);
+    if (nsr != null) {
+      for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : nsr.getVnfr()) {
+        if (nsr.getStatus().ordinal() > virtualNetworkFunctionRecord.getStatus().ordinal()) {
+          nsr.setStatus(vnfr.getStatus());
+        }
       }
+      nsrRepository.saveCascade(nsr);
+    } else {
+      log.warn("Parent NS does not exist anymore...");
     }
-    nsrRepository.saveCascade(nsr);
   }
 
   /**
