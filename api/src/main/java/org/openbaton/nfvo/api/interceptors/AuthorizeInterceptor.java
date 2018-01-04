@@ -37,7 +37,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-/** Created by lto on 25/05/16. */
 @Service
 public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
 
