@@ -4,7 +4,13 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
+import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
+import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.ImageStatus;
 import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
 import org.openbaton.catalogue.nfvo.images.DockerImage;
@@ -167,5 +173,65 @@ public class VimInstanceUtils {
           .filter(i -> i.getExtId().equals(imageName))
           .collect(Collectors.toList());
     }
+  }
+
+  public static BaseNetwork createBaseNetwork(
+      NetworkServiceDescriptor networkServiceDescriptor,
+      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
+      VNFDConnectionPoint vnfdConnectionPoint,
+      String type)
+      throws BadRequestException {
+    String t;
+    if (type.contains(".")) {
+      t = type.split(Pattern.quote("."))[0];
+    } else {
+      t = type;
+    }
+    switch (t) {
+      case "openstack":
+        Network network = new Network();
+        HashSet<Subnet> subnets = new HashSet<>();
+        Subnet subnet = new Subnet();
+        subnet.setName(String.format("%s_subnet", vnfdConnectionPoint.getVirtual_link_reference()));
+        subnet.setCidr(
+            getCidrFromVLName(
+                vnfdConnectionPoint.getVirtual_link_reference(),
+                networkServiceDescriptor,
+                virtualNetworkFunctionDescriptor));
+        subnets.add(subnet);
+        network.setSubnets(subnets);
+        network.setName(vnfdConnectionPoint.getVirtual_link_reference());
+        return network;
+      case "docker":
+        DockerNetwork networkdc = new DockerNetwork();
+        networkdc.setName(vnfdConnectionPoint.getVirtual_link_reference());
+        return networkdc;
+      default:
+        BaseNetwork networkb = new BaseNetwork();
+        networkb.setName(vnfdConnectionPoint.getVirtual_link_reference());
+        return networkb;
+    }
+  }
+
+  private static String getCidrFromVLName(
+      String virtual_link_reference,
+      NetworkServiceDescriptor networkServiceDescriptor,
+      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor)
+      throws BadRequestException {
+    for (VirtualLinkDescriptor vld : networkServiceDescriptor.getVld()) {
+      if (vld.getName().equals(virtual_link_reference)) {
+        return vld.getCidr();
+      }
+    }
+    for (InternalVirtualLink ivl : virtualNetworkFunctionDescriptor.getVirtual_link()) {
+      if (ivl.getName().equals(virtual_link_reference)) {
+        return ivl.getCidr();
+      }
+    }
+    throw new BadRequestException(
+        String.format(
+            "Connection Point with Virtual link reference %s points to non defined Virtual Link. Please add a VL in the "
+                + "VNFD or NSD or change the VL reference",
+            virtual_link_reference));
   }
 }

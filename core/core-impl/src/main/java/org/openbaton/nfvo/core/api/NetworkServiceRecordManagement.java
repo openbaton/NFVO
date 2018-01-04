@@ -43,7 +43,6 @@ import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
@@ -67,7 +66,6 @@ import org.openbaton.catalogue.nfvo.messages.VnfmOrHealedMessage;
 import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
 import org.openbaton.catalogue.nfvo.networks.DockerNetwork;
 import org.openbaton.catalogue.nfvo.networks.Network;
-import org.openbaton.catalogue.nfvo.networks.Subnet;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
 import org.openbaton.catalogue.security.Key;
@@ -80,6 +78,7 @@ import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.exceptions.WrongStatusException;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
+import org.openbaton.nfvo.common.utils.viminstance.VimInstanceUtils;
 import org.openbaton.nfvo.core.interfaces.DependencyManagement;
 import org.openbaton.nfvo.core.interfaces.EventDispatcher;
 import org.openbaton.nfvo.core.interfaces.NetworkManagement;
@@ -1212,7 +1211,7 @@ public class NetworkServiceRecordManagement
                 }
                 if (!networkExists) {
                   BaseNetwork network =
-                      createBaseNetwork(
+                      VimInstanceUtils.createBaseNetwork(
                           networkServiceDescriptor,
                           virtualNetworkFunctionDescriptor,
                           vnfdConnectionPoint,
@@ -1263,38 +1262,6 @@ public class NetworkServiceRecordManagement
     return networkServiceRecord;
   }
 
-  private BaseNetwork createBaseNetwork(
-      NetworkServiceDescriptor networkServiceDescriptor,
-      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
-      VNFDConnectionPoint vnfdConnectionPoint,
-      String type)
-      throws BadRequestException {
-    switch (type) {
-      case "openstack":
-        Network network = new Network();
-        HashSet<Subnet> subnets = new HashSet<>();
-        Subnet subnet = new Subnet();
-        subnet.setName(String.format("%s_subnet", vnfdConnectionPoint.getVirtual_link_reference()));
-        subnet.setCidr(
-            getCidrFromVLName(
-                vnfdConnectionPoint.getVirtual_link_reference(),
-                networkServiceDescriptor,
-                virtualNetworkFunctionDescriptor));
-        subnets.add(subnet);
-        network.setSubnets(subnets);
-        network.setName(vnfdConnectionPoint.getVirtual_link_reference());
-        return network;
-      case "docker":
-        DockerNetwork networkdc = new DockerNetwork();
-        networkdc.setName(vnfdConnectionPoint.getVirtual_link_reference());
-        return networkdc;
-      default:
-        BaseNetwork networkb = new BaseNetwork();
-        networkb.setName(vnfdConnectionPoint.getVirtual_link_reference());
-        return networkb;
-    }
-  }
-
   private boolean isVNFDConnectionPointExisting(
       VNFDConnectionPoint vnfdConnectionPoint, BaseNetwork network) {
     if (network.getName().equals(vnfdConnectionPoint.getVirtual_link_reference())
@@ -1323,28 +1290,6 @@ public class NetworkServiceRecordManagement
         return true;
       }
     } else return false;
-  }
-
-  private String getCidrFromVLName(
-      String virtual_link_reference,
-      NetworkServiceDescriptor networkServiceDescriptor,
-      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor)
-      throws BadRequestException {
-    for (VirtualLinkDescriptor vld : networkServiceDescriptor.getVld()) {
-      if (vld.getName().equals(virtual_link_reference)) {
-        return vld.getCidr();
-      }
-    }
-    for (InternalVirtualLink ivl : virtualNetworkFunctionDescriptor.getVirtual_link()) {
-      if (ivl.getName().equals(virtual_link_reference)) {
-        return ivl.getCidr();
-      }
-    }
-    throw new BadRequestException(
-        String.format(
-            "Connection Point with Virtual link reference %s points to non defined Virtual Link. Please add a VL in the "
-                + "VNFD or NSD or change the VL reference",
-            virtual_link_reference));
   }
 
   private void checkSshInfo(NetworkServiceDescriptor nsd, DeployNSRBody body)
@@ -1706,6 +1651,10 @@ public class NetworkServiceRecordManagement
   /**
    * Triggers the execution of an {@link org.openbaton.catalogue.nfvo.Action} on a specific
    * VNFCInstance.
+   *
+   * <p>
+   *
+   * <p>
    *
    * <p>
    *
