@@ -987,9 +987,16 @@ public class VNFPackageManagement
                 }
               }
             } else {
-              throw new NotFoundException(
-                  "VNFPackageManagement: Neither the defined image ids nor the names were found. Use upload option "
-                      + "'check' to get sure that the image will be available");
+              if (imageDetails.containsKey("ids")) {
+                vdu.getVm_image().addAll((List) imageDetails.get("ids"));
+              }
+              if (imageDetails.containsKey("names")) {
+                vdu.getVm_image().addAll((List) imageDetails.get("names"));
+              }
+              ;
+              //              throw new NotFoundException(
+              //                  "VNFPackageManagement: Neither the defined image ids nor the names were found. Use upload option "
+              //                      + "'check' to get sure that the image will be available");
             }
           } else {
             log.debug(
