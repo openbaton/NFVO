@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
@@ -179,37 +178,30 @@ public class VimInstanceUtils {
       NetworkServiceDescriptor networkServiceDescriptor,
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
       VNFDConnectionPoint vnfdConnectionPoint,
-      String type)
+      BaseVimInstance vimInstance)
       throws BadRequestException {
-    String t;
-    if (type.contains(".")) {
-      t = type.split(Pattern.quote("."))[0];
+    if (vimInstance instanceof OpenstackVimInstance) {
+      Network network = new Network();
+      HashSet<Subnet> subnets = new HashSet<>();
+      Subnet subnet = new Subnet();
+      subnet.setName(String.format("%s_subnet", vnfdConnectionPoint.getVirtual_link_reference()));
+      subnet.setCidr(
+          getCidrFromVLName(
+              vnfdConnectionPoint.getVirtual_link_reference(),
+              networkServiceDescriptor,
+              virtualNetworkFunctionDescriptor));
+      subnets.add(subnet);
+      network.setSubnets(subnets);
+      network.setName(vnfdConnectionPoint.getVirtual_link_reference());
+      return network;
+    } else if (vimInstance instanceof DockerVimInstance) {
+      DockerNetwork networkdc = new DockerNetwork();
+      networkdc.setName(vnfdConnectionPoint.getVirtual_link_reference());
+      return networkdc;
     } else {
-      t = type;
-    }
-    switch (t) {
-      case "openstack":
-        Network network = new Network();
-        HashSet<Subnet> subnets = new HashSet<>();
-        Subnet subnet = new Subnet();
-        subnet.setName(String.format("%s_subnet", vnfdConnectionPoint.getVirtual_link_reference()));
-        subnet.setCidr(
-            getCidrFromVLName(
-                vnfdConnectionPoint.getVirtual_link_reference(),
-                networkServiceDescriptor,
-                virtualNetworkFunctionDescriptor));
-        subnets.add(subnet);
-        network.setSubnets(subnets);
-        network.setName(vnfdConnectionPoint.getVirtual_link_reference());
-        return network;
-      case "docker":
-        DockerNetwork networkdc = new DockerNetwork();
-        networkdc.setName(vnfdConnectionPoint.getVirtual_link_reference());
-        return networkdc;
-      default:
-        BaseNetwork networkb = new BaseNetwork();
-        networkb.setName(vnfdConnectionPoint.getVirtual_link_reference());
-        return networkb;
+      BaseNetwork networkb = new BaseNetwork();
+      networkb.setName(vnfdConnectionPoint.getVirtual_link_reference());
+      return networkb;
     }
   }
 

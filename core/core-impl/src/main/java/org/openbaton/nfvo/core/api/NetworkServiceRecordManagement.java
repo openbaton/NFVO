@@ -1215,7 +1215,7 @@ public class NetworkServiceRecordManagement
                           networkServiceDescriptor,
                           virtualNetworkFunctionDescriptor,
                           vnfdConnectionPoint,
-                          vimInstance.getType());
+                          vimInstance);
                   network = networkManagement.add(vimInstance, network);
                   vnfdConnectionPoint.setVirtual_link_reference_id(network.getExtId());
                 }
