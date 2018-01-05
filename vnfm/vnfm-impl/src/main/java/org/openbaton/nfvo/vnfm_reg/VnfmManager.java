@@ -157,7 +157,7 @@ public class VnfmManager
               + ordered
               + ".Consider changing it directly into the openbaton-nfvo.properties file");
       if (ordered) {
-        vnfrNames.put(networkServiceRecord.getId(), new HashMap<String, Integer>());
+        vnfrNames.put(networkServiceRecord.getId(), new HashMap<>());
         Map<String, Integer> vnfrNamesWeighted = vnfrNames.get(networkServiceRecord.getId());
         fillVnfrNames(networkServiceDescriptor, vnfrNamesWeighted);
         vnfrNames.put(networkServiceRecord.getId(), sortByValue(vnfrNamesWeighted));
@@ -167,7 +167,12 @@ public class VnfmManager
 
       for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
         vnfStateHandler.handleVNF(
-            networkServiceDescriptor, networkServiceRecord, body, vduVimInstances, vnfd);
+            networkServiceDescriptor,
+            networkServiceRecord,
+            body,
+            vduVimInstances,
+            vnfd,
+            monitoringIp);
       }
     } catch (BadFormatException e) {
       e.printStackTrace();

@@ -73,7 +73,7 @@ public class MessageGenerator implements org.openbaton.vnfm.interfaces.manager.M
   private String brokerIp;
 
   @Value("${nfvo.monitoring.ip:}")
-  private String monitoringIp;
+  private String generalMonitoringIp;
 
   @Value("${nfvo.timezone:CET}")
   private String timezone;
@@ -108,10 +108,17 @@ public class MessageGenerator implements org.openbaton.vnfm.interfaces.manager.M
 
   @Override
   public Map<String, String> getExtension() {
+    return getExtension(null);
+  }
+
+  @Override
+  public Map<String, String> getExtension(String monitoringIp) {
     Map<String, String> extension = new HashMap<>();
     extension.put("brokerIp", brokerIp.trim());
     extension.put("brokerPort", brokerPort.trim());
-    extension.put("monitoringIp", monitoringIp.trim());
+    extension.put(
+        "monitoringIp",
+        monitoringIp != null && !monitoringIp.equals("") ? monitoringIp : generalMonitoringIp);
     extension.put("timezone", timezone);
     return extension;
   }
@@ -126,7 +133,8 @@ public class MessageGenerator implements org.openbaton.vnfm.interfaces.manager.M
       VirtualNetworkFunctionDescriptor vnfd,
       Map<String, Set<String>> vduVimInstances,
       NetworkServiceRecord networkServiceRecord,
-      DeployNSRBody body)
+      DeployNSRBody body,
+      String monitoringIp)
       throws NotFoundException {
     Map<String, Collection<VimInstance>> vimInstances = new HashMap<>();
 
@@ -150,7 +158,7 @@ public class MessageGenerator implements org.openbaton.vnfm.interfaces.manager.M
     }
 
     //Creating the extension
-    Map<String, String> extension = getExtension();
+    Map<String, String> extension = getExtension(monitoringIp);
     extension = fillAccessibilityConfigurationParameters(extension, vnfd, body);
 
     extension.put("nsr-id", networkServiceRecord.getId());
@@ -186,8 +194,7 @@ public class MessageGenerator implements org.openbaton.vnfm.interfaces.manager.M
   }
 
   private Map<String, String> fillAccessibilityConfigurationParameters(
-      Map<String, String> extension, VirtualNetworkFunctionDescriptor vnfd, DeployNSRBody body)
-      throws NotFoundException {
+      Map<String, String> extension, VirtualNetworkFunctionDescriptor vnfd, DeployNSRBody body) {
     if (body.getConfigurations().get(vnfd.getName()) == null) return extension;
     for (ConfigurationParameter passedConfigurationParameter :
         body.getConfigurations().get(vnfd.getName()).getConfigurationParameters()) {
