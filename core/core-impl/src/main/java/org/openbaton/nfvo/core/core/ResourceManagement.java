@@ -288,9 +288,9 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
           if (vnfDeploymentFlavour
               .getFlavour_key()
               .equals(virtualNetworkFunctionRecord.getDeployment_flavour_key())) {
-            if (vnfDeploymentFlavour.getDisk() != 0
-                && vnfDeploymentFlavour.getRam() != 0
-                && vnfDeploymentFlavour.getVcpus() != 0) {
+            if (!(vnfDeploymentFlavour.getDisk() == 0
+                || vnfDeploymentFlavour.getRam() == 0
+                || vnfDeploymentFlavour.getVcpus() == 0)) {
               DeploymentFlavour flavor = vim.add(vimInstance, vnfDeploymentFlavour);
               ((OpenstackVimInstance) vimInstance).getFlavours().add(flavor);
               log.info("Created new Flavor -> " + flavor);
