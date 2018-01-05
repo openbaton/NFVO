@@ -32,7 +32,6 @@ import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.ManagerCredentialsRepository;
-import org.openbaton.nfvo.repositories.VduRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
 import org.openbaton.nfvo.vnfm_reg.VnfmRegister;
@@ -74,15 +73,13 @@ public class MessageGenerator implements org.openbaton.vnfm.interfaces.manager.M
   private String brokerIp;
 
   @Value("${nfvo.monitoring.ip:}")
-  private String monitoringIp;
+  private String generalMonitoringIp;
 
   @Value("${nfvo.timezone:CET}")
   private String timezone;
 
   @Value("${spring.rabbitmq.port:5672}")
   private String brokerPort;
-
-  @Autowired private VduRepository vduRepository;
 
   @Override
   public VnfmSender getVnfmSender(EndpointType endpointType) throws BeansException {
@@ -111,10 +108,17 @@ public class MessageGenerator implements org.openbaton.vnfm.interfaces.manager.M
 
   @Override
   public Map<String, String> getExtension() {
+    return getExtension(null);
+  }
+
+  @Override
+  public Map<String, String> getExtension(String monitoringIp) {
     Map<String, String> extension = new HashMap<>();
     extension.put("brokerIp", brokerIp.trim());
     extension.put("brokerPort", brokerPort.trim());
-    extension.put("monitoringIp", monitoringIp.trim());
+    extension.put(
+        "monitoringIp",
+        monitoringIp != null && !monitoringIp.equals("") ? monitoringIp : generalMonitoringIp);
     extension.put("timezone", timezone);
     return extension;
   }
@@ -129,7 +133,8 @@ public class MessageGenerator implements org.openbaton.vnfm.interfaces.manager.M
       VirtualNetworkFunctionDescriptor vnfd,
       Map<String, Set<String>> vduVimInstances,
       NetworkServiceRecord networkServiceRecord,
-      DeployNSRBody body)
+      DeployNSRBody body,
+      String monitoringIp)
       throws NotFoundException {
     Map<String, Collection<BaseVimInstance>> vimInstances = new HashMap<>();
 
@@ -160,7 +165,7 @@ public class MessageGenerator implements org.openbaton.vnfm.interfaces.manager.M
     }
 
     //Creating the extension
-    Map<String, String> extension = getExtension();
+    Map<String, String> extension = getExtension(monitoringIp);
     extension = fillAccessibilityConfigurationParameters(extension, vnfd, body);
 
     extension.put("nsr-id", networkServiceRecord.getId());
@@ -196,8 +201,7 @@ public class MessageGenerator implements org.openbaton.vnfm.interfaces.manager.M
   }
 
   private Map<String, String> fillAccessibilityConfigurationParameters(
-      Map<String, String> extension, VirtualNetworkFunctionDescriptor vnfd, DeployNSRBody body)
-      throws NotFoundException {
+      Map<String, String> extension, VirtualNetworkFunctionDescriptor vnfd, DeployNSRBody body) {
     if (body.getConfigurations().get(vnfd.getName()) == null) return extension;
     for (ConfigurationParameter passedConfigurationParameter :
         body.getConfigurations().get(vnfd.getName()).getConfigurationParameters()) {

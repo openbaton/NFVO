@@ -21,6 +21,8 @@ public interface MessageGenerator {
 
   VnfmSender getVnfmSender(VirtualNetworkFunctionDescriptor vnfd) throws NotFoundException;
 
+  Map<String, String> getExtension(String monitoringIp);
+
   Map<String, String> getExtension();
 
   NFVMessage getNextMessage(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
@@ -29,7 +31,8 @@ public interface MessageGenerator {
       VirtualNetworkFunctionDescriptor vnfd,
       Map<String, Set<String>> vduVimInstances,
       NetworkServiceRecord networkServiceRecord,
-      DeployNSRBody body)
+      DeployNSRBody body,
+      String monitoringIp)
       throws NotFoundException;
 
   VnfmManagerEndpoint getEndpoint(VirtualNetworkFunctionDescriptor vnfd) throws NotFoundException;
