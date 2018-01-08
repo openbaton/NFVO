@@ -81,6 +81,7 @@ public class RestComponents {
     produces = MediaType.APPLICATION_OCTET_STREAM_VALUE
   )
   @ResponseStatus(HttpStatus.CREATED)
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
   public String createService(
       @RequestHeader(value = "project-id") String projectId,
       //      @RequestBody @Valid JsonObject serviceCreateBody)
@@ -188,7 +189,7 @@ public class RestComponents {
     }
   }
 
-  /** Enable a new Service. */
+  /** List all Services. */
   @ApiOperation(value = "List Services", notes = "List all services")
   @RequestMapping(
     value = "/services",
@@ -196,6 +197,7 @@ public class RestComponents {
     produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.OK)
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
   public List<ServiceMetadata> listServices(@RequestHeader(value = "project-id") String projectId)
       throws IOException {
 

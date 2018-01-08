@@ -15,7 +15,7 @@
  *
  */
 
-package org.openbaton.nfvo.security.authentication;
+package org.openbaton.nfvo.security.config;
 
 import java.util.Properties;
 import org.springframework.beans.factory.annotation.Autowired;

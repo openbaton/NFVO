@@ -15,7 +15,7 @@
  *
  */
 
-package org.openbaton.nfvo.security.authentication;
+package org.openbaton.nfvo.security.config;
 
 import java.io.Serializable;
 import java.util.HashMap;

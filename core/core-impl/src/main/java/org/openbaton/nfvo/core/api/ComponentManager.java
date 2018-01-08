@@ -37,7 +37,7 @@ import org.openbaton.nfvo.repositories.ProjectRepository;
 import org.openbaton.nfvo.repositories.ServiceRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
-import org.openbaton.nfvo.security.authentication.OAuth2AuthorizationServerConfig;
+import org.openbaton.nfvo.security.config.OAuth2AuthorizationServerConfig;
 import org.openbaton.vnfm.interfaces.register.VnfmRegister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
