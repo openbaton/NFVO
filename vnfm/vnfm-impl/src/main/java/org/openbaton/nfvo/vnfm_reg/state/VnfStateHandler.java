@@ -106,8 +106,8 @@ public class VnfStateHandler implements org.openbaton.vnfm.interfaces.state.VnfS
     log.trace("message: " + nfvMessage);
     task.setAction(nfvMessage.getAction());
 
-    VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
-    virtualNetworkFunctionRecord = generator.setupTask(nfvMessage, task);
+    VirtualNetworkFunctionRecord virtualNetworkFunctionRecord =
+        generator.setupTask(nfvMessage, task);
 
     if (virtualNetworkFunctionRecord != null) {
       if (virtualNetworkFunctionRecord.getParent_ns_id() != null) {
