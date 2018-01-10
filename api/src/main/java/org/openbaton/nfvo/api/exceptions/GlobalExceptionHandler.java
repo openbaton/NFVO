@@ -25,6 +25,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -105,5 +106,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     headers.setContentType(MediaType.APPLICATION_JSON);
 
     return handleExceptionInternal(e, exc, headers, HttpStatus.FORBIDDEN, request);
+  }
+
+  @ExceptionHandler({AccessDeniedException.class})
+  protected ResponseEntity<Object> handleAccessDeniedException(Exception e, WebRequest request) {
+    if (log.isDebugEnabled())
+      log.error("Exception was thrown -> Retrun message: " + e.getMessage(), e);
+    else log.error("Exception was thrown -> Retrun message: " + e.getMessage());
+    ExceptionResource exceptionResource = new ExceptionResource("Access denied", e.getMessage());
+    return handleExceptionInternal(
+        e, exceptionResource, new HttpHeaders(), HttpStatus.FORBIDDEN, request);
   }
 }

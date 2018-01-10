@@ -17,11 +17,7 @@
 
 dependencies {
     compile project(':repository')
-    compile project(':catalogue')
-    compile project(':exception')
     compile project(':common')
-    compile project(':vnfm-int')
-    compile project(':core-int')
 
     compile 'org.springframework.boot:spring-boot-starter-web:' + springBootVersion
     compile 'org.springframework.boot:spring-boot-starter-security:'+ springBootVersion
@@ -30,4 +26,5 @@ dependencies {
     // This is for enabling spring endpoints (e.g. /health)
     runtime 'org.springframework.boot:spring-boot-starter-actuator:'+ springBootVersion
     compile 'com.fasterxml.jackson.core:jackson-databind:2.8.7'
+    compile 'com.google.code.gson:gson:2.8.0'
 }

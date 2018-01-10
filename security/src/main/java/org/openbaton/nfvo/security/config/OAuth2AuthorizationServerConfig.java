@@ -15,7 +15,7 @@
  *
  */
 
-package org.openbaton.nfvo.security.authentication;
+package org.openbaton.nfvo.security.config;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -26,12 +26,9 @@ import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -47,7 +44,6 @@ import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
-import org.springframework.security.provisioning.UserDetailsManager;
 
 @Configuration
 @EnableAuthorizationServer
@@ -58,12 +54,6 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
   private Logger log = LoggerFactory.getLogger(this.getClass());
   @Autowired private AuthenticationManager authenticationManager;
 
-  @Autowired
-  @Qualifier("customUserDetailsService")
-  private UserDetailsManager customUserDetailsManager;
-
-  private DefaultTokenServices tokenServices;
-  private DefaultTokenServices serviceTokenServices;
   private TokenStore tokenStore = new InMemoryTokenStore();
 
   @Value("${nfvo.security.user.token.validity:600}")
@@ -72,33 +62,19 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
   @Value("${nfvo.security.service.token.validity:31556952}")
   private int serviceTokenValidityDuration;
 
+  private DefaultTokenServices serviceTokenServices;
+
   @PostConstruct
-  private void init() {
-    this.serviceTokenServices = new DefaultTokenServices();
-    this.serviceTokenServices.setSupportRefreshToken(true);
-    this.serviceTokenServices.setTokenStore(tokenStore);
-    this.serviceTokenServices.setAccessTokenValiditySeconds(serviceTokenValidityDuration);
-  }
-
-  public int getUserTokenValidityDuration() {
-    return userTokenValidityDuration;
-  }
-
-  public void setUserTokenValidityDuration(int userTokenValidityDuration) {
-    this.userTokenValidityDuration = userTokenValidityDuration;
-  }
-
-  @Bean
-  public TokenStore tokenStore() {
-    return new InMemoryTokenStore();
+  public void init() {
+    serviceTokenServices = new DefaultTokenServices();
+    serviceTokenServices.setSupportRefreshToken(true);
+    serviceTokenServices.setTokenStore(tokenStore);
+    serviceTokenServices.setAccessTokenValiditySeconds(serviceTokenValidityDuration);
   }
 
   @Override
   public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-    endpoints
-        .authenticationManager(this.authenticationManager)
-        .tokenStore(this.tokenStore)
-        .userDetailsService(customUserDetailsManager);
+    endpoints.authenticationManager(this.authenticationManager).tokenStore(this.tokenStore);
   }
 
   @Override
@@ -107,22 +83,19 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
         .inMemory()
         .withClient("openbatonOSClient")
         .secret("secret")
-        .authorizedGrantTypes("authorization_code", "refresh_token", "password")
+        .authorizedGrantTypes("refresh_token", "password")
         .scopes("read", "write")
-        //.authorities("ROLE_CLIENT")
+        .accessTokenValiditySeconds(userTokenValidityDuration)
         .resourceIds(RESOURCE_ID);
   }
 
-  @Bean
-  @Primary
-  public DefaultTokenServices tokenServices() {
-    this.tokenServices = new DefaultTokenServices();
-    this.tokenServices.setSupportRefreshToken(true);
-    this.tokenServices.setTokenStore(this.tokenStore);
-    this.tokenServices.setAccessTokenValiditySeconds(userTokenValidityDuration);
-    return tokenServices;
-  }
-
+  /**
+   * Method for generating an OAuth2 token for services. The token's (and refresh token's) validity
+   * duration is longer than for normal users.
+   *
+   * @param serviceName
+   * @return the oauth2 service token
+   */
   public OAuth2AccessToken getNewServiceToken(String serviceName) {
     Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
     authorities.add(new SimpleGrantedAuthority("ADMIN"));

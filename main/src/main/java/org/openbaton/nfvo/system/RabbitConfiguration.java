@@ -18,8 +18,8 @@
 package org.openbaton.nfvo.system;
 
 import com.google.gson.JsonSyntaxException;
+import org.openbaton.nfvo.core.interfaces.ComponentManager;
 import org.openbaton.nfvo.core.interfaces.EventDispatcher;
-import org.openbaton.nfvo.security.interfaces.ComponentManager;
 import org.openbaton.vnfm.interfaces.manager.VnfmReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

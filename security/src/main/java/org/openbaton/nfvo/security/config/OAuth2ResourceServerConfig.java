@@ -15,7 +15,7 @@
  *
  */
 
-package org.openbaton.nfvo.security.authentication;
+package org.openbaton.nfvo.security.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -25,7 +25,7 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
 
 @Configuration
 @EnableResourceServer
-public class ResourceServer extends ResourceServerConfigurerAdapter {
+public class OAuth2ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
   @Override
   public void configure(HttpSecurity http) throws Exception {
@@ -33,16 +33,8 @@ public class ResourceServer extends ResourceServerConfigurerAdapter {
     http.authorizeRequests()
         .antMatchers("/api/v1/components/services/register", "/api/v1/security")
         .permitAll()
-        .and()
-        .authorizeRequests()
         .antMatchers("/api/**")
-        .access("#oauth2.hasScope('write')")
-        .and()
-        .exceptionHandling()
-        .and()
-        .csrf()
-        .disable()
-        .cors();
+        .authenticated();
   }
 
   @Override
