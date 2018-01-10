@@ -160,7 +160,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
 
   @Override
   public String createService(String serviceName, String projectId, List<String> projects)
-      throws NoSuchAlgorithmException, IOException, NotFoundException, MissingParameterException {
+      throws NotFoundException, MissingParameterException {
     for (ServiceMetadata serviceMetadata : serviceRepository.findAll()) {
       if (serviceMetadata.getName().equals(serviceName)) {
         log.debug("Service " + serviceName + " already exists.");
@@ -203,9 +203,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
   }
 
   @Override
-  public boolean isService(String tokenToCheck)
-      throws InvalidKeyException, BadPaddingException, NoSuchAlgorithmException,
-          IllegalBlockSizeException, NoSuchPaddingException {
+  public boolean isService(String tokenToCheck) {
     for (ServiceMetadata serviceMetadata : serviceRepository.findAll()) {
       if (serviceMetadata.getToken() != null && !serviceMetadata.getToken().equals("")) {
         String encryptedServiceToken = serviceMetadata.getToken();
@@ -378,7 +376,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
     }
   }
 
-  private void refreshVims(String username) throws InterruptedException {
+  private void refreshVims(String username) {
     if (delayRefresh > 0) {
       Timer timer = new Timer();
 
@@ -392,6 +390,8 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
                   log.debug(String.format("Refreshing vims of type %s", vimType));
                   vimRepository
                       .findByType(vimType)
+                      .stream()
+                      .parallel()
                       .forEach(
                           vim -> {
                             try {
