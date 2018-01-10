@@ -18,7 +18,6 @@
 package org.openbaton.nfvo.vnfm_reg.impl.sender;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Future;
 import org.openbaton.catalogue.nfvo.Endpoint;
@@ -51,7 +50,6 @@ public class RabbitVnfmSender implements VnfmSender {
   @Async
   public Future<NFVMessage> sendCommand(final NFVMessage nfvMessage, final Endpoint endpoint)
       throws BadFormatException {
-    //    String destinationName = "nfvo." + endpoint.getType() + ".actions";
     String destinationName = endpoint.getEndpoint();
     log.debug(
         "Sending NFVMessage with action: "
@@ -59,15 +57,12 @@ public class RabbitVnfmSender implements VnfmSender {
             + " to destination: "
             + destinationName);
     log.trace("nfvMessage is: " + nfvMessage);
-    //    log.trace("gson is: " + gson);
-    //    log.trace("RabbitTemplate is: " + rabbitTemplate);
     String json = null;
     try {
       json = gson.toJson(nfvMessage);
     } catch (Exception e) {
       e.printStackTrace();
     }
-    //    log.trace("Json is: " + json);
     rabbitTemplate.setReplyTimeout(-1);
     Object receive =
         rabbitTemplate.convertSendAndReceive("openbaton-exchange", destinationName, json);
@@ -81,7 +76,7 @@ public class RabbitVnfmSender implements VnfmSender {
     NFVMessage result;
     try {
       result = gson.fromJson(str, NFVMessage.class);
-    } catch (JsonSyntaxException e) {
+    } catch (Exception e) {
       throw new BadFormatException(e);
     }
     return new AsyncResult<>(result);

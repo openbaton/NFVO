@@ -197,6 +197,11 @@ public class VimInstanceUtils {
     } else if (vimInstance instanceof DockerVimInstance) {
       DockerNetwork networkdc = new DockerNetwork();
       networkdc.setName(vnfdConnectionPoint.getVirtual_link_reference());
+      networkdc.setSubnet(
+          getCidrFromVLName(
+              vnfdConnectionPoint.getVirtual_link_reference(),
+              networkServiceDescriptor,
+              virtualNetworkFunctionDescriptor));
       return networkdc;
     } else {
       BaseNetwork networkb = new BaseNetwork();
