@@ -20,6 +20,7 @@ package org.openbaton.nfvo.security.config;
 import java.util.Properties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,6 +45,7 @@ import org.springframework.web.filter.CorsFilter;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
   @Autowired
   @Qualifier("customUserDetailsService")
   private UserDetailsManager customUserDetailsManager;
@@ -84,6 +86,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   }
 
   @Bean
+  @ConditionalOnProperty(prefix = "nfvo.security", name = "cors")
   public FilterRegistrationBean simpleCorsFilter() {
     UrlBasedCorsConfigurationSource corsConfigurationSource = new UrlBasedCorsConfigurationSource();
     CorsConfiguration corsConfiguration = new CorsConfiguration();
