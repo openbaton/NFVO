@@ -104,7 +104,7 @@ class EventDispatcher
 
   @Override
   public void onApplicationEvent(EventNFVO event) {
-    log.debug("Received event: " + event);
+    log.trace("Received event: " + event);
     dispatchEvent(event);
   }
 
