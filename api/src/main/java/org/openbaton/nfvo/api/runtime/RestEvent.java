@@ -85,7 +85,7 @@ public class RestEvent {
     token = tokenArray[1];
     if (endpoint.getProjectId() == null || endpoint.getProjectId().equals(""))
       endpoint.setProjectId(projectId);
-    if ((!componentManager.isService(token) || !utils.isAdmin())
+    if ((!componentManager.isService(token) && !utils.isAdmin())
         && endpoint.getProjectId().equals("*"))
       throw new BadRequestException("Only services and admin can register to all events");
     if (!utils.isAdmin()
