@@ -102,6 +102,29 @@ public class RestVimInstances {
   }
 
   /**
+   * Removes multiple VIM Instances
+   *
+   * @param ids: the list of VIM Instance IDs
+   * @throws NotFoundException if one of the VIM Instances was not found
+   * @throws BadRequestException if something is wrong with the request
+   */
+  @RequestMapping(
+    value = "/multipledelete",
+    method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ApiOperation(
+    value = "Removing multiple VIM Instances",
+    notes = "Delete Request takes a list of VIM Instance IDs"
+  )
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void multipleDelete(
+      @RequestBody @Valid List<String> ids, @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException, BadRequestException {
+    for (String id : ids) vimManagement.delete(id, projectId);
+  }
+
+  /**
    * Returns the list of the Datacenters available
    *
    * @return List<Datacenter>: The List of Datacenters available
