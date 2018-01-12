@@ -17,7 +17,7 @@
 package org.openbaton.nfvo.api.admin;
 
 import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.nfvo.security.interfaces.UserManagement;
+import org.openbaton.nfvo.core.interfaces.UserManagement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;

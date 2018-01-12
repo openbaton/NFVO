@@ -412,12 +412,12 @@ public class VNFPackageManagement
             if (imageDetails.containsKey("ids")) {
               imageMetadata.setIds(new HashSet<String>((ArrayList) imageDetails.get("ids")));
             } else {
-              imageMetadata.setIds(new HashSet<String>());
+              imageMetadata.setIds(new HashSet<>());
             }
             if (imageDetails.containsKey("names")) {
               imageMetadata.setNames(new HashSet<String>((ArrayList) imageDetails.get("names")));
             } else {
-              imageMetadata.setNames(new HashSet<String>());
+              imageMetadata.setNames(new HashSet<>());
             }
             if (imageDetails.containsKey("link")) {
               imageMetadata.setLink((String) imageDetails.get("link"));
@@ -518,15 +518,7 @@ public class VNFPackageManagement
     vnfdParameters.put("vendor", virtualNetworkFunctionDescriptor.getVendor());
     CheckVNFPackage.checkCommonParametersWithVNFD(vnfPackageMetadataParameters, vnfdParameters);
 
-    //vnfPackageMetadata.setVnfPackage(vnfPackage);
-    //vnfPackageMetadata.setNfvImage(image);
-
-    //vnfPackageMetadata.setImageMetadata(imageMetadata);
-
-    //vnfPackageMetadata.setVnfPackageFileName(fileName);
     vnfPackageMetadata.setProjectId(projectId);
-    //vnfPackageMetadata.setVnfPackageFile(pack);
-    //vnfPackageMetadata.setMd5sum(DigestUtils.md5DigestAsHex(pack));
     vnfPackageMetadata.setType("tar");
     vnfPackage.setVnfPackageMetadata(vnfPackageMetadata);
     vnfPackage.setImage(image);
@@ -555,16 +547,8 @@ public class VNFPackageManagement
 
     nsdUtils.checkIntegrity(virtualNetworkFunctionDescriptor);
 
-    // check if it is the first and set to default
-    //    if(!vnfPackageMetadataRepository.findAllByNameAndVendor(vnfPackageMetadata.getName(),vnfPackageMetadata.getVendor()).iterator().hasNext()){
-    //      log.debug("Setting VNF package to default");
-    //      vnfPackageMetadata.setDefaultFlag(true);
-    //    }
-    //    else vnfPackageMetadata.setDefaultFlag(false);
-    //vnfPackageMetadataRepository.save(vnfPackageMetadata);
     /* Done in the nsdCheckutils */
     vnfPackage = vnfPackageRepository.save(vnfPackage);
-    //    vnfPackage = vnfPackageRepository.findFirstById(virtualNetworkFunctionDescriptor.getVnfPackageLocation());
     log.trace("Persisted " + vnfPackage);
     vnfPackageMetadataRepository.setVNFPackageId(vnfPackage.getId());
 
@@ -919,18 +903,27 @@ public class VNFPackageManagement
 
         for (String vimName : vimInstanceNames) {
 
-          BaseVimInstance vimInstance = null;
+          Optional<BaseVimInstance> optVimInstance =
+              vimInstanceRepository
+                  .findByProjectId(projectId)
+                  .stream()
+                  .filter(
+                      v -> {
+                        String name;
+                        if (vimName.contains(":")) {
+                          name = vimName.split(":")[0];
+                        } else {
+                          name = vimName;
+                        }
+                        return v.getName().equals(name);
+                      })
+                  .findFirst();
 
-          for (BaseVimInstance vi : vimInstanceRepository.findByProjectId(projectId)) {
-            if (vimName.equals(vi.getName())) {
-              vimInstance = vi;
-            }
-          }
-
-          if (vimInstance == null) {
+          if (!optVimInstance.isPresent()) {
             throw new NotFoundException(
                 "Vim Instance with name " + vimName + " was not found in project: " + projectId);
           }
+          BaseVimInstance vimInstance = optVimInstance.get();
 
           boolean found = false;
           vimManagement.refresh(vimInstance, false);
@@ -994,9 +987,16 @@ public class VNFPackageManagement
                 }
               }
             } else {
-              throw new NotFoundException(
-                  "VNFPackageManagement: Neither the defined image ids nor the names were found. Use upload option "
-                      + "'check' to get sure that the image will be available");
+              if (imageDetails.containsKey("ids")) {
+                vdu.getVm_image().addAll((List) imageDetails.get("ids"));
+              }
+              if (imageDetails.containsKey("names")) {
+                vdu.getVm_image().addAll((List) imageDetails.get("names"));
+              }
+              ;
+              //              throw new NotFoundException(
+              //                  "VNFPackageManagement: Neither the defined image ids nor the names were found. Use upload option "
+              //                      + "'check' to get sure that the image will be available");
             }
           } else {
             log.debug(

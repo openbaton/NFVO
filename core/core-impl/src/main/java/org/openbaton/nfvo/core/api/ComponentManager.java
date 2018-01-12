@@ -1,4 +1,4 @@
-package org.openbaton.nfvo.security.components;
+package org.openbaton.nfvo.core.api;
 
 import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.createRabbitMqUser;
 import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.removeRabbitMqUser;
@@ -37,7 +37,7 @@ import org.openbaton.nfvo.repositories.ProjectRepository;
 import org.openbaton.nfvo.repositories.ServiceRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
-import org.openbaton.nfvo.security.authentication.OAuth2AuthorizationServerConfig;
+import org.openbaton.nfvo.security.config.OAuth2AuthorizationServerConfig;
 import org.openbaton.vnfm.interfaces.register.VnfmRegister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,10 +47,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.stereotype.Service;
 
-//TODO place this class somewhere else
 @Service
 @ConfigurationProperties
-public class ComponentManager implements org.openbaton.nfvo.security.interfaces.ComponentManager {
+public class ComponentManager implements org.openbaton.nfvo.core.interfaces.ComponentManager {
 
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -160,7 +159,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
 
   @Override
   public String createService(String serviceName, String projectId, List<String> projects)
-      throws NoSuchAlgorithmException, IOException, NotFoundException, MissingParameterException {
+      throws NotFoundException, MissingParameterException {
     for (ServiceMetadata serviceMetadata : serviceRepository.findAll()) {
       if (serviceMetadata.getName().equals(serviceName)) {
         log.debug("Service " + serviceName + " already exists.");
@@ -203,9 +202,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
   }
 
   @Override
-  public boolean isService(String tokenToCheck)
-      throws InvalidKeyException, BadPaddingException, NoSuchAlgorithmException,
-          IllegalBlockSizeException, NoSuchPaddingException {
+  public boolean isService(String tokenToCheck) {
     for (ServiceMetadata serviceMetadata : serviceRepository.findAll()) {
       if (serviceMetadata.getToken() != null && !serviceMetadata.getToken().equals("")) {
         String encryptedServiceToken = serviceMetadata.getToken();
@@ -378,7 +375,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
     }
   }
 
-  private void refreshVims(String username) throws InterruptedException {
+  private void refreshVims(String username) {
     if (delayRefresh > 0) {
       Timer timer = new Timer();
 
@@ -392,6 +389,8 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
                   log.debug(String.format("Refreshing vims of type %s", vimType));
                   vimRepository
                       .findByType(vimType)
+                      .stream()
+                      .parallel()
                       .forEach(
                           vim -> {
                             try {

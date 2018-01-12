@@ -17,7 +17,7 @@
 
 package org.openbaton.nfvo.main;
 
-import org.openbaton.nfvo.security.interfaces.ComponentManager;
+import org.openbaton.nfvo.core.interfaces.ComponentManager;
 import org.openbaton.plugin.mgmt.PluginStartup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

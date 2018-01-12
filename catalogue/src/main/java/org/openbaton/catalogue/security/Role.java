@@ -21,10 +21,11 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import org.openbaton.catalogue.util.BaseEntity;
+import org.springframework.security.core.GrantedAuthority;
 
 /** Created by lto on 24/05/16. */
 @Entity
-public class Role extends BaseEntity {
+public class Role extends BaseEntity implements GrantedAuthority {
 
   @Enumerated(EnumType.STRING)
   private RoleEnum role;
@@ -50,6 +51,11 @@ public class Role extends BaseEntity {
 
   public void setRole(RoleEnum role) {
     this.role = role;
+  }
+
+  @Override
+  public String getAuthority() {
+    return "ROLE_" + role.name();
   }
 
   public enum RoleEnum {

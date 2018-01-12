@@ -24,9 +24,9 @@ import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
 import org.openbaton.exceptions.NotAllowedException;
 import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.nfvo.core.interfaces.ProjectManagement;
+import org.openbaton.nfvo.core.interfaces.UserManagement;
 import org.openbaton.nfvo.repositories.ServiceRepository;
-import org.openbaton.nfvo.security.interfaces.ProjectManagement;
-import org.openbaton.nfvo.security.interfaces.UserManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-/** Created by lto on 25/05/16. */
 @Service
 public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
 

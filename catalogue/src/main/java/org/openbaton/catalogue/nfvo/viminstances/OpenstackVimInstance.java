@@ -22,6 +22,16 @@ public class OpenstackVimInstance extends BaseVimInstance {
 
   private String tenant;
 
+  public String getDomain() {
+    return domain;
+  }
+
+  public void setDomain(String domain) {
+    this.domain = domain;
+  }
+
+  private String domain;
+
   @NotNull
   @Size(min = 1)
   private String username;

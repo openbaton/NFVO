@@ -52,9 +52,17 @@ public class ErrorTask extends AbstractTask {
   @Override
   protected void setDescription() {
     if (exception != null) {
-      if (exception.getMessage().length() > 1024) {
-        description = exception.getMessage().substring(0, 1024);
-      } else description = exception.getMessage();
+      if (exception.getMessage() != null) {
+        if (exception.getMessage().length() > 1024) {
+          description = exception.getMessage().substring(0, 1024);
+        } else description = exception.getMessage();
+      } else if (exception.getLocalizedMessage() != null) {
+        if (exception.getLocalizedMessage().length() > 1024) {
+          description = exception.getLocalizedMessage().substring(0, 1024);
+        } else description = exception.getMessage();
+      } else {
+        description = "An Error Occurred in this VNFR, check the VNFM logs for more info";
+      }
     } else {
       description = "An Error Occurred in this VNFR, check the VNFM logs for more info";
     }

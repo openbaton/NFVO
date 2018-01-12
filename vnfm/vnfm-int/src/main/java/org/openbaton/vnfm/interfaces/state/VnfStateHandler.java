@@ -21,7 +21,8 @@ public interface VnfStateHandler {
       NetworkServiceRecord networkServiceRecord,
       DeployNSRBody body,
       Map<String, Set<String>> vduVimInstances,
-      VirtualNetworkFunctionDescriptor vnfd)
+      VirtualNetworkFunctionDescriptor vnfd,
+      String monitoringIp)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 
   @Async

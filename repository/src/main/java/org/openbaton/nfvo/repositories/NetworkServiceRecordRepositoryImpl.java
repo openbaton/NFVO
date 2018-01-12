@@ -57,8 +57,10 @@ public class NetworkServiceRecordRepositoryImpl implements NetworkServiceRecordR
   public void deleteVNFRecord(String idNsr, String idVnfr) {
     SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
     NetworkServiceRecord nsr = networkServiceRecordRepository.findFirstById(idNsr);
-    nsr.setUpdatedAt(format.format(new Date()));
-    nsr.getVnfr().remove(vnfrRepository.findFirstById(idVnfr));
+    if (nsr != null) {
+      nsr.setUpdatedAt(format.format(new Date()));
+      nsr.getVnfr().remove(vnfrRepository.findFirstById(idVnfr));
+    }
     vnfrRepository.delete(idVnfr);
   }
 
