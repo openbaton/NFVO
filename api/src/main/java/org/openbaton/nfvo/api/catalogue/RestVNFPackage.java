@@ -79,7 +79,10 @@ public class RestVNFPackage {
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = null;
     try {
       virtualNetworkFunctionDescriptor = vnfPackageManagement.add(bytes, false, projectId, false);
-    } catch (ExistingVNFPackage | DescriptorWrongFormat | VNFPackageFormatException e) {
+    } catch (ExecutionException
+        | ExistingVNFPackage
+        | DescriptorWrongFormat
+        | VNFPackageFormatException e) {
       if (log.isDebugEnabled()) log.error(e.getMessage(), e);
       else log.error(e.getMessage());
       throw new BadRequestException(e.getMessage());

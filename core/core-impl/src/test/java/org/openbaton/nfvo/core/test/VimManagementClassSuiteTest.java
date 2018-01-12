@@ -26,10 +26,7 @@ import static org.openbaton.nfvo.core.test.TestUtils.createVimInstance;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -38,16 +35,11 @@ import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.openbaton.catalogue.mano.common.DeploymentFlavour;
-import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
 import org.openbaton.catalogue.nfvo.images.NFVImage;
-import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
 import org.openbaton.catalogue.nfvo.networks.Network;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
-import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.EntityUnreachableException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
@@ -61,7 +53,6 @@ import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.AsyncResult;
 
 @SuppressWarnings({"unsafe", "unchecked"})
 public class VimManagementClassSuiteTest {
@@ -85,7 +76,7 @@ public class VimManagementClassSuiteTest {
   private final Logger log = LoggerFactory.getLogger(ApplicationTest.class);
 
   @InjectMocks private VimManagement vimManagement;
-  @Mock private VimManagement.AsyncVimManagement asyncVimManagement;
+  //  @Mock private VimManagement.AsyncVimManagement asyncVimManagement;
 
   @Before
   public void init() {
@@ -100,12 +91,11 @@ public class VimManagementClassSuiteTest {
 
   @Test
   public void vimManagementRefreshTest()
-      throws VimException, PluginException, IOException, EntityUnreachableException,
-          BadRequestException, AlreadyExistingException {
+      throws VimException, PluginException, IOException, ExecutionException, InterruptedException {
     initMocks();
     BaseVimInstance vimInstance = createVimInstance();
     when(vimRepository.save(any(BaseVimInstance.class))).thenReturn(vimInstance);
-    vimManagement.refresh(vimInstance, false);
+    vimManagement.refresh(vimInstance, false).get();
 
     //    Assert.assertEquals(2, vimInstance.getFlavours().size());
     Assert.assertEquals(2, vimInstance.getImages().size());
@@ -114,8 +104,7 @@ public class VimManagementClassSuiteTest {
 
   @Test
   public void vimManagementUpdateTest()
-      throws VimException, PluginException, IOException, EntityUnreachableException,
-          BadRequestException, AlreadyExistingException, NotFoundException {
+      throws VimException, PluginException, IOException, BadRequestException, NotFoundException {
     initMocks();
     OpenstackVimInstance vimInstanceExp = createVimInstance();
     when(vimRepository.findFirstByIdAndProjectId(vimInstanceExp.getId(), projectId))
@@ -153,8 +142,7 @@ public class VimManagementClassSuiteTest {
 
   @Test
   public void nfvImageManagementAddTest()
-      throws VimException, PluginException, IOException, EntityUnreachableException,
-          BadRequestException, AlreadyExistingException {
+      throws VimException, PluginException, IOException, BadRequestException {
     initMocks();
     OpenstackVimInstance vimInstance_exp = createVimInstance();
     System.out.println(vimInstance_exp);
@@ -184,23 +172,23 @@ public class VimManagementClassSuiteTest {
     Vim vim = mock(Vim.class);
     when(vim.queryImages(any(BaseVimInstance.class))).thenReturn(new ArrayList<>());
     when(vimBroker.getVim(anyString())).thenReturn(vim);
-    try {
-      Future<Set<DeploymentFlavour>> futureFlavours = mock(AsyncResult.class);
-      Future<Set<BaseNetwork>> futureNetworks = mock(AsyncResult.class);
-      Future<Set<BaseNfvImage>> futureImages = mock(AsyncResult.class);
-      when(asyncVimManagement.updateFlavors(any(BaseVimInstance.class))).thenReturn(futureFlavours);
-      when(asyncVimManagement.updateFlavors(any(BaseVimInstance.class)).get())
-          .thenReturn(new HashSet<>());
-      when(asyncVimManagement.updateImages(any(BaseVimInstance.class))).thenReturn(futureImages);
-      when(asyncVimManagement.updateImages(any(BaseVimInstance.class)).get())
-          .thenReturn(new HashSet<>());
-      when(asyncVimManagement.updateNetworks(any(BaseVimInstance.class)))
-          .thenReturn(futureNetworks);
-      when(asyncVimManagement.updateNetworks(any(BaseVimInstance.class)).get())
-          .thenReturn(new HashSet<>());
-    } catch (InterruptedException | ExecutionException | BadRequestException e) {
-      e.printStackTrace();
-    }
+    //    try {
+    //      Future<Set<DeploymentFlavour>> futureFlavours = mock(AsyncResult.class);
+    //      Future<Set<BaseNetwork>> futureNetworks = mock(AsyncResult.class);
+    //      Future<Set<BaseNfvImage>> futureImages = mock(AsyncResult.class);
+    //      when(asyncVimManagement.updateFlavors(any(BaseVimInstance.class))).thenReturn(futureFlavours);
+    //      when(asyncVimManagement.updateFlavors(any(BaseVimInstance.class)).get())
+    //          .thenReturn(new HashSet<>());
+    //      when(asyncVimManagement.updateImages(any(BaseVimInstance.class))).thenReturn(futureImages);
+    //      when(asyncVimManagement.updateImages(any(BaseVimInstance.class)).get())
+    //          .thenReturn(new HashSet<>());
+    //      when(asyncVimManagement.updateNetworks(any(BaseVimInstance.class)))
+    //          .thenReturn(futureNetworks);
+    //      when(asyncVimManagement.updateNetworks(any(BaseVimInstance.class)).get())
+    //          .thenReturn(new HashSet<>());
+    //    } catch (InterruptedException | ExecutionException | BadRequestException e) {
+    //      e.printStackTrace();
+    //    }
     doNothing().when(imageRepository).delete(any(NFVImage.class));
     doNothing().when(networkRepository).delete(any(Network.class));
   }

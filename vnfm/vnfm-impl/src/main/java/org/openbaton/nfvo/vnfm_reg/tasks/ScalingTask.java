@@ -17,6 +17,11 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -38,12 +43,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
 /** Created by lto on 06/08/15. */
 @Service
 @Scope("prototype")
@@ -63,14 +62,6 @@ public class ScalingTask extends AbstractTask {
   }
 
   private String userdata;
-
-  public boolean isCheckQuota() {
-    return checkQuota;
-  }
-
-  public void setCheckQuota(boolean checkQuota) {
-    this.checkQuota = checkQuota;
-  }
 
   @Override
   protected NFVMessage doWork() throws Exception {
@@ -109,6 +100,8 @@ public class ScalingTask extends AbstractTask {
             + virtualNetworkFunctionRecord.getId()
             + ") is: "
             + componentToAdd);
+    if (vdu == null)
+      throw new VimException("Error while scaling, no vdu found. This should not happen");
     Map<String, BaseVimInstance> vimInstanceMap = new HashMap<>();
     if (checkQuota) {
       if (vimInstance == null) {
@@ -287,9 +280,5 @@ public class ScalingTask extends AbstractTask {
 
   public void setVimInstance(BaseVimInstance vimInstance) {
     this.vimInstance = vimInstance;
-  }
-
-  public BaseVimInstance getVimInstance() {
-    return vimInstance;
   }
 }
