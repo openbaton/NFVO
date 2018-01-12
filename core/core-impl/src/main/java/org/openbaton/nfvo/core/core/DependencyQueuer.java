@@ -36,23 +36,16 @@ import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.VNFRDependencyRepository;
 import org.openbaton.nfvo.repositories.VNFRRepository;
-import org.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.openbaton.vnfm.interfaces.state.VnfStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-/** Created by lto on 19/08/15. */
 @Service
 @Scope
 public class DependencyQueuer implements org.openbaton.nfvo.core.interfaces.DependencyQueuer {
-
-  @Autowired
-  @Qualifier("vnfmManager")
-  private VnfmManager vnfmManager;
 
   @Autowired private VNFRRepository vnfrRepository;
   @Autowired private VNFRDependencyRepository vnfrDependencyRepository;
@@ -69,9 +62,7 @@ public class DependencyQueuer implements org.openbaton.nfvo.core.interfaces.Depe
 
   @Override
   public synchronized void waitForVNFR(String targetDependencyId, Set<String> sourceIds) {
-    if (queues.get(targetDependencyId) == null) {
-      queues.put(targetDependencyId, new HashSet<String>());
-    }
+    queues.computeIfAbsent(targetDependencyId, k -> new HashSet<>());
     log.debug("Adding to the queue: " + sourceIds + ", dependency: " + targetDependencyId);
     for (String name : sourceIds) queues.get(targetDependencyId).add(name);
   }
@@ -106,10 +97,21 @@ public class DependencyQueuer implements org.openbaton.nfvo.core.interfaces.Depe
           log.debug("Found VNFRecordDependency: " + vnfRecordDependency);
 
           //get the vnfr target by its name
-          VirtualNetworkFunctionRecord target = null;
-          for (VirtualNetworkFunctionRecord vnfr : nsrFather.getVnfr())
-            if (vnfr.getName().equals(vnfRecordDependency.getTarget()))
-              target = vnfrRepository.findFirstById(vnfr.getId());
+          VirtualNetworkFunctionRecord target =
+              vnfrRepository.findFirstById(
+                  nsrFather
+                      .getVnfr()
+                      .stream()
+                      .filter(vnfr -> vnfr.getName().equals(vnfRecordDependency.getTarget()))
+                      .findFirst()
+                      .orElseThrow(
+                          () ->
+                              new NotFoundException(
+                                  String.format(
+                                      "No VNFR found with name %s",
+                                      vnfRecordDependency.getTarget())))
+                      .getId());
+
           log.info("Found target of relation: " + target.getName());
           if (nsrFather.getStatus().ordinal() != Status.ERROR.ordinal()) {
             log.debug("Sending MODIFY to " + target.getName());

@@ -583,7 +583,6 @@ public class NetworkServiceRecordManagement
       }
     }
 
-    //        virtualDeploymentUnit.getVnfc().add(component);
     vnfcRepository.save(component);
     nsrRepository.saveCascade(networkServiceRecord);
     log.debug("new VNFComponent is " + component);
@@ -1086,12 +1085,14 @@ public class NetworkServiceRecordManagement
                                   && vimInstanceName.equals(vimInstance.getName()))) {
 
                             try {
-                              vimManagement.refresh(vimInstance, false);
+                              vimManagement.refresh(vimInstance, false).get();
                             } catch (VimException
                                 | PluginException
                                 | BadRequestException
                                 | IOException
-                                | AlreadyExistingException e) {
+                                | AlreadyExistingException
+                                | InterruptedException
+                                | ExecutionException e) {
                               e.printStackTrace();
                               exception[0] = e;
                             }
@@ -1099,19 +1100,21 @@ public class NetworkServiceRecordManagement
                         });
                   } else {
                     try {
-                      vimManagement.refresh(vimInstance, false);
+                      vimManagement.refresh(vimInstance, false).get();
                     } catch (VimException
                         | PluginException
                         | BadRequestException
                         | IOException
-                        | AlreadyExistingException e) {
+                        | AlreadyExistingException
+                        | InterruptedException
+                        | ExecutionException e) {
                       e.printStackTrace();
                       exception[0] = e;
                     }
                   }
                 });
       } else {
-        vimManagement.refresh(vimInstance, false);
+        vimManagement.refresh(vimInstance, false).get();
       }
       if (exception[0] != null) {
         throw new VimException(exception[0]);
@@ -1177,7 +1180,7 @@ public class NetworkServiceRecordManagement
 
             if (!vimInstance.getType().equals("test")) {
               boolean found = false;
-              vimManagement.refresh(vimInstance, false);
+              vimManagement.refresh(vimInstance, false).get();
 
               for (String imageName : vdu.getVm_image()) {
 

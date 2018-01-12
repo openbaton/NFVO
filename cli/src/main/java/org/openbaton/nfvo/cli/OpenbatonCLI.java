@@ -57,7 +57,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -66,7 +65,7 @@ import org.springframework.stereotype.Component;
  * environment that either leads to calls of the main() or the run() method.
  */
 @Component
-@Order(Ordered.LOWEST_PRECEDENCE)
+@Order()
 @ConfigurationProperties(prefix = "nfvo.rabbit")
 public class OpenbatonCLI implements CommandLineRunner {
 
@@ -182,59 +181,63 @@ public class OpenbatonCLI implements CommandLineRunner {
         exit(999);
       }
       String line;
-      PrintWriter out = new PrintWriter(reader.getOutput());
-      List<Completer> completors = new ArrayList<>();
-      completors.add(new StringsCompleter(helpCommandList.keySet()));
-      completors.add(new FileNameCompleter());
-      reader.addCompleter(new ArgumentCompleter(completors));
-      reader.setPrompt(
-          "\u001B[135m" + System.getProperty("user.name") + "@[\u001B[32mopen-baton\u001B[0m]~> ");
-      while ((line = reader.readLine()) != null) {
-        out.flush();
-        line = line.trim();
-        if (line.equalsIgnoreCase("quit") || line.equalsIgnoreCase("exit")) {
-          exit(0);
-        } else if (line.equalsIgnoreCase("listBeans")) {
-          for (String name : context.getBeanDefinitionNames()) {
-            System.out.println(name);
+      try (PrintWriter out = new PrintWriter(reader.getOutput())) {
+        List<Completer> completors = new ArrayList<>();
+        completors.add(new StringsCompleter(helpCommandList.keySet()));
+        completors.add(new FileNameCompleter());
+        reader.addCompleter(new ArgumentCompleter(completors));
+        reader.setPrompt(
+            "\u001B[135m"
+                + System.getProperty("user.name")
+                + "@[\u001B[32mopen-baton\u001B[0m]~> ");
+        while ((line = reader.readLine()) != null) {
+          out.flush();
+          line = line.trim();
+          if (line.equalsIgnoreCase("quit") || line.equalsIgnoreCase("exit")) {
+            exit(0);
+          } else if (line.equalsIgnoreCase("listBeans")) {
+            for (String name : context.getBeanDefinitionNames()) {
+              System.out.println(name);
+            }
+          } else if (line.equalsIgnoreCase("cls")) {
+            reader.clearScreen();
+          } else if (line.equalsIgnoreCase("help")) {
+            usage();
+          } else if (line.startsWith("installPlugin ")) {
+            if (!installPlugin(line)) {
+              log.error("Error installing running plugin.");
+            }
+          } else if (line.startsWith("uninstallPlugin ")) {
+            uninstallPlugin(line);
+          } else if (line.startsWith("listVnfms")) {
+            listVnfms();
+          } else if (line.startsWith("listUsers")) {
+            listUsers();
+          } else if (line.startsWith("changeLog")) {
+            changeLog(line);
+          } else if (line.startsWith("listRecords")) {
+            listRecords();
+          } else if (line.startsWith("listDescriptors")) {
+            listDescriptors();
+          } else if (line.startsWith("deleteRecord")) {
+            try {
+              deleteRecord(line);
+            } catch (BadFormatException e) {
+              e.printStackTrace();
+            }
+          } else if (line.startsWith("deleteDescriptor")) {
+            deleteDescriptor(line);
+          } else if (line.startsWith("listPlugins")) {
+            StringTokenizer stringTokenizer = new StringTokenizer(line);
+            stringTokenizer.nextToken();
+            if (stringTokenizer.hasMoreTokens()) {
+              System.out.println(listPlugins());
+            } else {
+              System.out.println(listPlugins());
+            }
+          } else if (!line.equalsIgnoreCase("")) {
+            usage();
           }
-        } else if (line.equalsIgnoreCase("cls")) {
-          reader.clearScreen();
-        } else if (line.equalsIgnoreCase("help")) {
-          usage();
-        } else if (line.startsWith("installPlugin ")) {
-          installPlugin(line);
-        } else if (line.startsWith("uninstallPlugin ")) {
-          uninstallPlugin(line);
-        } else if (line.startsWith("listVnfms")) {
-          listVnfms();
-        } else if (line.startsWith("listUsers")) {
-          listUsers();
-        } else if (line.startsWith("changeLog")) {
-          changeLog(line);
-        } else if (line.startsWith("listRecords")) {
-          listRecords();
-        } else if (line.startsWith("listDescriptors")) {
-          listDescriptors();
-        } else if (line.startsWith("deleteRecord")) {
-          try {
-            deleteRecord(line);
-          } catch (BadFormatException e) {
-            e.printStackTrace();
-          }
-        } else if (line.startsWith("deleteDescriptor")) {
-          deleteDescriptor(line);
-        } else if (line.startsWith("listPlugins")) {
-          StringTokenizer stringTokenizer = new StringTokenizer(line);
-          stringTokenizer.nextToken();
-          if (stringTokenizer.hasMoreTokens()) {
-            System.out.println(listPlugins());
-          } else {
-            System.out.println(listPlugins());
-          }
-        } else if (line.equalsIgnoreCase("")) {
-        } else {
-          usage();
         }
       }
     }
@@ -242,113 +245,118 @@ public class OpenbatonCLI implements CommandLineRunner {
 
   private void deleteDescriptor(String line)
       throws WrongStatusException, EntityInUseException, BadRequestException, NotFoundException {
-    StringTokenizer stringTokenizer = new StringTokenizer(line, " ");
-
-    if (stringTokenizer.countTokens() != 2) {
-      log.error("Please provide only the id to be removed");
-      return;
-    }
-    stringTokenizer.nextToken();
-    String id = stringTokenizer.nextToken();
+    String id = extractIdFromLine(line);
+    if (id.equals("")) return;
     nsdManagement.delete(id, nsdRepository.findFirstById(id).getProjectId());
   }
 
   private void deleteRecord(String line)
       throws NotFoundException, WrongStatusException, BadFormatException, ExecutionException,
           InterruptedException {
+    String id = extractIdFromLine(line);
+    if (id.equals("")) return;
+    nsrManagement.delete(id, nsrRepository.findFirstById(id).getProjectId());
+  }
+
+  private String extractIdFromLine(String line) {
     StringTokenizer stringTokenizer = new StringTokenizer(line, " ");
 
     if (stringTokenizer.countTokens() != 2) {
       log.error("Please provide only the id to be removed");
-      return;
+      return "";
     }
-
     stringTokenizer.nextToken();
-    String id = stringTokenizer.nextToken();
-
-    nsrManagement.delete(id, nsrRepository.findFirstById(id).getProjectId());
+    return stringTokenizer.nextToken();
   }
 
   private void listRecords() {
 
-    String result = "\n";
-    result += "Available NSRs:\n";
+    StringBuilder result = new StringBuilder("\n");
+    result.append("Available NSRs:\n");
     String formatBar = "|%20s|%20s|%40s|%40s|";
     String formatPlus = "+%20s+%20s+%40s+%40s+";
-    result +=
-        String.format(
+    result
+        .append(
+            String.format(
                 formatPlus,
                 "--------------------",
                 "--------------------",
                 "----------------------------------------",
-                "----------------------------------------")
-            + "\n";
-    result += String.format(formatBar, "name", "status", "id", "project-id") + "\n";
-    result +=
-        String.format(
+                "----------------------------------------"))
+        .append("\n");
+    result.append(String.format(formatBar, "name", "status", "id", "project-id")).append("\n");
+    result
+        .append(
+            String.format(
                 formatPlus,
                 "====================",
                 "====================",
                 "========================================",
-                "========================================")
-            + "\n";
+                "========================================"))
+        .append("\n");
 
     for (NetworkServiceRecord networkServiceRecord : nsrRepository.findAll()) {
-      result +=
-          String.format(
+      result
+          .append(
+              String.format(
                   formatBar,
                   networkServiceRecord.getName(),
                   networkServiceRecord.getStatus(),
                   networkServiceRecord.getId(),
-                  networkServiceRecord.getProjectId())
-              + "\n";
-      result +=
-          String.format(
+                  networkServiceRecord.getProjectId()))
+          .append("\n");
+      result
+          .append(
+              String.format(
                   formatPlus,
                   "--------------------",
                   "--------------------",
                   "----------------------------------------",
-                  "----------------------------------------")
-              + "\n";
+                  "----------------------------------------"))
+          .append("\n");
     }
     System.out.println(result);
   }
 
   private void listDescriptors() {
 
-    String result = "\n";
-    result += "Available NSRs:\n";
-    result +=
-        String.format(
+    StringBuilder result = new StringBuilder("\n");
+    result.append("Available NSRs:\n");
+    result
+        .append(
+            String.format(
                 "+%40s+%20s+%40s+",
                 "----------------------------------------",
                 "--------------------",
-                "----------------------------------------")
-            + "\n";
-    result += String.format("|%40s|%20s|%40s|", "id", "name", "project-id") + "\n";
-    result +=
-        String.format(
+                "----------------------------------------"))
+        .append("\n");
+    result.append(String.format("|%40s|%20s|%40s|", "id", "name", "project-id")).append("\n");
+    result
+        .append(
+            String.format(
                 "+%40s+%20s+%40s+",
                 "========================================",
                 "====================",
-                "========================================")
-            + "\n";
+                "========================================"))
+        .append("\n");
 
     for (NetworkServiceDescriptor networkServiceDescriptor : nsdRepository.findAll()) {
-      result +=
-          String.format(
+      result
+          .append(
+              String.format(
                   "|%40s|%20s|%40s|",
                   networkServiceDescriptor.getId(),
                   networkServiceDescriptor.getName(),
-                  networkServiceDescriptor.getProjectId())
-              + "\n";
-      result +=
-          String.format(
+                  networkServiceDescriptor.getProjectId()))
+          .append("\n");
+      result
+          .append(
+              String.format(
                   "+%40s+%20s+%40s+",
                   "----------------------------------------",
                   "--------------------",
-                  "----------------------------------------")
-              + "\n";
+                  "----------------------------------------"))
+          .append("\n");
     }
     System.out.println(result);
   }
@@ -403,19 +411,23 @@ public class OpenbatonCLI implements CommandLineRunner {
   }
 
   private String listPlugins() throws IOException {
-    String result = "\n";
-    result += "Available plugins:\n";
-    result +=
-        String.format(
+    StringBuilder result = new StringBuilder("\n");
+    result.append("Available plugins:\n");
+    result
+        .append(
+            String.format(
                 "+%20s+%20s+%20s+",
-                "--------------------", "--------------------", "--------------------")
-            + "\n";
-    result += String.format("|%20s|%20s|%20s|", "plugin type", "tool type", "plugin name") + "\n";
-    result +=
-        String.format(
+                "--------------------", "--------------------", "--------------------"))
+        .append("\n");
+    result
+        .append(String.format("|%20s|%20s|%20s|", "plugin type", "tool type", "plugin name"))
+        .append("\n");
+    result
+        .append(
+            String.format(
                 "+%20s+%20s+%20s+",
-                "====================", "====================", "====================")
-            + "\n";
+                "====================", "====================", "===================="))
+        .append("\n");
     System.out.println();
     //    for (Entry<String, Process> entry : PluginStartup.getProcesses().entrySet()) {
     //      result += String.format("%40s", entry.getKey()) + "\n";
@@ -426,21 +438,23 @@ public class OpenbatonCLI implements CommandLineRunner {
       if (queue.startsWith("vim-drivers") || queue.startsWith("monitor")) {
         StringTokenizer stringTokenizer = new StringTokenizer(queue, ".");
 
-        result +=
-            String.format(
+        result
+            .append(
+                String.format(
                     "|%20s|%20s|%20s|",
                     stringTokenizer.nextToken(),
                     stringTokenizer.nextToken(),
-                    stringTokenizer.nextToken())
-                + "\n";
-        result +=
-            String.format(
+                    stringTokenizer.nextToken()))
+            .append("\n");
+        result
+            .append(
+                String.format(
                     "+%20s+%20s+%20s+",
-                    "--------------------", "--------------------", "--------------------")
-                + "\n";
+                    "--------------------", "--------------------", "--------------------"))
+            .append("\n");
       }
     }
-    return result;
+    return result.toString();
   }
 
   private boolean installPlugin(String line) throws IOException {
@@ -453,7 +467,7 @@ public class OpenbatonCLI implements CommandLineRunner {
       log.error("please provide path and name");
       return false;
     }
-    String name = null;
+    String name;
     if (stringTokenizer.hasMoreTokens()) {
       name = stringTokenizer.nextToken();
     } else {

@@ -275,7 +275,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
           flavorExist = true;
         }
       }
-      if (flavorExist == false) {
+      if (!flavorExist) {
         log.debug(
             "Not found Flavor "
                 + virtualNetworkFunctionRecord.getDeployment_flavour_key()
@@ -295,7 +295,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
               ((OpenstackVimInstance) vimInstance).getFlavours().add(flavor);
               log.info("Created new Flavor -> " + flavor);
               try {
-                vimManagement.refresh(vimInstance, true);
+                vimManagement.refresh(vimInstance, true).get();
               } catch (Exception e) {
                 throw new VimException(e.getMessage(), e);
               }

@@ -20,6 +20,7 @@ package org.openbaton.tosca.parser;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.apache.commons.io.output.ByteArrayOutputStream;
@@ -166,7 +167,7 @@ public class CSARParser {
       String projectId)
       throws NotFoundException, PluginException, VimException, IncompatibleVNFPackage,
           BadRequestException, IOException, AlreadyExistingException, BadFormatException,
-          InterruptedException, EntityUnreachableException {
+          InterruptedException, EntityUnreachableException, ExecutionException {
 
     Map<String, Object> metadata;
     NFVImage image = new NFVImage();
@@ -197,7 +198,7 @@ public class CSARParser {
       String scriptsLink)
       throws PluginException, VimException, NotFoundException, IncompatibleVNFPackage,
           BadRequestException, IOException, AlreadyExistingException, InterruptedException,
-          EntityUnreachableException, BadFormatException {
+          EntityUnreachableException, BadFormatException, ExecutionException {
 
     VNFPackage vnfPackage = new VNFPackage();
 
@@ -230,7 +231,7 @@ public class CSARParser {
       throws NotFoundException, PluginException, VimException, IOException, IncompatibleVNFPackage,
           org.openbaton.tosca.exceptions.NotFoundException, BadRequestException,
           AlreadyExistingException, BadFormatException, InterruptedException,
-          EntityUnreachableException {
+          EntityUnreachableException, ExecutionException {
 
     InputStream input = new ByteArrayInputStream(bytes);
 
@@ -257,7 +258,7 @@ public class CSARParser {
       throws NotFoundException, PluginException, VimException, IOException, IncompatibleVNFPackage,
           org.openbaton.tosca.exceptions.NotFoundException, BadRequestException,
           AlreadyExistingException, BadFormatException, InterruptedException,
-          EntityUnreachableException {
+          EntityUnreachableException, ExecutionException {
 
     InputStream input = new ByteArrayInputStream(bytes);
     ArrayList<String> ids = new ArrayList<>();

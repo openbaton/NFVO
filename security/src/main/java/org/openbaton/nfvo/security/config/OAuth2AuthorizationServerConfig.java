@@ -56,7 +56,7 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
 
   private TokenStore tokenStore = new InMemoryTokenStore();
 
-  @Value("${nfvo.security.user.token.validity:600}")
+  @Value("${nfvo.security.user.token.validity:1200}")
   private int userTokenValidityDuration;
 
   @Value("${nfvo.security.service.token.validity:31556952}")

@@ -17,6 +17,9 @@
 
 package org.openbaton.nfvo.core.api;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Pattern;
 import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
 import org.openbaton.catalogue.security.User;
@@ -38,10 +41,6 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 /** Created by lto on 25/02/16. */
 @Service
@@ -65,8 +64,7 @@ public class UserManagement implements org.openbaton.nfvo.core.interfaces.UserMa
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Override
-  public User add(User user)
-      throws PasswordWeakException, BadRequestException {
+  public User add(User user) throws PasswordWeakException, BadRequestException {
     log.debug("Adding new user: " + user);
 
     if (customUserDetailsService.userExists(user.getUsername())) {
@@ -179,8 +177,7 @@ public class UserManagement implements org.openbaton.nfvo.core.interfaces.UserMa
     return user;
   }
 
-  private void checkIntegrity(User user)
-      throws BadRequestException {
+  private void checkIntegrity(User user) throws BadRequestException {
     if (user.getUsername() == null || user.getUsername().equals("")) {
       throw new BadRequestException("Username must be provided");
     }

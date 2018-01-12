@@ -121,14 +121,6 @@ public class VnfmManager
 
   private static Map<String, Map<String, Integer>> vnfrNames;
 
-  public boolean getOrdered() {
-    return ordered;
-  }
-
-  public void setOrdered(boolean ordered) {
-    this.ordered = ordered;
-  }
-
   @PostConstruct
   private void init() {
     vnfrNames = new LinkedHashMap<>();
@@ -250,6 +242,8 @@ public class VnfmManager
           }
         }
 
+        if (networkServiceRecord == null) return;
+
         log.debug("Checking the status of NSR: " + networkServiceRecord.getName());
 
         for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr()) {
@@ -337,24 +331,6 @@ public class VnfmManager
     }
 
     log.trace("Thread: " + Thread.currentThread().getId() + " finished findAndSet");
-  }
-
-  private NetworkServiceRecord safeSaveNetworkServiceRecord(
-      NetworkServiceRecord networkServiceRecord) {
-    boolean foundAndSet = false;
-
-    while (!foundAndSet) {
-      try {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
-        networkServiceRecord.setUpdatedAt(format.format(new Date()));
-        networkServiceRecord = nsrRepository.save(networkServiceRecord);
-        foundAndSet = true;
-      } catch (OptimisticLockingFailureException ignored) {
-        log.debug(
-            "OptimisticLockingFailureException during findAndSet. Don't worry we will try it again.");
-      }
-    }
-    return networkServiceRecord;
   }
 
   private void publishEvent(Action action, Serializable payload, String projectId) {
