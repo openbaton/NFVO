@@ -217,7 +217,7 @@ public class UserManagement implements org.openbaton.nfvo.core.interfaces.UserMa
       if (role.getProject() == null || role.getProject().equals("")) {
         throw new BadRequestException("Project must be provided");
       }
-      if (role.getRole() == null || role.getRole().equals("")) {
+      if (role.getRole() == null) {
         throw new BadRequestException("Role must be provided");
       }
       if (!role.getProject().equals("*")) {
