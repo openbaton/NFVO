@@ -104,7 +104,8 @@ public class VimManagementClassSuiteTest {
 
   @Test
   public void vimManagementUpdateTest()
-      throws VimException, PluginException, IOException, BadRequestException, NotFoundException {
+      throws VimException, PluginException, IOException, BadRequestException, NotFoundException,
+          ExecutionException, InterruptedException {
     initMocks();
     OpenstackVimInstance vimInstanceExp = createVimInstance();
     when(vimRepository.findFirstByIdAndProjectId(vimInstanceExp.getId(), projectId))
@@ -120,7 +121,7 @@ public class VimManagementClassSuiteTest {
 
     vimInstanceExp =
         (OpenstackVimInstance)
-            vimManagement.update(vimInstance_new, vimInstanceExp.getId(), projectId);
+            vimManagement.update(vimInstance_new, vimInstanceExp.getId(), projectId).get();
 
     Assert.assertEquals(vimInstanceExp.getName(), vimInstance_new.getName());
     Assert.assertEquals(vimInstanceExp.getTenant(), vimInstance_new.getTenant());
@@ -142,13 +143,14 @@ public class VimManagementClassSuiteTest {
 
   @Test
   public void nfvImageManagementAddTest()
-      throws VimException, PluginException, IOException, BadRequestException {
+      throws VimException, PluginException, IOException, BadRequestException, ExecutionException,
+          InterruptedException {
     initMocks();
     OpenstackVimInstance vimInstance_exp = createVimInstance();
     System.out.println(vimInstance_exp);
     when(vimRepository.save(any(BaseVimInstance.class))).thenReturn(vimInstance_exp);
     OpenstackVimInstance vimInstance_new =
-        (OpenstackVimInstance) vimManagement.add(vimInstance_exp, projectId);
+        (OpenstackVimInstance) vimManagement.add(vimInstance_exp, projectId).get();
 
     Assert.assertEquals(vimInstance_exp.getName(), vimInstance_new.getName());
     Assert.assertEquals(vimInstance_exp.getTenant(), vimInstance_new.getTenant());
