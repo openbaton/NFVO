@@ -15,7 +15,7 @@
  *
  */
 
-package org.openbaton.nfvo.security.interfaces;
+package org.openbaton.nfvo.core.interfaces;
 
 import org.openbaton.catalogue.security.BaseUser;
 import org.openbaton.catalogue.security.Project;

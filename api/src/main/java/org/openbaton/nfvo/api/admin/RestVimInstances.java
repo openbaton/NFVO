@@ -37,8 +37,8 @@ import org.openbaton.exceptions.EntityUnreachableException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
+import org.openbaton.nfvo.core.interfaces.ComponentManager;
 import org.openbaton.nfvo.core.interfaces.VimManagement;
-import org.openbaton.nfvo.security.interfaces.ComponentManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -99,6 +99,29 @@ public class RestVimInstances {
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException, BadRequestException {
     vimManagement.delete(id, projectId);
+  }
+
+  /**
+   * Removes multiple VIM Instances
+   *
+   * @param ids: the list of VIM Instance IDs
+   * @throws NotFoundException if one of the VIM Instances was not found
+   * @throws BadRequestException if something is wrong with the request
+   */
+  @RequestMapping(
+    value = "/multipledelete",
+    method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ApiOperation(
+    value = "Removing multiple VIM Instances",
+    notes = "Delete Request takes a list of VIM Instance IDs"
+  )
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void multipleDelete(
+      @RequestBody @Valid List<String> ids, @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException, BadRequestException {
+    for (String id : ids) vimManagement.delete(id, projectId);
   }
 
   /**

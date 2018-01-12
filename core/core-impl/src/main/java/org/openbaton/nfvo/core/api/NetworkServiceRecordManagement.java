@@ -1905,7 +1905,49 @@ public class NetworkServiceRecordManagement
               vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
           log.debug(
               "Terminating the VNFR not yet removed: " + virtualNetworkFunctionRecord.getName());
-          vnfStateHandler.terminate(virtualNetworkFunctionRecord);
+          //          vnfStateHandler.terminate(virtualNetworkFunctionRecord);
+          virtualNetworkFunctionRecord
+              .getVdu()
+              .stream()
+              .parallel()
+              .forEach(
+                  vdu -> {
+                    vdu.getVnfc_instance()
+                        .stream()
+                        .parallel()
+                        .forEach(
+                            vnfcInstance -> {
+                              try {
+                                resourceManagement.release(vdu, vnfcInstance);
+                              } catch (VimException
+                                  | ExecutionException
+                                  | PluginException
+                                  | InterruptedException e) {
+                                e.printStackTrace();
+                              }
+                            });
+                  });
+          if (nsrRepository.exists(virtualNetworkFunctionRecord.getParent_ns_id())) {
+            NetworkServiceRecord nsr =
+                nsrRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id());
+            synchronized (NetworkServiceRecordManagement.class) {
+              try {
+                nsr.setVnfr(new HashSet<>());
+                nsrRepository.delete(nsr);
+                ApplicationEventNFVO event =
+                    new ApplicationEventNFVO(
+                        Action.RELEASE_RESOURCES_FINISH,
+                        nsr,
+                        virtualNetworkFunctionRecord.getProjectId());
+                EventNFVO eventNFVO = new EventNFVO(this);
+                eventNFVO.setEventNFVO(event);
+                log.trace("Publishing event: " + event);
+                publisher.dispatchEvent(eventNFVO);
+              } catch (Exception e) {
+                e.printStackTrace();
+              }
+            }
+          }
         }
       } catch (InterruptedException e) {
         e.printStackTrace();

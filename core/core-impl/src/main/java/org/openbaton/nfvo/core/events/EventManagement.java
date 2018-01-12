@@ -113,7 +113,10 @@ public class EventManagement implements org.openbaton.nfvo.core.interfaces.Event
   @Override
   public EventEndpoint query(String id, String projectId) throws NotFoundException {
     EventEndpoint endpoint = eventEndpointRepository.findFirstByIdAndProjectId(id, projectId);
-    if (endpoint == null) throw new NotFoundException("No Event found with ID " + id);
+    if (endpoint == null) {
+      endpoint = eventEndpointRepository.findFirstByIdAndProjectId(id, "*");
+      if (endpoint == null) throw new NotFoundException("No Event found with ID " + id);
+    }
     return endpoint;
   }
 

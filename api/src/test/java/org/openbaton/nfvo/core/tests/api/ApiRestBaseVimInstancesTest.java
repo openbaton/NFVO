@@ -44,8 +44,8 @@ import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.api.admin.RestVimInstances;
+import org.openbaton.nfvo.core.api.ComponentManager;
 import org.openbaton.nfvo.core.interfaces.VimManagement;
-import org.openbaton.nfvo.security.components.ComponentManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

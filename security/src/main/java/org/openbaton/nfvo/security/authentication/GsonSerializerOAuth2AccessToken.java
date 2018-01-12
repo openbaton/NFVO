@@ -15,7 +15,7 @@
  *
  */
 
-package org.openbaton.nfvo.security.config;
+package org.openbaton.nfvo.security.authentication;
 
 import com.google.gson.*;
 import java.lang.reflect.Type;
