@@ -17,11 +17,6 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -42,6 +37,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /** Created by lto on 06/08/15. */
 @Service
@@ -236,7 +237,12 @@ public class ScalingTask extends AbstractTask {
         saveVirtualNetworkFunctionRecord();
         vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
         return errorMessage;
-      } catch (VimException e) {
+      } catch (ExecutionException | VimException exception) {
+        VimException e;
+        if (exception instanceof VimException) e = (VimException) exception;
+        else if (exception.getCause() instanceof VimException)
+          e = (VimException) exception.getCause();
+        else throw exception;
         log.error(e.getLocalizedMessage());
         if (e.getVnfcInstance() != null) {
           resourceManagement.release(vdu, e.getVnfcInstance());
