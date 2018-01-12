@@ -583,7 +583,6 @@ public class NetworkServiceRecordManagement
       }
     }
 
-    //        virtualDeploymentUnit.getVnfc().add(component);
     vnfcRepository.save(component);
     nsrRepository.saveCascade(networkServiceRecord);
     log.debug("new VNFComponent is " + component);
