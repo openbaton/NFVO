@@ -223,7 +223,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     log.debug("NAME: " + virtualNetworkFunctionRecord.getName());
     log.debug("ID: " + virtualDeploymentUnit.getId());
 
-    createFlavorIfNotExisting(vimInstance, virtualNetworkFunctionRecord);
+    //createFlavorIfNotExisting(vimInstance, virtualNetworkFunctionRecord);
 
     // TODO retrive nsr->getKeys->keyRepository->getKeys
     Set<Key> keys = new HashSet<>();
