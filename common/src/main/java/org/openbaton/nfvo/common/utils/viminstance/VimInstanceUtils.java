@@ -161,7 +161,8 @@ public class VimInstanceUtils {
               i ->
                   ((NFVImage) i).getName() != null
                       && ((NFVImage) i).getName().equals(imageName)
-                      && ((NFVImage) i).getStatus().ordinal() == ImageStatus.ACTIVE.ordinal())
+                      && (((NFVImage) i).getStatus() == null
+                          || ((NFVImage) i).getStatus().ordinal() == ImageStatus.ACTIVE.ordinal()))
           .collect(Collectors.toList());
     } else if (vimInstance instanceof DockerVimInstance) {
       return ((DockerVimInstance) vimInstance)
