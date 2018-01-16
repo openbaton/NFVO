@@ -34,24 +34,16 @@ import java.util.concurrent.Future;
 import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.api.DeployNSRBody;
-import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.openbaton.catalogue.mano.descriptor.VNFComponent;
-import org.openbaton.catalogue.mano.descriptor.VNFDependency;
-import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.Action;
-import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
-import org.openbaton.catalogue.nfvo.Script;
-import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.catalogue.nfvo.*;
+import org.openbaton.catalogue.nfvo.messages.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmLogMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmScalingMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmUpdateMessage;
+import org.openbaton.catalogue.security.Key;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
@@ -163,6 +155,156 @@ public class VnfmManager
       e.printStackTrace();
       throw e;
     }
+  }
+
+  @Override
+  @Async
+  public Future<Void> addVnfr(
+      NetworkServiceRecord networkServiceRecord,
+      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
+      DeployNSRBody body,
+      Map<String, List<String>> vduVimInstances)
+      throws NotFoundException {
+
+    try {
+
+      //TODO
+      //      log.debug(
+      //              "Parameter ordered set to "
+      //                      + ordered
+      //                      + ". Consider changing it directly into the openbaton.properties file");
+      //      if (ordered) {
+      //        vnfrNames.put(networkServiceRecord.getId(), new HashMap<String, Integer>());
+      //        Map<String, Integer> vnfrNamesWeighted = vnfrNames.get(networkServiceRecord.getId());
+      //        fillVnfrNames(networkServiceDescriptor, vnfrNamesWeighted);
+      //        vnfrNames.put(networkServiceRecord.getId(), sortByValue(vnfrNamesWeighted));
+      //
+      //        log.debug("VNFRs ordered by dependencies: " + vnfrNames.get(networkServiceRecord.getId()));
+      //      }
+
+      log.debug(
+          "Processing VNFD ("
+              + virtualNetworkFunctionDescriptor.getName()
+              + ") for NSR ("
+              + networkServiceRecord.getName()
+              + ")");
+      Map<String, Collection<VimInstance>> vimInstances = new HashMap<>();
+
+      for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
+        vimInstances.put(vdu.getId(), new ArrayList<VimInstance>());
+        List<String> vimInstanceNames = vduVimInstances.get(vdu.getId());
+        for (String vimInstanceName : vimInstanceNames) {
+          log.debug(
+              "deployment procedure for ("
+                  + virtualNetworkFunctionDescriptor.getName()
+                  + "). Looking for "
+                  + vimInstanceName);
+          VimInstance vimInstance = null;
+
+          for (VimInstance vi : vimInstanceRepository.findByProjectId(vdu.getProjectId())) {
+            if (vimInstanceName.equals(vi.getName())) {
+              vimInstance = vi;
+              break;
+            }
+          }
+
+          vimInstances.get(vdu.getId()).add(vimInstance);
+        }
+      }
+
+      //        for (Entry<String, Collection<VimInstance>> vimInstance : vimInstances.entrySet()) {
+      //
+      //          if (vimInstance.getValue().isEmpty()) {
+      //            for (VimInstance vimInstance1 :
+      //                vimInstanceRepository.findByProjectId(networkServiceDescriptor.getProjectId())) {
+      //              vimInstance.getValue().add(vimInstance1);
+      //            }
+      //          }
+      //          for (VimInstance vi : vimInstance.getValue()) {
+      //            log.debug("\t" + vi.getName());
+      //          }
+      //          log.debug("~~~~~~");
+      //        }
+
+      //Creating the extension
+      Map<String, String> extension = getExtension();
+
+      extension.put("nsr-id", networkServiceRecord.getId());
+
+      NFVMessage message;
+      HashSet<Key> keys;
+      if (body.getKeys() != null) {
+        keys = new HashSet<>(body.getKeys());
+      } else {
+        keys = new HashSet<>();
+      }
+      if (virtualNetworkFunctionDescriptor.getVnfPackageLocation() != null) {
+        VNFPackage vnfPackage =
+            vnfPackageRepository.findFirstById(
+                virtualNetworkFunctionDescriptor.getVnfPackageLocation());
+        message =
+            new OrVnfmInstantiateMessage(
+                virtualNetworkFunctionDescriptor,
+                getDeploymentFlavour(virtualNetworkFunctionDescriptor),
+                virtualNetworkFunctionDescriptor.getName(),
+                networkServiceRecord.getVlr(),
+                extension,
+                vimInstances,
+                keys,
+                vnfPackage);
+      } else {
+        message =
+            new OrVnfmInstantiateMessage(
+                virtualNetworkFunctionDescriptor,
+                getDeploymentFlavour(virtualNetworkFunctionDescriptor),
+                virtualNetworkFunctionDescriptor.getName(),
+                networkServiceRecord.getVlr(),
+                extension,
+                vimInstances,
+                keys,
+                null);
+      }
+      VnfmManagerEndpoint endpoint =
+          vnfmRegister.getVnfm(virtualNetworkFunctionDescriptor.getEndpoint());
+      if (endpoint == null) {
+        throw new NotFoundException(
+            "VnfManager of type "
+                + virtualNetworkFunctionDescriptor.getType()
+                + " (endpoint = "
+                + virtualNetworkFunctionDescriptor.getEndpoint()
+                + ") is not registered");
+      }
+
+      VnfmSender vnfmSender;
+      try {
+        vnfmSender = this.getVnfmSender(endpoint.getEndpointType());
+      } catch (BeansException e) {
+        throw new NotFoundException(e);
+      }
+      vnfmSender.sendCommand(message, endpoint);
+      log.info(
+          "Sent " + message.getAction() + " to VNF: " + virtualNetworkFunctionDescriptor.getName());
+
+      return new AsyncResult<>(null);
+    } catch (Exception e) {
+      log.error("", e);
+      throw e;
+    }
+  }
+
+  private Map<String, String> getExtension() {
+    Map<String, String> extension = new HashMap<>();
+    extension.put("brokerIp", brokerIp.trim());
+    extension.put("brokerPort", brokerPort.trim());
+    extension.put("monitoringIp", monitoringIp.trim());
+    extension.put("timezone", timezone);
+    extension.put("emsVersion", emsVersion);
+    extension.put("username", username);
+    extension.put("password", password);
+    extension.put("exchangeName", "openbaton-exchange");
+    extension.put("emsHeartbeat", emsHeartbeat);
+    extension.put("emsAutodelete", emsAutodelete);
+    return extension;
   }
 
   private void fillVnfrNames(

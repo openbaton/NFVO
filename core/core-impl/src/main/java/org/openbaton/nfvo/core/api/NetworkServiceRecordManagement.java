@@ -66,6 +66,7 @@ import org.openbaton.catalogue.nfvo.messages.VnfmOrHealedMessage;
 import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
 import org.openbaton.catalogue.nfvo.networks.DockerNetwork;
 import org.openbaton.catalogue.nfvo.networks.Network;
+import org.openbaton.catalogue.nfvo.networks.Subnet;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
 import org.openbaton.catalogue.security.Key;
@@ -216,20 +217,23 @@ public class NetworkServiceRecordManagement
       Map configurations)
       throws NotFoundException, MissingParameterException, VimException, BadRequestException,
           PluginException {
-    log.info("Looking for NetworkServiceDescriptor with id: " + nsrId);
+    //Check if the NSR exists
+    log.info("Looking for NetworkServiceRecord with id: " + nsrId);
     NetworkServiceRecord nsr = nsrRepository.findFirstById(nsrId);
     if (nsr == null) {
       throw new NotFoundException("NSR with id " + nsrId + " was not found");
     }
+    //Check if the NSR belongs to the current project
     if (!nsr.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
           "NSD " + nsrId + " not under the project (" + projectId + ") chosen ...");
     }
-
+    //Check if the VNFD exists
     VirtualNetworkFunctionDescriptor vnfd = vnfdRepository.findFirstById(vnfdId);
     if (vnfd == null) {
       throw new NotFoundException("VNFD with id " + vnfdId + " was not found");
     }
+    //Check if the VNFD belongs the current project
     if (!vnfd.getProjectId().equals(projectId)) {
       throw new UnauthorizedUserException(
           "VNFD " + vnfdId + " not under the project (" + projectId + ") chosen ...");
@@ -261,20 +265,125 @@ public class NetworkServiceRecordManagement
   }
 
   private NetworkServiceRecord scaleOutNsr(
-      NetworkServiceRecord nsr,
+      NetworkServiceRecord networkServiceRecord,
       VirtualNetworkFunctionDescriptor vnfd,
       String projectId,
-      DeployNSRBody body) {
+      DeployNSRBody body) throws MissingParameterException {
     Map<String, List<String>> vduVimInstances = new HashMap<>();
-    log.info("Fetched NetworkServiceDescriptor: " + nsr.getName());
-    log.info("VNFD are: ");
-    for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord : nsr.getVnfr()) {
-      log.debug("\t" + virtualNetworkFunctionRecord.getName());
-    }
+    log.info("Scaling NetworkServiceRecord: " + networkServiceRecord.getName());
+    log.trace("Scaling NetworkServiceRecord: " + networkServiceRecord);
+    log.info("VNFD to add is: " + vnfd.getName());
 
+    // TODO
     log.info("Checking if all vnfm are registered and active");
-    Iterable<VnfmManagerEndpoint> endpoints = vnfmManagerEndpointRepository.findAll();
-    return null;
+    //Iterable<VnfmManagerEndpoint> endpoints = vnfmManagerEndpointRepository.findAll();
+    //nsdUtils.checkEndpoint(vnfd.getEndpoint(), endpoints);
+
+    boolean savedNsrSuccessfully = false;
+    int attempt = 0;
+    // this while loop is necessary, because while creating the NSR also a VIM might be changed (newly created networks).
+    // then saving the NSR might produce OptimisticLockingFailureExceptions.
+    while (!savedNsrSuccessfully) {
+      // Save the keys in the NSR
+      networkServiceRecord.setStatus(Status.SCALING);
+      networkServiceRecord.setTask("ScalingOut");
+      //            networkServiceRecord.setKeyNames(new HashSet<String>());
+      if (body != null && body.getKeys() != null && !body.getKeys().isEmpty()) {
+        for (Key key : body.getKeys()) {
+          networkServiceRecord.getKeyNames().add(key.getName());
+        }
+      }
+      log.trace("Creating " + networkServiceRecord);
+
+      //    for (VirtualLinkRecord vlr : networkServiceRecord.getVlr()) {
+      for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
+        //TODO FROM HERE
+        List<String> instanceNames = getRuntimeDeploymentInfo(body, vdu);
+        log.debug("Checking vim instance support");
+        instanceNames = checkIfVimAreSupportedByPackage(vnfd, instanceNames);
+        vduVimInstances.put(vdu.getId(), instanceNames);
+        for (String vimInstanceName : instanceNames) {
+
+          VimInstance vimInstance = null;
+
+          for (VimInstance vi : vimInstanceRepository.findByProjectId(vdu.getProjectId())) {
+            if (vimInstanceName.equals(vi.getName())) {
+              vimInstance = vi;
+              break;
+            }
+          }
+
+          if (vimInstance == null) {
+            throw new NotFoundException("Not found VIM instance: " + vimInstanceName);
+          }
+
+          //check networks
+          for (VNFComponent vnfc : vdu.getVnfc()) {
+            for (VNFDConnectionPoint vnfdConnectionPoint : vnfc.getConnection_point()) {
+              //                if (vnfdConnectionPoint.getVirtual_link_reference().equals(vlr.getName())) {
+              boolean networkExists = false;
+              if (vimInstance.getNetworks() == null)
+                throw new VimException(
+                    "VIM instance " + vimInstance.getName() + "does not have networks ");
+              for (Network network : vimInstance.getNetworks()) {
+                //                    if (network.getName().equals(vlr.getName()) || network.getExtId().equals(vlr.getName())) {
+                if (network.getName().equals(vnfdConnectionPoint.getVirtual_link_reference())
+                    || network.getExtId().equals(vnfdConnectionPoint.getVirtual_link_reference())) {
+                  networkExists = true;
+                  //                      vlr.setStatus(LinkStatus.NORMALOPERATION);
+                  //                      vlr.setVim_id(vdu.getId());
+                  //                      vlr.setExtId(network.getExtId());
+                  //                      vlr.getConnection().add(vnfdConnectionPoint.getId());
+                  break;
+                }
+              }
+              if (!networkExists) {
+                Network network = new Network();
+                network.setName(vnfdConnectionPoint.getVirtual_link_reference());
+                network.setSubnets(new HashSet<>());
+                network = networkManagement.add(vimInstance, network);
+                //                    vlr.setStatus(LinkStatus.NORMALOPERATION);
+                //                    vlr.setVim_id(vdu.getId());
+                //                    vlr.setExtId(network.getExtId());
+                //                    vlr.getConnection().add(vnfdConnectionPoint.getId());
+              }
+              //       }
+            }
+          }
+        }
+      }
+
+      // TODO it better: Check if the chosen VIM has ENOUGH Resources for deployment
+      checkQuotaForVNF(vnfd);
+
+      //TODO
+      //            NSRUtils.setDependencies(networkServiceDescriptor, networkServiceRecord);
+
+      vnfd.setProjectId(projectId);
+      try {
+        networkServiceRecord = nsrRepository.save(networkServiceRecord);
+        savedNsrSuccessfully = true;
+        log.debug(
+            "Persisted NSR "
+                + networkServiceRecord.getName()
+                + ". Got id: "
+                + networkServiceRecord.getId());
+      } catch (OptimisticLockingFailureException e) {
+        if (attempt >= 3) {
+          log.error(
+              "After 4 attempts there is still an OptimisticLockingFailureException when creating the NSR. Stop trying.");
+          throw e;
+        }
+        log.warn("OptimisticLockingFailureException while creating the NSR. We will try it again.");
+        savedNsrSuccessfully = false;
+        attempt++;
+      }
+    }
+    checkConfigParameter(vnfd, body);
+
+    vnfmManager.addVnfr(networkServiceRecord, vnfd, body, vduVimInstances);
+    log.debug("Returning NSR " + networkServiceRecord.getName());
+    return networkServiceRecord;
   }
 
   @Override
@@ -1389,6 +1498,36 @@ public class NetworkServiceRecordManagement
   }
 
   private void checkConfigParameter(
+      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor, DeployNSRBody body) {
+    for (String vnfrName : body.getConfigurations().keySet()) {
+      if (virtualNetworkFunctionDescriptor.getName() != null) {
+        if (virtualNetworkFunctionDescriptor.getName().equals(vnfrName)) {
+          if (virtualNetworkFunctionDescriptor.getConfigurations() != null) {
+            if (body.getConfigurations().get(vnfrName).getName() != null
+                && !body.getConfigurations().get(vnfrName).getName().isEmpty()) {
+              virtualNetworkFunctionDescriptor
+                  .getConfigurations()
+                  .setName(body.getConfigurations().get(vnfrName).getName());
+            }
+            virtualNetworkFunctionDescriptor
+                .getConfigurations()
+                .getConfigurationParameters()
+                .addAll(body.getConfigurations().get(vnfrName).getConfigurationParameters());
+          } else {
+            virtualNetworkFunctionDescriptor.setConfigurations(
+                body.getConfigurations().get(vnfrName));
+          }
+        }
+      } else {
+        log.warn(
+            "Not found name for VNFD "
+                + virtualNetworkFunctionDescriptor.getId()
+                + ". Cannot set configuration parameters");
+      }
+    }
+  }
+
+  private void checkConfigParameter(
       NetworkServiceDescriptor networkServiceDescriptor, DeployNSRBody body) {
     if (networkServiceDescriptor.getVnfd() != null) {
       for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
@@ -1444,6 +1583,80 @@ public class NetworkServiceRecordManagement
         }
       }
     }
+  }
+
+  private void checkQuotaForVNF(VirtualNetworkFunctionDescriptor vnfd)
+      throws NotFoundException, VimException, PluginException {
+//    Map<VimInstance, Quota> requirements = new HashMap<>();
+//
+//    for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
+//      int floatingIpCount = 0;
+//      for (VNFComponent vnfComponent : vdu.getVnfc()) {
+//        for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point()) {
+//          if (vnfdConnectionPoint.getFloatingIp() != null) floatingIpCount++;
+//        }
+//      }
+//      for (String vimInstanceName : vdu.getVimInstanceName()) {
+//        VimInstance vimInstance = null;
+//        for (VimInstance vim : vimInstanceRepository.findByProjectId(vnfd.getProjectId())) {
+//          if (vim.getName().equals(vimInstanceName)) vimInstance = vim;
+//        }
+//        DeploymentFlavour df = null;
+//        String df_key = vnfd.getDeployment_flavour().iterator().next().getFlavour_key();
+//        if (vimInstance != null) {
+//          for (DeploymentFlavour deploymentFlavour : vimInstance.getFlavours()) {
+//            // TODO: Should find a better solution for here and generic
+//            if (deploymentFlavour.getFlavour_key().equals(df_key)) df = deploymentFlavour;
+//          }
+//          if (df == null)
+//            throw new NotFoundException(
+//                "Deployment Flavour key: "
+//                    + df_key
+//                    + " not supported in VIM Instance: "
+//                    + vimInstance.getName());
+//          if (!requirements.keySet().contains(vimInstance)) {
+//            Quota quota = new Quota();
+//            quota.setCores(df.getVcpus());
+//            quota.setInstances(1);
+//            quota.setRam(df.getRam());
+//            quota.setFloatingIps(floatingIpCount);
+//            requirements.put(vimInstance, quota);
+//          } else {
+//            requirements
+//                .get(vimInstance)
+//                .setCores(requirements.get(vimInstance).getCores() + df.getVcpus());
+//            requirements
+//                .get(vimInstance)
+//                .setInstances(requirements.get(vimInstance).getInstances() + 1);
+//            requirements
+//                .get(vimInstance)
+//                .setRam(requirements.get(vimInstance).getRam() + df.getRam());
+//            requirements
+//                .get(vimInstance)
+//                .setFloatingIps(requirements.get(vimInstance).getFloatingIps() + floatingIpCount);
+//          }
+//        }
+//      }
+//    }
+//
+//    for (VimInstance vimInstance : requirements.keySet()) {
+//      Quota leftQuota = vimBroker.getLeftQuota(vimInstance);
+//      Quota neededQuota = requirements.get(vimInstance);
+//      log.info("Needed Quota for VIM Instance:" + vimInstance.getName() + " is: " + neededQuota);
+//      if (leftQuota.getRam() < neededQuota.getRam()
+//          || leftQuota.getCores() < neededQuota.getCores()
+//          || leftQuota.getInstances() < neededQuota.getInstances()
+//          || leftQuota.getFloatingIps() < neededQuota.getFloatingIps())
+//        throw new VimException(
+//            "The VIM "
+//                + vimInstance.getName()
+//                + " does not have the needed resources to deploy all the VNFCs with the specified Deployment Flavours."
+//                + " You should lower the Deployment Flavours or free up resources.");
+//      else
+//        log.info(
+//            "Resource check done: ",
+//            "Vim Instance has enough resources. Moving on with deployment.");
+//    }
   }
 
   private void checkQuotaForNS(NetworkServiceDescriptor networkServiceDescriptor)
@@ -1619,6 +1832,7 @@ public class NetworkServiceRecordManagement
     return instanceNames;
   }
 
+  // get vim instance names from the VNFD or the DeployNSRbody otherwise
   private Set<String> getRuntimeDeploymentInfo(DeployNSRBody body, VirtualDeploymentUnit vdu)
       throws MissingParameterException {
     Set<String> instanceNames;

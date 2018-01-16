@@ -201,6 +201,33 @@ public class RestNetworkServiceRecord {
         id, projectId, keys, vduVimInstances, configurations, monitoringIp);
   }
 
+  @RequestMapping(
+    value = "{nsrId}/vnfd/{vnfdId}",
+    method = RequestMethod.PUT,
+    produces = MediaType.APPLICATION_JSON_VALUE,
+    consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ResponseStatus(HttpStatus.CREATED)
+  public NetworkServiceRecord scaleOut(
+      @PathVariable("nsrId") String nsrId,
+      @PathVariable("vnfdId") String vnfdId,
+      @RequestHeader(value = "project-id") String projectId,
+      @RequestBody(required = false) JsonObject jsonObject)
+      throws InterruptedException, ExecutionException, VimException, NotFoundException,
+          BadFormatException, VimDriverException, QuotaExceededException, PluginException,
+          MissingParameterException, BadRequestException {
+
+    log.debug("Json Body is" + jsonObject);
+    Type mapType = new TypeToken<Map<String, Configuration>>() {}.getType();
+    return networkServiceRecordManagement.scaleOut(
+        nsrId,
+        vnfdId,
+        projectId,
+        gson.fromJson(jsonObject.getAsJsonArray("keys"), List.class),
+        gson.fromJson(jsonObject.getAsJsonObject("vduVimInstances"), Map.class),
+        (Map) gson.fromJson(jsonObject.get("configurations"), mapType));
+  }
+
   /**
    * This operation is used to remove a Network Service Record
    *

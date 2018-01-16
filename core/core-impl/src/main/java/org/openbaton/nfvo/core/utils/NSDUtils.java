@@ -132,6 +132,28 @@ public class NSDUtils {
     }
   }
 
+  public void checkEndpoint(String endpointName, Iterable<VnfmManagerEndpoint> endpoints)
+      throws NotFoundException {
+    boolean found = false;
+
+    for (VnfmManagerEndpoint endpoint : endpoints) {
+      log.debug("Check if VNFM is registered: " + endpoint.getType() + " == " + endpointName);
+      if (endpoint.getType().equals(endpointName) && endpoint.isActive() && endpoint.isEnabled()) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      throw new NotFoundException(
+          "VNFManager with endpoint: "
+              + endpointName
+              + " is not registered, not enabled or not active.");
+    }
+    if (!found) {
+      throw new NotFoundException("No VNFManagers were found");
+    }
+  }
+
   /** Fetching vnfd already existing in thr DB based on the id */
   public List<String> fetchExistingVnfd(
       NetworkServiceDescriptor networkServiceDescriptor, String projectId)
