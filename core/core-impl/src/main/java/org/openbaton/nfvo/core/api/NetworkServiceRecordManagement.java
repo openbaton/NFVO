@@ -268,7 +268,7 @@ public class NetworkServiceRecordManagement
       NetworkServiceRecord networkServiceRecord,
       VirtualNetworkFunctionDescriptor vnfd,
       String projectId,
-      DeployNSRBody body) throws MissingParameterException {
+      DeployNSRBody body) throws MissingParameterException, BadRequestException, NotFoundException {
     Map<String, List<String>> vduVimInstances = new HashMap<>();
     log.info("Scaling NetworkServiceRecord: " + networkServiceRecord.getName());
     log.trace("Scaling NetworkServiceRecord: " + networkServiceRecord);
@@ -295,12 +295,12 @@ public class NetworkServiceRecordManagement
       }
       log.trace("Creating " + networkServiceRecord);
 
-      //    for (VirtualLinkRecord vlr : networkServiceRecord.getVlr()) {
       for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
-        //TODO FROM HERE
-        List<String> instanceNames = getRuntimeDeploymentInfo(body, vdu);
+        // get the vim instance names on where to deploy the vdu
+        Set<String> instanceNames = getRuntimeDeploymentInfo(body, vdu);
         log.debug("Checking vim instance support");
         instanceNames = checkIfVimAreSupportedByPackage(vnfd, instanceNames);
+
         vduVimInstances.put(vdu.getId(), instanceNames);
         for (String vimInstanceName : instanceNames) {
 

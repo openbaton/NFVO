@@ -66,6 +66,14 @@ public interface VnfmManager {
       List<String> vimInstanceNames)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 
+  @Async
+  Future<Void> addVnfr(
+          NetworkServiceRecord networkServiceRecord,
+          VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
+          DeployNSRBody body,
+          Map<String, List<String>> vduVimInstances)
+          throws NotFoundException;
+
   Future<Void> removeVnfcDependency(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFCInstance vnfcInstance)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
