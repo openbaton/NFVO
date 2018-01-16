@@ -157,13 +157,21 @@ public class VimInstanceUtils {
       return ((OpenstackVimInstance) vimInstance)
           .getImages()
           .stream()
-          .filter(i -> ((NFVImage) i).getName().equals(imageName))
+          .filter(
+              i ->
+                  ((NFVImage) i).getName() != null
+                      && ((NFVImage) i).getName().equals(imageName)
+                      && ((NFVImage) i).getStatus().ordinal() == ImageStatus.ACTIVE.ordinal())
           .collect(Collectors.toList());
     } else if (vimInstance instanceof DockerVimInstance) {
       return ((DockerVimInstance) vimInstance)
           .getImages()
           .stream()
-          .filter(i -> ((DockerImage) i).getTags().contains(imageName))
+          .filter(
+              i ->
+                  ((DockerImage) i).getTags() != null
+                      && !((DockerImage) i).getTags().isEmpty()
+                      && ((DockerImage) i).getTags().contains(imageName))
           .collect(Collectors.toList());
     } else {
       return vimInstance
