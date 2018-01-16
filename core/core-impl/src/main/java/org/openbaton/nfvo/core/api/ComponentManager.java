@@ -63,10 +63,10 @@ public class ComponentManager implements org.openbaton.nfvo.core.interfaces.Comp
   @Value("${nfvo.security.service.token.validity:31556952}")
   private int serviceTokenValidityDuration;
 
-  @Value("${nfvo.rabbit.brokerIp:localhost}")
+  @Value("${spring.rabbitmq.host:localhost}")
   private String brokerIp;
 
-  @Value("${nfvo.rabbit.managementPort:15672}")
+  @Value("${spring.rabbitmq.port:15672}")
   private String managementPort;
 
   @Value("${spring.rabbitmq.password:openbaton}")

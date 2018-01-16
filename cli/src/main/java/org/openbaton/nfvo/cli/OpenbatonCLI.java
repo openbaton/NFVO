@@ -55,17 +55,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
  * A Bridge for either executing the openbaton shell standalone or in an existing spring boot
  * environment that either leads to calls of the main() or the run() method.
  */
-@Component
+@Service
 @Order()
+@ConditionalOnProperty(value = "nfvo.cli.active")
 @ConfigurationProperties(prefix = "nfvo.rabbit")
 public class OpenbatonCLI implements CommandLineRunner {
 
