@@ -1,25 +1,8 @@
 package org.openbaton.nfvo.core.api;
 
-import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.createRabbitMqUser;
-import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.removeRabbitMqUser;
-import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.setRabbitMqUserPermissions;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.ExecutionException;
-import java.util.regex.Pattern;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import org.openbaton.catalogue.nfvo.ManagerCredentials;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.security.Project;
@@ -48,6 +31,24 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
+
+import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.createRabbitMqUser;
+import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.removeRabbitMqUser;
+import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.setRabbitMqUserPermissions;
+
 @Service
 @ConfigurationProperties
 public class ComponentManager implements org.openbaton.nfvo.core.interfaces.ComponentManager {
@@ -66,7 +67,7 @@ public class ComponentManager implements org.openbaton.nfvo.core.interfaces.Comp
   @Value("${spring.rabbitmq.host:localhost}")
   private String brokerIp;
 
-  @Value("${spring.rabbitmq.port:15672}")
+  @Value("${nfvo.rabbit.management.port:15672}")
   private String managementPort;
 
   @Value("${spring.rabbitmq.password:openbaton}")
