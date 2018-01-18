@@ -24,6 +24,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -37,8 +38,8 @@ import org.openbaton.exceptions.EntityUnreachableException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
+import org.openbaton.nfvo.core.interfaces.ComponentManager;
 import org.openbaton.nfvo.core.interfaces.VimManagement;
-import org.openbaton.nfvo.security.interfaces.ComponentManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -79,9 +80,9 @@ public class RestVimInstances {
   public BaseVimInstance create(
       @RequestBody @Valid BaseVimInstance vimInstance,
       @RequestHeader(value = "project-id") String projectId)
-      throws VimException, PluginException, EntityUnreachableException, IOException,
-          BadRequestException, AlreadyExistingException, NotFoundException {
-    return vimManagement.add(vimInstance, projectId);
+      throws VimException, PluginException, IOException, BadRequestException,
+          AlreadyExistingException, ExecutionException, InterruptedException {
+    return vimManagement.add(vimInstance, projectId).get();
   }
 
   /**
@@ -99,6 +100,29 @@ public class RestVimInstances {
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException, BadRequestException {
     vimManagement.delete(id, projectId);
+  }
+
+  /**
+   * Removes multiple VIM Instances
+   *
+   * @param ids: the list of VIM Instance IDs
+   * @throws NotFoundException if one of the VIM Instances was not found
+   * @throws BadRequestException if something is wrong with the request
+   */
+  @RequestMapping(
+    value = "/multipledelete",
+    method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ApiOperation(
+    value = "Removing multiple VIM Instances",
+    notes = "Delete Request takes a list of VIM Instance IDs"
+  )
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void multipleDelete(
+      @RequestBody @Valid List<String> ids, @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException, BadRequestException {
+    for (String id : ids) vimManagement.delete(id, projectId);
   }
 
   /**
@@ -180,9 +204,9 @@ public class RestVimInstances {
       @RequestBody @Valid BaseVimInstance new_vimInstance,
       @PathVariable("id") String id,
       @RequestHeader(value = "project-id") String projectId)
-      throws VimException, PluginException, EntityUnreachableException, IOException,
-          BadRequestException, AlreadyExistingException, NotFoundException {
-    return vimManagement.update(new_vimInstance, id, projectId);
+      throws VimException, PluginException, IOException, BadRequestException,
+          AlreadyExistingException, NotFoundException, ExecutionException, InterruptedException {
+    return vimManagement.update(new_vimInstance, id, projectId).get();
   }
 
   /**
@@ -304,12 +328,12 @@ public class RestVimInstances {
   @RequestMapping(value = "{id}/refresh", method = RequestMethod.GET)
   public BaseVimInstance refresh(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
-      throws VimException, PluginException, EntityUnreachableException, IOException,
-          BadRequestException, AlreadyExistingException, NotFoundException {
+      throws VimException, PluginException, IOException, BadRequestException,
+          AlreadyExistingException, NotFoundException, ExecutionException, InterruptedException {
     BaseVimInstance vimInstance = vimManagement.query(id, projectId);
     if (vimInstance == null)
       throw new NotFoundException("VIM Instance with ID " + id + " not found.");
-    vimManagement.refresh(vimInstance, true);
+    vimManagement.refresh(vimInstance, true).get();
     return vimInstance;
   }
 }

@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
-import javax.annotation.PreDestroy;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.nfvo.Quota;
@@ -87,11 +86,6 @@ public class VimDriverCaller extends VimDriver {
             virtualHost,
             Integer.parseInt(managementPort),
             pluginTimeout);
-  }
-
-  @PreDestroy
-  public void stop() throws IOException, TimeoutException {
-    if (pluginCaller != null) pluginCaller.close();
   }
 
   @Override

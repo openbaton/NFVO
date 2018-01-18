@@ -5,6 +5,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
+import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
+import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.ImageStatus;
 import org.openbaton.catalogue.nfvo.images.AWSImage;
 import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
@@ -154,13 +159,22 @@ public class VimInstanceUtils {
       return ((OpenstackVimInstance) vimInstance)
           .getImages()
           .stream()
-          .filter(i -> ((NFVImage) i).getName().equals(imageName))
+          .filter(
+              i ->
+                  ((NFVImage) i).getName() != null
+                      && ((NFVImage) i).getName().equals(imageName)
+                      && (((NFVImage) i).getStatus() == null
+                          || ((NFVImage) i).getStatus().ordinal() == ImageStatus.ACTIVE.ordinal()))
           .collect(Collectors.toList());
     } else if (vimInstance instanceof DockerVimInstance) {
       return ((DockerVimInstance) vimInstance)
           .getImages()
           .stream()
-          .filter(i -> ((DockerImage) i).getTags().contains(imageName))
+          .filter(
+              i ->
+                  ((DockerImage) i).getTags() != null
+                      && !((DockerImage) i).getTags().isEmpty()
+                      && ((DockerImage) i).getTags().contains(imageName))
           .collect(Collectors.toList());
     } else if (vimInstance instanceof AmazonVimInstance) {
       return ((AmazonVimInstance) vimInstance)
@@ -175,5 +189,63 @@ public class VimInstanceUtils {
           .filter(i -> i.getExtId().equals(imageName))
           .collect(Collectors.toList());
     }
+  }
+
+  public static BaseNetwork createBaseNetwork(
+      NetworkServiceDescriptor networkServiceDescriptor,
+      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
+      VNFDConnectionPoint vnfdConnectionPoint,
+      BaseVimInstance vimInstance)
+      throws BadRequestException {
+    if (vimInstance instanceof OpenstackVimInstance) {
+      Network network = new Network();
+      HashSet<Subnet> subnets = new HashSet<>();
+      Subnet subnet = new Subnet();
+      subnet.setName(String.format("%s_subnet", vnfdConnectionPoint.getVirtual_link_reference()));
+      subnet.setCidr(
+          getCidrFromVLName(
+              vnfdConnectionPoint.getVirtual_link_reference(),
+              networkServiceDescriptor,
+              virtualNetworkFunctionDescriptor));
+      subnets.add(subnet);
+      network.setSubnets(subnets);
+      network.setName(vnfdConnectionPoint.getVirtual_link_reference());
+      return network;
+    } else if (vimInstance instanceof DockerVimInstance) {
+      DockerNetwork networkdc = new DockerNetwork();
+      networkdc.setName(vnfdConnectionPoint.getVirtual_link_reference());
+      networkdc.setSubnet(
+          getCidrFromVLName(
+              vnfdConnectionPoint.getVirtual_link_reference(),
+              networkServiceDescriptor,
+              virtualNetworkFunctionDescriptor));
+      return networkdc;
+    } else {
+      BaseNetwork networkb = new BaseNetwork();
+      networkb.setName(vnfdConnectionPoint.getVirtual_link_reference());
+      return networkb;
+    }
+  }
+
+  private static String getCidrFromVLName(
+      String virtual_link_reference,
+      NetworkServiceDescriptor networkServiceDescriptor,
+      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor)
+      throws BadRequestException {
+    for (VirtualLinkDescriptor vld : networkServiceDescriptor.getVld()) {
+      if (vld.getName().equals(virtual_link_reference)) {
+        return vld.getCidr();
+      }
+    }
+    for (InternalVirtualLink ivl : virtualNetworkFunctionDescriptor.getVirtual_link()) {
+      if (ivl.getName().equals(virtual_link_reference)) {
+        return ivl.getCidr();
+      }
+    }
+    throw new BadRequestException(
+        String.format(
+            "Connection Point with Virtual link reference %s points to non defined Virtual Link. Please add a VL in the "
+                + "VNFD or NSD or change the VL reference",
+            virtual_link_reference));
   }
 }

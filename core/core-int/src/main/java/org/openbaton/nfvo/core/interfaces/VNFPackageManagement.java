@@ -47,7 +47,7 @@ public interface VNFPackageManagement {
   VirtualNetworkFunctionDescriptor onboard(byte[] pack, String projectId)
       throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage,
           AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException,
-          InterruptedException, EntityUnreachableException, BadFormatException;
+          InterruptedException, EntityUnreachableException, BadFormatException, ExecutionException;
 
   /** This operation allows submitting and validating the VNF Package from the marketplace. */
   /**
@@ -71,7 +71,7 @@ public interface VNFPackageManagement {
           ExistingVNFPackage, DescriptorWrongFormat, VNFPackageFormatException,
           IncompatibleVNFPackage, BadRequestException, AlreadyExistingException,
           NetworkServiceIntegrityException, EntityUnreachableException, InterruptedException,
-          BadFormatException;
+          BadFormatException, ExecutionException;
 
   /**
    * This operation handles the data about the image of the vnf package
@@ -93,7 +93,8 @@ public interface VNFPackageManagement {
       Map<String, Object> imageDetails,
       String projectId)
       throws NotFoundException, PluginException, VimException, BadRequestException, IOException,
-          AlreadyExistingException, InterruptedException, EntityUnreachableException;
+          AlreadyExistingException, InterruptedException, EntityUnreachableException,
+          ExecutionException;
 
   /**
    * This operation allows submitting and validating the VNF Package from the marketplace.

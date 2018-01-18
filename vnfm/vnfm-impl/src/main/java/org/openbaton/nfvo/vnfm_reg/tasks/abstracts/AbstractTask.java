@@ -235,16 +235,10 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
       vnfStateHandler.executeAction(
           vnfmSender.sendCommand(
               message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint())));
-    } catch (NotFoundException e1) {
-      e1.printStackTrace();
-      throw new RuntimeException(e1);
-    } catch (BadFormatException e1) {
-      e1.printStackTrace();
-      throw new RuntimeException(e1);
-    } catch (ExecutionException e1) {
-      e1.printStackTrace();
-      throw new RuntimeException(e1);
-    } catch (InterruptedException e1) {
+    } catch (NotFoundException
+        | BadFormatException
+        | InterruptedException
+        | ExecutionException e1) {
       e1.printStackTrace();
       throw new RuntimeException(e1);
     }

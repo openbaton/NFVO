@@ -25,19 +25,23 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import org.openbaton.catalogue.mano.common.DeploymentFlavour;
+import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Server;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
+import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
 import org.openbaton.catalogue.security.Key;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimDriverException;
-import org.openbaton.exceptions.VimException;
+import org.openbaton.exceptions.*;
+import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.openbaton.nfvo.repositories.KeyRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
+import org.openbaton.nfvo.repositories.VNFDRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
@@ -59,7 +63,10 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
   @Autowired private VimBroker vimBroker;
   @Autowired private VimRepository vimInstanceRepository;
 
+  @Autowired private VimManagement vimManagement;
+
   @Autowired private NetworkServiceRecordRepository nsrRepository;
+  @Autowired private VNFDRepository vnfdRepository;
   @Autowired private KeyRepository keyRepository;
 
   @Override
@@ -72,14 +79,16 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
       Set<Key> keys)
       throws VimException, ExecutionException, InterruptedException, PluginException {
     List<Future<VNFCInstance>> instances = new ArrayList<>();
-    org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim;
-    vim = vimBroker.getVim(vimInstance.getType());
+    org.openbaton.nfvo.vim_interfaces.vim.Vim vim = vimBroker.getVim(vimInstance.getType());
     log.debug("Executing allocate with Vim: " + vim.getClass().getSimpleName());
     log.debug("NAME: " + virtualNetworkFunctionRecord.getName());
     log.debug("ID: " + virtualDeploymentUnit.getId());
     String hostname = virtualNetworkFunctionRecord.getName().replaceAll("_", "-");
     log.debug("Hostname is: " + hostname);
     virtualDeploymentUnit.setHostname(hostname);
+
+    createFlavorIfNotExisting(vimInstance, virtualNetworkFunctionRecord);
+
     for (VNFComponent component : virtualDeploymentUnit.getVnfc()) {
       log.trace("UserData is: " + userdata);
       Map<String, String> floatingIps = new HashMap<>();
@@ -130,7 +139,8 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
       VNFComponent component,
       String userdata,
       Set<Key> keys)
-      throws InterruptedException, ExecutionException, VimException {
+      throws InterruptedException, ExecutionException, VimException, PluginException {
+
     log.trace("UserData is: " + userdata);
     Map<String, String> floatinIps = new HashMap<>();
     for (VNFDConnectionPoint connectionPoint : component.getConnection_point()) {
@@ -212,6 +222,9 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     log.debug("Executing allocate with Vim: " + vim.getClass().getSimpleName());
     log.debug("NAME: " + virtualNetworkFunctionRecord.getName());
     log.debug("ID: " + virtualDeploymentUnit.getId());
+
+    createFlavorIfNotExisting(vimInstance, virtualNetworkFunctionRecord);
+
     // TODO retrive nsr->getKeys->keyRepository->getKeys
     Set<Key> keys = new HashSet<>();
     for (String keyName :
@@ -241,5 +254,64 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
     }
     log.info("Finished deploying VMs with external id: " + vnfc.getVc_id());
     return new AsyncResult<>(vnfc);
+  }
+
+  public void createFlavorIfNotExisting(
+      BaseVimInstance vimInstance, VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
+      throws VimException, PluginException {
+
+    org.openbaton.nfvo.vim_interfaces.vim.Vim vim = vimBroker.getVim(vimInstance.getType());
+    log.info(
+        "Checking if Flavor "
+            + virtualNetworkFunctionRecord.getDeployment_flavour_key()
+            + " exists...");
+
+    if (vimInstance instanceof OpenstackVimInstance) {
+      boolean flavorExist = false;
+      for (DeploymentFlavour flavour : ((OpenstackVimInstance) vimInstance).getFlavours()) {
+        if (flavour
+            .getFlavour_key()
+            .equals(virtualNetworkFunctionRecord.getDeployment_flavour_key())) {
+          flavorExist = true;
+        }
+      }
+      if (!flavorExist) {
+        log.debug(
+            "Not found Flavor "
+                + virtualNetworkFunctionRecord.getDeployment_flavour_key()
+                + " on VIM "
+                + vimInstance.getName()
+                + ". Creating it... ");
+        VirtualNetworkFunctionDescriptor vnfd =
+            vnfdRepository.findOne(virtualNetworkFunctionRecord.getDescriptor_reference());
+        for (VNFDeploymentFlavour vnfDeploymentFlavour : vnfd.getDeployment_flavour()) {
+          if (vnfDeploymentFlavour
+              .getFlavour_key()
+              .equals(virtualNetworkFunctionRecord.getDeployment_flavour_key())) {
+            if (!(vnfDeploymentFlavour.getDisk() == 0
+                || vnfDeploymentFlavour.getRam() == 0
+                || vnfDeploymentFlavour.getVcpus() == 0)) {
+              DeploymentFlavour flavor = vim.add(vimInstance, vnfDeploymentFlavour);
+              ((OpenstackVimInstance) vimInstance).getFlavours().add(flavor);
+              log.info("Created new Flavor -> " + flavor);
+              try {
+                vimManagement.refresh(vimInstance, true).get();
+              } catch (Exception e) {
+                throw new VimException(e.getMessage(), e);
+              }
+            } else {
+              throw new VimException(
+                  "Not found DeploymentFlavour with name "
+                      + virtualNetworkFunctionRecord.getDeployment_flavour_key()
+                      + " on VimInstance "
+                      + vimInstance.getName()
+                      + ". Providing additional information allows to create the Flavor on demand.");
+            }
+          }
+        }
+      }
+    } else {
+      log.warn("Flavor creation is supported for OpenStack only at the moment");
+    }
   }
 }

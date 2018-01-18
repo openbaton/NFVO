@@ -74,6 +74,7 @@ public class TestUtils {
     OpenstackVimInstance vimInstance = new OpenstackVimInstance();
     vimInstance.setId("vim_instance_id");
     vimInstance.setName("vim_instance");
+    vimInstance.setAuthUrl("http://auth.url.hello");
     vimInstance.setTenant("tenant");
     vimInstance.setUsername("username");
     vimInstance.setPassword("password");

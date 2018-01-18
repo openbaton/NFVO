@@ -15,31 +15,37 @@
  *
  */
 
-package org.openbaton.nfvo.security.authentication;
+package org.openbaton.nfvo.security.config;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Properties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.provider.expression.OAuth2MethodSecurityExpressionHandler;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
   @Autowired
   @Qualifier("customUserDetailsService")
   private UserDetailsManager customUserDetailsManager;
@@ -78,16 +84,29 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   }
 
   @Bean
-  public CorsConfigurationSource corsConfigurationSource() {
-    CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(Collections.singletonList("*"));
-    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "OPTIONS", "DELETE"));
-    configuration.addAllowedHeader("*");
-    configuration.setAllowCredentials(false);
-    configuration.setMaxAge(180000L);
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", configuration);
-    source.registerCorsConfiguration("/oauth/token", configuration);
-    return source;
+  @ConditionalOnProperty(prefix = "nfvo.security", name = "cors")
+  public FilterRegistrationBean simpleCorsFilter() {
+    UrlBasedCorsConfigurationSource corsConfigurationSource = new UrlBasedCorsConfigurationSource();
+    CorsConfiguration corsConfiguration = new CorsConfiguration();
+    corsConfiguration.setAllowCredentials(false);
+    corsConfiguration.addAllowedOrigin("*");
+    corsConfiguration.addAllowedHeader("*");
+    corsConfiguration.addAllowedMethod("*");
+    corsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
+    FilterRegistrationBean bean =
+        new FilterRegistrationBean(new CorsFilter(corsConfigurationSource));
+    bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+    return bean;
+  }
+
+  /** For enabling annotations like @PreAuthorize("hasAnyRole('ROLE_ADMIN')") on RestControllers. */
+  @EnableGlobalMethodSecurity(prePostEnabled = true)
+  private static class GlobalSecurityConfiguration extends GlobalMethodSecurityConfiguration {
+    public GlobalSecurityConfiguration() {}
+
+    @Override
+    protected MethodSecurityExpressionHandler createExpressionHandler() {
+      return new OAuth2MethodSecurityExpressionHandler();
+    }
   }
 }

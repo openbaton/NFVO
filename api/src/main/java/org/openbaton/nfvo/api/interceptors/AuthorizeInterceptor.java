@@ -24,9 +24,9 @@ import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
 import org.openbaton.exceptions.NotAllowedException;
 import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.nfvo.core.interfaces.ProjectManagement;
+import org.openbaton.nfvo.core.interfaces.UserManagement;
 import org.openbaton.nfvo.repositories.ServiceRepository;
-import org.openbaton.nfvo.security.interfaces.ProjectManagement;
-import org.openbaton.nfvo.security.interfaces.UserManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-/** Created by lto on 25/05/16. */
 @Service
 public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
 
@@ -103,14 +102,14 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
   }
 
   private boolean checkAuthorization(
-      String project,
+      String projectId,
       HttpServletRequest request,
       String currentUserName,
       HttpServletResponse response)
       throws NotFoundException, NotAllowedException, IOException {
 
     log.trace("Current User: " + currentUserName);
-    log.trace("projectId: \"" + project + "\"");
+    log.trace("projectId: \"" + projectId + "\"");
     log.trace(request.getMethod() + " on URI: " + request.getRequestURI());
     log.trace("UserManagement: " + userManagement);
     BaseUser baseUser;
@@ -126,10 +125,10 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
       }
     }
 
-    if (project != null && !project.isEmpty()) {
+    if (projectId != null) {
 
-      if (projectIsNecessary(request) && !projectManagement.exist(project)) {
-        throw new NotFoundException("Project with id " + project + " was not found");
+      if (projectIsNecessary(request) && !projectManagement.exist(projectId)) {
+        throw new NotFoundException("Project with id '" + projectId + "' was not found");
       }
       for (Role role : baseUser.getRoles()) {
         if (role.getRole().ordinal() == Role.RoleEnum.ADMIN.ordinal()) {
@@ -137,7 +136,7 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
         }
       }
       for (Role role : baseUser.getRoles()) {
-        String pjName = projectManagement.query(project).getName();
+        String pjName = projectManagement.query(projectId).getName();
         log.trace(role.getProject() + " == " + pjName);
         if (role.getProject().equals(pjName)) {
           if (role.getRole().ordinal() == Role.RoleEnum.GUEST.ordinal()
@@ -154,10 +153,9 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
       if (userProjects.iterator().hasNext()) {
         return checkAuthorization(
             userProjects.iterator().next().getId(), request, currentUserName, response);
-      } else {
-        throw new NotFoundException(
-            "Not Found any project you are assigned to. Please ask an admin to assign a project to you.");
       }
+      throw new NotFoundException(
+          "Not Found any project you are assigned to. Please ask an admin to assign a project to you.");
     }
     return sendError(request, response);
   }

@@ -24,6 +24,7 @@ import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
 import org.openbaton.catalogue.nfvo.EventEndpoint;
+import org.openbaton.catalogue.util.BaseEntity;
 import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
@@ -103,51 +104,46 @@ class EventDispatcher
 
   @Override
   public void onApplicationEvent(EventNFVO event) {
-    log.debug("Received event: " + event);
+    log.trace("Received event: " + event);
     dispatchEvent(event);
   }
 
   @Override
   public void dispatchEvent(EventNFVO event) {
-    log.debug("dispatching event to the world!!!");
-    log.debug("event is: " + event);
+    log.trace("dispatching event to the world!!!");
+    log.trace("event is: " + event);
 
     Iterable<EventEndpoint> endpoints = eventEndpointRepository.findAll();
 
     for (EventEndpoint endpoint : endpoints) {
-      log.debug("Checking endpoint: " + endpoint);
-      log.trace(
-          endpoint.getEvent()
-              + ":"
-              + endpoint.getEvent().ordinal()
-              + " == "
-              + event.getEventNFVO().getAction().ordinal()
-              + ":"
-              + event.getEventNFVO().getAction());
-      if (endpoint.getEvent().ordinal() == event.getEventNFVO().getAction().ordinal()) {
-        if (endpoint.getVirtualNetworkFunctionId() != null
-            && !endpoint.getVirtualNetworkFunctionId().equals("")) {
-          if (event.getEventNFVO().getPayload() instanceof VirtualNetworkFunctionRecord) {
-            if (((VirtualNetworkFunctionRecord) event.getEventNFVO().getPayload())
-                .getId()
-                .equals(endpoint.getVirtualNetworkFunctionId())) {
-              log.debug("dispatching event to: " + endpoint);
-              sendEvent(endpoint, event.getEventNFVO());
+      log.trace("Checking endpoint: " + endpoint);
+      BaseEntity entity = (BaseEntity) event.getEventNFVO().getPayload();
+      if (endpoint.getProjectId().equals("*")
+          || endpoint.getProjectId().equals(entity.getProjectId())) {
+        if (endpoint.getEvent().ordinal() == event.getEventNFVO().getAction().ordinal()) {
+          if (endpoint.getVirtualNetworkFunctionId() != null
+              && !endpoint.getVirtualNetworkFunctionId().equals("")) {
+            if (event.getEventNFVO().getPayload() instanceof VirtualNetworkFunctionRecord) {
+              VirtualNetworkFunctionRecord virtualNetworkFunctionRecord =
+                  (VirtualNetworkFunctionRecord) event.getEventNFVO().getPayload();
+              if (virtualNetworkFunctionRecord
+                  .getId()
+                  .equals(endpoint.getVirtualNetworkFunctionId())) {
+                sendEvent(endpoint, event.getEventNFVO());
+              }
             }
-          }
-        } else if (endpoint.getNetworkServiceId() != null
-            && !endpoint.getNetworkServiceId().equals("")) {
-          if (event.getEventNFVO().getPayload() instanceof NetworkServiceRecord) {
-            if (((NetworkServiceRecord) event.getEventNFVO().getPayload())
-                .getId()
-                .equals(endpoint.getNetworkServiceId())) {
-              log.debug("dispatching event to: " + endpoint);
-              sendEvent(endpoint, event.getEventNFVO());
+          } else if (endpoint.getNetworkServiceId() != null
+              && !endpoint.getNetworkServiceId().equals("")) {
+            if (event.getEventNFVO().getPayload() instanceof NetworkServiceRecord) {
+              NetworkServiceRecord networkServiceRecord =
+                  (NetworkServiceRecord) event.getEventNFVO().getPayload();
+              if (networkServiceRecord.getId().equals(endpoint.getNetworkServiceId())) {
+                sendEvent(endpoint, event.getEventNFVO());
+              }
             }
+          } else {
+            sendEvent(endpoint, event.getEventNFVO());
           }
-        } else {
-          log.debug("dispatching event to: " + endpoint);
-          sendEvent(endpoint, event.getEventNFVO());
         }
       }
     }
@@ -156,7 +152,7 @@ class EventDispatcher
   private void sendEvent(EventEndpoint endpoint, ApplicationEventNFVO event) {
     EventSender sender =
         (EventSender) context.getBean(endpoint.getType().toString().toLowerCase() + "EventSender");
-    log.debug("Sender is: " + sender.getClass().getSimpleName());
+    log.trace("Sender is: " + sender.getClass().getSimpleName());
     sender.send(endpoint, event);
   }
 

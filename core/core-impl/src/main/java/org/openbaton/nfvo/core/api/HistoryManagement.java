@@ -22,8 +22,8 @@ import java.util.Date;
 import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.security.HistoryEntity;
 import org.openbaton.catalogue.security.User;
+import org.openbaton.nfvo.core.interfaces.UserManagement;
 import org.openbaton.nfvo.repositories.HistoryEntityRepository;
-import org.openbaton.nfvo.security.interfaces.UserManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,11 +66,10 @@ public class HistoryManagement implements org.openbaton.nfvo.core.interfaces.His
         log.trace("skipping method get or put");
         return;
       }
-      User user = null;
+      User user;
       try {
         user = userManagement.getCurrentUser();
       } catch (org.openbaton.exceptions.NotFoundException ex) {
-        //log.warn("Not storing requests from anonymousUser");
         return;
       }
 

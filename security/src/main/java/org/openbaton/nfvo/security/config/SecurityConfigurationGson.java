@@ -7,6 +7,7 @@ import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.nfvo.common.configuration.NfvoGsonDeserializerNFVMessage;
 import org.openbaton.nfvo.common.configuration.NfvoGsonDeserializerVimInstance;
 import org.openbaton.nfvo.common.configuration.NfvoGsonSerializerVimInstance;
+import org.openbaton.nfvo.security.authentication.GsonSerializerOAuth2AccessToken;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;

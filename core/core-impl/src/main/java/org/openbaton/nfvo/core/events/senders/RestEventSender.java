@@ -35,7 +35,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
-/** Created by lto on 01/07/15. */
 @Service
 @Scope
 public class RestEventSender implements EventSender {
@@ -45,8 +44,8 @@ public class RestEventSender implements EventSender {
   @Override
   @Async
   public Future<Void> send(EventEndpoint endpoint, ApplicationEventNFVO event) {
-    try {
-      CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+    log.debug("Sending message: " + event + " to endpoint: " + endpoint);
+    try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
       Gson mapper = new GsonBuilder().create();
       String json =
           "{\"action\":\""
@@ -64,6 +63,11 @@ public class RestEventSender implements EventSender {
       StringEntity params = new StringEntity(json);
       request.setEntity(params);
       HttpResponse response = httpClient.execute(request);
+      log.trace(
+          String.format(
+              "Response status is [%d]: %s",
+              response.getStatusLine().getStatusCode(),
+              response.getStatusLine().getReasonPhrase()));
     } catch (Exception ignored) {
       log.warn(
           "Impossible to reach the endpoint with name: "

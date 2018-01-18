@@ -2,6 +2,7 @@ package org.openbaton.nfvo.core.api;
 
 import java.io.IOException;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import org.openbaton.catalogue.nfvo.ImageStatus;
 import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
 import org.openbaton.catalogue.nfvo.images.NFVImage;
@@ -10,6 +11,7 @@ import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
+import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
-/** Created by rvl on 10.05.17. */
 @Service
 @Scope
 @EnableAsync
@@ -39,8 +40,8 @@ public class ImageChecker {
 
   @Async
   public void checkImageStatus(BaseVimInstance vimInstance)
-      throws InterruptedException, AlreadyExistingException, IOException, BadRequestException,
-          VimException, PluginException {
+      throws InterruptedException, IOException, VimException, PluginException, ExecutionException,
+          BadRequestException, AlreadyExistingException {
 
     for (int i = 0; i < imageStatusTimeout; i++) {
 
@@ -63,11 +64,11 @@ public class ImageChecker {
 
       if (allImagesActive) {
         log.info("All images are active");
-        vimManagement.refresh(vimInstance, false);
+        vimManagement.refresh(vimInstance, false).get();
         return;
       }
     }
-    vimManagement.refresh(vimInstance, false);
+    vimManagement.refresh(vimInstance, false).get();
     throw new VimException("Not all images are active even after timeout!");
   }
 }

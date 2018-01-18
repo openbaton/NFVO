@@ -15,12 +15,15 @@
  *
  */
 
-package org.openbaton.nfvo.security.config;
+package org.openbaton.nfvo.security.authentication;
 
-import com.google.gson.*;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 import java.util.Date;
-import java.util.Map;
 import java.util.Set;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
@@ -54,7 +57,7 @@ public class GsonSerializerOAuth2AccessToken implements JsonSerializer<OAuth2Acc
     Set<String> scope = src.getScope();
 
     if (scope != null && !scope.isEmpty()) {
-      StringBuffer scopes = new StringBuffer();
+      StringBuilder scopes = new StringBuilder();
       for (String s : scope) {
         Assert.hasLength(s, "Scopes cannot be null or empty. Got " + scope + "");
         scopes.append(s);
@@ -64,11 +67,6 @@ public class GsonSerializerOAuth2AccessToken implements JsonSerializer<OAuth2Acc
       jsonObject.addProperty(OAuth2AccessToken.SCOPE, scopes.substring(0, scopes.length() - 1));
     }
 
-    Map<String, Object> additionalInformation = src.getAdditionalInformation();
-    for (String key : additionalInformation.keySet()) {
-      // TODO put the additionalInformation in the JsonObject
-      //jsonObject.add(key, additionalInformation.get(key));
-    }
     return jsonObject;
   }
 }

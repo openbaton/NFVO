@@ -48,7 +48,7 @@ public class NetworkManagement implements org.openbaton.nfvo.core.interfaces.Net
   @Autowired private NetworkRepository networkRepository;
 
   @Override
-  public BaseNetwork add(BaseVimInstance vimInstance, BaseNetwork network)
+  public synchronized BaseNetwork add(BaseVimInstance vimInstance, BaseNetwork network)
       throws VimException, PluginException, BadRequestException {
     log.info("Creating network " + network.getName() + " on vim " + vimInstance.getName());
     org.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement vim;

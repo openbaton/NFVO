@@ -50,7 +50,8 @@ public class VnfStateHandler implements org.openbaton.vnfm.interfaces.state.VnfS
       NetworkServiceRecord networkServiceRecord,
       DeployNSRBody body,
       Map<String, Set<String>> vduVimInstances,
-      VirtualNetworkFunctionDescriptor vnfd)
+      VirtualNetworkFunctionDescriptor vnfd,
+      String monitoringIp)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
     log.debug(
         "Processing VNFD ("
@@ -61,7 +62,7 @@ public class VnfStateHandler implements org.openbaton.vnfm.interfaces.state.VnfS
 
     VnfmSender vnfmSender = generator.getVnfmSender(vnfd);
     NFVMessage message =
-        generator.getNextMessage(vnfd, vduVimInstances, networkServiceRecord, body);
+        generator.getNextMessage(vnfd, vduVimInstances, networkServiceRecord, body, monitoringIp);
     VnfmManagerEndpoint endpoint = generator.getEndpoint(vnfd);
     log.debug("----------Executing ACTION: " + message.getAction());
     executeAction(vnfmSender.sendCommand(message, endpoint));
@@ -105,8 +106,8 @@ public class VnfStateHandler implements org.openbaton.vnfm.interfaces.state.VnfS
     log.trace("message: " + nfvMessage);
     task.setAction(nfvMessage.getAction());
 
-    VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
-    virtualNetworkFunctionRecord = generator.setupTask(nfvMessage, task);
+    VirtualNetworkFunctionRecord virtualNetworkFunctionRecord =
+        generator.setupTask(nfvMessage, task);
 
     if (virtualNetworkFunctionRecord != null) {
       if (virtualNetworkFunctionRecord.getParent_ns_id() != null) {

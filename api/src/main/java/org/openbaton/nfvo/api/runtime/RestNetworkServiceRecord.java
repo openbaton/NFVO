@@ -55,7 +55,6 @@ import org.openbaton.exceptions.QuotaExceededException;
 import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.exceptions.WrongStatusException;
-import org.openbaton.nfvo.api.exceptions.StateException;
 import org.openbaton.nfvo.api.model.DependencyObject;
 import org.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
 import org.slf4j.Logger;
@@ -216,13 +215,8 @@ public class RestNetworkServiceRecord {
   public void delete(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
       throws VimException, InterruptedException, ExecutionException, NotFoundException,
-          BadFormatException {
-    try {
-      networkServiceRecordManagement.delete(id, projectId);
-    } catch (WrongStatusException e) {
-      e.printStackTrace();
-      throw new StateException(id);
-    }
+          BadFormatException, WrongStatusException {
+    networkServiceRecordManagement.delete(id, projectId);
   }
 
   /**
@@ -239,13 +233,8 @@ public class RestNetworkServiceRecord {
   public void resume(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
       throws VimException, InterruptedException, ExecutionException, NotFoundException,
-          BadFormatException {
-    try {
-      networkServiceRecordManagement.resume(id, projectId);
-    } catch (WrongStatusException e) {
-      e.printStackTrace();
-      throw new StateException(id);
-    }
+          BadFormatException, WrongStatusException {
+    networkServiceRecordManagement.resume(id, projectId);
   }
 
   /**
@@ -999,8 +988,8 @@ public class RestNetworkServiceRecord {
       @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException {
     NetworkServiceRecord nsr = networkServiceRecordManagement.query(id, projectId);
-    PhysicalNetworkFunctionRecord pDescriptor = findPNFD(nsr.getPnfr(), id_pnf);
-    nsr.getVnfr().remove(pDescriptor);
+    PhysicalNetworkFunctionRecord physicalNetworkFunctionRecord = findPNFD(nsr.getPnfr(), id_pnf);
+    nsr.getPnfr().remove(physicalNetworkFunctionRecord);
   }
 
   /**
@@ -1071,15 +1060,10 @@ public class RestNetworkServiceRecord {
       @PathVariable("id_vnf") String id_vnf,
       @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException {
-    LinkedHashSet<HistoryLifecycleEvent> lifecycle_event_history =
-        (LinkedHashSet<HistoryLifecycleEvent>)
-            networkServiceRecordManagement
-                .getVirtualNetworkFunctionRecord(id, id_vnf, projectId)
-                .getLifecycle_event_history();
-    //    Collections.sort(
-    //        lifecycle_event_history,
-    //        new PropertyComparator<HistoryLifecycleEvent>("timestamp", true, true));
-    return lifecycle_event_history;
+    return (LinkedHashSet<HistoryLifecycleEvent>)
+        networkServiceRecordManagement
+            .getVirtualNetworkFunctionRecord(id, id_vnf, projectId)
+            .getLifecycle_event_history();
   }
 
   // TODO The Rest of the classes

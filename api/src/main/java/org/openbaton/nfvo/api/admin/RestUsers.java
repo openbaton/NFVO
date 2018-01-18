@@ -27,7 +27,7 @@ import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.NotAllowedException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PasswordWeakException;
-import org.openbaton.nfvo.security.interfaces.UserManagement;
+import org.openbaton.nfvo.core.interfaces.UserManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

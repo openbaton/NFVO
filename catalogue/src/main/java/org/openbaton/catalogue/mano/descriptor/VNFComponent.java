@@ -26,7 +26,6 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import org.openbaton.catalogue.util.BaseEntity;
 
 /** Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12) */
@@ -40,7 +39,6 @@ public class VNFComponent extends BaseEntity {
    */
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
   @NotNull
-  @Size(min = 1)
   protected Set<VNFDConnectionPoint> connection_point;
 
   public VNFComponent() {

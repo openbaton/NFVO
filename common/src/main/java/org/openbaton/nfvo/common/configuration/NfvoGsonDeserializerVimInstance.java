@@ -47,14 +47,23 @@ public class NfvoGsonDeserializerVimInstance implements JsonDeserializer<BaseVim
       JsonElement json, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {
     String type = json.getAsJsonObject().get("type").getAsString();
+    String name = null;
     BaseVimInstance result;
     try {
+      String[] typeAndName = type.split("\\.");
+      if (typeAndName.length > 1) {
+        type = typeAndName[0];
+        name = typeAndName[1];
+        log.debug("Type contains name: " + name);
+      }
       String className =
           "org.openbaton.catalogue.nfvo.viminstances."
               + type.substring(0, 1).toUpperCase()
               + type.substring(1)
               + "VimInstance";
-      log.debug("Looking for class " + className);
+      log.trace("Looking for class " + className);
+
+      @SuppressWarnings("unchecked")
       Class<? extends BaseVimInstance> clz =
           (Class<? extends BaseVimInstance>) Class.forName(className);
       result = gson.fromJson(json, clz);

@@ -183,7 +183,8 @@ public class NetworkServiceRecordManagementClassSuiteTest {
                 add(vnfmManagerEndpoint);
               }
             });
-    when(vimManagement.refresh(any(BaseVimInstance.class), anyBoolean())).thenReturn(vimInstance);
+    when(vimManagement.refresh(any(BaseVimInstance.class), anyBoolean()))
+        .thenReturn(new AsyncResult<>(vimInstance));
     when(vnfPackageRepository.findFirstById(anyString())).thenReturn(createVNFPackage());
     log.info("Starting test");
   }

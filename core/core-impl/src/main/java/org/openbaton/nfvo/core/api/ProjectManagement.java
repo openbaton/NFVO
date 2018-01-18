@@ -15,12 +15,13 @@
  *
  */
 
-package org.openbaton.nfvo.security.authorization;
+package org.openbaton.nfvo.core.api;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.security.BaseUser;
 import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
@@ -31,21 +32,22 @@ import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.EntityInUseException;
 import org.openbaton.exceptions.NotAllowedException;
 import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.nfvo.core.interfaces.UserManagement;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.ProjectRepository;
 import org.openbaton.nfvo.repositories.ServiceRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
-import org.openbaton.nfvo.security.interfaces.UserManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /** Created by lto on 24/05/16. */
 @Service
-public class ProjectManagement implements org.openbaton.nfvo.security.interfaces.ProjectManagement {
+public class ProjectManagement implements org.openbaton.nfvo.core.interfaces.ProjectManagement {
 
   @Autowired private UserManagement userManagement;
 
@@ -56,6 +58,22 @@ public class ProjectManagement implements org.openbaton.nfvo.security.interfaces
   @Autowired private VnfPackageRepository vnfPackageRepository;
   private Logger log = LoggerFactory.getLogger(this.getClass());
   @Autowired private ServiceRepository serviceRepository;
+
+  @Value("${nfvo.security.project.name:default}")
+  private String projectDefaultName;
+
+  @PostConstruct
+  public void init() {
+    log.debug("Creating initial Project...");
+
+    if (!query().iterator().hasNext()) {
+      Project project = new Project();
+      project.setName(projectDefaultName);
+      project.setDescription("default project");
+      this.add(project);
+      log.debug("Created project: " + project);
+    } else log.debug("One project exists already.");
+  }
 
   @Override
   public Project add(Project project) {

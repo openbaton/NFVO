@@ -1,24 +1,8 @@
-package org.openbaton.nfvo.security.components;
-
-import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.createRabbitMqUser;
-import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.removeRabbitMqUser;
-import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.setRabbitMqUserPermissions;
+package org.openbaton.nfvo.core.api;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.regex.Pattern;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import org.openbaton.catalogue.nfvo.ManagerCredentials;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.security.Project;
@@ -37,7 +21,7 @@ import org.openbaton.nfvo.repositories.ProjectRepository;
 import org.openbaton.nfvo.repositories.ServiceRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
-import org.openbaton.nfvo.security.authentication.OAuth2AuthorizationServerConfig;
+import org.openbaton.nfvo.security.config.OAuth2AuthorizationServerConfig;
 import org.openbaton.vnfm.interfaces.register.VnfmRegister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,10 +31,27 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.stereotype.Service;
 
-//TODO place this class somewhere else
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
+
+import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.createRabbitMqUser;
+import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.removeRabbitMqUser;
+import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.setRabbitMqUserPermissions;
+
 @Service
 @ConfigurationProperties
-public class ComponentManager implements org.openbaton.nfvo.security.interfaces.ComponentManager {
+public class ComponentManager implements org.openbaton.nfvo.core.interfaces.ComponentManager {
 
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -63,10 +64,10 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
   @Value("${nfvo.security.service.token.validity:31556952}")
   private int serviceTokenValidityDuration;
 
-  @Value("${nfvo.rabbit.brokerIp:localhost}")
+  @Value("${spring.rabbitmq.host:localhost}")
   private String brokerIp;
 
-  @Value("${nfvo.rabbit.managementPort:15672}")
+  @Value("${nfvo.rabbit.management.port:15672}")
   private String managementPort;
 
   @Value("${spring.rabbitmq.password:openbaton}")
@@ -138,29 +139,31 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
           "The name of the found service does not match the requested name " + serviceName);
     }
 
-    if (action.toLowerCase().equals("register")) {
-      if (service.getToken() != null && !service.getToken().equals("")) {
-        if (service.getTokenExpirationDate() > (new Date()).getTime()) return service.getToken();
-      }
-      OAuth2AccessToken token = serverConfig.getNewServiceToken(serviceName);
-      service.setToken(KeyHelper.encryptNew(token.getValue(), service.getKeyValue()));
-      service.setTokenExpirationDate(token.getExpiration().getTime());
-      serviceRepository.save(service);
-      return service.getToken();
+    switch (action.toLowerCase()) {
+      case "register":
+        if (service.getToken() != null && !service.getToken().equals("")) {
+          if (service.getTokenExpirationDate() > (new Date()).getTime()) return service.getToken();
+        }
+        OAuth2AccessToken token = serverConfig.getNewServiceToken(serviceName);
+        service.setToken(KeyHelper.encryptNew(token.getValue(), service.getKeyValue()));
+        service.setTokenExpirationDate(token.getExpiration().getTime());
+        serviceRepository.save(service);
+        return service.getToken();
 
-    } else if (action.toLowerCase().equals("remove") || action.toLowerCase().equals("delete")) {
-      serviceRepository.delete(service);
-      log.info("Removed service " + serviceName);
-      return null;
-    } else {
-      log.error("Action " + action + " unknown!");
-      throw new RuntimeException("Action " + action + " unknown!");
+      case "remove":
+      case "delete":
+        serviceRepository.delete(service);
+        log.info("Removed service " + serviceName);
+        return null;
+      default:
+        log.error("Action " + action + " unknown!");
+        throw new RuntimeException("Action " + action + " unknown!");
     }
   }
 
   @Override
   public String createService(String serviceName, String projectId, List<String> projects)
-      throws NoSuchAlgorithmException, IOException, NotFoundException, MissingParameterException {
+      throws NotFoundException, MissingParameterException {
     for (ServiceMetadata serviceMetadata : serviceRepository.findAll()) {
       if (serviceMetadata.getName().equals(serviceName)) {
         log.debug("Service " + serviceName + " already exists.");
@@ -203,9 +206,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
   }
 
   @Override
-  public boolean isService(String tokenToCheck)
-      throws InvalidKeyException, BadPaddingException, NoSuchAlgorithmException,
-          IllegalBlockSizeException, NoSuchPaddingException {
+  public boolean isService(String tokenToCheck) {
     for (ServiceMetadata serviceMetadata : serviceRepository.findAll()) {
       if (serviceMetadata.getToken() != null && !serviceMetadata.getToken().equals("")) {
         String encryptedServiceToken = serviceMetadata.getToken();
@@ -231,8 +232,6 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
     //TODO remove also associated toker
     ServiceMetadata serviceMetadataToRemove = serviceRepository.findById(id);
     log.debug("Found service: " + serviceMetadataToRemove);
-    //  if (serviceMetadataToRemove.getToken() != null)
-    //      serverConfig.tokenServices().revokeToken(serviceMetadataToRemove.getToken());
     serviceRepository.delete(id);
   }
 
@@ -262,117 +261,132 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
         return null;
       }
       JsonElement vnfmManagerEndpoint = body.get("vnfmManagerEndpoint");
-      if (body.get("action").getAsString().toLowerCase().equals("register")) {
+      switch (body.get("action").getAsString().toLowerCase()) {
+        case "register":
+          {
 
-        // register plugin or vnfm
-        if (!body.has("type")) {
-          log.error("Could not process Json message. The 'type' property is missing.");
-          return null;
-        }
-        String username = body.get("type").getAsString();
-        String password = org.apache.commons.lang.RandomStringUtils.randomAlphanumeric(16);
-
-        ManagerCredentials managerCredentials =
-            managerCredentialsRepository.findFirstByRabbitUsername(username);
-        VnfmManagerEndpoint endpoint = null;
-        boolean isManager = vnfmManagerEndpoint != null;
-        if (managerCredentials != null) {
-          log.warn("Manager already registered.");
-          return gson.toJson(managerCredentials);
-        } else {
-          managerCredentials = new ManagerCredentials();
-          if (isManager) {
-            if (vnfmManagerEndpoint.isJsonPrimitive()) {
-              endpoint =
-                  gson.fromJson(vnfmManagerEndpoint.getAsString(), VnfmManagerEndpoint.class);
-            } else {
-              endpoint = gson.fromJson(vnfmManagerEndpoint, VnfmManagerEndpoint.class);
+            // register plugin or vnfm
+            if (!body.has("type")) {
+              log.error("Could not process Json message. The 'type' property is missing.");
+              return null;
             }
+            String username = body.get("type").getAsString();
+            String password = org.apache.commons.lang.RandomStringUtils.randomAlphanumeric(16);
+
+            ManagerCredentials managerCredentials =
+                managerCredentialsRepository.findFirstByRabbitUsername(username);
+            VnfmManagerEndpoint endpoint = null;
+            boolean isManager = vnfmManagerEndpoint != null;
+            if (managerCredentials != null) {
+              log.warn("Manager already registered.");
+              return gson.toJson(managerCredentials);
+            } else {
+              managerCredentials = new ManagerCredentials();
+              if (isManager) {
+                if (vnfmManagerEndpoint.isJsonPrimitive()) {
+                  endpoint =
+                      gson.fromJson(vnfmManagerEndpoint.getAsString(), VnfmManagerEndpoint.class);
+                } else {
+                  endpoint = gson.fromJson(vnfmManagerEndpoint, VnfmManagerEndpoint.class);
+                }
+              }
+            }
+
+            String type =
+                isManager
+                    ? vnfmManagerEndpoint.getAsJsonObject().get("endpoint").getAsString()
+                    : username;
+            String configurePermissions =
+                "^amq\\.gen.*|amq\\.default$|(" + type + ")|(nfvo." + type + ".actions)";
+            String writePermissions =
+                "^amq\\.gen.*|amq\\.default$|("
+                    + type
+                    + ")|(vnfm.nfvo.actions)|(vnfm.nfvo.actions.reply)|(nfvo."
+                    + type
+                    + ".actions)|(openbaton-exchange)";
+            String readPermissions =
+                "^amq\\.gen.*|amq\\.default$|(nfvo."
+                    + type
+                    + ".actions)|("
+                    + type
+                    + ")|(openbaton-exchange)";
+
+            createRabbitMqUser(
+                rabbitUsername,
+                rabbitPassword,
+                brokerIp,
+                managementPort,
+                username,
+                password,
+                vhost);
+            try {
+              setRabbitMqUserPermissions(
+                  rabbitUsername,
+                  rabbitPassword,
+                  brokerIp,
+                  managementPort,
+                  username,
+                  vhost,
+                  configurePermissions,
+                  writePermissions,
+                  readPermissions);
+            } catch (Exception e) {
+              try {
+                removeRabbitMqUser(
+                    rabbitUsername, rabbitPassword, brokerIp, managementPort, username);
+              } catch (Exception e2) {
+                log.error("Clean up failed. Could not remove RabbitMQ user " + username);
+                e2.printStackTrace();
+              }
+              throw e;
+            }
+
+            managerCredentials.setRabbitUsername(username);
+            managerCredentials.setRabbitPassword(password);
+            managerCredentials = managerCredentialsRepository.save(managerCredentials);
+            if (endpoint != null) vnfmManagerEndpointRepository.save(endpoint);
+            log.info("Registered a new manager.");
+            if (!isManager) {
+              this.refreshVims(username);
+            }
+            return gson.toJson(managerCredentials);
           }
-        }
+        case "unregister":
+        case "deregister":
+          {
+            if (!body.has("username")) {
+              log.error("Could not process Json message. The 'username' property is missing.");
+              return null;
+            }
+            if (!body.has("password")) {
+              log.error("Could not process Json message. The 'password' property is missing.");
+              return null;
+            }
+            String username = body.get("username").getAsString();
+            ManagerCredentials managerCredentials =
+                managerCredentialsRepository.findFirstByRabbitUsername(username);
+            if (managerCredentials == null) {
+              log.error("Did not find manager with name " + body.get("username"));
+              return null;
+            }
+            if (body.get("password").getAsString().equals(managerCredentials.getRabbitPassword())) {
+              managerCredentialsRepository.delete(managerCredentials);
+              // if message comes from a vnfm, remove the endpoint
+              if (body.has("vnfmManagerEndpoint"))
+                vnfmRegister.unregister(
+                    gson.fromJson(vnfmManagerEndpoint, VnfmManagerEndpoint.class));
 
-        String type =
-            isManager
-                ? vnfmManagerEndpoint.getAsJsonObject().get("endpoint").getAsString()
-                : username;
-        String configurePermissions =
-            "^amq\\.gen.*|amq\\.default$|(" + type + ")|(nfvo." + type + ".actions)";
-        String writePermissions =
-            "^amq\\.gen.*|amq\\.default$|("
-                + type
-                + ")|(vnfm.nfvo.actions)|(vnfm.nfvo.actions.reply)|(nfvo."
-                + type
-                + ".actions)|(openbaton-exchange)";
-        String readPermissions =
-            "^amq\\.gen.*|amq\\.default$|(nfvo."
-                + type
-                + ".actions)|("
-                + type
-                + ")|(openbaton-exchange)";
-
-        createRabbitMqUser(
-            rabbitUsername, rabbitPassword, brokerIp, managementPort, username, password, vhost);
-        try {
-          setRabbitMqUserPermissions(
-              rabbitUsername,
-              rabbitPassword,
-              brokerIp,
-              managementPort,
-              username,
-              vhost,
-              configurePermissions,
-              writePermissions,
-              readPermissions);
-        } catch (Exception e) {
-          try {
-            removeRabbitMqUser(rabbitUsername, rabbitPassword, brokerIp, managementPort, username);
-          } catch (Exception e2) {
-            log.error("Clean up failed. Could not remove RabbitMQ user " + username);
-            e2.printStackTrace();
+              removeRabbitMqUser(
+                  rabbitUsername, rabbitPassword, brokerIp, managementPort, username);
+            } else {
+              log.warn(
+                  "Some manager tried to unregister with a wrong password! or maybe i have an inconsistent DB...most probably... ;( ");
+            }
+            return null;
           }
-          throw e;
-        }
-
-        managerCredentials.setRabbitUsername(username);
-        managerCredentials.setRabbitPassword(password);
-        managerCredentials = managerCredentialsRepository.save(managerCredentials);
-        if (endpoint != null) vnfmManagerEndpointRepository.save(endpoint);
-        log.info("Registered a new manager.");
-        if (!isManager) {
-          this.refreshVims(username);
-        }
-        return gson.toJson(managerCredentials);
-      } else if (body.get("action").getAsString().toLowerCase().equals("unregister")
-          || body.get("action").getAsString().toLowerCase().equals("deregister")) {
-
-        if (!body.has("username")) {
-          log.error("Could not process Json message. The 'username' property is missing.");
+        default:
           return null;
-        }
-        if (!body.has("password")) {
-          log.error("Could not process Json message. The 'password' property is missing.");
-          return null;
-        }
-        String username = body.get("username").getAsString();
-        ManagerCredentials managerCredentials =
-            managerCredentialsRepository.findFirstByRabbitUsername(username);
-        if (managerCredentials == null) {
-          log.error("Did not find manager with name " + body.get("username"));
-          return null;
-        }
-        if (body.get("password").getAsString().equals(managerCredentials.getRabbitPassword())) {
-          managerCredentialsRepository.delete(managerCredentials);
-          // if message comes from a vnfm, remove the endpoint
-          if (body.has("vnfmManagerEndpoint"))
-            vnfmRegister.unregister(gson.fromJson(vnfmManagerEndpoint, VnfmManagerEndpoint.class));
-
-          removeRabbitMqUser(rabbitUsername, rabbitPassword, brokerIp, managementPort, username);
-        } else {
-          log.warn(
-              "Some manager tried to unregister with a wrong password! or maybe i have an inconsistent DB...most probably... ;( ");
-        }
-        return null;
-      } else return null;
+      }
     } catch (Exception e) {
       log.error("Exception while enabling manager or plugin.");
       e.printStackTrace();
@@ -380,7 +394,7 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
     }
   }
 
-  private void refreshVims(String username) throws InterruptedException {
+  private void refreshVims(String username) {
     if (delayRefresh > 0) {
       Timer timer = new Timer();
 
@@ -394,16 +408,20 @@ public class ComponentManager implements org.openbaton.nfvo.security.interfaces.
                   log.debug(String.format("Refreshing vims of type %s", vimType));
                   vimRepository
                       .findByType(vimType)
+                      .stream()
+                      .parallel()
                       .forEach(
                           vim -> {
                             try {
-                              vimManagement.refresh(vim, false);
+                              vimManagement.refresh(vim, false).get();
                             } catch (VimException
                                 | PluginException
                                 | IOException
                                 | AlreadyExistingException
-                                | BadRequestException e) {
-
+                                | BadRequestException
+                                | InterruptedException
+                                | ExecutionException e) {
+                              e.printStackTrace();
                               log.warn(
                                   String.format(
                                       "Error while refreshing vim %s of type %s after plugin registration",
