@@ -219,7 +219,7 @@ public class RestNetworkServiceRecord {
 
     log.debug("Json Body is" + jsonObject);
     Type mapType = new TypeToken<Map<String, Configuration>>() {}.getType();
-    return networkServiceRecordManagement.scaleOut(
+    return networkServiceRecordManagement.scaleOutNsr(
         nsrId,
         vnfdId,
         projectId,

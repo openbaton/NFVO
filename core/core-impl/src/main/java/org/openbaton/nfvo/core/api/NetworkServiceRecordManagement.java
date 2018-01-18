@@ -208,7 +208,7 @@ public class NetworkServiceRecordManagement
   }
 
   @Override
-  public NetworkServiceRecord scaleOut(
+  public NetworkServiceRecord scaleOutNsr(
       String nsrId,
       String vnfdId,
       String projectId,
@@ -286,7 +286,7 @@ public class NetworkServiceRecordManagement
     while (!savedNsrSuccessfully) {
       // Save the keys in the NSR
       networkServiceRecord.setStatus(Status.SCALING);
-      networkServiceRecord.setTask("ScalingOut");
+      networkServiceRecord.setTask("Scaling out");
       //            networkServiceRecord.setKeyNames(new HashSet<String>());
       if (body != null && body.getKeys() != null && !body.getKeys().isEmpty()) {
         for (Key key : body.getKeys()) {

@@ -208,7 +208,7 @@ public interface NetworkServiceRecordManagement {
 
   List<NetworkServiceRecord> queryByProjectId(String projectId);
 
-  NetworkServiceRecord scaleOut(
+  NetworkServiceRecord scaleOutNsr(
       String nsrId,
       String vnfdId,
       String projectId,
