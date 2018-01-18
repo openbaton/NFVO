@@ -17,6 +17,8 @@
 
 package org.openbaton.nfvo.core.utils;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -40,14 +42,22 @@ import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Created by lto on 11/05/15. */
 public class NSRUtils {
 
   private static final Logger log = LoggerFactory.getLogger(NSRUtils.class);
 
+  public static SimpleDateFormat getFormat() {
+    return new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+  }
+
   public static NetworkServiceRecord createNetworkServiceRecord(
       NetworkServiceDescriptor networkServiceDescriptor) {
+
     NetworkServiceRecord networkServiceRecord = new NetworkServiceRecord();
+    networkServiceRecord.setCreatedAt(getFormat().format(new Date()));
+    networkServiceRecord.setUpdatedAt(getFormat().format(new Date()));
+    networkServiceRecord.setTask("Onboarding");
+    networkServiceRecord.setKeyNames(new HashSet<>());
     networkServiceRecord.setDescriptor_reference(networkServiceDescriptor.getId());
     networkServiceRecord.setName(networkServiceDescriptor.getName());
     networkServiceRecord.setVendor(networkServiceDescriptor.getVendor());

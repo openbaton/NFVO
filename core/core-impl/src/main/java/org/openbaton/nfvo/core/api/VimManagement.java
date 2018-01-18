@@ -187,7 +187,8 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     }
 
     log.info("Refreshing vim");
-    synchronized (vimInstance.getAuthUrl().intern()) {
+    synchronized (
+        String.format("%s%s", vimInstance.getName(), vimInstance.getProjectId()).intern()) {
       vimInstance = vimBroker.getVim(vimInstance.getType()).refresh(vimInstance);
       vimInstance = vimRepository.save(vimInstance);
     }
