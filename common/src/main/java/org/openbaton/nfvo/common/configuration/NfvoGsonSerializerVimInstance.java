@@ -23,7 +23,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
-
 import org.openbaton.catalogue.nfvo.viminstances.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,9 +42,7 @@ public class NfvoGsonSerializerVimInstance implements JsonSerializer<BaseVimInst
       return gson.toJsonTree(src, OpenstackVimInstance.class);
     } else if (src instanceof DockerVimInstance)
       return gson.toJsonTree(src, DockerVimInstance.class);
-    else if (src instanceof AmazonVimInstance)
-      return gson.toJsonTree(src, AmazonVimInstance.class);
-    else
-      return gson.toJsonTree(src, GenericVimInstance.class);
+    else if (src instanceof AmazonVimInstance) return gson.toJsonTree(src, AmazonVimInstance.class);
+    else return gson.toJsonTree(src, GenericVimInstance.class);
   }
 }

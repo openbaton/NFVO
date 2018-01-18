@@ -1319,8 +1319,7 @@ public class GenericVIM extends Vim {
       flavorExtId = getFlavorExtID(flavorKey, (OpenstackVimInstance) vimInstance);
     else if (vimInstance instanceof AmazonVimInstance) {
       flavorExtId = vnfr.getDeployment_flavour_key();
-    }
-    else flavorExtId = "";
+    } else flavorExtId = "";
 
     log.debug("Generating Hostname...");
     vdu.setHostname(vnfr.getName());

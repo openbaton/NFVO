@@ -164,10 +164,10 @@ public class VimInstanceUtils {
           .collect(Collectors.toList());
     } else if (vimInstance instanceof AmazonVimInstance) {
       return ((AmazonVimInstance) vimInstance)
-              .getImages()
-              .stream()
-              .filter(i -> ((AWSImage) i).getName().equals(imageName))
-              .collect(Collectors.toList());
+          .getImages()
+          .stream()
+          .filter(i -> ((AWSImage) i).getName().equals(imageName))
+          .collect(Collectors.toList());
     } else {
       return vimInstance
           .getImages()
