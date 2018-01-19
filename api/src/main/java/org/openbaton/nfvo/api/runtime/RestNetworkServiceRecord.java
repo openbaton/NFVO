@@ -18,6 +18,7 @@ package org.openbaton.nfvo.api.runtime;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
 import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
@@ -788,6 +789,31 @@ public class RestNetworkServiceRecord {
     return vnfRecord;
   }
 
+  @ApiOperation(
+          value = "Restarts a VNF in an NSR",
+          notes = "Restarts a VNF, rebuilding to a different image if specified"
+  )
+  @RequestMapping(
+          value = "{idNsr}/vnfrecords/{idVnfr}/restart",
+          method = RequestMethod.POST,
+          consumes = MediaType.APPLICATION_JSON_VALUE,
+          produces = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  public VirtualNetworkFunctionRecord restartVNFD(
+          @RequestBody @Valid JsonObject body,
+          @PathVariable("idNsr") String nsrId,
+          @PathVariable("idVnfr") String vnfrId,
+          @RequestHeader(value = "project-id") String projectId)
+          throws NotFoundException, InterruptedException, BadRequestException, AlreadyExistingException, VimException, ExecutionException, PluginException, IOException {
+    NetworkServiceRecord nsr = networkServiceRecordManagement.query(nsrId, projectId);
+    JsonPrimitive imageNameJsonPrimitive = body.getAsJsonPrimitive("imageName");
+    String imageName = imageNameJsonPrimitive == null ? null : imageNameJsonPrimitive.getAsString();
+    return networkServiceRecordManagement.restartVnfr(nsr,vnfrId,imageName,projectId);
+  }
+
+
+
   /**
    * Returns a set of VNFDependency objects belonging to a specific NSR.
    *
@@ -929,6 +955,7 @@ public class RestNetworkServiceRecord {
     networkServiceRecordManagement.update(nsr, id, projectId);
     return vnfDependency;
   }
+
 
   /**
    * Returns the list of PhysicalNetworkFunctionRecord into a NSD with id

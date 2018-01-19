@@ -260,6 +260,38 @@ public class NetworkServiceRecordManagement
     return scaleOutNsr(nsr, vnfd, projectId, body);
   }
 
+  @Override
+  public VirtualNetworkFunctionRecord restartVnfr(NetworkServiceRecord nsr, String vnfrId, String imageName, String projectId) throws NotFoundException, AlreadyExistingException, IOException, BadRequestException, VimException, PluginException, ExecutionException, InterruptedException, BadFormatException {
+      VirtualNetworkFunctionRecord vnfr = vnfrRepository.findFirstByIdAndParent_ns_idAndProjectId(vnfrId, nsr.getId(), projectId);
+      if(imageName!=null && !imageName.isEmpty()) {
+
+      if (vnfr == null) throw new NotFoundException("Not found vnfr with id: " + vnfrId);
+
+      boolean imageNameSpecifiedDiffers= false;
+      for(VirtualDeploymentUnit vdu : vnfr.getVdu()){
+        imageNameSpecifiedDiffers = !vdu.getVm_image().iterator().next().equals(imageName);
+      }
+      if(imageNameSpecifiedDiffers) {
+        for (VirtualDeploymentUnit vdu : vnfr.getVdu()) {
+          for (VNFCInstance vnfcInstance : vdu.getVnfc_instance()) {
+            BaseVimInstance vimInstance = vimInstanceRepository.findFirstByIdAndProjectId(vnfcInstance.getVim_id(), projectId);
+            if (!vimInstance.getType().equals("test")) {
+              vimManagement.refresh(vimInstance, false).get();
+              if (findActiveImagesByName(vimInstance, imageName).size() == 0)
+                throw new NotFoundException(
+                        "Not found image "
+                                + imageName
+                                + " in vim: "
+                                + vimInstance.getName());
+            }
+          }
+        }
+      }
+    }
+    vnfmManager.restartVnfr(vnfr,imageName);
+    return vnfr;
+  }
+
   private NetworkServiceRecord scaleOutNsr(
       NetworkServiceRecord nsr,
       VirtualNetworkFunctionDescriptor vnfd,

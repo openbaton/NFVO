@@ -23,6 +23,7 @@ import java.util.Set;
 import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
+import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
@@ -38,6 +39,9 @@ public class OrVnfmInstantiateMessage extends OrVnfmMessage {
   private Map<String, String> extension;
   private Map<String, Collection<BaseVimInstance>> vimInstances;
   private VNFPackage vnfPackage;
+  private VirtualNetworkFunctionRecord vnfr;
+
+
 
   public Set<Key> getKeys() {
     return keys;
@@ -129,12 +133,22 @@ public class OrVnfmInstantiateMessage extends OrVnfmMessage {
     this.extension = extension;
   }
 
+  public VirtualNetworkFunctionRecord getVnfr() {
+    return vnfr;
+  }
+
+  public void setVnfr(VirtualNetworkFunctionRecord vnfr) {
+    this.vnfr = vnfr;
+  }
+
   @Override
   public String toString() {
     String result =
         "OrVnfmInstantiateMessage{"
             + "vnfd="
             + vnfd
+            + ", vnfr="
+            + vnfr
             + ", vnfdf="
             + vnfdf
             + ", vnfInstanceName='"

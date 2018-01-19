@@ -132,6 +132,23 @@ public class VimDriverCaller extends VimDriver {
   }
 
   @Override
+  public Server rebuildServer(BaseVimInstance vimInstance, String serverId, String imageName) throws VimDriverException {
+    List<Serializable> params = new LinkedList<>();
+    params.add(vimInstance);
+    params.add(serverId);
+    params.add(imageName);
+    Serializable res;
+    try {
+      res = pluginCaller.executeRPC("rebuildServer", params, Server.class);
+    } catch (IOException | InterruptedException e) {
+      throw new VimDriverException(e.getMessage());
+    } catch (PluginException e) {
+      throw new VimDriverException(e.getMessage(), e.getCause());
+    }
+    return (Server) res;
+  }
+
+  @Override
   public BaseVimInstance refresh(BaseVimInstance vimInstance) throws VimDriverException {
     List<Serializable> params = new LinkedList<>();
     params.add(vimInstance);

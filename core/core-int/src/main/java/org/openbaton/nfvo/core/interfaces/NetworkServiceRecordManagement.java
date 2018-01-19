@@ -217,4 +217,6 @@ public interface NetworkServiceRecordManagement {
       Map configurations)
       throws NotFoundException, MissingParameterException, VimException, BadRequestException,
           PluginException;
+
+    VirtualNetworkFunctionRecord restartVnfr(NetworkServiceRecord nsr, String vnfrId, String imageName, String projectId) throws NotFoundException, AlreadyExistingException, IOException, BadRequestException, VimException, PluginException, ExecutionException, InterruptedException, BadFormatException;
 }

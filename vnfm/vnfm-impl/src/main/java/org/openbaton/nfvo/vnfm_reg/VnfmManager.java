@@ -47,11 +47,8 @@ import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.catalogue.nfvo.messages.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmLogMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmScalingMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmUpdateMessage;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
@@ -449,6 +446,33 @@ public class VnfmManager
       throw new NotFoundException(e);
     }
 
+    vnfStateHandler.executeAction(vnfmSender.sendCommand(message, endpoint));
+    return new AsyncResult<>(null);
+  }
+
+  @Override
+  @Async
+  public Future<Void> restartVnfr(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, String imageName) throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
+    VnfmManagerEndpoint endpoint = generator.getVnfm(virtualNetworkFunctionRecord.getEndpoint());
+    if (endpoint == null) {
+      throw new NotFoundException(
+              "VnfManager of type "
+                      + virtualNetworkFunctionRecord.getType()
+                      + " (endpoint = "
+                      + virtualNetworkFunctionRecord.getEndpoint()
+                      + ") is not registered");
+    }
+
+    OrVnfmInstantiateMessage message = new OrVnfmInstantiateMessage();
+    message.setVnfr(virtualNetworkFunctionRecord);
+    HashMap<String,String> extension = new HashMap<>();
+    extension.put("imageName",imageName);
+    VnfmSender vnfmSender;
+    try {
+      vnfmSender = generator.getVnfmSender(endpoint.getEndpointType());
+    } catch (BeansException e) {
+      throw new NotFoundException(e);
+    }
     vnfStateHandler.executeAction(vnfmSender.sendCommand(message, endpoint));
     return new AsyncResult<>(null);
   }
