@@ -65,6 +65,7 @@ import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.VNFDRepository;
 import org.openbaton.nfvo.repositories.VNFRRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
+import org.openbaton.nfvo.repositories.VirtualLinkRecordRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
 import org.openbaton.vnfm.interfaces.manager.MessageGenerator;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
@@ -108,6 +109,7 @@ public class VnfmManager
   @Autowired private VimRepository vimInstanceRepository;
   @Autowired private MessageGenerator generator;
   @Autowired private VimManagement vimManagement;
+  @Autowired private VirtualLinkRecordRepository vlrRepository;
 
   @Value("${nfvo.start.ordered:false}")
   private boolean ordered;
@@ -336,8 +338,13 @@ public class VnfmManager
           networkServiceRecord.getProjectId());
       nsrRepository.delete(networkServiceRecord);
       if (dedicatedNetworks) {
+
         networkServiceRecord
             .getVlr()
+            .parallelStream()
+            .filter(
+                virtualLinkRecord ->
+                    vlrRepository.findByExtId(virtualLinkRecord.getExtId()).size() == 0)
             .forEach(
                 vlr -> {
                   try {
