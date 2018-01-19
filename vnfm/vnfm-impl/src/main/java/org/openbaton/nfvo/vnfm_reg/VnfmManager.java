@@ -55,8 +55,11 @@ import org.openbaton.catalogue.nfvo.messages.OrVnfmUpdateMessage;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.PluginException;
+import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.common.internal.model.EventFinishNFVO;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
+import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.VNFDRepository;
@@ -104,9 +107,13 @@ public class VnfmManager
   @Autowired private VNFRRepository vnfrRepository;
   @Autowired private VimRepository vimInstanceRepository;
   @Autowired private MessageGenerator generator;
+  @Autowired private VimManagement vimManagement;
 
   @Value("${nfvo.start.ordered:false}")
   private boolean ordered;
+
+  @Value("${nfvo.networks.dedicated:false}")
+  private boolean dedicatedNetworks;
 
   private static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
     List<Entry<K, V>> list = new LinkedList<>(map.entrySet());
@@ -328,6 +335,21 @@ public class VnfmManager
           networkServiceRecord,
           networkServiceRecord.getProjectId());
       nsrRepository.delete(networkServiceRecord);
+      if (dedicatedNetworks) {
+        networkServiceRecord
+            .getVlr()
+            .forEach(
+                vlr -> {
+                  try {
+                    vimManagement.deleteNetwork(vlr);
+                  } catch (PluginException | VimException e) {
+                    e.printStackTrace();
+                    log.error(String.format("Not Able to delete network %s!", vlr.getExtId()));
+                  } catch (NotFoundException e) {
+                    log.warn(String.format("%s. probably already deleted...", e.getMessage()));
+                  }
+                });
+      }
     }
 
     log.trace("Thread: " + Thread.currentThread().getId() + " finished findAndSet");

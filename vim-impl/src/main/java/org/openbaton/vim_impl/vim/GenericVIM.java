@@ -135,7 +135,7 @@ public class GenericVIM extends Vim {
   @Override
   public void delete(BaseVimInstance vimInstance, DeploymentFlavour deploymentFlavour)
       throws VimException {
-    boolean isDeleted = false;
+    boolean isDeleted;
     try {
       log.debug(
           "Deleting DeploymentFlavor with name "
@@ -361,7 +361,7 @@ public class GenericVIM extends Vim {
 
   @Override
   public void delete(BaseVimInstance vimInstance, NFVImage image) throws VimException {
-    boolean isDeleted = false;
+    boolean isDeleted;
     try {
       log.debug(
           "Deleting image with name: "
@@ -970,7 +970,7 @@ public class GenericVIM extends Vim {
   @Override
   public Quota getQuota(BaseVimInstance vimInstance) throws VimException {
     log.debug("Listing Quota for Tenant of VimInstance " + vimInstance.getName());
-    Quota quota = null;
+    Quota quota;
     try {
       quota = client.getQuota(vimInstance);
       log.info(
@@ -1015,7 +1015,7 @@ public class GenericVIM extends Vim {
   }
 
   @Override
-  public BaseNetwork update(BaseVimInstance vimInstance, Network network) throws VimException {
+  public BaseNetwork update(BaseVimInstance vimInstance, BaseNetwork network) throws VimException {
     BaseNetwork updatedNetwork;
     try {
       log.debug(
@@ -1064,10 +1064,10 @@ public class GenericVIM extends Vim {
               + " on VimInstance "
               + vimInstance.getName()
               + " -> "
-              + network.getSubnets());
+              + ((Network) network).getSubnets());
       Set<Subnet> updatedSubnets = new HashSet<>();
       List<String> updatedSubnetExtIds = new ArrayList<>();
-      for (Subnet subnet : network.getSubnets()) {
+      for (Subnet subnet : ((Network) network).getSubnets()) {
         if (subnet.getExtId() != null) {
           try {
             log.debug(
@@ -1085,7 +1085,7 @@ public class GenericVIM extends Vim {
                     + network.getName()
                     + " on VimInstance "
                     + vimInstance.getName());
-            updatedSubnet.setNetworkId(updatedNetwork.getId().toString());
+            updatedSubnet.setNetworkId(updatedNetwork.getId());
             updatedSubnets.add(updatedSubnet);
             updatedSubnetExtIds.add(updatedSubnet.getExtId());
           } catch (Exception e) {
@@ -1139,7 +1139,7 @@ public class GenericVIM extends Vim {
                     + network.getName()
                     + " on VimInstance "
                     + vimInstance.getName());
-            createdSubnet.setNetworkId(updatedNetwork.getId().toString());
+            createdSubnet.setNetworkId(updatedNetwork.getId());
             updatedSubnets.add(createdSubnet);
             updatedSubnetExtIds.add(createdSubnet.getExtId());
           } catch (Exception e) {
@@ -1179,7 +1179,7 @@ public class GenericVIM extends Vim {
         }
       }
       ((Network) updatedNetwork).setSubnets(updatedSubnets);
-      List<String> existingSubnetExtIds = null;
+      List<String> existingSubnetExtIds;
       try {
         log.debug(
             "Listing all Subnet IDs of Network with name: "
@@ -1304,10 +1304,8 @@ public class GenericVIM extends Vim {
     String image = this.chooseImage(vdu.getVm_image(), vimInstance);
 
     log.debug("Finding Networks...");
-    Set<VNFDConnectionPoint> networks = new HashSet<>();
-    networks.addAll(vnfComponent.getConnection_point());
-    log.debug("Found Networks with ExtIds: " + networks);
-    String flavorKey = null;
+    Set<VNFDConnectionPoint> networks = new HashSet<>(vnfComponent.getConnection_point());
+    String flavorKey;
     if (vdu.getComputation_requirement() != null && !vdu.getComputation_requirement().isEmpty()) {
       flavorKey = vdu.getComputation_requirement();
     } else {
@@ -1432,7 +1430,7 @@ public class GenericVIM extends Vim {
                   + "' from VIM directly");
           vnfcInstance =
               getVnfcInstance(vimInstance, vnfComponent, hostname, null, vdu, floatingIps, vnfr);
-          checkIntegrity(vnfr, vdu, vnfComponent, vnfcInstance, server);
+          //checkIntegrity(vnfr, vdu, vnfComponent, vnfcInstance, null);
         } catch (VimDriverException | VimException e1) {
           if ((e1 instanceof VimException) && ((VimException) e1).getVnfcInstance() != null)
             vnfcInstance = ((VimException) e1).getVnfcInstance();
@@ -1443,8 +1441,8 @@ public class GenericVIM extends Vim {
             vnfcInstance.setVnfComponent(vnfComponent);
             vnfcInstance.setVc_id("unknown");
             vnfcInstance.setState("ERROR");
-            vnfcInstance.setIps(new HashSet<Ip>());
-            vnfcInstance.setFloatingIps(new HashSet<Ip>());
+            vnfcInstance.setIps(new HashSet<>());
+            vnfcInstance.setFloatingIps(new HashSet<>());
           }
           throw new VimException(
               "Not launched VM with hostname "
@@ -1474,7 +1472,7 @@ public class GenericVIM extends Vim {
     return new AsyncResult<>(vnfcInstance);
   }
 
-  protected VNFCInstance getVnfcInstance(
+  private VNFCInstance getVnfcInstance(
       BaseVimInstance vimInstance,
       VNFComponent vnfComponent,
       String hostname,
@@ -1509,7 +1507,7 @@ public class GenericVIM extends Vim {
     vnfcInstance.setVim_id(vimInstance.getId());
     vnfcInstance.setState(server.getStatus());
 
-    vnfcInstance.setConnection_point(new HashSet<VNFDConnectionPoint>());
+    vnfcInstance.setConnection_point(new HashSet<>());
 
     for (VNFDConnectionPoint connectionPoint : vnfComponent.getConnection_point()) {
       VNFDConnectionPoint connectionPoint_vnfci = new VNFDConnectionPoint();
@@ -1522,12 +1520,12 @@ public class GenericVIM extends Vim {
       vnfcInstance.getConnection_point().add(connectionPoint_vnfci);
     }
 
-    if (vdu.getVnfc_instance() == null) vdu.setVnfc_instance(new HashSet<VNFCInstance>());
+    if (vdu.getVnfc_instance() == null) vdu.setVnfc_instance(new HashSet<>());
 
     vnfcInstance.setVnfComponent(vnfComponent);
 
-    vnfcInstance.setIps(new HashSet<Ip>());
-    vnfcInstance.setFloatingIps(new HashSet<Ip>());
+    vnfcInstance.setIps(new HashSet<>());
+    vnfcInstance.setFloatingIps(new HashSet<>());
 
     if (!floatingIps.isEmpty()) {
       for (Entry<String, String> fip : server.getFloatingIps().entrySet()) {

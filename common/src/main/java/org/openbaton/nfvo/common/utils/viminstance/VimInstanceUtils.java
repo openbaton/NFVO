@@ -305,8 +305,16 @@ public class VimInstanceUtils {
     } else return false;
   }
 
-  public static boolean isVLRExisting(VirtualLinkRecord virtualLinkRecord, BaseNetwork network) {
-    return network.getName().equals(virtualLinkRecord.getName())
-        || network.getExtId().equals(virtualLinkRecord.getName());
+  public static boolean isVLRExisting(
+      VirtualLinkRecord virtualLinkRecord, BaseNetwork network, boolean dedicatedNetworks) {
+    boolean checkNamesAndIds =
+        network.getName().equals(virtualLinkRecord.getName())
+            || network.getExtId().equals(virtualLinkRecord.getName())
+            || network.getExtId().equals(virtualLinkRecord.getExtId());
+    if (dedicatedNetworks)
+      return virtualLinkRecord.getExtId() != null
+          && !virtualLinkRecord.getExtId().equals("")
+          && checkNamesAndIds;
+    else return checkNamesAndIds;
   }
 }

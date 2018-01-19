@@ -20,6 +20,7 @@ package org.openbaton.nfvo.core.interfaces;
 import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.Future;
+import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.exceptions.AlreadyExistingException;
@@ -83,4 +84,9 @@ public interface VimManagement {
 
   Set<BaseNfvImage> queryImagesDirectly(BaseVimInstance vimInstance)
       throws PluginException, VimException;
+
+  Future<Void> deleteNetwork(VirtualLinkRecord vlr)
+      throws PluginException, NotFoundException, VimException;
+
+  BaseVimInstance query(String vim_id);
 }

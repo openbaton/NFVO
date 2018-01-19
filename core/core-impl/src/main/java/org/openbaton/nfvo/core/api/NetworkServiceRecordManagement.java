@@ -72,7 +72,6 @@ import org.openbaton.exceptions.WrongStatusException;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
 import org.openbaton.nfvo.core.interfaces.DependencyManagement;
 import org.openbaton.nfvo.core.interfaces.EventDispatcher;
-import org.openbaton.nfvo.core.interfaces.NetworkManagement;
 import org.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.openbaton.nfvo.core.utils.NSDUtils;
@@ -121,7 +120,6 @@ public class NetworkServiceRecordManagement
   @Autowired private VnfmManager vnfmManager;
   @Autowired private VnfStateHandler vnfStateHandler;
   @Autowired private ResourceManagement resourceManagement;
-  @Autowired private NetworkManagement networkManagement;
   @Autowired private DependencyManagement dependencyManagement;
   @Autowired private VNFCRepository vnfcRepository;
   @Autowired private VduRepository vduRepository;
@@ -1516,132 +1514,6 @@ public class NetworkServiceRecordManagement
    * Triggers the execution of an {@link org.openbaton.catalogue.nfvo.Action} on a specific
    * VNFCInstance.
    *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * <p>
-   *
    * <p>Note: Currently only the HEAL action is supported.
    *
    * @param nfvMessage the NFVMessage to send
@@ -1895,22 +1767,21 @@ public class NetworkServiceRecordManagement
               .stream()
               .parallel()
               .forEach(
-                  vdu -> {
-                    vdu.getVnfc_instance()
-                        .stream()
-                        .parallel()
-                        .forEach(
-                            vnfcInstance -> {
-                              try {
-                                resourceManagement.release(vdu, vnfcInstance);
-                              } catch (VimException
-                                  | ExecutionException
-                                  | PluginException
-                                  | InterruptedException e) {
-                                e.printStackTrace();
-                              }
-                            });
-                  });
+                  vdu ->
+                      vdu.getVnfc_instance()
+                          .stream()
+                          .parallel()
+                          .forEach(
+                              vnfcInstance -> {
+                                try {
+                                  resourceManagement.release(vdu, vnfcInstance);
+                                } catch (VimException
+                                    | ExecutionException
+                                    | PluginException
+                                    | InterruptedException e) {
+                                  e.printStackTrace();
+                                }
+                              }));
           if (nsrRepository.exists(virtualNetworkFunctionRecord.getParent_ns_id())) {
             NetworkServiceRecord nsr =
                 nsrRepository.findFirstById(virtualNetworkFunctionRecord.getParent_ns_id());
