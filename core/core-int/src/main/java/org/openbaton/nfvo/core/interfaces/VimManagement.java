@@ -19,6 +19,8 @@ package org.openbaton.nfvo.core.interfaces;
 
 import java.io.IOException;
 import java.util.Set;
+import java.util.concurrent.Future;
+import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.exceptions.AlreadyExistingException;
@@ -28,11 +30,10 @@ import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 
-/** Created by lto on 13/05/15. */
 public interface VimManagement {
 
   /** This operation allows adding a datacenter into the datacenter repository. */
-  BaseVimInstance add(BaseVimInstance vimInstance, String projectId)
+  Future<BaseVimInstance> add(BaseVimInstance vimInstance, String projectId)
       throws VimException, PluginException, IOException, BadRequestException,
           AlreadyExistingException;
 
@@ -40,7 +41,7 @@ public interface VimManagement {
   void delete(String id, String projectId) throws NotFoundException, BadRequestException;
 
   /** This operation allows updating the datacenter in the datacenter repository. */
-  BaseVimInstance update(BaseVimInstance new_vimInstance, String id, String projectId)
+  Future<BaseVimInstance> update(BaseVimInstance new_vimInstance, String id, String projectId)
       throws VimException, PluginException, IOException, BadRequestException,
           AlreadyExistingException, NotFoundException;
 
@@ -49,7 +50,7 @@ public interface VimManagement {
    */
   BaseVimInstance query(String id, String projectId);
 
-  BaseVimInstance refresh(BaseVimInstance vimInstance, boolean force)
+  Future<BaseVimInstance> refresh(BaseVimInstance vimInstance, boolean force)
       throws VimException, PluginException, IOException, BadRequestException,
           AlreadyExistingException;
 
@@ -83,4 +84,9 @@ public interface VimManagement {
 
   Set<BaseNfvImage> queryImagesDirectly(BaseVimInstance vimInstance)
       throws PluginException, VimException;
+
+  Future<Void> deleteNetwork(VirtualLinkRecord vlr)
+      throws PluginException, NotFoundException, VimException;
+
+  BaseVimInstance query(String vim_id);
 }

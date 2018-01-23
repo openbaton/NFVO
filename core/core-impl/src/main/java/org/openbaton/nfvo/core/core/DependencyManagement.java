@@ -313,8 +313,9 @@ public class DependencyManagement
           }
         }
       }
+      return dp.getParameters().keySet();
     }
-    return dp.getParameters().keySet();
+    return new HashSet<>();
   }
 
   public Set<String> getNotInitializedVnfrSource(Set<String> ids, NetworkServiceRecord nsr) {

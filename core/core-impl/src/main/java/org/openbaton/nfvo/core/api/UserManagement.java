@@ -64,8 +64,7 @@ public class UserManagement implements org.openbaton.nfvo.core.interfaces.UserMa
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Override
-  public User add(User user)
-      throws PasswordWeakException, NotAllowedException, BadRequestException, NotFoundException {
+  public User add(User user) throws PasswordWeakException, BadRequestException {
     log.debug("Adding new user: " + user);
 
     if (customUserDetailsService.userExists(user.getUsername())) {
@@ -78,21 +77,13 @@ public class UserManagement implements org.openbaton.nfvo.core.interfaces.UserMa
       Utils.checkPasswordIntegrity(user.getPassword());
     }
 
-    // TODO handle projects
-    String[] roles = new String[user.getRoles().size()];
-
-    Role[] objects = user.getRoles().toArray(new Role[0]);
-    for (int i = 0; i < user.getRoles().size(); i++) {
-      roles[i] = objects[i].getRole() + ":" + objects[i].getProject();
-    }
-
     user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt(12)));
     customUserDetailsService.createUser(user);
     return user;
   }
 
   @Override
-  public void delete(User user) throws NotAllowedException {
+  public void delete(User user) {
     log.debug("Deleting user: " + user);
     customUserDetailsService.deleteUser(user.getUsername());
   }
@@ -109,13 +100,6 @@ public class UserManagement implements org.openbaton.nfvo.core.interfaces.UserMa
     newUser.setPassword(userToUpdate.getPassword());
 
     checkIntegrity(newUser);
-
-    String[] roles = new String[newUser.getRoles().size()];
-
-    Role[] newRoles = newUser.getRoles().toArray(new Role[0]);
-    for (int i = 0; i < newUser.getRoles().size(); i++) {
-      roles[i] = newRoles[i].getRole() + ":" + newRoles[i].getProject();
-    }
 
     userToUpdate.setEmail(newUser.getEmail());
     userToUpdate.setEnabled(newUser.isEnabled());
@@ -193,8 +177,7 @@ public class UserManagement implements org.openbaton.nfvo.core.interfaces.UserMa
     return user;
   }
 
-  public void checkIntegrity(User user)
-      throws BadRequestException, NotFoundException, NotAllowedException {
+  private void checkIntegrity(User user) throws BadRequestException {
     if (user.getUsername() == null || user.getUsername().equals("")) {
       throw new BadRequestException("Username must be provided");
     }
@@ -202,9 +185,7 @@ public class UserManagement implements org.openbaton.nfvo.core.interfaces.UserMa
       throw new BadRequestException("Password must be provided");
     }
     if (checkEmail && user.getEmail() != null && !user.getEmail().equals("")) {
-      String EMAIL_PATTERN =
-          "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-      Pattern pattern = Pattern.compile(EMAIL_PATTERN);
+      Pattern pattern = Pattern.compile(".+@.+\\.[a-z]+");
       if (!pattern.matcher(user.getEmail()).matches()) {
         throw new BadRequestException("Email is not well formatted");
       }
@@ -217,7 +198,7 @@ public class UserManagement implements org.openbaton.nfvo.core.interfaces.UserMa
       if (role.getProject() == null || role.getProject().equals("")) {
         throw new BadRequestException("Project must be provided");
       }
-      if (role.getRole() == null || role.getRole().equals("")) {
+      if (role.getRole() == null) {
         throw new BadRequestException("Role must be provided");
       }
       if (!role.getProject().equals("*")) {

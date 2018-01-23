@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -39,7 +40,6 @@ import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.EntityUnreachableException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
@@ -48,6 +48,7 @@ import org.openbaton.nfvo.core.api.ComponentManager;
 import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.AsyncResult;
 
 public class ApiRestBaseVimInstancesTest {
 
@@ -71,8 +72,8 @@ public class ApiRestBaseVimInstancesTest {
 
   @Test
   public void createVimInstance()
-      throws VimException, PluginException, IOException, EntityUnreachableException,
-          BadRequestException, AlreadyExistingException, NotFoundException {
+      throws VimException, PluginException, IOException, BadRequestException,
+          AlreadyExistingException, ExecutionException, InterruptedException {
     OpenstackVimInstance datacenter = new OpenstackVimInstance();
     datacenter.setId("123");
     datacenter.setName("DC-1");
@@ -81,7 +82,8 @@ public class ApiRestBaseVimInstancesTest {
     datacenter.setTenant("tenant");
     datacenter.setKeyPair("keypair");
     datacenter.setPassword("");
-    when(mock.add(any(datacenter.getClass()), anyString())).thenReturn(datacenter);
+    when(mock.add(any(datacenter.getClass()), anyString()))
+        .thenReturn(new AsyncResult<>(datacenter));
     log.info("" + restVimInstances.create(datacenter, "pi"));
     BaseVimInstance datacenter2 = restVimInstances.create(datacenter, "pi");
     assertEquals(datacenter, datacenter2);
@@ -102,14 +104,15 @@ public class ApiRestBaseVimInstancesTest {
 
   @Test
   public void updateVimInstance()
-      throws VimException, PluginException, IOException, EntityUnreachableException,
-          BadRequestException, AlreadyExistingException, NotFoundException {
+      throws VimException, PluginException, IOException, BadRequestException,
+          AlreadyExistingException, NotFoundException, ExecutionException, InterruptedException {
     OpenstackVimInstance datacenter = new OpenstackVimInstance();
     datacenter.setId("123");
     datacenter.setName("DC-1");
     datacenter.setType("OpenStack");
     datacenter.setName("datacenter_test");
-    when(mock.update(any(datacenter.getClass()), anyString(), anyString())).thenReturn(datacenter);
+    when(mock.update(any(datacenter.getClass()), anyString(), anyString()))
+        .thenReturn(new AsyncResult<>(datacenter));
     assertEquals(datacenter, restVimInstances.update(datacenter, datacenter.getId(), "pi"));
   }
 

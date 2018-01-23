@@ -61,7 +61,7 @@ public class NfvoGsonDeserializerVimInstance implements JsonDeserializer<BaseVim
               + type.substring(0, 1).toUpperCase()
               + type.substring(1)
               + "VimInstance";
-      log.debug("Looking for class " + className);
+      log.trace("Looking for class " + className);
 
       @SuppressWarnings("unchecked")
       Class<? extends BaseVimInstance> clz =

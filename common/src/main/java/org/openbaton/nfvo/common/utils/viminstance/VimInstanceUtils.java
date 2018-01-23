@@ -5,11 +5,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.apache.commons.net.util.SubnetUtils;
 import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.openbaton.catalogue.nfvo.ImageStatus;
 import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
 import org.openbaton.catalogue.nfvo.images.DockerImage;
@@ -157,13 +159,22 @@ public class VimInstanceUtils {
       return ((OpenstackVimInstance) vimInstance)
           .getImages()
           .stream()
-          .filter(i -> ((NFVImage) i).getName().equals(imageName))
+          .filter(
+              i ->
+                  ((NFVImage) i).getName() != null
+                      && ((NFVImage) i).getName().equals(imageName)
+                      && (((NFVImage) i).getStatus() == null
+                          || ((NFVImage) i).getStatus().ordinal() == ImageStatus.ACTIVE.ordinal()))
           .collect(Collectors.toList());
     } else if (vimInstance instanceof DockerVimInstance) {
       return ((DockerVimInstance) vimInstance)
           .getImages()
           .stream()
-          .filter(i -> ((DockerImage) i).getTags().contains(imageName))
+          .filter(
+              i ->
+                  ((DockerImage) i).getTags() != null
+                      && !((DockerImage) i).getTags().isEmpty()
+                      && ((DockerImage) i).getTags().contains(imageName))
           .collect(Collectors.toList());
     } else {
       return vimInstance
@@ -210,6 +221,38 @@ public class VimInstanceUtils {
     }
   }
 
+  public static BaseNetwork createBaseNetwork(
+      NetworkServiceDescriptor networkServiceDescriptor,
+      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
+      String networkName,
+      BaseVimInstance vimInstance)
+      throws BadRequestException {
+    if (vimInstance instanceof OpenstackVimInstance) {
+      Network network = new Network();
+      HashSet<Subnet> subnets = new HashSet<>();
+      Subnet subnet = new Subnet();
+      subnet.setName(String.format("%s_subnet", networkName));
+      subnet.setCidr(
+          getCidrFromVLName(
+              networkName, networkServiceDescriptor, virtualNetworkFunctionDescriptor));
+      subnets.add(subnet);
+      network.setSubnets(subnets);
+      network.setName(networkName);
+      return network;
+    } else if (vimInstance instanceof DockerVimInstance) {
+      DockerNetwork networkdc = new DockerNetwork();
+      networkdc.setName(networkName);
+      networkdc.setSubnet(
+          getCidrFromVLName(
+              networkName, networkServiceDescriptor, virtualNetworkFunctionDescriptor));
+      return networkdc;
+    } else {
+      BaseNetwork networkb = new BaseNetwork();
+      networkb.setName(networkName);
+      return networkb;
+    }
+  }
+
   private static String getCidrFromVLName(
       String virtual_link_reference,
       NetworkServiceDescriptor networkServiceDescriptor,
@@ -230,5 +273,48 @@ public class VimInstanceUtils {
             "Connection Point with Virtual link reference %s points to non defined Virtual Link. Please add a VL in the "
                 + "VNFD or NSD or change the VL reference",
             virtual_link_reference));
+  }
+
+  public static boolean isVNFDConnectionPointExisting(
+      VNFDConnectionPoint vnfdConnectionPoint, BaseNetwork network) {
+    if (network.getName().equals(vnfdConnectionPoint.getVirtual_link_reference())
+        || network.getExtId().equals(vnfdConnectionPoint.getVirtual_link_reference())) {
+      if (vnfdConnectionPoint.getFixedIp() != null
+          && !vnfdConnectionPoint.getFixedIp().equals("")) {
+        if (network instanceof Network) {
+          Network osNet = (Network) network;
+          return osNet.getSubnets() == null
+              || osNet.getSubnets().size() <= 0
+              || osNet
+                  .getSubnets()
+                  .stream()
+                  .anyMatch(
+                      subnet ->
+                          new SubnetUtils(subnet.getCidr())
+                              .getInfo()
+                              .isInRange(vnfdConnectionPoint.getFixedIp()));
+        } else if (network instanceof DockerNetwork) {
+          DockerNetwork dockerNetwork = (DockerNetwork) network;
+          return new SubnetUtils(dockerNetwork.getSubnet())
+              .getInfo()
+              .isInRange(vnfdConnectionPoint.getFixedIp());
+        } else return true;
+      } else {
+        return true;
+      }
+    } else return false;
+  }
+
+  public static boolean isVLRExisting(
+      VirtualLinkRecord virtualLinkRecord, BaseNetwork network, boolean dedicatedNetworks) {
+    boolean checkNamesAndIds =
+        network.getName().equals(virtualLinkRecord.getName())
+            || network.getExtId().equals(virtualLinkRecord.getName())
+            || network.getExtId().equals(virtualLinkRecord.getExtId());
+    if (dedicatedNetworks)
+      return virtualLinkRecord.getExtId() != null
+          && !virtualLinkRecord.getExtId().equals("")
+          && checkNamesAndIds;
+    else return checkNamesAndIds;
   }
 }

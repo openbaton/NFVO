@@ -32,7 +32,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-/** Created by lto on 20/04/15. */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {Application.class})
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class})

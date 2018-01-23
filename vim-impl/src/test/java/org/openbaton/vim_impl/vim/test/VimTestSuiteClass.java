@@ -28,7 +28,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -48,6 +47,7 @@ import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.nfvo.ImageStatus;
 import org.openbaton.catalogue.nfvo.Server;
 import org.openbaton.catalogue.nfvo.images.NFVImage;
 import org.openbaton.catalogue.nfvo.networks.Network;
@@ -154,8 +154,8 @@ public class VimTestSuiteClass {
 
     Server server = new Server();
     server.setExtId(environment.getProperty("mocked_id"));
-    server.setIps(new HashMap<String, List<String>>());
-    server.setFloatingIps(new HashMap<String, String>());
+    server.setIps(new HashMap<>());
+    server.setFloatingIps(new HashMap<>());
     //TODO use the method launchInstanceAndWait properly
     when(vimDriverCaller.launchInstanceAndWait(
             any(BaseVimInstance.class),
@@ -179,8 +179,8 @@ public class VimTestSuiteClass {
               vnfr,
               vdu.getVnfc().iterator().next(),
               "",
-              new HashMap<String, String>(),
-              new HashSet<Key>());
+              new HashMap<>(),
+              new HashSet<>());
       String expectedId = id.get().getVc_id();
       log.debug(expectedId + " == " + environment.getProperty("mocked_id"));
       Assert.assertEquals(expectedId, environment.getProperty("mocked_id"));
@@ -235,7 +235,7 @@ public class VimTestSuiteClass {
     Set<String> vm_images = new HashSet<>();
     vm_images.add("image_1234");
     vdu.setVm_image(vm_images);
-    vimInstance.setFlavours(new HashSet<DeploymentFlavour>());
+    vimInstance.setFlavours(new HashSet<>());
     DeploymentFlavour deploymentFlavour = new DeploymentFlavour();
     deploymentFlavour.setExtId("ext_id");
     deploymentFlavour.setFlavour_key("m1.small");
@@ -265,6 +265,7 @@ public class VimTestSuiteClass {
             NFVImage nfvImage = new NFVImage();
             nfvImage.setName("image_1234");
             nfvImage.setExtId("ext_id");
+            nfvImage.setStatus(ImageStatus.ACTIVE.name());
             add(nfvImage);
           }
         });
