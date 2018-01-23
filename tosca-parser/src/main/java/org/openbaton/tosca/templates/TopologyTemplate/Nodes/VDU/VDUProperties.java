@@ -28,6 +28,8 @@ public class VDUProperties {
   private int scale_in_out;
   private Set<String> vim_instance_name;
   private VDUFaultManagement fault_management_policy = null;
+  private VDUHighAvailability high_availability = null;
+  private Set<String> monitoring_parameter;
 
   @SuppressWarnings({"unsafe", "unchecked"})
   public VDUProperties(Object vduProp) {
@@ -50,6 +52,20 @@ public class VDUProperties {
     if (vduPropMap.containsKey("fault_management_policy")) {
       fault_management_policy = new VDUFaultManagement(vduPropMap.get("fault_management_policy"));
     }
+    
+    if (vduPropMap.containsKey("high_availability")) {
+      high_availability = new VDUHighAvailability(vduPropMap.get("high_availability"));
+    }
+
+    if (vduPropMap.containsKey("monitoring_parameter")) {
+      monitoring_parameter =
+          new LinkedHashSet<String>() {
+            {
+              addAll((Collection<? extends String>) vduPropMap.get("monitoring_parameter"));
+            }
+          };
+    }
+
   }
 
   public int getScale_in_out() {
@@ -87,4 +103,20 @@ public class VDUProperties {
   public void setFault_management_policy(VDUFaultManagement fault_management_policy) {
     this.fault_management_policy = fault_management_policy;
   }
+  public VDUHighAvailability getHigh_Availability() {
+    return high_availability;
+  }
+
+  public void setHighAvailability(VDUHighAvailability high_availability) {
+    this.high_availability = high_availability;
+  }
+
+  public Set<String> getMonitoring_Parameter() {
+    return monitoring_parameter;
+  }
+
+  public void setMonitoring_Parameter(LinkedHashSet<String> monitoring_parameter) {
+    this.monitoring_parameter = monitoring_parameter;
+  }
+
 }

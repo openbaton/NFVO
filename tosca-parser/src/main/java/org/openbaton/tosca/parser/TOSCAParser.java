@@ -101,6 +101,16 @@ public class TOSCAParser {
       vdu.setFault_management_policy(
           vduTemplate.getProperties().getFault_management_policy().getFaultManagementPolicies());
     }
+    
+    if (vduTemplate.getProperties().getHigh_Availability() != null) {
+      vdu.setHigh_availability(
+          vduTemplate.getProperties().getHigh_Availability().getHighAvailability());
+    }
+
+    if (vduTemplate.getProperties().getMonitoring_Parameter() != null) {
+      vdu.setMonitoring_parameter(vduTemplate.getProperties().getMonitoring_Parameter());
+    }
+
 
     vdu.setVimInstanceName(vduTemplate.getProperties().getVim_instance_name());
 
