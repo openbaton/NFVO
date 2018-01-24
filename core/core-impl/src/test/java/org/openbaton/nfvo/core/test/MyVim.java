@@ -153,7 +153,10 @@ public class MyVim extends Vim {
   public void migrate(VirtualDeploymentUnit vdu) {}
 
   @Override
-  public void operate(VirtualDeploymentUnit vdu, String operation) {}
+  public Future<Void> operate(
+      BaseVimInstance vimInstance, VirtualDeploymentUnit vdu, String operation) {
+    return null;
+  }
 
   @Override
   public Future<Void> release(VNFCInstance vnfcInstance, BaseVimInstance vimInstance)

@@ -29,14 +29,7 @@ import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.exceptions.BadFormatException;
-import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.MissingParameterException;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimException;
-import org.openbaton.exceptions.WrongStatusException;
+import org.openbaton.exceptions.*;
 
 /** Created by mpa on 30/04/15. */
 public interface NetworkServiceRecordManagement {
@@ -218,5 +211,9 @@ public interface NetworkServiceRecordManagement {
       throws NotFoundException, MissingParameterException, VimException, BadRequestException,
           PluginException;
 
-    VirtualNetworkFunctionRecord restartVnfr(NetworkServiceRecord nsr, String vnfrId, String imageName, String projectId) throws NotFoundException, AlreadyExistingException, IOException, BadRequestException, VimException, PluginException, ExecutionException, InterruptedException, BadFormatException;
+  VirtualNetworkFunctionRecord restartVnfr(
+      NetworkServiceRecord nsr, String vnfrId, String imageName, String projectId)
+      throws NotFoundException, AlreadyExistingException, IOException, BadRequestException,
+          VimException, PluginException, ExecutionException, InterruptedException,
+          BadFormatException, VimDriverException;
 }

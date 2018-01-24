@@ -76,7 +76,8 @@ public interface ResourceManagement {
    * Examples on compute resources can include (but not limited to): start, stop, pause, suspend,
    * capture snapshot, etc.
    */
-  void operate(VirtualDeploymentUnit vdu, String operation);
+  Future<Void> operate(VirtualDeploymentUnit vdu, String operation)
+      throws PluginException, ExecutionException, InterruptedException, VimException;
 
   /**
    * This operation allows de-allocating and terminating an instantiated virtualised resource. This

@@ -179,7 +179,18 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
   public void migrate(VirtualDeploymentUnit vdu) {}
 
   @Override
-  public void operate(VirtualDeploymentUnit vdu, String operation) {}
+  @Async
+  public Future<Void> operate(VirtualDeploymentUnit vdu, String operation)
+      throws PluginException, ExecutionException, InterruptedException, VimException {
+    for (VNFCInstance vnfcInstance : vdu.getVnfc_instance()) {
+      BaseVimInstance vimInstance = vimInstanceRepository.findFirstById(vnfcInstance.getVim_id());
+      org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim =
+          vimBroker.getVim(vimInstance.getType());
+      log.info("rebuilding vnfcInstance: " + vnfcInstance.getHostname());
+      vim.operate(vimInstance, vdu, operation).get();
+    }
+    return new AsyncResult<>(null);
+  }
 
   @Override
   @Async

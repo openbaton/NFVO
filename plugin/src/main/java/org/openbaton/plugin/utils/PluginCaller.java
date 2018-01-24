@@ -219,7 +219,8 @@ public class PluginCaller {
             pluginException =
                 new PluginException(
                     gson.fromJson(exceptionJson.getAsJsonObject(), VimDriverException.class));
-            log.debug(
+            log.error("Got Vim Driver Exception with cause: " + pluginException.getMessage());
+            log.error(
                 "Got Vim Driver Exception with server: "
                     + ((VimDriverException) pluginException.getCause()).getServer());
           } catch (Exception ignored) {

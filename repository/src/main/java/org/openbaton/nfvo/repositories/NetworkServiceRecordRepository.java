@@ -19,12 +19,25 @@ package org.openbaton.nfvo.repositories;
 
 import java.util.List;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
+import org.openbaton.catalogue.mano.record.Status;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 /** Created by mob on 03.09.15. */
 public interface NetworkServiceRecordRepository
     extends CrudRepository<NetworkServiceRecord, String>, NetworkServiceRecordRepositoryCustom {
   NetworkServiceRecord findFirstById(String id);
+
+  @Modifying
+  // @Transactional is needed since using @Query the semantics are completely in the declaration
+  // while other methods (CRUD operations) are transactional by default
+  @Transactional
+  @Query("update NetworkServiceRecord n set n.status = ?2 where n.id = ?1")
+  void setStatus(String id, Status status);
+
+  boolean existsByIdAndProjectIdAndStatus(String id, String projectId, Status status);
 
   NetworkServiceRecord findFirstByIdAndProjectId(String id, String projectId);
 

@@ -41,8 +41,6 @@ public class OrVnfmInstantiateMessage extends OrVnfmMessage {
   private VNFPackage vnfPackage;
   private VirtualNetworkFunctionRecord vnfr;
 
-
-
   public Set<Key> getKeys() {
     return keys;
   }

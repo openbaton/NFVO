@@ -19,11 +19,17 @@ package org.openbaton.nfvo.repositories;
 
 import java.util.List;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 /** Created by lto on 06/05/15. */
 public interface VNFRRepository extends CrudRepository<VirtualNetworkFunctionRecord, String> {
   VirtualNetworkFunctionRecord findFirstById(String id);
-  VirtualNetworkFunctionRecord findFirstByIdAndParent_ns_idAndProjectId(String id,String parent_ns_id, String projectId);
+
+  @Query(
+      "select v from VirtualNetworkFunctionRecord v where v.id=?1 and v.parent_ns_id=?2 and v.projectId=?3")
+  VirtualNetworkFunctionRecord findByIdAndParent_ns_idAndProjectId(
+      String id, String parent_ns_id, String projectId);
+
   List<VirtualNetworkFunctionRecord> findByProjectId(String id);
 }

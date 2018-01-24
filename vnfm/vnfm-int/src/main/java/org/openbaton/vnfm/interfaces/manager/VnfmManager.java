@@ -63,8 +63,8 @@ public interface VnfmManager {
       List<String> vimInstanceNames)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 
-  @Async
-  Future<Void> restartVnfr(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, String imageName) throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
+  void restartVnfr(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 
   Future<Void> removeVnfcDependency(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFCInstance vnfcInstance)

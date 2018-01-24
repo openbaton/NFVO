@@ -50,7 +50,8 @@ public interface ClientInterfaces {
 
   List<Server> listServer(BaseVimInstance vimInstance) throws VimDriverException;
 
-  Server rebuildServer(BaseVimInstance vimInstance, String serverId, String imageName) throws VimDriverException;
+  Server rebuildServer(BaseVimInstance vimInstance, String serverId, String imageId)
+      throws VimDriverException;
 
   List<BaseNetwork> listNetworks(BaseVimInstance vimInstance) throws VimDriverException;
 

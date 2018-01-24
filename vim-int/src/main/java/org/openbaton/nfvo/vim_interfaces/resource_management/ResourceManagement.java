@@ -98,10 +98,14 @@ public interface ResourceManagement {
    * Examples on compute resources can include (but not limited to): start, stop, pause, suspend,
    * capture snapshot, etc.
    *
-   * @param vdu the {@link VirtualDeploymentUnit} on which execute the operation
-   * @param operation the operation to execute
+   * @param vimInstance the {@link BaseVimInstance} on which to operate
+   * @param vdu the {@link VirtualDeploymentUnit} on which to operate
+   * @param operation the operation to perform
+   * @return Future of {@link Void}
+   * @throws VimException in case of exception
    */
-  void operate(VirtualDeploymentUnit vdu, String operation);
+  Future<Void> operate(BaseVimInstance vimInstance, VirtualDeploymentUnit vdu, String operation)
+      throws VimException;
 
   /**
    * This operation allows de-allocating and terminating an instantiated virtualised resource. This
