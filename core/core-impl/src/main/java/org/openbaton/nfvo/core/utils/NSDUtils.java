@@ -50,7 +50,6 @@ import org.openbaton.catalogue.nfvo.images.DockerImage;
 import org.openbaton.catalogue.nfvo.images.NFVImage;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
-import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.CyclicDependenciesException;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.openbaton.exceptions.NotFoundException;
@@ -259,8 +258,7 @@ public class NSDUtils {
   }
 
   public void fetchDependencies(NetworkServiceDescriptor networkServiceDescriptor)
-      throws NotFoundException, BadFormatException, CyclicDependenciesException,
-          NetworkServiceIntegrityException {
+      throws NotFoundException, CyclicDependenciesException, NetworkServiceIntegrityException {
     /* Fetching dependencies */
     DirectedPseudograph<String, DefaultEdge> g = new DirectedPseudograph<>(DefaultEdge.class);
 

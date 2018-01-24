@@ -177,8 +177,7 @@ public class Registration {
         new DefaultConsumer(channel) {
           @Override
           public void handleDelivery(
-              String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
-              throws IOException {
+              String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) {
             if (properties.getCorrelationId().equals(corrId)) {
               String bodyString = new String(body);
               ManagerCredentials managerCredentials =

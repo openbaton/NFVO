@@ -24,7 +24,6 @@ import static org.mockito.Matchers.anySet;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,7 +53,6 @@ import org.openbaton.catalogue.nfvo.networks.Network;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
 import org.openbaton.catalogue.security.Key;
-import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
@@ -135,7 +133,7 @@ public class VimTestSuiteClass {
   }
 
   @Test
-  public void testVimBrokers() throws PluginException {
+  public void testVimBrokers() {
     //    Assert.assertNotNull(vimBroker);
     //    Vim genericVim = vimBroker.getVim("generic");
     //    Assert.assertEquals(genericVim.getClass(), GenericVIM.class);
@@ -144,7 +142,7 @@ public class VimTestSuiteClass {
   }
 
   @Test
-  public void testVimOpenstack() throws VimDriverException, VimException, RemoteException {
+  public void testVimOpenstack() throws VimDriverException, VimException {
     VirtualDeploymentUnit vdu = createVDU();
     VirtualNetworkFunctionRecord vnfr = createVNFR();
     ArrayList<String> networks = new ArrayList<>();

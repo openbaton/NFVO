@@ -29,7 +29,6 @@ import org.openbaton.catalogue.nfvo.messages.VnfmOrAllocateResourcesMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrScalingMessage;
 import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.VNFRRepository;
@@ -60,7 +59,7 @@ public class VnfmReceiverRest implements VnfmReceiver {
 
   @Override
   public String actionFinished(@RequestBody String nfvMessage)
-      throws NotFoundException, VimException, ExecutionException, InterruptedException {
+      throws ExecutionException, InterruptedException {
 
     log.debug("NFVO - core module received (via REST): " + nfvMessage);
     NFVMessage message = gson.fromJson(nfvMessage, NFVMessage.class);
@@ -97,7 +96,7 @@ public class VnfmReceiverRest implements VnfmReceiver {
 
   @Override
   public void actionFinishedVoid(String nfvMessage)
-      throws NotFoundException, VimException, ExecutionException, InterruptedException {
+      throws ExecutionException, InterruptedException {
     log.debug("NFVO - core module received (via REST): " + nfvMessage);
     NFVMessage message = gson.fromJson(nfvMessage, NFVMessage.class);
     vnfStateHandler.executeAction(message).get();
@@ -111,7 +110,7 @@ public class VnfmReceiverRest implements VnfmReceiver {
   )
   @ResponseStatus(HttpStatus.ACCEPTED)
   public NFVMessage grantLifecycleOperation(@RequestBody VnfmOrGenericMessage message)
-      throws VimException, PluginException, ExecutionException, InterruptedException {
+      throws ExecutionException, InterruptedException {
 
     log.debug("NFVO - core module received (via REST):" + message);
 
@@ -126,7 +125,7 @@ public class VnfmReceiverRest implements VnfmReceiver {
   )
   @ResponseStatus(HttpStatus.ACCEPTED)
   public NFVMessage allocate(@RequestBody VnfmOrAllocateResourcesMessage message)
-      throws VimException, ExecutionException, InterruptedException {
+      throws ExecutionException, InterruptedException {
 
     return (OrVnfmGenericMessage) vnfStateHandler.executeAction(message).get();
   }
@@ -139,7 +138,7 @@ public class VnfmReceiverRest implements VnfmReceiver {
   )
   @ResponseStatus(HttpStatus.ACCEPTED)
   public NFVMessage scale(@RequestBody VnfmOrScalingMessage message)
-      throws InterruptedException, ExecutionException, VimException, NotFoundException {
+      throws InterruptedException, ExecutionException {
     return (OrVnfmGenericMessage) vnfStateHandler.executeAction(message).get();
   }
 

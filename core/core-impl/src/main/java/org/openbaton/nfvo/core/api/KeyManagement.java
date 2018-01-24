@@ -50,7 +50,7 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
   }
 
   @Override
-  public Key queryById(String projectId, String id) throws NotFoundException {
+  public Key queryById(String projectId, String id) {
     return keyRepository.findFirstByIdAndProjectId(id, projectId);
   }
 

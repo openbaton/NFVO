@@ -30,7 +30,7 @@ public interface KeyManagement {
 
   Iterable<Key> query(String projectId);
 
-  Key queryById(String projectId, String id) throws NotFoundException;
+  Key queryById(String projectId, String id);
 
   Key queryByName(String projectId, String name);
 

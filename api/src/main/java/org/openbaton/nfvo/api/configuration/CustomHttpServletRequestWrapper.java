@@ -38,7 +38,7 @@ public class CustomHttpServletRequestWrapper extends HttpServletRequestWrapper {
   }
 
   @Override
-  public ServletInputStream getInputStream() throws IOException {
+  public ServletInputStream getInputStream() {
     final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(body.getBytes());
     return new ServletInputStream() {
       @Override
@@ -56,7 +56,7 @@ public class CustomHttpServletRequestWrapper extends HttpServletRequestWrapper {
         throw new RuntimeException("Not implemented");
       }
 
-      public int read() throws IOException {
+      public int read() {
         return byteArrayInputStream.read();
       }
     };

@@ -59,7 +59,7 @@ public class StopTask extends AbstractTask {
   }
 
   @Override
-  public NFVMessage doWork() throws Exception {
+  public NFVMessage doWork() {
     log.info("Stopped VNFR: " + virtualNetworkFunctionRecord.getName());
     VirtualNetworkFunctionRecord existing =
         vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());

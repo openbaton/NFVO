@@ -95,8 +95,7 @@ public interface NetworkServiceRecordManagement {
 
   /** This operation is used to resume a failed Network Service Record. */
   void resume(String id, String projectId)
-      throws NotFoundException, WrongStatusException, BadFormatException, ExecutionException,
-          InterruptedException;
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 
   void deleteVNFRecord(String idNsr, String idVnf, String projectId) throws NotFoundException;
 
@@ -136,8 +135,7 @@ public interface NetworkServiceRecordManagement {
       String mode,
       String projectId,
       List<String> vimInstanceNames)
-      throws NotFoundException, BadFormatException, WrongStatusException, ExecutionException,
-          InterruptedException;
+      throws NotFoundException, BadFormatException, WrongStatusException;
 
   /**
    * This method will add a {@Link VNFCInstance} into a NetworkServiceRecord to a specific
@@ -149,8 +147,7 @@ public interface NetworkServiceRecordManagement {
       VNFComponent component,
       String projectId,
       List<String> vimInstanceNames)
-      throws NotFoundException, BadFormatException, WrongStatusException, ExecutionException,
-          InterruptedException;
+      throws NotFoundException, BadFormatException, WrongStatusException;
 
   /**
    * This method will remove a {@Link VNFCInstance} of a NetworkServiceRecord from a specific
@@ -173,16 +170,14 @@ public interface NetworkServiceRecordManagement {
    * VirtualDeploymentUnit of a specific VirtualNetworkFunctionRecord.
    */
   void startVNFCInstance(String id, String idVnf, String idVdu, String idVNFCI, String projectId)
-      throws NotFoundException, WrongStatusException, BadFormatException, ExecutionException,
-          InterruptedException;
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 
   /**
    * This method will stop a {@Link VNFCInstance} of a NetworkServiceRecord from a specific
    * VirtualDeploymentUnit of a specific VirtualNetworkFunctionRecord.
    */
   void stopVNFCInstance(String id, String idVnf, String idVdu, String idVNFCI, String projectId)
-      throws NotFoundException, WrongStatusException, BadFormatException, ExecutionException,
-          InterruptedException;
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 
   void switchToRedundantVNFCInstance(
       String id,
@@ -208,12 +203,11 @@ public interface NetworkServiceRecordManagement {
       List keys,
       Map vduVimInstances,
       Map configurations)
-      throws NotFoundException, MissingParameterException, VimException, BadRequestException,
-          PluginException;
+      throws NotFoundException;
 
   VirtualNetworkFunctionRecord restartVnfr(
       NetworkServiceRecord nsr, String vnfrId, String imageName, String projectId)
       throws NotFoundException, AlreadyExistingException, IOException, BadRequestException,
           VimException, PluginException, ExecutionException, InterruptedException,
-          BadFormatException, VimDriverException;
+          BadFormatException;
 }

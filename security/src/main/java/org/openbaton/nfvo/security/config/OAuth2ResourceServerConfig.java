@@ -38,7 +38,7 @@ public class OAuth2ResourceServerConfig extends ResourceServerConfigurerAdapter 
   }
 
   @Override
-  public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
+  public void configure(ResourceServerSecurityConfigurer resources) {
     resources.resourceId(OAuth2AuthorizationServerConfig.RESOURCE_ID);
   }
 }

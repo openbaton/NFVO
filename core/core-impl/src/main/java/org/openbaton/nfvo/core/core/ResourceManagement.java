@@ -139,7 +139,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
       VNFComponent component,
       String userdata,
       Set<Key> keys)
-      throws InterruptedException, ExecutionException, VimException, PluginException {
+      throws InterruptedException, ExecutionException, VimException {
 
     log.trace("UserData is: " + userdata);
     Map<String, String> floatinIps = new HashMap<>();
@@ -226,8 +226,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
       VNFComponent componentToAdd,
       BaseVimInstance vimInstance,
       String userdata)
-      throws InterruptedException, ExecutionException, PluginException, VimException,
-          VimDriverException {
+      throws InterruptedException, ExecutionException, PluginException, VimException {
     org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim;
     vim = vimBroker.getVim(vimInstance.getType());
     log.debug("Executing allocate with Vim: " + vim.getClass().getSimpleName());

@@ -36,7 +36,6 @@ import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
 import org.openbaton.catalogue.nfvo.networks.Network;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.security.Key;
-import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.openbaton.vim.drivers.VimDriverCaller;
 import org.springframework.stereotype.Service;
@@ -51,77 +50,70 @@ public class MyVim extends Vim {
   }
 
   @Override
-  public DeploymentFlavour add(BaseVimInstance vimInstance, DeploymentFlavour deploymentFlavour)
-      throws VimException {
+  public DeploymentFlavour add(BaseVimInstance vimInstance, DeploymentFlavour deploymentFlavour) {
     return null;
   }
 
   @Override
-  public void delete(BaseVimInstance vimInstance, DeploymentFlavour deploymentFlavor)
-      throws VimException {}
+  public void delete(BaseVimInstance vimInstance, DeploymentFlavour deploymentFlavor) {}
 
   @Override
-  public DeploymentFlavour update(BaseVimInstance vimInstance, DeploymentFlavour deploymentFlavour)
-      throws VimException {
+  public DeploymentFlavour update(
+      BaseVimInstance vimInstance, DeploymentFlavour deploymentFlavour) {
     return null;
   }
 
   @Override
-  public List<DeploymentFlavour> queryDeploymentFlavors(BaseVimInstance vimInstance)
-      throws VimException {
+  public List<DeploymentFlavour> queryDeploymentFlavors(BaseVimInstance vimInstance) {
     return null;
   }
 
   @Override
-  public NFVImage add(BaseVimInstance vimInstance, NFVImage image, byte[] imageFile)
-      throws VimException {
+  public NFVImage add(BaseVimInstance vimInstance, NFVImage image, byte[] imageFile) {
     return null;
   }
 
   @Override
-  public NFVImage add(BaseVimInstance vimInstance, NFVImage image, String image_url)
-      throws VimException {
+  public NFVImage add(BaseVimInstance vimInstance, NFVImage image, String image_url) {
     return null;
   }
 
   @Override
-  public void delete(BaseVimInstance vimInstance, NFVImage image) throws VimException {}
+  public void delete(BaseVimInstance vimInstance, NFVImage image) {}
 
   @Override
-  public BaseNfvImage update(BaseVimInstance vimInstance, NFVImage image) throws VimException {
+  public BaseNfvImage update(BaseVimInstance vimInstance, NFVImage image) {
     return null;
   }
 
   @Override
-  public List<BaseNfvImage> queryImages(BaseVimInstance vimInstance) throws VimException {
+  public List<BaseNfvImage> queryImages(BaseVimInstance vimInstance) {
     return null;
   }
 
   @Override
-  public void copy(BaseVimInstance vimInstance, NFVImage image, byte[] imageFile)
-      throws VimException {}
+  public void copy(BaseVimInstance vimInstance, NFVImage image, byte[] imageFile) {}
 
   @Override
-  public BaseNetwork add(BaseVimInstance vimInstance, BaseNetwork network) throws VimException {
+  public BaseNetwork add(BaseVimInstance vimInstance, BaseNetwork network) {
     return (Network) network;
   }
 
   @Override
-  public void delete(BaseVimInstance vimInstance, BaseNetwork network) throws VimException {}
+  public void delete(BaseVimInstance vimInstance, BaseNetwork network) {}
 
   @Override
-  public BaseNetwork update(BaseVimInstance vimInstance, Network updatingNetwork)
-      throws VimException {
+  public BaseNetwork update(BaseVimInstance vimInstance, Network updatingNetwork) {
     return updatingNetwork;
   }
 
   @Override
-  public List<BaseNetwork> queryNetwork(BaseVimInstance vimInstance) throws VimException {
+  public List<BaseNetwork> queryNetwork(BaseVimInstance vimInstance) {
     return null;
   }
 
   @Override
-  public BaseNetwork query(BaseVimInstance vimInstance, String extId) throws VimException {
+  public BaseNetwork query(BaseVimInstance vimInstance, String extId) {
     return null;
   }
 
@@ -133,13 +125,12 @@ public class MyVim extends Vim {
       VNFComponent vnfComponent,
       String userdata,
       Map<String, String> floatingIps,
-      Set<Key> keys)
-      throws VimException {
+      Set<Key> keys) {
     return null;
   }
 
   @Override
-  public List<Server> queryResources(BaseVimInstance vimInstance) throws VimException {
+  public List<Server> queryResources(BaseVimInstance vimInstance) {
     return null;
   }
 
@@ -159,8 +150,7 @@ public class MyVim extends Vim {
   }
 
   @Override
-  public Future<Void> release(VNFCInstance vnfcInstance, BaseVimInstance vimInstance)
-      throws VimException {
+  public Future<Void> release(VNFCInstance vnfcInstance, BaseVimInstance vimInstance) {
     return null;
   }
 
@@ -182,7 +172,7 @@ public class MyVim extends Vim {
   }
 
   @Override
-  public BaseVimInstance refresh(BaseVimInstance vimInstance) throws VimException {
+  public BaseVimInstance refresh(BaseVimInstance vimInstance) {
     return vimInstance;
   }
 }

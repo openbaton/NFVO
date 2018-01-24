@@ -188,7 +188,7 @@ public class RestVNFPackage {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void multipleDelete(
       @RequestBody @Valid List<String> ids, @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException, WrongAction {
+      throws WrongAction {
     for (String id : ids) vnfPackageManagement.delete(id, projectId);
   }
 

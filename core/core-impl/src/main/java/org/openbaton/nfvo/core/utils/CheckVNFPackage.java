@@ -36,7 +36,7 @@ public class CheckVNFPackage {
   private static final Logger log = LoggerFactory.getLogger(CheckVNFPackage.class);
 
   private static void checkRequiredFirstLevelMetadataKeys(
-      Map<String, Object> metadata, String[] keys) throws NotFoundException {
+      Map<String, Object> metadata, String[] keys) {
     for (String requiredKey : keys) {
       if (metadata.get(requiredKey) == null) {
         throw new NullPointerException(
@@ -45,8 +45,7 @@ public class CheckVNFPackage {
     }
   }
 
-  private static void checkRequiredImageDetailsKeys(Map<String, Object> imageDetails)
-      throws NotFoundException {
+  private static void checkRequiredImageDetailsKeys(Map<String, Object> imageDetails) {
     for (String requiredKey : REQUIRED_IMAGE_DETAILS) {
       if (imageDetails.get(requiredKey) == null) {
         throw new NullPointerException(
@@ -55,8 +54,7 @@ public class CheckVNFPackage {
     }
   }
 
-  private static void checkRequiredImageConfigKeys(Map<String, Object> imageConfig)
-      throws NotFoundException {
+  private static void checkRequiredImageConfigKeys(Map<String, Object> imageConfig) {
     for (String requiredKey : REQUIRED_IMAGE_CONFIG) {
       if (imageConfig.get(requiredKey) == null) {
         throw new NullPointerException("Not defined " + requiredKey + " of image in Metadata.yaml");
@@ -66,7 +64,7 @@ public class CheckVNFPackage {
 
   public static void checkCommonParametersWithVNFD(
       Map<String, Object> vnfdParameters, Map<String, Object> vnfPackageMetadataParameters)
-      throws NotFoundException, VNFPackageFormatException {
+      throws VNFPackageFormatException {
     for (String commonKey : REQUIRED_VNF_PACKAGE_AND_VNFD_COMMON_KEYS) {
       String vnfdCommonKey = (String) vnfdParameters.get(commonKey);
       String vnfPackageCommonKey = (String) vnfPackageMetadataParameters.get(commonKey);
@@ -225,8 +223,8 @@ public class CheckVNFPackage {
       throw new VNFPackageFormatException("There is no Metadata.yaml in the VNF Package");
   }
 
-  private static boolean areNFVOVersionsCompatible(String nfvoVersion, String vnfPackageNFVOVersion)
-      throws IncompatibleVNFPackage, NotFoundException {
+  private static boolean areNFVOVersionsCompatible(
+      String nfvoVersion, String vnfPackageNFVOVersion) {
 
     if (nfvoVersion == null) throw new NullPointerException("The nfvo version in null");
     if (vnfPackageNFVOVersion.isEmpty())

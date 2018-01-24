@@ -117,7 +117,7 @@ public class VNFLifecycleOperationGranting
       Collection<String> vimInstanceNames,
       HashMap<BaseVimInstance, Integer> countVDUsOnVimInstances,
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
-      throws VimException, PluginException {
+      throws VimException {
     List<BaseVimInstance> vimInstances = null;
     if (countVDUsOnVimInstances.isEmpty()) {
       vimInstances =

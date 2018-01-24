@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -80,8 +79,6 @@ import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.QuotaExceededException;
-import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.exceptions.WrongStatusException;
 import org.openbaton.nfvo.core.api.ConfigurationManagement;
@@ -138,8 +135,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 
   @Before
   public void init()
-      throws ExecutionException, InterruptedException, VimDriverException, VimException,
-          PluginException, BadRequestException, IOException, AlreadyExistingException {
+      throws ExecutionException, InterruptedException, VimException, PluginException, IOException {
     MockitoAnnotations.initMocks(this);
     BaseVimInstance vimInstance = createVimInstance();
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionRecord =
@@ -224,8 +220,8 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 
   @Test
   public void nsrManagementDeleteTest()
-      throws VimException, InterruptedException, ExecutionException, NamingException,
-          NotFoundException, WrongStatusException, PluginException, BadFormatException {
+      throws VimException, InterruptedException, ExecutionException, NotFoundException,
+          WrongStatusException, PluginException, BadFormatException {
     NetworkServiceRecord nsd_exp = createNetworkServiceRecord();
     when(resourceManagement.release(any(VirtualDeploymentUnit.class), any(VNFCInstance.class)))
         .thenReturn(new AsyncResult<Void>(null));
@@ -241,10 +237,9 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 
   @Test
   public void nsrManagementOnboardTest1()
-      throws NotFoundException, InterruptedException, ExecutionException, NamingException,
-          VimException, VimDriverException, BadFormatException, QuotaExceededException,
-          PluginException, MissingParameterException, BadRequestException, IOException,
-          AlreadyExistingException {
+      throws NotFoundException, InterruptedException, ExecutionException, VimException,
+          BadFormatException, PluginException, MissingParameterException, BadRequestException,
+          IOException, AlreadyExistingException {
     final NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
     when(nsrRepository.save(any(NetworkServiceRecord.class)))
         .thenAnswer(
@@ -290,10 +285,9 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 
   @Test
   public void nsrManagementOnboardTest2()
-      throws NotFoundException, InterruptedException, ExecutionException, NamingException,
-          VimException, VimDriverException, BadFormatException, QuotaExceededException,
-          PluginException, MissingParameterException, BadRequestException, IOException,
-          AlreadyExistingException {
+      throws NotFoundException, InterruptedException, ExecutionException, VimException,
+          BadFormatException, PluginException, MissingParameterException, BadRequestException,
+          IOException, AlreadyExistingException {
     /** Initial settings */
     when(vimRepository.findByProjectIdAndName(anyString(), anyString()))
         .thenReturn(createVimInstance());
@@ -356,10 +350,9 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 
   @Test
   public void nsrManagementOnboardTest3()
-      throws NotFoundException, InterruptedException, ExecutionException, NamingException,
-          VimException, VimDriverException, BadFormatException, QuotaExceededException,
-          PluginException, MissingParameterException, BadRequestException, IOException,
-          AlreadyExistingException {
+      throws NotFoundException, InterruptedException, ExecutionException, VimException,
+          BadFormatException, PluginException, MissingParameterException, BadRequestException,
+          IOException, AlreadyExistingException {
     /** Initial settings */
     when(vimRepository.findByProjectIdAndName(anyString(), anyString()))
         .thenReturn(createVimInstance());

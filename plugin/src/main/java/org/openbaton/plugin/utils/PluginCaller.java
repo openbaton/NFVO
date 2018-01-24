@@ -101,7 +101,7 @@ public class PluginCaller {
       String virtualHost,
       int managementPort,
       long timeout)
-      throws IOException, TimeoutException, NotFoundException {
+      throws IOException, NotFoundException {
     this.pluginId =
         getFullPluginId(pluginId, brokerIp, username, password, virtualHost, managementPort);
     this.managementPort = managementPort;

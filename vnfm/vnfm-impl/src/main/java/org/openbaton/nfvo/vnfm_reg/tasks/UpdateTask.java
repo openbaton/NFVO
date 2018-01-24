@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
 public class UpdateTask extends AbstractTask {
 
   @Override
-  protected NFVMessage doWork() throws Exception {
+  protected NFVMessage doWork() {
 
     log.info("Updated script for VNFR: " + virtualNetworkFunctionRecord.getName());
     setHistoryLifecycleEvent(new Date());

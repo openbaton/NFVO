@@ -169,8 +169,7 @@ public class NetworkServiceRecordManagement
       List keys,
       Map vduVimInstances,
       Map configurations)
-      throws NotFoundException, MissingParameterException, VimException, BadRequestException,
-          PluginException {
+      throws NotFoundException {
     log.info("Looking for NetworkServiceDescriptor with id: " + nsrId);
     NetworkServiceRecord nsr = nsrRepository.findFirstById(nsrId);
     if (nsr == null) {
@@ -415,8 +414,7 @@ public class NetworkServiceRecordManagement
       VNFComponent component,
       String projectId,
       List<String> vimInstanceNames)
-      throws NotFoundException, BadFormatException, WrongStatusException, ExecutionException,
-          InterruptedException {
+      throws NotFoundException, BadFormatException, WrongStatusException {
     log.info("Adding new VNFCInstance to VNFR with id: " + idVnf);
     NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id, projectId);
     VirtualNetworkFunctionRecord virtualNetworkFunctionRecord =
@@ -497,8 +495,7 @@ public class NetworkServiceRecordManagement
       String mode,
       String projectId,
       List<String> vimInstanceNames)
-      throws NotFoundException, BadFormatException, WrongStatusException, ExecutionException,
-          InterruptedException {
+      throws NotFoundException, BadFormatException, WrongStatusException {
     log.info("Adding new VNFCInstance to VNFR with id " + idVnf + " and VDU with id " + idVdu);
     NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInActiveState(id, projectId);
     VirtualNetworkFunctionRecord virtualNetworkFunctionRecord =
@@ -1107,9 +1104,7 @@ public class NetworkServiceRecordManagement
                               vimManagement.refresh(vimInstance, false).get();
                             } catch (VimException
                                 | PluginException
-                                | BadRequestException
                                 | IOException
-                                | AlreadyExistingException
                                 | InterruptedException
                                 | ExecutionException e) {
                               e.printStackTrace();
@@ -1122,9 +1117,7 @@ public class NetworkServiceRecordManagement
                       vimManagement.refresh(vimInstance, false).get();
                     } catch (VimException
                         | PluginException
-                        | BadRequestException
                         | IOException
-                        | AlreadyExistingException
                         | InterruptedException
                         | ExecutionException e) {
                       e.printStackTrace();

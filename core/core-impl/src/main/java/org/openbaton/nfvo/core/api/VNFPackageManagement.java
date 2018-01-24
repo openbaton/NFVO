@@ -66,7 +66,6 @@ import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.DescriptorWrongFormat;
-import org.openbaton.exceptions.EntityUnreachableException;
 import org.openbaton.exceptions.ExistingVNFPackage;
 import org.openbaton.exceptions.IncompatibleVNFPackage;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
@@ -1047,7 +1046,7 @@ public class VNFPackageManagement
   public VirtualNetworkFunctionDescriptor onboardFromMarket(String link, String projectId)
       throws IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
           NotFoundException, PluginException, NetworkServiceIntegrityException, BadRequestException,
-          InterruptedException, EntityUnreachableException, BadFormatException {
+          InterruptedException, BadFormatException {
     log.debug("This is download link" + link);
     URL packageLink;
     try {
@@ -1087,7 +1086,7 @@ public class VNFPackageManagement
       String link, String projectId)
       throws IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
           NotFoundException, PluginException, NetworkServiceIntegrityException, BadRequestException,
-          InterruptedException, EntityUnreachableException {
+          InterruptedException {
     log.debug("Onboard from Package Repository, this is the download link: " + link);
     URL packageLink = new URL(link);
 
