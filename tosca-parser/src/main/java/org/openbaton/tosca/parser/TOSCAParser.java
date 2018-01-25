@@ -238,7 +238,7 @@ public class TOSCAParser {
       vnfd.setConfigurations(configuration);
     }
 
-    if (vnf.getProperties().getMetadata() != null) {
+    if (vnf.getProperties() != null && vnf.getProperties().getMetadata() != null) {
       vnfd.setMetadata(vnf.getProperties().getMetadata());
     }
 
