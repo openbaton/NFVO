@@ -43,7 +43,11 @@ public class VimInstanceUtils {
         .getClass()
         .getCanonicalName()
         .equals(OpenstackVimInstance.class.getCanonicalName())) {
-      ((OpenstackVimInstance) vimNew).setPassword(((OpenstackVimInstance) vimOld).getPassword());
+      if (((OpenstackVimInstance) vimNew).getPassword().equals("**********")
+          || ((OpenstackVimInstance) vimNew).getPassword().isEmpty()
+          || ((OpenstackVimInstance) vimNew).getPassword() == null) {
+        ((OpenstackVimInstance) vimNew).setPassword(((OpenstackVimInstance) vimOld).getPassword());
+      }
     } else if (vimNew
         .getClass()
         .getCanonicalName()
