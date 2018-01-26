@@ -40,18 +40,7 @@ import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.nfvo.VNFPackageMetadata;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
-import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.exceptions.BadFormatException;
-import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.CyclicDependenciesException;
-import org.openbaton.exceptions.EntityInUseException;
-import org.openbaton.exceptions.EntityUnreachableException;
-import org.openbaton.exceptions.IncompatibleVNFPackage;
-import org.openbaton.exceptions.NetworkServiceIntegrityException;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimException;
-import org.openbaton.exceptions.WrongStatusException;
+import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.core.utils.NSDUtils;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
@@ -336,11 +325,20 @@ public class NetworkServiceDescriptorManagement
    */
   @Override
   public void deleteVnfDescriptor(String idNsd, String idVnfd, String projectId)
-      throws EntityInUseException, NotFoundException {
-    log.debug("Is there an NSD referencing it? " + nsdRepository.exists(idNsd));
-    if (nsdRepository.exists(idNsd)) {
-      throw new EntityInUseException(
-          "NSD with id: " + idNsd + " is still onboarded and referencing this VNFD");
+      throws EntityInUseException, NotFoundException, NotAllowedException {
+    //Get all NSD referencing the VNFD identified by idVnfd
+    List<NetworkServiceDescriptor> nsds =
+        nsdRepository.findByVnfd_idAndProjectId(idVnfd, projectId);
+
+    for (NetworkServiceDescriptor nsd : nsds) {
+      // If another NSD references such VNFD, this operation cannot be performed
+      if (!nsd.getId().equals(idNsd))
+        throw new EntityInUseException(
+            "NSD with id: " + nsd.getId() + " is still onboarded and referencing this VNFD");
+      // If this NSD contains only 1 VNFD, this operation cannot be performed (check integrity constraints in NSD)
+      else if (nsd.getId().equals(idNsd) && nsd.getVnfd().size() == 1) {
+        throw new NotAllowedException("NSD with id: " + idNsd + " cannot contain less than 1 vnfd");
+      }
     }
     log.info("Removing VnfDescriptor with id: " + idVnfd + " from NSD with id: " + idNsd);
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =

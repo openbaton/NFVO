@@ -28,6 +28,7 @@ public class VDUProperties {
   private int scale_in_out;
   private Set<String> vim_instance_name;
   private VDUFaultManagement fault_management_policy = null;
+  private Map<String, String> metadata;
 
   @SuppressWarnings({"unsafe", "unchecked"})
   public VDUProperties(Object vduProp) {
@@ -49,6 +50,9 @@ public class VDUProperties {
 
     if (vduPropMap.containsKey("fault_management_policy")) {
       fault_management_policy = new VDUFaultManagement(vduPropMap.get("fault_management_policy"));
+    }
+    if (vduPropMap.containsKey("metadata")) {
+      metadata = (Map<String, String>) vduPropMap.get("metadata");
     }
   }
 
@@ -86,5 +90,13 @@ public class VDUProperties {
 
   public void setFault_management_policy(VDUFaultManagement fault_management_policy) {
     this.fault_management_policy = fault_management_policy;
+  }
+
+  public Map<String, String> getMetadata() {
+    return metadata;
+  }
+
+  public void setMetadata(Map<String, String> metadata) {
+    this.metadata = metadata;
   }
 }
