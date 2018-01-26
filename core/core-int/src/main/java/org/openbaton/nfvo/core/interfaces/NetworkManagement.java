@@ -17,9 +17,12 @@
 
 package org.openbaton.nfvo.core.interfaces;
 
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
 import org.openbaton.catalogue.nfvo.networks.Network;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
+import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
@@ -29,7 +32,8 @@ public interface NetworkManagement {
 
   /** This operation allows adding new VNF software images to the image repository. */
   BaseNetwork add(BaseVimInstance vimInstance, BaseNetwork network)
-      throws VimException, PluginException, BadRequestException;
+      throws VimException, PluginException, BadRequestException, IOException,
+          AlreadyExistingException, ExecutionException, InterruptedException;
 
   /** This operation allows deleting in the VNF software images from the image repository. */
   void delete(BaseVimInstance vimInstance, BaseNetwork network)

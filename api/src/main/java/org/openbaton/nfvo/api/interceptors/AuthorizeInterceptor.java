@@ -153,10 +153,9 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
       if (userProjects.iterator().hasNext()) {
         return checkAuthorization(
             userProjects.iterator().next().getId(), request, currentUserName, response);
-      } else {
-        throw new NotFoundException(
-            "Not Found any project you are assigned to. Please ask an admin to assign a project to you.");
       }
+      throw new NotFoundException(
+          "Not Found any project you are assigned to. Please ask an admin to assign a project to you.");
     }
     return sendError(request, response);
   }

@@ -22,8 +22,10 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.openbaton.nfvo.core.test.TestUtils.createVimInstance;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.concurrent.ExecutionException;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -37,6 +39,7 @@ import org.mockito.MockitoAnnotations;
 import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
 import org.openbaton.catalogue.nfvo.networks.Network;
 import org.openbaton.catalogue.nfvo.networks.Subnet;
+import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
@@ -131,7 +134,9 @@ public class NetworkManagementClassSuiteTest {
   }
 
   @Test
-  public void networkManagementAddTest() throws VimException, PluginException, BadRequestException {
+  public void networkManagementAddTest()
+      throws VimException, PluginException, BadRequestException, AlreadyExistingException,
+          ExecutionException, InterruptedException, IOException {
     Network network_exp = createNetwork();
     when(networkRepository.save(any(Network.class))).thenReturn(network_exp);
     when(vimBroker.getVim(anyString())).thenReturn(myVim);

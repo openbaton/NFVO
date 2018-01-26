@@ -70,7 +70,7 @@ import org.springframework.stereotype.Service;
 public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.tasks.AbstractTask {
   protected Logger log = LoggerFactory.getLogger(AbstractTask.class);
   private Action action;
-  private static ReentrantLock lock = new ReentrantLock();
+  protected static ReentrantLock lock = new ReentrantLock();
 
   protected abstract void setEvent();
 

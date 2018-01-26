@@ -24,6 +24,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -79,9 +80,9 @@ public class RestVimInstances {
   public BaseVimInstance create(
       @RequestBody @Valid BaseVimInstance vimInstance,
       @RequestHeader(value = "project-id") String projectId)
-      throws VimException, PluginException, EntityUnreachableException, IOException,
-          BadRequestException, AlreadyExistingException, NotFoundException {
-    return vimManagement.add(vimInstance, projectId);
+      throws VimException, PluginException, IOException, BadRequestException,
+          AlreadyExistingException, ExecutionException, InterruptedException {
+    return vimManagement.add(vimInstance, projectId).get();
   }
 
   /**
@@ -203,9 +204,9 @@ public class RestVimInstances {
       @RequestBody @Valid BaseVimInstance new_vimInstance,
       @PathVariable("id") String id,
       @RequestHeader(value = "project-id") String projectId)
-      throws VimException, PluginException, EntityUnreachableException, IOException,
-          BadRequestException, AlreadyExistingException, NotFoundException {
-    return vimManagement.update(new_vimInstance, id, projectId);
+      throws VimException, PluginException, IOException, BadRequestException,
+          AlreadyExistingException, NotFoundException, ExecutionException, InterruptedException {
+    return vimManagement.update(new_vimInstance, id, projectId).get();
   }
 
   /**
@@ -327,12 +328,12 @@ public class RestVimInstances {
   @RequestMapping(value = "{id}/refresh", method = RequestMethod.GET)
   public BaseVimInstance refresh(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
-      throws VimException, PluginException, EntityUnreachableException, IOException,
-          BadRequestException, AlreadyExistingException, NotFoundException {
+      throws VimException, PluginException, IOException, BadRequestException,
+          AlreadyExistingException, NotFoundException, ExecutionException, InterruptedException {
     BaseVimInstance vimInstance = vimManagement.query(id, projectId);
     if (vimInstance == null)
       throw new NotFoundException("VIM Instance with ID " + id + " not found.");
-    vimManagement.refresh(vimInstance, true);
+    vimManagement.refresh(vimInstance, true).get();
     return vimInstance;
   }
 }

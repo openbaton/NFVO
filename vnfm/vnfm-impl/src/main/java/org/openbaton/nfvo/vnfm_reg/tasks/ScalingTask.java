@@ -63,14 +63,6 @@ public class ScalingTask extends AbstractTask {
 
   private String userdata;
 
-  public boolean isCheckQuota() {
-    return checkQuota;
-  }
-
-  public void setCheckQuota(boolean checkQuota) {
-    this.checkQuota = checkQuota;
-  }
-
   @Override
   protected NFVMessage doWork() throws Exception {
 
@@ -108,6 +100,8 @@ public class ScalingTask extends AbstractTask {
             + virtualNetworkFunctionRecord.getId()
             + ") is: "
             + componentToAdd);
+    if (vdu == null)
+      throw new VimException("Error while scaling, no vdu found. This should not happen");
     Map<String, BaseVimInstance> vimInstanceMap = new HashMap<>();
     if (checkQuota) {
       if (vimInstance == null) {
@@ -236,7 +230,12 @@ public class ScalingTask extends AbstractTask {
         saveVirtualNetworkFunctionRecord();
         vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
         return errorMessage;
-      } catch (VimException e) {
+      } catch (ExecutionException | VimException exception) {
+        VimException e;
+        if (exception instanceof VimException) e = (VimException) exception;
+        else if (exception.getCause() instanceof VimException)
+          e = (VimException) exception.getCause();
+        else throw exception;
         log.error(e.getLocalizedMessage());
         if (e.getVnfcInstance() != null) {
           resourceManagement.release(vdu, e.getVnfcInstance());
@@ -281,9 +280,5 @@ public class ScalingTask extends AbstractTask {
 
   public void setVimInstance(BaseVimInstance vimInstance) {
     this.vimInstance = vimInstance;
-  }
-
-  public BaseVimInstance getVimInstance() {
-    return vimInstance;
   }
 }

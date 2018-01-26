@@ -38,6 +38,7 @@ public class VNFProperties {
   private String type = null;
   private VNFInterfaces interfaces = null;
   private VNFAutoscaling auto_scale_policy = null;
+  private Map<String, String> metadata;
 
   public VNFProperties() {}
 
@@ -73,6 +74,9 @@ public class VNFProperties {
     }
     if (propertiesMap.containsKey("auto_scale_policy")) {
       auto_scale_policy = new VNFAutoscaling(propertiesMap.get("auto_scale_policy"));
+    }
+    if (propertiesMap.containsKey("metadata")) {
+      metadata = (Map<String, String>) propertiesMap.get("metadata");
     }
   }
 
@@ -197,5 +201,13 @@ public class VNFProperties {
         + "depl flavour : "
         + deploymentFlavour
         + "\n";
+  }
+
+  public Map<String, String> getMetadata() {
+    return metadata;
+  }
+
+  public void setMetadata(Map<String, String> metadata) {
+    this.metadata = metadata;
   }
 }

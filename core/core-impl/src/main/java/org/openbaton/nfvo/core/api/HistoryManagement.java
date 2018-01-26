@@ -66,11 +66,10 @@ public class HistoryManagement implements org.openbaton.nfvo.core.interfaces.His
         log.trace("skipping method get or put");
         return;
       }
-      User user = null;
+      User user;
       try {
         user = userManagement.getCurrentUser();
       } catch (org.openbaton.exceptions.NotFoundException ex) {
-        //log.warn("Not storing requests from anonymousUser");
         return;
       }
 

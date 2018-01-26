@@ -19,7 +19,6 @@ package org.openbaton.nfvo.repositories;
 
 import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
 
-/** Created by dbo on 21/09/15. */
 public interface VimRepositoryCustom {
   BaseNfvImage addImage(String id, BaseNfvImage image);
 

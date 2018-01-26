@@ -94,14 +94,6 @@ public class NetworkServiceDescriptorManagement
   @Autowired private VNFPackageManagement vnfPackageManagement;
   @Autowired private Gson gson;
 
-  public boolean isCascadeDelete() {
-    return cascadeDelete;
-  }
-
-  public void setCascadeDelete(boolean cascadeDelete) {
-    this.cascadeDelete = cascadeDelete;
-  }
-
   /**
    * This operation allows submitting and validating a Network Service Descriptor (NSD), including
    * any related VNFFGD and VLD.

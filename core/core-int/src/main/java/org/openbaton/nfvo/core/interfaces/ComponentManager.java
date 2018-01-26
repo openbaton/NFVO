@@ -11,7 +11,6 @@ import org.openbaton.catalogue.security.ServiceMetadata;
 import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.NotFoundException;
 
-/** Created by lto on 04/04/2017. */
 public interface ComponentManager {
 
   String registerService(String body)

@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -146,10 +145,10 @@ public class VNFPackageManagement
   public synchronized VirtualNetworkFunctionDescriptor onboard(byte[] pack, String projectId)
       throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage,
           AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException,
-          InterruptedException, EntityUnreachableException, BadFormatException {
+          InterruptedException, BadFormatException, ExecutionException {
     log.info("Onboarding VNF Package...");
     for (BaseVimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId))
-      vimManagement.refresh(vimInstance, false);
+      vimManagement.refresh(vimInstance, false).get();
     VNFPackage vnfPackage = new VNFPackage();
     vnfPackage.setScripts(new HashSet<>());
     Map<String, Object> metadata = null;
@@ -270,7 +269,9 @@ public class VNFPackageManagement
 
     vnfPackage.setImage(image);
     myTarFile.close();
-    virtualNetworkFunctionDescriptor.setProjectId(projectId);
+    if (virtualNetworkFunctionDescriptor != null) {
+      virtualNetworkFunctionDescriptor.setProjectId(projectId);
+    } else throw new BadFormatException("Missing VNFD in package");
     vnfPackage.setProjectId(projectId);
     for (VirtualNetworkFunctionDescriptor vnfd : vnfdRepository.findByProjectId(projectId)) {
       if (vnfd.getVendor().equals(virtualNetworkFunctionDescriptor.getVendor())
@@ -284,14 +285,12 @@ public class VNFPackageManagement
     try {
       nsdUtils.checkIntegrity(virtualNetworkFunctionDescriptor);
     } catch (NetworkServiceIntegrityException e) {
-      NetworkServiceIntegrityException e2 =
-          new NetworkServiceIntegrityException(
-              "There are problems in the VNFPackage's VNFD file "
-                  + entry.getName()
-                  + ": "
-                  + e.getMessage(),
-              e);
-      throw e2;
+      throw new NetworkServiceIntegrityException(
+          "There are problems in the VNFPackage's VNFD file "
+              + (entry != null ? entry.getName() : "")
+              + ": "
+              + e.getMessage(),
+          e);
     }
 
     vnfPackage = vnfPackageRepository.save(vnfPackage);
@@ -308,11 +307,10 @@ public class VNFPackageManagement
   @Override
   public synchronized VirtualNetworkFunctionDescriptor add(
       byte[] pack, boolean isImageIncluded, String projectId, boolean fromMarketPlace)
-      throws IOException, VimException, NotFoundException, SQLException, PluginException,
-          ExistingVNFPackage, DescriptorWrongFormat, VNFPackageFormatException,
-          IncompatibleVNFPackage, BadRequestException, AlreadyExistingException,
-          NetworkServiceIntegrityException, EntityUnreachableException, InterruptedException,
-          BadFormatException {
+      throws IOException, VimException, NotFoundException, PluginException, ExistingVNFPackage,
+          DescriptorWrongFormat, VNFPackageFormatException, IncompatibleVNFPackage,
+          BadRequestException, AlreadyExistingException, NetworkServiceIntegrityException,
+          InterruptedException, BadFormatException, ExecutionException {
 
     CheckVNFPackage.checkStructure(pack, isImageIncluded, fromMarketPlace);
 
@@ -498,6 +496,8 @@ public class VNFPackageManagement
     } finally {
       lock.unlock();
     }
+    if (virtualNetworkFunctionDescriptor == null)
+      throw new BadFormatException("Missing VNFD in pacakge");
 
     if (virtualNetworkFunctionDescriptor.getVnfPackageLocation() != null) {
       throw new BadFormatException("VnfPackageLocation must be empty");
@@ -567,8 +567,7 @@ public class VNFPackageManagement
   }
 
   private VirtualNetworkFunctionDescriptor setIPConfigurations(
-      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor)
-      throws DescriptorWrongFormat {
+      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor) {
     // If the VNF manager is not the fixed-host then skip this part
     if (!virtualNetworkFunctionDescriptor.getEndpoint().equalsIgnoreCase("fixed-host"))
       return virtualNetworkFunctionDescriptor;
@@ -787,7 +786,7 @@ public class VNFPackageManagement
       Map<String, Object> imageDetails,
       String projectId)
       throws NotFoundException, PluginException, VimException, BadRequestException, IOException,
-          AlreadyExistingException, InterruptedException, EntityUnreachableException {
+          AlreadyExistingException, InterruptedException, ExecutionException {
     if (metadata == null) {
       throw new NotFoundException("VNFPackageManagement: Not found Metadata.yaml");
     }
@@ -861,13 +860,8 @@ public class VNFPackageManagement
         for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
           if (vdu.getVimInstanceName() != null && !vdu.getVimInstanceName().isEmpty()) {
             for (String vimName : vdu.getVimInstanceName()) {
-              BaseVimInstance vimInstance = null;
-
-              for (BaseVimInstance vi : vimInstanceRepository.findByProjectId(projectId)) {
-                if (vimName.equals(vi.getName())) {
-                  vimInstance = vi;
-                }
-              }
+              BaseVimInstance vimInstance =
+                  vimInstanceRepository.findByProjectIdAndName(projectId, vimName);
 
               if (!vimInstances.contains(
                   vimInstance.getId())) { // check if we didn't already upload it
@@ -881,7 +875,7 @@ public class VNFPackageManagement
                 }
                 vdu.getVm_image().add(image.getExtId());
                 vimInstances.add(vimInstance.getId());
-                vimManagement.refresh(vimInstance, true);
+                vimInstance = vimManagement.refresh(vimInstance, true).get();
 
                 imageChecker.checkImageStatus(vimInstance);
               }
@@ -926,7 +920,7 @@ public class VNFPackageManagement
           BaseVimInstance vimInstance = optVimInstance.get();
 
           boolean found = false;
-          vimManagement.refresh(vimInstance, false);
+          vimManagement.refresh(vimInstance, false).get();
           //First, check for image ids
           if (imageDetails.containsKey("ids")) {
             for (BaseNfvImage nfvImage : vimInstance.getImages()) {
@@ -981,7 +975,7 @@ public class VNFPackageManagement
                   }
                   vimInstances.add(vimInstance.getId());
                   vdu.getVm_image().add(image.getExtId());
-                  vimManagement.refresh(vimInstance, true);
+                  vimInstance = vimManagement.refresh(vimInstance, true).get();
 
                   imageChecker.checkImageStatus(vimInstance);
                 }
@@ -993,7 +987,6 @@ public class VNFPackageManagement
               if (imageDetails.containsKey("names")) {
                 vdu.getVm_image().addAll((List) imageDetails.get("names"));
               }
-              ;
               //              throw new NotFoundException(
               //                  "VNFPackageManagement: Neither the defined image ids nor the names were found. Use upload option "
               //                      + "'check' to get sure that the image will be available");
@@ -1033,7 +1026,7 @@ public class VNFPackageManagement
       VirtualDeploymentUnit vdu,
       BaseVimInstance vimInstance)
       throws PluginException, VimException, IOException, BadRequestException,
-          AlreadyExistingException, InterruptedException {
+          AlreadyExistingException, InterruptedException, ExecutionException {
     if (!vimInstances.contains(vimInstance.getId())) { // check if we didn't already upload it
       Vim vim = vimBroker.getVim(vimInstance.getType());
       log.debug(
@@ -1044,7 +1037,7 @@ public class VNFPackageManagement
       }
       vdu.getVm_image().add(image.getExtId());
       vimInstances.add(vimInstance.getId());
-      vimManagement.refresh(vimInstance, true);
+      vimInstance = vimManagement.refresh(vimInstance, true).get();
 
       imageChecker.checkImageStatus(vimInstance);
     }
@@ -1078,10 +1071,10 @@ public class VNFPackageManagement
     VirtualNetworkFunctionDescriptor vnfd;
     try {
       vnfd = add(packageOnboard, false, projectId, true);
-    } catch (SQLException
-        | ExistingVNFPackage
+    } catch (ExistingVNFPackage
         | DescriptorWrongFormat
-        | VNFPackageFormatException e) {
+        | VNFPackageFormatException
+        | ExecutionException e) {
       if (log.isDebugEnabled()) log.error(e.getMessage(), e);
       else log.error(e.getMessage());
       throw new BadRequestException(e.getMessage());
@@ -1112,11 +1105,11 @@ public class VNFPackageManagement
     VirtualNetworkFunctionDescriptor vnfd;
     try {
       vnfd = add(packageOnboard, false, projectId, false);
-    } catch (SQLException
-        | ExistingVNFPackage
+    } catch (ExistingVNFPackage
         | DescriptorWrongFormat
         | BadFormatException
-        | VNFPackageFormatException e) {
+        | VNFPackageFormatException
+        | ExecutionException e) {
       if (log.isDebugEnabled()) log.error(e.getMessage(), e);
       else log.error(e.getMessage());
       throw new BadRequestException(e.getMessage());
@@ -1163,7 +1156,7 @@ public class VNFPackageManagement
   }
 
   @Override
-  public VNFPackage query(String id, String projectId) throws NotFoundException {
+  public VNFPackage query(String id, String projectId) {
     return vnfPackageRepository.findFirstByIdAndProjectId(id, projectId);
   }
 
