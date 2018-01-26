@@ -75,6 +75,9 @@ public class TOSCAParser {
       if (cpTemplate.getProperties().getFloatingIP() != null) {
         cp.setFloatingIp(cpTemplate.getProperties().getFloatingIP());
       }
+      if (cpTemplate.getProperties().getMetadata() != null) {
+        cp.setMetadata(cpTemplate.getProperties().getMetadata());
+      }
       cp.setInterfaceId(cpTemplate.getProperties().getInterfaceId());
     }
 
@@ -97,10 +100,14 @@ public class TOSCAParser {
     // ADD Settings
     vdu.setScale_in_out(vduTemplate.getProperties().getScale_in_out());
     vdu.setVm_image(vduTemplate.getArtifacts());
-    if (vduTemplate.getProperties().getFault_management_policy() != null) {
+    if (vduTemplate.getProperties() != null
+        && vduTemplate.getProperties().getFault_management_policy() != null) {
       vdu.setFault_management_policy(
           vduTemplate.getProperties().getFault_management_policy().getFaultManagementPolicies());
     }
+
+    if (vduTemplate.getProperties() != null && vduTemplate.getProperties().getMetadata() != null)
+      vdu.setMetadata(vduTemplate.getProperties().getMetadata());
 
     vdu.setVimInstanceName(vduTemplate.getProperties().getVim_instance_name());
 
@@ -229,6 +236,10 @@ public class TOSCAParser {
 
       configuration.setConfigurationParameters(configurationParameters);
       vnfd.setConfigurations(configuration);
+    }
+
+    if (vnf.getProperties() != null && vnf.getProperties().getMetadata() != null) {
+      vnfd.setMetadata(vnf.getProperties().getMetadata());
     }
 
     return vnfd;
