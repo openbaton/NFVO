@@ -17,7 +17,6 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
-import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -102,7 +101,7 @@ public class StartTask extends AbstractTask {
       }
     }
 
-    setHistoryLifecycleEvent(new Date());
+    setHistoryLifecycleEvent();
     saveVirtualNetworkFunctionRecord();
 
     if (ordered != null && Boolean.parseBoolean(ordered)) {

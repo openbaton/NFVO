@@ -18,7 +18,6 @@
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -80,10 +79,15 @@ public class GrantoperationTask extends AbstractTask {
   protected NFVMessage doWork() throws Exception {
     log.info("Executing task: GrantOperation on VNFR: " + virtualNetworkFunctionRecord.getName());
 
+    //Save the vnfr since in the grantLifecycleOperation method we use vdu.getId()
+    setHistoryLifecycleEvent();
+    saveVirtualNetworkFunctionRecord();
+
+    Map<String, BaseVimInstance> vimInstancesChosen = new HashMap<>();
+
     if (!checkQuota) {
       log.warn("Checking quota is disabled, please consider to enable it");
-      setHistoryLifecycleEvent(new Date());
-      saveVirtualNetworkFunctionRecord();
+
       log.trace(
           "VNFR ("
               + virtualNetworkFunctionRecord.getId()
@@ -113,24 +117,30 @@ public class GrantoperationTask extends AbstractTask {
                           + ") existing hibernate version is = "
                           + vdu.getHbVersion()));
 
-      OrVnfmGrantLifecycleOperationMessage nfvMessage = new OrVnfmGrantLifecycleOperationMessage();
-      nfvMessage.setGrantAllowed(true);
-      nfvMessage.setVduVim(new HashMap<>());
       for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
         BaseVimInstance vimInstance =
             vnfPlacementManagement.choseRandom(
                 virtualDeploymentUnit.getVimInstanceName(),
                 virtualNetworkFunctionRecord.getProjectId());
         performChecks(vimInstance, virtualDeploymentUnit);
-        nfvMessage.getVduVim().put(virtualDeploymentUnit.getId(), vimInstance);
+        vimInstancesChosen.put(virtualDeploymentUnit.getId(), vimInstance);
       }
-      nfvMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
+      log.info("Choose all Vim Instance for vnfr: " + virtualNetworkFunctionRecord.getName());
+
       saveVirtualNetworkFunctionRecord();
+      log.trace(
+          "VNFR ("
+              + virtualNetworkFunctionRecord.getId()
+              + ") current hibernate version is: "
+              + virtualNetworkFunctionRecord.getHbVersion());
+
+      OrVnfmGrantLifecycleOperationMessage nfvMessage = new OrVnfmGrantLifecycleOperationMessage();
+      nfvMessage.setGrantAllowed(true);
+      nfvMessage.setVduVim(vimInstancesChosen);
+      nfvMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
       return nfvMessage;
     } else {
-      //Save the vnfr since in the grantLifecycleOperation method we use vdu.getId()
-      setHistoryLifecycleEvent(new Date());
-      saveVirtualNetworkFunctionRecord();
+
       for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
         log.debug(
             "For vdu "
@@ -138,12 +148,9 @@ public class GrantoperationTask extends AbstractTask {
                 + " possible vim instances are: "
                 + virtualDeploymentUnit.getVimInstanceName());
       }
-      Map<String, BaseVimInstance> vimInstancesChosen =
+      vimInstancesChosen =
           lifecycleOperationGranting.grantLifecycleOperation(virtualNetworkFunctionRecord);
 
-      for (Map.Entry<String, BaseVimInstance> entry : vimInstancesChosen.entrySet())
-        log.info("VimInstances chosen are: " + entry.getKey() + ": " + entry.getValue().getName());
-      log.trace("VimInstances chosen are: " + vimInstancesChosen);
       if (vimInstancesChosen.size() == virtualNetworkFunctionRecord.getVdu().size()) {
         for (Map.Entry<String, BaseVimInstance> entry : vimInstancesChosen.entrySet()) {
           performChecks(
@@ -155,21 +162,7 @@ public class GrantoperationTask extends AbstractTask {
                   .findFirst()
                   .orElseThrow(() -> new RuntimeException("That's impossible")));
         }
-        log.info(
-            "Finished task: GrantOperation on VNFR: " + virtualNetworkFunctionRecord.getName());
 
-        saveVirtualNetworkFunctionRecord();
-        log.trace(
-            "VNFR ("
-                + virtualNetworkFunctionRecord.getId()
-                + ") current hibernate version is: "
-                + virtualNetworkFunctionRecord.getHbVersion());
-        OrVnfmGrantLifecycleOperationMessage nfvMessage =
-            new OrVnfmGrantLifecycleOperationMessage();
-        nfvMessage.setGrantAllowed(true);
-        nfvMessage.setVduVim(vimInstancesChosen);
-        nfvMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
-        return nfvMessage;
       } else {
         // there are not enough resources for deploying VNFR
         log.error(
@@ -182,6 +175,19 @@ public class GrantoperationTask extends AbstractTask {
             "Not enough resources for deploying VNFR " + virtualNetworkFunctionRecord.getName());
       }
     }
+    log.info("Finished task: GrantOperation on VNFR: " + virtualNetworkFunctionRecord.getName());
+
+    saveVirtualNetworkFunctionRecord();
+    log.trace(
+        "VNFR ("
+            + virtualNetworkFunctionRecord.getId()
+            + ") current hibernate version is: "
+            + virtualNetworkFunctionRecord.getHbVersion());
+    OrVnfmGrantLifecycleOperationMessage nfvMessage = new OrVnfmGrantLifecycleOperationMessage();
+    nfvMessage.setGrantAllowed(true);
+    nfvMessage.setVduVim(vimInstancesChosen);
+    nfvMessage.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
+    return nfvMessage;
   }
 
   private void performChecks(
