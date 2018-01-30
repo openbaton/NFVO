@@ -27,11 +27,16 @@ import org.openbaton.catalogue.nfvo.EventEndpoint;
 import org.openbaton.catalogue.util.BaseEntity;
 import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.nfvo.common.configuration.RabbitConfiguration;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
 import org.openbaton.nfvo.core.interfaces.EventSender;
 import org.openbaton.nfvo.repositories.EventEndpointRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.annotation.Exchange;
+import org.springframework.amqp.rabbit.annotation.Queue;
+import org.springframework.amqp.rabbit.annotation.QueueBinding;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -56,6 +61,25 @@ class EventDispatcher
   @Autowired private org.openbaton.nfvo.core.interfaces.EventManagement eventManagement;
 
   @Override
+  @RabbitListener(
+    bindings =
+        @QueueBinding(
+          value =
+              @Queue(
+                value = RabbitConfiguration.QUEUE_NAME_EVENT_REGISTER,
+                durable = RabbitConfiguration.QUEUE_DURABLE,
+                autoDelete = RabbitConfiguration.QUEUE_AUTODELETE
+              ),
+          exchange =
+              @Exchange(
+                value = RabbitConfiguration.EXCHANGE_NAME_OPENBATON,
+                ignoreDeclarationExceptions = "true",
+                type = RabbitConfiguration.EXCHANGE_TYPE_OPENBATON,
+                durable = RabbitConfiguration.EXCHANGE_DURABLE_OPENBATON
+              ),
+          key = RabbitConfiguration.QUEUE_NAME_EVENT_REGISTER
+        )
+  )
   public EventEndpoint register(String endpoint_json) throws MissingParameterException {
 
     EventEndpoint endpoint = gson.fromJson(endpoint_json, EventEndpoint.class);
@@ -157,6 +181,25 @@ class EventDispatcher
   }
 
   @Override
+  @RabbitListener(
+    bindings =
+        @QueueBinding(
+          value =
+              @Queue(
+                value = RabbitConfiguration.QUEUE_NAME_EVENT_UNREGISTER,
+                durable = RabbitConfiguration.QUEUE_DURABLE,
+                autoDelete = RabbitConfiguration.QUEUE_AUTODELETE
+              ),
+          exchange =
+              @Exchange(
+                value = RabbitConfiguration.EXCHANGE_NAME_OPENBATON,
+                ignoreDeclarationExceptions = "true",
+                type = RabbitConfiguration.EXCHANGE_TYPE_OPENBATON,
+                durable = RabbitConfiguration.EXCHANGE_DURABLE_OPENBATON
+              ),
+          key = RabbitConfiguration.QUEUE_NAME_EVENT_UNREGISTER
+        )
+  )
   public void unregister(String id) throws NotFoundException {
     eventManagement.removeUnreachableEndpoints();
     EventEndpoint endpoint = eventEndpointRepository.findFirstById(id);

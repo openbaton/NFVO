@@ -640,7 +640,7 @@ public class VNFPackageManagement
               image = vim.add(vimInstance, image, imageFile);
             }
             if (vdu.getVm_image() == null) {
-              vdu.setVm_image(new HashSet<>());
+              vdu.setVm_image(new LinkedHashSet<>());
             }
             vdu.getVm_image().add(image.getExtId());
             vimInstance = vimManagement.refresh(vimInstance, true).get();
@@ -659,7 +659,7 @@ public class VNFPackageManagement
           .forEach(
               virtualDeploymentUnit -> {
                 if (virtualDeploymentUnit.getVm_image() == null) {
-                  virtualDeploymentUnit.setVm_image(new HashSet<>());
+                  virtualDeploymentUnit.setVm_image(new LinkedHashSet<>());
                 }
                 if (ids != null) virtualDeploymentUnit.getVm_image().addAll(ids);
                 if (names != null) virtualDeploymentUnit.getVm_image().addAll(names);

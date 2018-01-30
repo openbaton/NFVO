@@ -31,6 +31,7 @@ import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
+import org.openbaton.nfvo.common.configuration.RabbitConfiguration;
 import org.openbaton.nfvo.common.utils.key.KeyHelper;
 import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.openbaton.nfvo.repositories.ManagerCredentialsRepository;
@@ -42,6 +43,10 @@ import org.openbaton.nfvo.security.config.OAuth2AuthorizationServerConfig;
 import org.openbaton.vnfm.interfaces.register.VnfmRegister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.annotation.Exchange;
+import org.springframework.amqp.rabbit.annotation.Queue;
+import org.springframework.amqp.rabbit.annotation.QueueBinding;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -238,10 +243,6 @@ public class ComponentManager implements org.openbaton.nfvo.core.interfaces.Comp
    * Manager related operations
    */
 
-  public String enableManager(byte[] message) {
-    return enableManager(new String(message));
-  }
-
   /**
    * Handles the registration requests of VNFMs and returns a ManagerCredential object from which
    * the VNFMs can get the rabbitmq username and password.
@@ -251,6 +252,25 @@ public class ComponentManager implements org.openbaton.nfvo.core.interfaces.Comp
    * @throws IOException
    */
   @Override
+  @RabbitListener(
+    bindings =
+        @QueueBinding(
+          value =
+              @Queue(
+                value = RabbitConfiguration.QUEUE_NAME_MANAGER_REGISTER,
+                durable = "true",
+                autoDelete = "true"
+              ),
+          exchange =
+              @Exchange(
+                value = RabbitConfiguration.EXCHANGE_NAME_OPENBATON,
+                ignoreDeclarationExceptions = "true",
+                type = RabbitConfiguration.EXCHANGE_TYPE_OPENBATON,
+                durable = RabbitConfiguration.EXCHANGE_DURABLE_OPENBATON
+              ),
+          key = RabbitConfiguration.QUEUE_NAME_MANAGER_REGISTER
+        )
+  )
   public String enableManager(String message) {
     try {
       // deserialize message

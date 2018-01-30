@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Future;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
@@ -826,18 +827,18 @@ public class GenericVIM extends Vim {
             + vimInstance.getName());
   }
 
-  protected String chooseImage(Collection<String> vmImages, BaseVimInstance vimInstance)
+  private String chooseImage(Collection<String> vmImages, BaseVimInstance vimInstance)
       throws VimException {
     log.debug("Choosing Image...");
     log.debug("Requested: " + vmImages);
 
     if (vmImages != null && !vmImages.isEmpty()) {
-      for (String image : vmImages) {
-        Collection<BaseNfvImage> imagesByName =
-            VimInstanceUtils.findActiveImagesByName(vimInstance, image);
-        if (imagesByName.size() > 0) {
-          //TODO implement choose
-          return imagesByName.iterator().next().getExtId();
+      //TODO implement choose, actually this should return the first one, so good
+      for (String imageName : vmImages) {
+        Optional<BaseNfvImage> extId =
+            VimInstanceUtils.findActiveImagesByName(vimInstance, imageName).stream().findFirst();
+        if (extId.isPresent()) {
+          return extId.get().getExtId();
         }
       }
       throw new VimException(
@@ -845,8 +846,7 @@ public class GenericVIM extends Vim {
               + vmImages
               + " on VimInstance "
               + vimInstance.getName());
-    }
-    throw new VimException("No Images are available on VimInstnace " + vimInstance.getName());
+    } else throw new VimException("No Images in the VDU");
   }
 
   @Override

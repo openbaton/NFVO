@@ -204,7 +204,8 @@ public class GrantoperationTask extends AbstractTask {
       if (virtualDeploymentUnit
           .getVm_image()
           .stream()
-          .noneMatch(i -> VimInstanceUtils.findActiveImagesByName(finalVimInstance, i).size() > 0))
+          .noneMatch(
+              name -> VimInstanceUtils.findActiveImagesByName(finalVimInstance, name).size() > 0))
         throw new VimException(
             String.format(
                 "None of the images %s where found on the chosen vim instance %s",

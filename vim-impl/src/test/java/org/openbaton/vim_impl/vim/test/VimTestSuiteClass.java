@@ -25,9 +25,9 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -53,8 +53,6 @@ import org.openbaton.catalogue.nfvo.images.NFVImage;
 import org.openbaton.catalogue.nfvo.networks.Network;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
-import org.openbaton.catalogue.security.Key;
-import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
@@ -135,7 +133,7 @@ public class VimTestSuiteClass {
   }
 
   @Test
-  public void testVimBrokers() throws PluginException {
+  public void testVimBrokers() {
     //    Assert.assertNotNull(vimBroker);
     //    Vim genericVim = vimBroker.getVim("generic");
     //    Assert.assertEquals(genericVim.getClass(), GenericVIM.class);
@@ -147,10 +145,6 @@ public class VimTestSuiteClass {
   public void testVimOpenstack() throws VimDriverException, VimException, RemoteException {
     VirtualDeploymentUnit vdu = createVDU();
     VirtualNetworkFunctionRecord vnfr = createVNFR();
-    ArrayList<String> networks = new ArrayList<>();
-    networks.add("network1");
-    ArrayList<String> secGroups = new ArrayList<>();
-    secGroups.add("secGroup1");
 
     Server server = new Server();
     server.setExtId(environment.getProperty("mocked_id"));
@@ -198,8 +192,8 @@ public class VimTestSuiteClass {
         vnfr,
         vdu.getVnfc().iterator().next(),
         "",
-        new HashMap<String, String>(),
-        new HashSet<Key>());
+        new HashMap<>(),
+        new HashSet<>());
   }
 
   private VirtualNetworkFunctionRecord createVNFR() {
@@ -232,7 +226,7 @@ public class VimTestSuiteClass {
     monitoring_parameter.add("parameter_3");
     vdu.setMonitoring_parameter(monitoring_parameter);
     vdu.setComputation_requirement("m1.small");
-    Set<String> vm_images = new HashSet<>();
+    Set<String> vm_images = new LinkedHashSet<>();
     vm_images.add("image_1234");
     vdu.setVm_image(vm_images);
     vimInstance.setFlavours(new HashSet<>());
