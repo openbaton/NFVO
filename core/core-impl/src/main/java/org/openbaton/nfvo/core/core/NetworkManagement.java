@@ -17,17 +17,21 @@
 
 package org.openbaton.nfvo.core.core;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import org.apache.commons.net.util.SubnetUtils;
 import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
 import org.openbaton.catalogue.nfvo.networks.Network;
 import org.openbaton.catalogue.nfvo.networks.Subnet;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.util.IdGenerator;
+import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
+import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.openbaton.nfvo.repositories.NetworkRepository;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
@@ -36,7 +40,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-/** Created by mpa on 24.06.15. */
 @Service
 @Scope
 public class NetworkManagement implements org.openbaton.nfvo.core.interfaces.NetworkManagement {
@@ -46,10 +49,12 @@ public class NetworkManagement implements org.openbaton.nfvo.core.interfaces.Net
   @Autowired private VimBroker vimBroker;
 
   @Autowired private NetworkRepository networkRepository;
+  @Autowired private VimManagement vimInstanceRepository;
 
   @Override
   public synchronized BaseNetwork add(BaseVimInstance vimInstance, BaseNetwork network)
-      throws VimException, PluginException, BadRequestException {
+      throws VimException, PluginException, BadRequestException, IOException,
+          AlreadyExistingException, ExecutionException, InterruptedException {
     log.info("Creating network " + network.getName() + " on vim " + vimInstance.getName());
     org.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement vim;
     vim = vimBroker.getVim(vimInstance.getType());

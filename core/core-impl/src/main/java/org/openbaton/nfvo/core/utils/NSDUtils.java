@@ -114,7 +114,6 @@ public class NSDUtils {
     for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
         networkServiceDescriptor.getVnfd()) {
       for (VnfmManagerEndpoint endpoint : endpoints) {
-        log.debug(endpoint.getType() + " == " + virtualNetworkFunctionDescriptor.getEndpoint());
         if (endpoint.getType().equals(virtualNetworkFunctionDescriptor.getEndpoint())
             && endpoint.isActive()
             && endpoint.isEnabled()) {

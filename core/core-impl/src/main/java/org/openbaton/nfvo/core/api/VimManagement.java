@@ -24,6 +24,7 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
@@ -32,6 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
@@ -65,16 +67,13 @@ import org.springframework.stereotype.Service;
 public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimManagement {
 
   @Autowired private VimRepository vimRepository;
-
   @Autowired private VimBroker vimBroker;
-
   @Autowired private ImageRepository imageRepository;
-
   @Autowired private VNFDRepository vnfdRepository;
-
   @Autowired private VNFRRepository vnfrRepository;
 
   private static Map<String, Long> lastUpdateVim = new ConcurrentHashMap<>();
+  private static Map<String, Object> lockMap = new HashMap<>();
 
   private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -187,7 +186,12 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     }
 
     log.info("Refreshing vim");
-    synchronized (vimInstance.getAuthUrl().intern()) {
+    String key = String.format("%s%s", vimInstance.getName(), vimInstance.getProjectId());
+    Object lock;
+    synchronized (lockMap) {
+      lock = lockMap.computeIfAbsent(key, k -> new Object());
+    }
+    synchronized (lock) {
       vimInstance = vimBroker.getVim(vimInstance.getType()).refresh(vimInstance);
       vimInstance = vimRepository.save(vimInstance);
     }
@@ -323,6 +327,35 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   public Set<BaseNfvImage> queryImagesDirectly(BaseVimInstance vimInstance)
       throws PluginException, VimException {
     return new HashSet<>(vimBroker.getVim(vimInstance.getType()).queryImages(vimInstance));
+  }
+
+  @Async
+  @Override
+  public Future<Void> deleteNetwork(VirtualLinkRecord vlr)
+      throws PluginException, NotFoundException, VimException {
+    BaseVimInstance vimInstance = this.query(vlr.getVim_id());
+    if (vimInstance == null)
+      throw new NotFoundException(
+          String.format("VimInstance with it %s not found", vlr.getVim_id()));
+    vimBroker
+        .getVim(vimInstance.getType())
+        .delete(
+            vimInstance,
+            vimInstance
+                .getNetworks()
+                .parallelStream()
+                .filter(n -> n.getExtId().equals(vlr.getExtId()))
+                .findFirst()
+                .orElseThrow(
+                    () ->
+                        new NotFoundException(
+                            String.format("Network with it %s not found", vlr.getExtId()))));
+    return new AsyncResult<>(null);
+  }
+
+  @Override
+  public BaseVimInstance query(String vimId) {
+    return vimRepository.findFirstById(vimId);
   }
 
   /**

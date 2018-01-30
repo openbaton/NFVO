@@ -17,7 +17,6 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
-import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import org.openbaton.catalogue.mano.common.Event;
@@ -103,7 +102,7 @@ public class InstantiateTask extends AbstractTask {
 
     dependencyManagement.fillDependecyParameters(virtualNetworkFunctionRecord);
     log.debug("Filled dependency parameters of " + virtualNetworkFunctionRecord.getName());
-    setHistoryLifecycleEvent(new Date());
+    setHistoryLifecycleEvent();
     saveVirtualNetworkFunctionRecord();
     log.debug("Saved VNFR " + virtualNetworkFunctionRecord.getName());
     NetworkServiceRecord nsr =

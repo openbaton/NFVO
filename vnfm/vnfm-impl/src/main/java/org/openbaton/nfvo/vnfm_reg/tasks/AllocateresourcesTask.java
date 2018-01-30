@@ -17,7 +17,6 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
-import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 import org.openbaton.catalogue.mano.common.Event;
@@ -90,7 +89,7 @@ public class AllocateresourcesTask extends AbstractTask {
       }
     }
 
-    setHistoryLifecycleEvent(new Date());
+    setHistoryLifecycleEvent();
     saveVirtualNetworkFunctionRecord();
 
     OrVnfmGenericMessage orVnfmGenericMessage =

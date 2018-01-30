@@ -52,7 +52,7 @@ public interface NetworkManagement {
    * @return the {@link Network} updated
    * @throws VimException in case of exception
    */
-  BaseNetwork update(BaseVimInstance vimInstance, Network updatingNetwork) throws VimException;
+  BaseNetwork update(BaseVimInstance vimInstance, BaseNetwork updatingNetwork) throws VimException;
 
   /**
    * This operation allows querying the information of the Networks in the network repository.

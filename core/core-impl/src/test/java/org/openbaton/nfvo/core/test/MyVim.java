@@ -103,7 +103,7 @@ public class MyVim extends Vim {
   public void delete(BaseVimInstance vimInstance, BaseNetwork network) {}
 
   @Override
-  public BaseNetwork update(BaseVimInstance vimInstance, Network updatingNetwork) {
+  public BaseNetwork update(BaseVimInstance vimInstance, BaseNetwork updatingNetwork) {
     return updatingNetwork;
   }
 

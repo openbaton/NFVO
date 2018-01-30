@@ -105,10 +105,10 @@ public class OpenstackVimInstance extends BaseVimInstance {
     this.flavours = flavours;
   }
 
-  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
   private Set<NFVImage> images;
 
-  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
   private Set<Network> networks;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
