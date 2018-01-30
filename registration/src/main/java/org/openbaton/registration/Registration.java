@@ -166,10 +166,13 @@ public class Registration {
     final String corrId = UUID.randomUUID().toString();
 
     AMQP.BasicProperties props =
-        new AMQP.BasicProperties.Builder().correlationId(corrId).replyTo(replyQueueName).build();
+        new AMQP.BasicProperties.Builder()
+            .correlationId(corrId)
+            .contentType("text/plain")
+            .replyTo(replyQueueName)
+            .build();
 
-    final BlockingQueue<ManagerCredentials> response =
-        new ArrayBlockingQueue<ManagerCredentials>(1);
+    final BlockingQueue<ManagerCredentials> response = new ArrayBlockingQueue<>(1);
 
     channel.basicConsume(
         replyQueueName,
