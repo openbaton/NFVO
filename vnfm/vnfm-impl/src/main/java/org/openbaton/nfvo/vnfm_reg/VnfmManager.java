@@ -261,6 +261,13 @@ public class VnfmManager
             status = vnfr.getStatus();
           }
         }
+        status =
+            networkServiceRecord
+                    .getVnfr()
+                    .stream()
+                    .anyMatch(vnfr -> vnfr.getStatus().ordinal() == Status.TERMINATED.ordinal())
+                ? Status.TERMINATED
+                : status;
 
         log.debug("Setting NSR status to: " + status);
         networkServiceRecord.setStatus(status);
@@ -323,15 +330,18 @@ public class VnfmManager
             }
           } catch (OptimisticLockingFailureException e) {
             log.error(
-                "FFFF OptimisticLockingFailureException while setting the task of the NSR. Don't worry we will try it"
-                    + " again.");
+                "Got OptimisticLockingFailureException while setting the task of the NSR. Don't worry I'll try again.");
             savedNsr = false;
           }
         } else {
           log.debug("Nsr is ACTIVE but not all vnfr have been received");
         }
       } while (!savedNsr);
-    } else if (status.ordinal() == Status.TERMINATED.ordinal()) {
+    } else if (status.ordinal() == Status.TERMINATED.ordinal()
+        && networkServiceRecord
+            .getVnfr()
+            .stream()
+            .allMatch(vnfr -> vnfr.getStatus().ordinal() == Status.TERMINATED.ordinal())) {
       publishEvent(
           Action.RELEASE_RESOURCES_FINISH,
           networkServiceRecord,

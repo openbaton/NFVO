@@ -260,10 +260,8 @@ public class RabbitConfiguration {
   SimpleMessageListenerContainer container_eventUnregister(
       ConnectionFactory connectionFactory,
       @Qualifier("listenerAdapter_eventUnregister") MessageListenerAdapter listenerAdapter) {
-    SimpleMessageListenerContainer container =
-        getSimpleMessageListenerContainer(
-            connectionFactory, listenerAdapter, queueName_eventUnregister);
-    return container;
+    return getSimpleMessageListenerContainer(
+        connectionFactory, listenerAdapter, queueName_eventUnregister);
   }
 
   @Bean
@@ -304,14 +302,12 @@ public class RabbitConfiguration {
   SimpleMessageListenerContainer container_vnfmCoreActionsReply(
       ConnectionFactory connectionFactory,
       @Qualifier("listenerAdapter_vnfmCoreActionsReply") MessageListenerAdapter listenerAdapter) {
-    SimpleMessageListenerContainer container =
-        getSimpleMessageListenerContainer(
-            connectionFactory,
-            listenerAdapter,
-            queueName_vnfmCoreActionsReply,
-            minConcurrency,
-            maxConcurrency);
-    return container;
+    return getSimpleMessageListenerContainer(
+        connectionFactory,
+        listenerAdapter,
+        queueName_vnfmCoreActionsReply,
+        minConcurrency,
+        maxConcurrency);
   }
 
   /**

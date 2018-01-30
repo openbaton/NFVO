@@ -171,18 +171,14 @@ public class CSARParser {
 
     Map<String, Object> metadata;
     NFVImage image = new NFVImage();
-    Map<String, Object> imageDetails = new HashMap<>();
-    byte[] imageFile = null;
 
     Yaml yaml = new Yaml();
     metadata = yaml.loadAs(new String(this.vnfMetadata.toByteArray()), Map.class);
     //Get configuration for NFVImage
     vnfPackage = vnfPackageManagement.handleMetadata(metadata, vnfPackage, image);
 
-    vnfPackageManagement.handleImage(
-        vnfPackage, imageFile, virtualNetworkFunctionDescriptor, image, imageDetails, projectId);
-
-    return image;
+    return vnfPackageManagement.handleImage(
+        vnfPackage, null, virtualNetworkFunctionDescriptor, image, metadata, projectId);
   }
 
   private String saveVNFD(
@@ -278,8 +274,6 @@ public class CSARParser {
         vnfScripts = new HashSet<>();
         for (Script script : scripts) {
           String[] splitted_name = script.getName().split("!_!");
-          log.debug(splitted_name[0]);
-          log.debug(script.getName());
 
           if (splitted_name.length == 2) {
             String folder_name = splitted_name[0];
