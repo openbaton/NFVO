@@ -247,9 +247,7 @@ public class Registration {
     channel.basicQos(1);
 
     AMQP.BasicProperties props =
-        new AMQP.BasicProperties.Builder()
-            .contentType("text/plain")
-            .build();
+        new AMQP.BasicProperties.Builder().contentType("text/plain").build();
 
     channel.basicPublish("openbaton-exchange", "nfvo.manager.handling", props, message.getBytes());
     channel.close();
