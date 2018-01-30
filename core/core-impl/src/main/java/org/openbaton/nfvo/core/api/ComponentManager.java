@@ -242,9 +242,6 @@ public class ComponentManager implements org.openbaton.nfvo.core.interfaces.Comp
   /*
    * Manager related operations
    */
-  public String enableManager(byte[] message) {
-    return enableManager(new String(message));
-  }
 
   /**
    * Handles the registration requests of VNFMs and returns a ManagerCredential object from which
