@@ -47,6 +47,7 @@ public class HistoryManagement implements org.openbaton.nfvo.core.interfaces.His
 
   @Value("${nfvo.history.clear:false}")
   private boolean clearHistory;
+
   private static final Object lock = new Object();
 
   @PostConstruct
@@ -85,7 +86,7 @@ public class HistoryManagement implements org.openbaton.nfvo.core.interfaces.His
         if (historyEntityRepository.count() >= maxHistoryEntities) {
           HistoryEntity entity =
               historyEntityRepository.findAll(
-                  new Sort(new Sort.Order(Sort.Direction.ASC, "timestamp")))[
+                      new Sort(new Sort.Order(Sort.Direction.ASC, "timestamp")))[
                   0];
           historyEntityRepository.delete(entity.getId());
         }
