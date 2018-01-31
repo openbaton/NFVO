@@ -45,15 +45,7 @@ import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.Action;
-import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
-import org.openbaton.catalogue.nfvo.Configuration;
-import org.openbaton.catalogue.nfvo.ConfigurationParameter;
-import org.openbaton.catalogue.nfvo.HistoryLifecycleEvent;
-import org.openbaton.catalogue.nfvo.Quota;
-import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
-import org.openbaton.catalogue.nfvo.VNFPackage;
-import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmHealVNFRequestMessage;
@@ -1740,6 +1732,16 @@ public class NetworkServiceRecordManagement
         vnfStateHandler.sendMessageToVNFR(failedVnfr, orVnfmGenericMessage);
       }
     }
+  }
+
+  /**
+   * This operation is used to execute a script on a specific Virtual Network Function Record during
+   * runtime.
+   */
+  @Override
+  public void executeScript(String idNsr, String idVnfr, String projectId, Script script)
+      throws NotFoundException, InterruptedException, BadFormatException, ExecutionException {
+    vnfmManager.executeScript(idVnfr, script);
   }
 
   @ConfigurationProperties

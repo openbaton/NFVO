@@ -38,5 +38,6 @@ public enum Action {
   START,
   STOP,
   LOG_REQUEST,
-  RESUME
+  RESUME,
+  EXECUTE
 }
