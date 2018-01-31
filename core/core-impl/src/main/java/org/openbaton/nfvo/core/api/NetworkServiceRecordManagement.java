@@ -1103,7 +1103,6 @@ public class NetworkServiceRecordManagement
             if (vimInstance == null) {
               throw new NotFoundException("Not found VIM instance: " + vimInstanceName);
             }
-            vimManagement.refresh(vimInstance, false).get();
           }
         }
       }
