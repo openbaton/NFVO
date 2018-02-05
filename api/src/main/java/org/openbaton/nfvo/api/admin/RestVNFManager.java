@@ -45,7 +45,7 @@ public class RestVNFManager {
   }
 
   @ApiOperation(
-    value = "Retrieving a registered VNFM’s endpoint",
+    value = "Retrieving a registered VNFM's endpoint",
     notes = "Specify the id of the Virtual Network Function Manager in the URL"
   )
   @RequestMapping(value = "{id}", method = RequestMethod.GET)

@@ -185,7 +185,7 @@ public class RestUsers {
   }
 
   @ApiOperation(
-    value = "Changing the current User’s password",
+    value = "Changing the current User's password",
     notes = "The current user can change his password by providing a new one"
   )
   @RequestMapping(
@@ -203,8 +203,8 @@ public class RestUsers {
   }
 
   @ApiOperation(
-    value = "Changing a User’s password",
-    notes = "If you want to change another User’s password, you have to be an admin"
+    value = "Changing a User's password",
+    notes = "If you want to change another User's password, you have to be an admin"
   )
   @RequestMapping(
     value = "changepwd/{username}",

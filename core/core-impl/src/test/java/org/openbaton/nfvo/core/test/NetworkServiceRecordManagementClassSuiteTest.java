@@ -47,21 +47,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
-import org.openbaton.catalogue.mano.common.AutoScalePolicy;
-import org.openbaton.catalogue.mano.common.ConnectionPoint;
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.common.HighAvailability;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.common.ResiliencyLevel;
 import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
-import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VNFDependency;
-import org.openbaton.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
@@ -444,10 +438,10 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     nsd.getMonitoring_parameter().add("monitor3");
     nsd.setProjectId(projectId);
     //nsd.setLifecycle_event(new HashSet<LifecycleEvent>());
-    nsd.setPnfd(new HashSet<PhysicalNetworkFunctionDescriptor>());
-    nsd.setVnffgd(new HashSet<VNFForwardingGraphDescriptor>());
-    nsd.setVld(new HashSet<VirtualLinkDescriptor>());
-    nsd.setAuto_scale_policy(new HashSet<AutoScalePolicy>());
+    nsd.setPnfd(new HashSet<>());
+    nsd.setVnffgd(new HashSet<>());
+    nsd.setVld(new HashSet<>());
+    nsd.setAuto_scale_policy(new HashSet<>());
     nsd.setVnf_dependency(new HashSet<VNFDependency>());
     Set<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new HashSet<>();
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor1 =
@@ -462,7 +456,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     VNFDependency vnfDependency = new VNFDependency();
     vnfDependency.setSource(virtualNetworkFunctionDescriptor1.getName());
     vnfDependency.setTarget(virtualNetworkFunctionDescriptor2.getName());
-    vnfDependency.setParameters(new HashSet<String>());
+    vnfDependency.setParameters(new HashSet<>());
     nsd.getVnf_dependency().add(vnfDependency);
 
     return nsd;
@@ -475,14 +469,14 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     virtualNetworkFunctionDescriptor.setProjectId(projectId);
     virtualNetworkFunctionDescriptor.setEndpoint("test");
     virtualNetworkFunctionDescriptor.setName("" + ((int) (Math.random() * 10000)));
-    virtualNetworkFunctionDescriptor.setMonitoring_parameter(new HashSet<String>());
+    virtualNetworkFunctionDescriptor.setMonitoring_parameter(new HashSet<>());
     virtualNetworkFunctionDescriptor.getMonitoring_parameter().add("monitor1");
     virtualNetworkFunctionDescriptor.getMonitoring_parameter().add("monitor2");
     virtualNetworkFunctionDescriptor.getMonitoring_parameter().add("monitor3");
-    virtualNetworkFunctionDescriptor.setAuto_scale_policy(new HashSet<AutoScalePolicy>());
-    virtualNetworkFunctionDescriptor.setConnection_point(new HashSet<ConnectionPoint>());
-    virtualNetworkFunctionDescriptor.setVirtual_link(new HashSet<InternalVirtualLink>());
-    virtualNetworkFunctionDescriptor.setLifecycle_event(new HashSet<LifecycleEvent>());
+    virtualNetworkFunctionDescriptor.setAuto_scale_policy(new HashSet<>());
+    virtualNetworkFunctionDescriptor.setConnection_point(new HashSet<>());
+    virtualNetworkFunctionDescriptor.setVirtual_link(new HashSet<>());
+    virtualNetworkFunctionDescriptor.setLifecycle_event(new HashSet<>());
 
     virtualNetworkFunctionDescriptor.setDeployment_flavour(
         new HashSet<VNFDeploymentFlavour>() {
@@ -498,7 +492,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
           {
             VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
             vdu.setVm_image(
-                new HashSet<String>() {
+                new LinkedHashSet<String>() {
                   {
                     add("mocked_image");
                   }
@@ -508,8 +502,8 @@ public class NetworkServiceRecordManagementClassSuiteTest {
             highAvailability.setResiliencyLevel(ResiliencyLevel.ACTIVE_STANDBY_STATELESS);
             vdu.setHigh_availability(highAvailability);
             vdu.setComputation_requirement("high_requirements");
-            vdu.setVnfc(new HashSet<VNFComponent>());
-            vdu.setLifecycle_event(new HashSet<LifecycleEvent>());
+            vdu.setVnfc(new HashSet<>());
+            vdu.setLifecycle_event(new HashSet<>());
             vdu.setMonitoring_parameter(
                 new HashSet<String>() {
                   {
@@ -535,7 +529,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     nsr.setVendor("FOKUS");
     nsr.setProjectId(projectId);
     nsr.setStatus(Status.ACTIVE);
-    nsr.setMonitoring_parameter(new HashSet<String>());
+    nsr.setMonitoring_parameter(new HashSet<>());
     nsr.getMonitoring_parameter().add("monitor1");
     nsr.getMonitoring_parameter().add("monitor2");
     nsr.getMonitoring_parameter().add("monitor3");
@@ -564,15 +558,15 @@ public class NetworkServiceRecordManagementClassSuiteTest {
             highAvailability.setResiliencyLevel(ResiliencyLevel.ACTIVE_STANDBY_STATELESS);
             vdu.setHigh_availability(highAvailability);
             vdu.setVm_image(
-                new HashSet<String>() {
+                new LinkedHashSet<String>() {
                   {
                     add("mocked_image");
                   }
                 });
             vdu.setComputation_requirement("high_requirements");
-            vdu.setVnfc(new HashSet<VNFComponent>());
-            vdu.setVnfc_instance(new HashSet<VNFCInstance>());
-            vdu.setLifecycle_event(new HashSet<LifecycleEvent>());
+            vdu.setVnfc(new HashSet<>());
+            vdu.setVnfc_instance(new HashSet<>());
+            vdu.setLifecycle_event(new HashSet<>());
             vdu.setMonitoring_parameter(
                 new HashSet<String>() {
                   {

@@ -17,6 +17,7 @@
 
 package org.openbaton.catalogue.mano.descriptor;
 
+import java.util.List;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
@@ -63,6 +64,17 @@ public class VirtualLinkDescriptor extends AbstractVirtualLink {
 
   /** Public ip pool */
   private String poolName;
+
+  public List<String> getDns() {
+    return dns;
+  }
+
+  public void setDns(List<String> dns) {
+    this.dns = dns;
+  }
+
+  @ElementCollection(fetch = FetchType.EAGER)
+  private List<String> dns;
 
   /** Number of endpoints available on this VL (e.g. E-Line=2) */
   private Integer number_of_endpoints = 0;

@@ -17,6 +17,7 @@
 
 package org.openbaton.catalogue.mano.record;
 
+import java.util.List;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
@@ -28,11 +29,7 @@ import javax.persistence.OneToMany;
 import org.openbaton.catalogue.mano.common.AbstractVirtualLink;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
 
-/**
- * Created by lto on 06/02/15.
- *
- * <p>Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12)
- */
+/** Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12) */
 @Entity
 public class VirtualLinkRecord extends AbstractVirtualLink {
   private String vendor;
@@ -75,6 +72,17 @@ public class VirtualLinkRecord extends AbstractVirtualLink {
 
   @ElementCollection(fetch = FetchType.EAGER)
   private Set<String> connection;
+
+  public List<String> getDns() {
+    return dns;
+  }
+
+  public void setDns(List<String> dns) {
+    this.dns = dns;
+  }
+
+  @ElementCollection(fetch = FetchType.EAGER)
+  private List<String> dns;
 
   public VirtualLinkRecord() {}
 

@@ -64,13 +64,13 @@ public class CheckVNFPackage {
 
   public static void checkCommonParametersWithVNFD(
       Map<String, Object> vnfdParameters, Map<String, Object> vnfPackageMetadataParameters)
-      throws VNFPackageFormatException {
+          throws VNFPackageFormatException, NotFoundException {
     for (String commonKey : REQUIRED_VNF_PACKAGE_AND_VNFD_COMMON_KEYS) {
       String vnfdCommonKey = (String) vnfdParameters.get(commonKey);
       String vnfPackageCommonKey = (String) vnfPackageMetadataParameters.get(commonKey);
       if (vnfdCommonKey == null || vnfPackageCommonKey == null)
-        throw new NullPointerException(
-            "Not defined " + commonKey + " in VNFD or VNF package metadata");
+        throw new NotFoundException(
+            "Not defined '" + commonKey + "' in VNFD or VNF package metadata");
       if (!vnfdCommonKey.equals(vnfPackageCommonKey))
         throw new VNFPackageFormatException(
             "VNFD and VNF package has different '" + commonKey + "', it must be the same");

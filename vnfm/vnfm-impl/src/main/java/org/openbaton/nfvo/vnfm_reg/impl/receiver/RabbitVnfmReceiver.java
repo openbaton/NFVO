@@ -21,14 +21,20 @@ import com.google.gson.Gson;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.VimException;
+import org.openbaton.nfvo.common.configuration.RabbitConfiguration;
 import org.openbaton.vnfm.interfaces.manager.VnfmReceiver;
 import org.openbaton.vnfm.interfaces.state.VnfStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.annotation.Exchange;
+import org.springframework.amqp.rabbit.annotation.Queue;
+import org.springframework.amqp.rabbit.annotation.QueueBinding;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-/** Created by lto on 26/05/15. */
 @Service
 public class RabbitVnfmReceiver implements VnfmReceiver {
 
@@ -38,7 +44,27 @@ public class RabbitVnfmReceiver implements VnfmReceiver {
   @Autowired private VnfStateHandler stateHandler;
 
   @Override
-  public String actionFinished(String nfvMessage) throws ExecutionException, InterruptedException {
+  @RabbitListener(
+    bindings =
+        @QueueBinding(
+          value =
+              @Queue(
+                value = RabbitConfiguration.QUEUE_NAME_VNFM_CORE_ACTIONS_REPLY,
+                durable = RabbitConfiguration.QUEUE_DURABLE,
+                autoDelete = RabbitConfiguration.QUEUE_AUTODELETE
+              ),
+          exchange =
+              @Exchange(
+                value = RabbitConfiguration.EXCHANGE_NAME_OPENBATON,
+                ignoreDeclarationExceptions = "true",
+                type = RabbitConfiguration.EXCHANGE_TYPE_OPENBATON,
+                durable = RabbitConfiguration.EXCHANGE_DURABLE_OPENBATON
+              ),
+          key = RabbitConfiguration.QUEUE_NAME_VNFM_CORE_ACTIONS_REPLY
+        )
+  )
+  public String actionFinished(String nfvMessage)
+      throws ExecutionException, InterruptedException {
     NFVMessage message = gson.fromJson(nfvMessage, NFVMessage.class);
     log.debug("NFVO - core module received (via MB): " + message.getAction());
 
@@ -48,10 +74,28 @@ public class RabbitVnfmReceiver implements VnfmReceiver {
     log.debug("Concluded ACTION: " + message.getAction());
 
     return result;
-    //    return "";
   }
 
   @Override
+  @RabbitListener(
+    bindings =
+        @QueueBinding(
+          value =
+              @Queue(
+                value = RabbitConfiguration.QUEUE_NAME_VNFM_CORE_ACTIONS,
+                durable = RabbitConfiguration.QUEUE_DURABLE,
+                autoDelete = RabbitConfiguration.QUEUE_AUTODELETE
+              ),
+          exchange =
+              @Exchange(
+                value = RabbitConfiguration.EXCHANGE_NAME_OPENBATON,
+                ignoreDeclarationExceptions = "true",
+                type = RabbitConfiguration.EXCHANGE_TYPE_OPENBATON,
+                durable = RabbitConfiguration.EXCHANGE_DURABLE_OPENBATON
+              ),
+          key = RabbitConfiguration.QUEUE_NAME_VNFM_CORE_ACTIONS
+        )
+  )
   public void actionFinishedVoid(String nfvMessage)
       throws ExecutionException, InterruptedException {
     NFVMessage message = gson.fromJson(nfvMessage, NFVMessage.class);

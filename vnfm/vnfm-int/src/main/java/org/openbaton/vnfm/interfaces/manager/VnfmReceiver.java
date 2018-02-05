@@ -19,7 +19,6 @@ package org.openbaton.vnfm.interfaces.manager;
 
 import java.util.concurrent.ExecutionException;
 
-/** Created by lto on 08/07/15. */
 public interface VnfmReceiver {
 
   String actionFinished(String nfvMessage) throws ExecutionException, InterruptedException;
