@@ -70,7 +70,6 @@ import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
@@ -232,8 +231,8 @@ public class NetworkServiceRecordManagementClassSuiteTest {
   @Test
   public void nsrManagementOnboardTest1()
       throws NotFoundException, InterruptedException, ExecutionException, VimException,
-          BadFormatException, PluginException, BadRequestException,
-          IOException, AlreadyExistingException {
+          BadFormatException, PluginException, BadRequestException, IOException,
+          AlreadyExistingException {
     final NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
     when(nsrRepository.save(any(NetworkServiceRecord.class)))
         .thenAnswer(
@@ -280,8 +279,8 @@ public class NetworkServiceRecordManagementClassSuiteTest {
   @Test
   public void nsrManagementOnboardTest2()
       throws NotFoundException, InterruptedException, ExecutionException, VimException,
-          BadFormatException, PluginException, BadRequestException,
-          IOException, AlreadyExistingException {
+          BadFormatException, PluginException, BadRequestException, IOException,
+          AlreadyExistingException {
     /** Initial settings */
     when(vimRepository.findByProjectIdAndName(anyString(), anyString()))
         .thenReturn(createVimInstance());
@@ -345,8 +344,8 @@ public class NetworkServiceRecordManagementClassSuiteTest {
   @Test
   public void nsrManagementOnboardTest3()
       throws NotFoundException, InterruptedException, ExecutionException, VimException,
-          BadFormatException, PluginException, BadRequestException,
-          IOException, AlreadyExistingException {
+          BadFormatException, PluginException, BadRequestException, IOException,
+          AlreadyExistingException {
     /** Initial settings */
     when(vimRepository.findByProjectIdAndName(anyString(), anyString()))
         .thenReturn(createVimInstance());

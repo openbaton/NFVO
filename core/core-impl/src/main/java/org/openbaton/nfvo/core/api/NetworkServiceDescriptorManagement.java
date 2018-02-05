@@ -104,7 +104,7 @@ public class NetworkServiceDescriptorManagement
       throws NotFoundException, NetworkServiceIntegrityException, CyclicDependenciesException,
           BadFormatException, EntityInUseException, BadRequestException, PluginException,
           IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
-           InterruptedException {
+          InterruptedException {
     SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
     networkServiceDescriptor.setProjectId(projectId);
     log.info("Starting onboarding process for NSD: " + networkServiceDescriptor.getName());

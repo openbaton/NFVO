@@ -18,7 +18,6 @@
 package org.openbaton.nfvo.core.interfaces;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
@@ -30,8 +29,6 @@ import org.openbaton.catalogue.nfvo.images.NFVImage;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.DescriptorWrongFormat;
-import org.openbaton.exceptions.EntityUnreachableException;
 import org.openbaton.exceptions.ExistingVNFPackage;
 import org.openbaton.exceptions.IncompatibleVNFPackage;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
@@ -56,10 +53,9 @@ public interface VNFPackageManagement {
 
   VirtualNetworkFunctionDescriptor add(
       byte[] pack, boolean isImageIncluded, String projectId, boolean fromMarketPlace)
-      throws IOException, VimException, NotFoundException, PluginException,
-          ExistingVNFPackage, VNFPackageFormatException,
-          IncompatibleVNFPackage, BadRequestException, AlreadyExistingException,
-          NetworkServiceIntegrityException, InterruptedException,
+      throws IOException, VimException, NotFoundException, PluginException, ExistingVNFPackage,
+          VNFPackageFormatException, IncompatibleVNFPackage, BadRequestException,
+          AlreadyExistingException, NetworkServiceIntegrityException, InterruptedException,
           BadFormatException, ExecutionException;
 
   /**
@@ -80,8 +76,7 @@ public interface VNFPackageManagement {
       Map<String, Object> metadata,
       String projectId)
       throws NotFoundException, PluginException, VimException, BadRequestException, IOException,
-          AlreadyExistingException, InterruptedException,
-          ExecutionException, BadFormatException;
+          AlreadyExistingException, InterruptedException, ExecutionException, BadFormatException;
 
   /**
    * This operation allows submitting and validating the VNF Package from the marketplace.

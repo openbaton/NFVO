@@ -549,8 +549,7 @@ public class RestNetworkServiceRecord {
       @PathVariable("idVdu") String idVdu,
       @PathVariable("idVNFCI") String idVNFCI,
       @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException, BadFormatException, ExecutionException,
-          InterruptedException {
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
     log.debug("start a VNF component instance");
     networkServiceRecordManagement.startVNFCInstance(id, idVnf, idVdu, idVNFCI, projectId);
   }
@@ -568,8 +567,7 @@ public class RestNetworkServiceRecord {
       @PathVariable("idVdu") String idVdu,
       @PathVariable("idVNFCI") String idVNFCI,
       @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException, BadFormatException, ExecutionException,
-          InterruptedException {
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
     log.debug("stop a VNF component instance");
     networkServiceRecordManagement.stopVNFCInstance(id, idVnf, idVdu, idVNFCI, projectId);
   }

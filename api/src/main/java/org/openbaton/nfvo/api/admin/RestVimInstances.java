@@ -20,18 +20,12 @@ import static org.openbaton.nfvo.common.utils.viminstance.VimInstanceUtils.handl
 
 import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.validation.Valid;
 import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
-import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.EntityUnreachableException;
@@ -80,8 +74,8 @@ public class RestVimInstances {
   public BaseVimInstance create(
       @RequestBody @Valid BaseVimInstance vimInstance,
       @RequestHeader(value = "project-id") String projectId)
-      throws VimException, PluginException, IOException, BadRequestException,
-          ExecutionException, InterruptedException {
+      throws VimException, PluginException, IOException, BadRequestException, ExecutionException,
+          InterruptedException {
     return vimManagement.add(vimInstance, projectId).get();
   }
 
@@ -139,8 +133,7 @@ public class RestVimInstances {
   public List<BaseVimInstance> findAll(
       @RequestHeader(value = "project-id") String projectId,
       @RequestHeader(value = "authorization") String token)
-      throws
-          BadFormatException {
+      throws BadFormatException {
     String[] tokenArray = token.split(" ");
     if (tokenArray.length < 2) throw new BadFormatException("The passed token has a wrong format.");
     token = tokenArray[1];
@@ -168,8 +161,7 @@ public class RestVimInstances {
       @PathVariable("id") String id,
       @RequestHeader(value = "project-id") String projectId,
       @RequestHeader(value = "authorization") String token)
-      throws
-          NotFoundException, BadFormatException {
+      throws NotFoundException, BadFormatException {
     BaseVimInstance vim = vimManagement.query(id, projectId);
     if (vim == null) throw new NotFoundException("VIM Instance with ID " + id + " not found.");
     String[] tokenArray = token.split(" ");
@@ -204,8 +196,8 @@ public class RestVimInstances {
       @RequestBody @Valid BaseVimInstance new_vimInstance,
       @PathVariable("id") String id,
       @RequestHeader(value = "project-id") String projectId)
-      throws VimException, PluginException, IOException, BadRequestException,
-          NotFoundException, ExecutionException, InterruptedException {
+      throws VimException, PluginException, IOException, BadRequestException, NotFoundException,
+          ExecutionException, InterruptedException {
     return vimManagement.update(new_vimInstance, id, projectId).get();
   }
 
@@ -328,8 +320,8 @@ public class RestVimInstances {
   @RequestMapping(value = "{id}/refresh", method = RequestMethod.GET)
   public BaseVimInstance refresh(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
-      throws VimException, PluginException, IOException,
-          NotFoundException, ExecutionException, InterruptedException {
+      throws VimException, PluginException, IOException, NotFoundException, ExecutionException,
+          InterruptedException {
     BaseVimInstance vimInstance = vimManagement.query(id, projectId);
     if (vimInstance == null)
       throw new NotFoundException("VIM Instance with ID " + id + " not found.");

@@ -24,7 +24,6 @@ import static org.mockito.Matchers.anySet;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
-import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;

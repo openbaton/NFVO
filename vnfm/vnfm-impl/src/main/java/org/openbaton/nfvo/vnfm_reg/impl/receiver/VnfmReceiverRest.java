@@ -28,8 +28,6 @@ import org.openbaton.catalogue.nfvo.messages.OrVnfmGrantLifecycleOperationMessag
 import org.openbaton.catalogue.nfvo.messages.VnfmOrAllocateResourcesMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrScalingMessage;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.VNFRRepository;
 import org.openbaton.vnfm.interfaces.manager.VnfmReceiver;

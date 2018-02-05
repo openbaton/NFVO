@@ -209,9 +209,8 @@ public class NetworkServiceRecordManagement
   @Override
   public VirtualNetworkFunctionRecord restartVnfr(
       NetworkServiceRecord nsr, String vnfrId, String imageName, String projectId)
-      throws NotFoundException, IOException, BadRequestException,
-          VimException, PluginException, ExecutionException, InterruptedException,
-          BadFormatException {
+      throws NotFoundException, IOException, BadRequestException, VimException, PluginException,
+          ExecutionException, InterruptedException, BadFormatException {
 
     // check if the nsr status is in ACTIVE
     if (!nsrRepository.existsByIdAndProjectIdAndStatus(nsr.getId(), projectId, Status.ACTIVE))
@@ -1073,8 +1072,8 @@ public class NetworkServiceRecordManagement
       String projectID,
       DeployNSRBody body,
       String monitoringIp)
-      throws NotFoundException, VimException, BadRequestException,
-          BadFormatException, ExecutionException, InterruptedException {
+      throws NotFoundException, VimException, BadRequestException, BadFormatException,
+          ExecutionException, InterruptedException {
     log.trace("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor);
 
     log.debug("VNFD are: ");

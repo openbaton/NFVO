@@ -113,8 +113,7 @@ public class RestUsers {
     consumes = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void multipleDelete(@RequestBody @Valid List<String> ids)
-      throws NotFoundException {
+  public void multipleDelete(@RequestBody @Valid List<String> ids) throws NotFoundException {
     if (userManagement != null) {
       for (String id : ids) {
         log.info("removing User with id " + id);

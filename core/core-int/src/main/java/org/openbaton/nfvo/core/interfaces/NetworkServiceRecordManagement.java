@@ -45,9 +45,8 @@ public interface NetworkServiceRecordManagement {
       Map<String, Set<String>> vduVimInstances,
       Map<String, Configuration> configurations,
       String monitoringIp)
-      throws VimException, NotFoundException, PluginException,
-          BadRequestException, IOException, AlreadyExistingException, BadFormatException,
-          ExecutionException, InterruptedException;
+      throws VimException, NotFoundException, PluginException, BadRequestException, IOException,
+          AlreadyExistingException, BadFormatException, ExecutionException, InterruptedException;
 
   /**
    * This operation allows submitting and validating a Network Service Descriptor (NSD), including
@@ -60,9 +59,8 @@ public interface NetworkServiceRecordManagement {
       Map vduVimInstances,
       Map configurations,
       String monitoringIp)
-      throws VimException, PluginException, NotFoundException,
-          BadRequestException, IOException, AlreadyExistingException, BadFormatException,
-          ExecutionException, InterruptedException;
+      throws VimException, PluginException, NotFoundException, BadRequestException, IOException,
+          AlreadyExistingException, BadFormatException, ExecutionException, InterruptedException;
 
   /**
    * This operation allows updating a Network Service Descriptor (NSD), including any related VNFFGD
@@ -207,7 +205,6 @@ public interface NetworkServiceRecordManagement {
 
   VirtualNetworkFunctionRecord restartVnfr(
       NetworkServiceRecord nsr, String vnfrId, String imageName, String projectId)
-      throws NotFoundException, IOException, BadRequestException,
-          VimException, PluginException, ExecutionException, InterruptedException,
-          BadFormatException;
+      throws NotFoundException, IOException, BadRequestException, VimException, PluginException,
+          ExecutionException, InterruptedException, BadFormatException;
 }

@@ -17,12 +17,9 @@
 
 package org.openbaton.nfvo.core.interfaces;
 
-import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
 import org.openbaton.catalogue.nfvo.networks.Network;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
-import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;

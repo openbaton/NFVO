@@ -18,13 +18,8 @@ package org.openbaton.nfvo.api.runtime;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.validation.Valid;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.EventEndpoint;
@@ -77,9 +72,7 @@ public class RestEvent {
       @RequestBody @Valid EventEndpoint endpoint,
       @RequestHeader(value = "project-id") String projectId,
       @RequestHeader(value = "authorization") String token)
-      throws MissingParameterException,
-          BadFormatException,
-          NotFoundException, BadRequestException {
+      throws MissingParameterException, BadFormatException, NotFoundException, BadRequestException {
     String[] tokenArray = token.split(" ");
     if (tokenArray.length < 2) throw new BadFormatException("The passed token has a wrong format.");
     token = tokenArray[1];

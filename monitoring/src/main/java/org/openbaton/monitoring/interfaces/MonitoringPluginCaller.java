@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 import org.openbaton.catalogue.mano.common.monitoring.AbstractVirtualizedResourceAlarm;
 import org.openbaton.catalogue.mano.common.monitoring.Alarm;
 import org.openbaton.catalogue.mano.common.monitoring.AlarmEndpoint;

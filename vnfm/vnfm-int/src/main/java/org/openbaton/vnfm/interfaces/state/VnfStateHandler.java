@@ -30,8 +30,7 @@ public interface VnfStateHandler {
       throws ExecutionException, InterruptedException;
 
   @Async
-  Future<NFVMessage> executeAction(NFVMessage nfvMessage)
-          ;
+  Future<NFVMessage> executeAction(NFVMessage nfvMessage);
 
   void terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 

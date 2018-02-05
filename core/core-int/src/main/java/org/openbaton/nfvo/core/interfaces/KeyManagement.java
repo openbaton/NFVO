@@ -18,7 +18,6 @@
 package org.openbaton.nfvo.core.interfaces;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.AlreadyExistingException;
@@ -40,6 +39,5 @@ public interface KeyManagement {
       throws NoSuchAlgorithmException, IOException, AlreadyExistingException;
 
   Key addKey(String projectId, String name, String key)
-      throws NoSuchAlgorithmException, BadFormatException,
-          AlreadyExistingException;
+      throws NoSuchAlgorithmException, BadFormatException, AlreadyExistingException;
 }
