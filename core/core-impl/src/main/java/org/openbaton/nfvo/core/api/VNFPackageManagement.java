@@ -39,7 +39,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.regex.Pattern;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
@@ -103,6 +102,9 @@ public class VNFPackageManagement
 
   @Value("${vnfd.vnfp.cascade.delete:false}")
   private boolean cascadeDelete;
+
+  @Value("${nfvo.version.check:true}")
+  private boolean checkNfvoVersion;
   // This is only in case you run the NFVO from IDE
   @Value("${nfvo.version:}")
   private String nfvoVersion;
@@ -410,7 +412,9 @@ public class VNFPackageManagement
     if (metadata.containsKey("nfvo_version")) {
       vnfPackageNFVOVersion = (String) metadata.get("nfvo_version");
     }
-    CheckVNFPackage.compareNFVOVersions(vnfPackageNFVOVersion, getNfvoVersionWithoutSNAPSHOT());
+    if (checkNfvoVersion) {
+      CheckVNFPackage.compareNFVOVersions(vnfPackageNFVOVersion, getNfvoVersionWithoutSNAPSHOT());
+    }
 
     vnfPackage.setNfvo_version(vnfPackageNFVOVersion);
     vnfPackageMetadata.setNfvoVersion(vnfPackageNFVOVersion);
@@ -470,7 +474,7 @@ public class VNFPackageManagement
 
   public VNFPackage handleMetadata(
       Map<String, Object> metadata, VNFPackage vnfPackage, NFVImage image)
-      throws IncompatibleVNFPackage, BadFormatException {
+      throws BadFormatException {
 
     //Get configuration for NFVImage
     String[] requiredPackageKeys = new String[] {"name", "image", "vim_types"};
@@ -484,42 +488,7 @@ public class VNFPackageManagement
             "Not defined " + requiredKey + " of VNFPackage in Metadata.yaml");
       }
     }
-    String[] actualNfvoVersion;
-    try {
-      actualNfvoVersion = getNfvoVersionSplitted();
-    } catch (NotFoundException ne) {
-      log.warn(ne.getMessage());
-      actualNfvoVersion = null;
-    }
-
     vnfPackage.setName((String) metadata.get("name"));
-    if (metadata.containsKey("nfvo_version") && actualNfvoVersion != null) {
-
-      String nfvoVersionString = (String) metadata.get("nfvo_version");
-      String[] nfvoVersion = nfvoVersionString.split(Pattern.quote("."));
-
-      if (nfvoVersion[0].equals(actualNfvoVersion[0])
-          && nfvoVersion[1].equals(actualNfvoVersion[1])) {
-        vnfPackage.setNfvo_version(nfvoVersionString);
-      } else {
-        throw new IncompatibleVNFPackage(
-            "The NFVO Version: "
-                + nfvoVersion[0]
-                + "."
-                + nfvoVersion[1]
-                + ".X"
-                + " specified in the Metadata"
-                + " is not compatible with the this NFVOs version: "
-                + actualNfvoVersion[0]
-                + "."
-                + actualNfvoVersion[1]
-                + ".X");
-      }
-    } else {
-      //TODO throw exception
-      log.warn(
-          "Missing 'nfvo_version' parameter in the vnfpackage, or the orchestrator does not expose its version number");
-    }
 
     if (metadata.containsKey("scripts-link")) {
       vnfPackage.setScriptsLink((String) metadata.get("scripts-link"));
@@ -735,10 +704,6 @@ public class VNFPackageManagement
       throw new BadRequestException(e.getMessage());
     }
     return vnfd;
-  }
-
-  private String[] getNfvoVersionSplitted() throws NotFoundException {
-    return getNfvoVersionWithoutSNAPSHOT().split(Pattern.quote("."));
   }
 
   private String getNfvoVersionWithoutSNAPSHOT() throws NotFoundException {
