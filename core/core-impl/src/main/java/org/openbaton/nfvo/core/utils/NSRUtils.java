@@ -18,6 +18,7 @@
 package org.openbaton.nfvo.core.utils;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -183,12 +184,14 @@ public class NSRUtils {
   private static VirtualLinkRecord createVirtualLinkRecord(
       VirtualLinkDescriptor virtualLinkDescriptor) {
     VirtualLinkRecord virtualLinkRecord = new VirtualLinkRecord();
+    virtualLinkRecord.setDns(new ArrayList<>());
     virtualLinkRecord.setName(virtualLinkDescriptor.getName());
     virtualLinkRecord.setConnectivity_type(virtualLinkDescriptor.getConnectivity_type());
     virtualLinkRecord.setDescriptor_reference(virtualLinkDescriptor.getId());
     virtualLinkRecord.setRoot_requirement(virtualLinkDescriptor.getRoot_requirement());
     virtualLinkRecord.setLeaf_requirement(virtualLinkDescriptor.getLeaf_requirement());
     virtualLinkRecord.setVendor(virtualLinkDescriptor.getVendor());
+    virtualLinkDescriptor.getDns().forEach(dns -> virtualLinkRecord.getDns().add(dns));
 
     virtualLinkRecord.setStatus(LinkStatus.LINKDOWN);
 

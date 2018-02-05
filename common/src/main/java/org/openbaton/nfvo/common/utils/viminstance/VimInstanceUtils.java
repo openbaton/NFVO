@@ -228,31 +228,32 @@ public class VimInstanceUtils {
   public static BaseNetwork createBaseNetwork(
       NetworkServiceDescriptor networkServiceDescriptor,
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
-      String networkName,
+      VirtualLinkRecord vlr,
       BaseVimInstance vimInstance)
       throws BadRequestException {
     if (vimInstance instanceof OpenstackVimInstance) {
       Network network = new Network();
       HashSet<Subnet> subnets = new HashSet<>();
       Subnet subnet = new Subnet();
-      subnet.setName(String.format("%s_subnet", networkName));
+      subnet.setName(String.format("%s_subnet", vlr.getName()));
+      subnet.setDns(vlr.getDns());
       subnet.setCidr(
           getCidrFromVLName(
-              networkName, networkServiceDescriptor, virtualNetworkFunctionDescriptor));
+              vlr.getName(), networkServiceDescriptor, virtualNetworkFunctionDescriptor));
       subnets.add(subnet);
       network.setSubnets(subnets);
-      network.setName(networkName);
+      network.setName(vlr.getName());
       return network;
     } else if (vimInstance instanceof DockerVimInstance) {
       DockerNetwork networkdc = new DockerNetwork();
-      networkdc.setName(networkName);
+      networkdc.setName(vlr.getName());
       networkdc.setSubnet(
           getCidrFromVLName(
-              networkName, networkServiceDescriptor, virtualNetworkFunctionDescriptor));
+              vlr.getName(), networkServiceDescriptor, virtualNetworkFunctionDescriptor));
       return networkdc;
     } else {
       BaseNetwork networkb = new BaseNetwork();
-      networkb.setName(networkName);
+      networkb.setName(vlr.getName());
       return networkb;
     }
   }

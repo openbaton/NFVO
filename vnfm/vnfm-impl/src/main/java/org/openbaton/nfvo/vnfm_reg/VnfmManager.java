@@ -358,6 +358,8 @@ public class VnfmManager
             .forEach(
                 vlr -> {
                   try {
+                    log.info(
+                        String.format("Deleting Network: %s [%s]", vlr.getName(), vlr.getExtId()));
                     vimManagement.deleteNetwork(vlr);
                   } catch (PluginException | VimException e) {
                     e.printStackTrace();

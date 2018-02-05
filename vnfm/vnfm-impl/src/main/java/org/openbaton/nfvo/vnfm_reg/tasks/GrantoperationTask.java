@@ -258,7 +258,7 @@ public class GrantoperationTask extends AbstractTask {
                       VimInstanceUtils.createBaseNetwork(
                           networkServiceDescriptor,
                           virtualNetworkFunctionDescriptor,
-                          virtualLinkRecord.getName(),
+                          virtualLinkRecord,
                           finalVimInstance1));
                 } catch (BadRequestException e) {
                   e.printStackTrace();
