@@ -85,7 +85,7 @@ public class RestComponents {
       @RequestHeader(value = "project-id") String projectId,
       //      @RequestBody @Valid JsonObject serviceCreateBody)
       @RequestBody @Valid ServiceCreateBody serviceCreateBody)
-      throws IOException, NoSuchAlgorithmException, NotFoundException, MissingParameterException {
+      throws NotFoundException, MissingParameterException {
 
     //    if (!serviceCreateBody.has("name"))
     //      throw new BadRequestException("The request's json body has to contain a name property.");

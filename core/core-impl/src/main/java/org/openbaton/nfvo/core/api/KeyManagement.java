@@ -91,7 +91,7 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
 
   @Override
   public Key addKey(String projectId, String name, String key)
-      throws UnsupportedEncodingException, NoSuchAlgorithmException, BadFormatException,
+      throws NoSuchAlgorithmException, BadFormatException,
           AlreadyExistingException {
     if (keyRepository.findKey(projectId, name) != null)
       throw new AlreadyExistingException("A key with the name " + name + " exists already.");

@@ -56,10 +56,10 @@ public interface VNFPackageManagement {
 
   VirtualNetworkFunctionDescriptor add(
       byte[] pack, boolean isImageIncluded, String projectId, boolean fromMarketPlace)
-      throws IOException, VimException, NotFoundException, SQLException, PluginException,
-          ExistingVNFPackage, DescriptorWrongFormat, VNFPackageFormatException,
+      throws IOException, VimException, NotFoundException, PluginException,
+          ExistingVNFPackage, VNFPackageFormatException,
           IncompatibleVNFPackage, BadRequestException, AlreadyExistingException,
-          NetworkServiceIntegrityException, EntityUnreachableException, InterruptedException,
+          NetworkServiceIntegrityException, InterruptedException,
           BadFormatException, ExecutionException;
 
   /**
@@ -80,7 +80,7 @@ public interface VNFPackageManagement {
       Map<String, Object> metadata,
       String projectId)
       throws NotFoundException, PluginException, VimException, BadRequestException, IOException,
-          AlreadyExistingException, InterruptedException, EntityUnreachableException,
+          AlreadyExistingException, InterruptedException,
           ExecutionException, BadFormatException;
 
   /**
@@ -92,7 +92,7 @@ public interface VNFPackageManagement {
   VirtualNetworkFunctionDescriptor onboardFromMarket(String link, String projectId)
       throws IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
           NotFoundException, PluginException, NetworkServiceIntegrityException, BadRequestException,
-          InterruptedException, EntityUnreachableException, BadFormatException;
+          InterruptedException, BadFormatException;
 
   /**
    * This operation allows submitting and validating the VNF Package from the Package Repository.
@@ -103,7 +103,7 @@ public interface VNFPackageManagement {
   VirtualNetworkFunctionDescriptor onboardFromPackageRepository(String link, String projectId)
       throws IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
           NotFoundException, PluginException, NetworkServiceIntegrityException, BadRequestException,
-          InterruptedException, EntityUnreachableException;
+          InterruptedException;
 
   /**
    * This operation allows disabling the VNF Package, so that it is not possible to instantiate any
@@ -117,7 +117,7 @@ public interface VNFPackageManagement {
   /** This operation allows updating the VNF Package. */
   VNFPackage update(String id, VNFPackage pack_new, String projectId) throws NotFoundException;
 
-  VNFPackage query(String id, String projectId) throws NotFoundException;
+  VNFPackage query(String id, String projectId);
 
   /** This operation is used to query information on VNF Packages. */
   Iterable<VNFPackage> query();

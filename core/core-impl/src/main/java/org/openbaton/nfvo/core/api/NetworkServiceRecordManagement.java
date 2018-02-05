@@ -209,7 +209,7 @@ public class NetworkServiceRecordManagement
   @Override
   public VirtualNetworkFunctionRecord restartVnfr(
       NetworkServiceRecord nsr, String vnfrId, String imageName, String projectId)
-      throws NotFoundException, AlreadyExistingException, IOException, BadRequestException,
+      throws NotFoundException, IOException, BadRequestException,
           VimException, PluginException, ExecutionException, InterruptedException,
           BadFormatException {
 
@@ -1073,8 +1073,8 @@ public class NetworkServiceRecordManagement
       String projectID,
       DeployNSRBody body,
       String monitoringIp)
-      throws NotFoundException, VimException, PluginException, BadRequestException, IOException,
-          AlreadyExistingException, BadFormatException, ExecutionException, InterruptedException {
+      throws NotFoundException, VimException, BadRequestException,
+          BadFormatException, ExecutionException, InterruptedException {
     log.trace("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor);
 
     log.debug("VNFD are: ");

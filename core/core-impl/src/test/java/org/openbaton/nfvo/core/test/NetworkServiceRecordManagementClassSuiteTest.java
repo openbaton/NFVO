@@ -232,7 +232,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
   @Test
   public void nsrManagementOnboardTest1()
       throws NotFoundException, InterruptedException, ExecutionException, VimException,
-          BadFormatException, PluginException, MissingParameterException, BadRequestException,
+          BadFormatException, PluginException, BadRequestException,
           IOException, AlreadyExistingException {
     final NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
     when(nsrRepository.save(any(NetworkServiceRecord.class)))
@@ -280,7 +280,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
   @Test
   public void nsrManagementOnboardTest2()
       throws NotFoundException, InterruptedException, ExecutionException, VimException,
-          BadFormatException, PluginException, MissingParameterException, BadRequestException,
+          BadFormatException, PluginException, BadRequestException,
           IOException, AlreadyExistingException {
     /** Initial settings */
     when(vimRepository.findByProjectIdAndName(anyString(), anyString()))
@@ -345,7 +345,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
   @Test
   public void nsrManagementOnboardTest3()
       throws NotFoundException, InterruptedException, ExecutionException, VimException,
-          BadFormatException, PluginException, MissingParameterException, BadRequestException,
+          BadFormatException, PluginException, BadRequestException,
           IOException, AlreadyExistingException {
     /** Initial settings */
     when(vimRepository.findByProjectIdAndName(anyString(), anyString()))

@@ -104,7 +104,7 @@ public class NetworkServiceDescriptorManagement
       throws NotFoundException, NetworkServiceIntegrityException, CyclicDependenciesException,
           BadFormatException, EntityInUseException, BadRequestException, PluginException,
           IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
-          EntityUnreachableException, InterruptedException {
+           InterruptedException {
     SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
     networkServiceDescriptor.setProjectId(projectId);
     log.info("Starting onboarding process for NSD: " + networkServiceDescriptor.getName());
@@ -216,7 +216,7 @@ public class NetworkServiceDescriptorManagement
   private List<String> getIds(List<String> market_ids, String project_id)
       throws NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
           AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException,
-          InterruptedException, EntityUnreachableException, BadFormatException {
+          InterruptedException, BadFormatException {
     List<String> not_found_ids = new ArrayList<>();
     not_found_ids.addAll(market_ids);
     List<String> vnfdIds = new ArrayList<>();
@@ -549,7 +549,7 @@ public class NetworkServiceDescriptorManagement
       List<String> packageRepositoryIds, String projectId)
       throws IOException, BadRequestException, PluginException, AlreadyExistingException,
           NetworkServiceIntegrityException, IncompatibleVNFPackage, NotFoundException, VimException,
-          EntityUnreachableException, InterruptedException {
+          InterruptedException {
     List<String> vnfdIds = new ArrayList<>();
     for (String packageRepositorySymbolicId : packageRepositoryIds) {
       String link =

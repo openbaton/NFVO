@@ -77,7 +77,7 @@ public class VnfmReceiverRest implements VnfmReceiver {
   )
   @ResponseStatus(HttpStatus.OK)
   public void actionFinishedRest(@RequestBody JsonObject nfvMessage)
-      throws InterruptedException, ExecutionException, VimException, NotFoundException {
+      throws InterruptedException, ExecutionException {
 
     this.actionFinished(gson.toJson(nfvMessage));
   }
@@ -90,7 +90,7 @@ public class VnfmReceiverRest implements VnfmReceiver {
   )
   @ResponseStatus(HttpStatus.OK)
   public void actionFinishedVoidRest(@RequestBody JsonObject nfvMessage)
-      throws InterruptedException, ExecutionException, VimException, NotFoundException {
+      throws InterruptedException, ExecutionException {
     this.actionFinishedVoid(gson.toJson(nfvMessage));
   }
 

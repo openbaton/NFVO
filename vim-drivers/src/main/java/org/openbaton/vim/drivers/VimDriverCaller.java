@@ -71,7 +71,7 @@ public class VimDriverCaller extends VimDriver {
       String name,
       String managementPort,
       int pluginTimeout)
-      throws IOException, TimeoutException, NotFoundException {
+      throws IOException, NotFoundException {
     log.trace("Creating PluginCaller");
     if (name == null) {
       name = "";

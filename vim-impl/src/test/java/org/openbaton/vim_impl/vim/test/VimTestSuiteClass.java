@@ -142,7 +142,7 @@ public class VimTestSuiteClass {
   }
 
   @Test
-  public void testVimOpenstack() throws VimDriverException, VimException, RemoteException {
+  public void testVimOpenstack() throws VimDriverException, VimException {
     VirtualDeploymentUnit vdu = createVDU();
     VirtualNetworkFunctionRecord vnfr = createVNFR();
 

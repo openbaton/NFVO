@@ -81,7 +81,7 @@ public class RestVimInstances {
       @RequestBody @Valid BaseVimInstance vimInstance,
       @RequestHeader(value = "project-id") String projectId)
       throws VimException, PluginException, IOException, BadRequestException,
-          AlreadyExistingException, ExecutionException, InterruptedException {
+          ExecutionException, InterruptedException {
     return vimManagement.add(vimInstance, projectId).get();
   }
 
@@ -139,8 +139,8 @@ public class RestVimInstances {
   public List<BaseVimInstance> findAll(
       @RequestHeader(value = "project-id") String projectId,
       @RequestHeader(value = "authorization") String token)
-      throws IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException,
-          NoSuchAlgorithmException, InvalidKeyException, BadFormatException {
+      throws
+          BadFormatException {
     String[] tokenArray = token.split(" ");
     if (tokenArray.length < 2) throw new BadFormatException("The passed token has a wrong format.");
     token = tokenArray[1];
@@ -168,8 +168,8 @@ public class RestVimInstances {
       @PathVariable("id") String id,
       @RequestHeader(value = "project-id") String projectId,
       @RequestHeader(value = "authorization") String token)
-      throws IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException,
-          NoSuchAlgorithmException, InvalidKeyException, NotFoundException, BadFormatException {
+      throws
+          NotFoundException, BadFormatException {
     BaseVimInstance vim = vimManagement.query(id, projectId);
     if (vim == null) throw new NotFoundException("VIM Instance with ID " + id + " not found.");
     String[] tokenArray = token.split(" ");
@@ -205,7 +205,7 @@ public class RestVimInstances {
       @PathVariable("id") String id,
       @RequestHeader(value = "project-id") String projectId)
       throws VimException, PluginException, IOException, BadRequestException,
-          AlreadyExistingException, NotFoundException, ExecutionException, InterruptedException {
+          NotFoundException, ExecutionException, InterruptedException {
     return vimManagement.update(new_vimInstance, id, projectId).get();
   }
 
@@ -268,7 +268,7 @@ public class RestVimInstances {
       BaseNfvImage nfvImage,
       @RequestHeader(value = "project-id") String projectId)
       throws VimException, PluginException, EntityUnreachableException, IOException,
-          BadRequestException, AlreadyExistingException, NotFoundException {
+          NotFoundException {
     return vimManagement.addImage(id, nfvImage, projectId);
   }
 
@@ -290,7 +290,7 @@ public class RestVimInstances {
       @RequestBody @Valid BaseNfvImage image,
       @RequestHeader(value = "project-id") String projectId)
       throws VimException, PluginException, EntityUnreachableException, IOException,
-          BadRequestException, AlreadyExistingException, NotFoundException {
+          NotFoundException {
     return vimManagement.addImage(idVim, image, projectId);
   }
 
@@ -311,7 +311,7 @@ public class RestVimInstances {
       @PathVariable("idImage") String idImage,
       @RequestHeader(value = "project-id") String projectId)
       throws VimException, PluginException, EntityUnreachableException, IOException,
-          BadRequestException, AlreadyExistingException, NotFoundException {
+          NotFoundException {
     vimManagement.deleteImage(idVim, idImage, projectId);
   }
 
@@ -328,8 +328,8 @@ public class RestVimInstances {
   @RequestMapping(value = "{id}/refresh", method = RequestMethod.GET)
   public BaseVimInstance refresh(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
-      throws VimException, PluginException, IOException, BadRequestException,
-          AlreadyExistingException, NotFoundException, ExecutionException, InterruptedException {
+      throws VimException, PluginException, IOException,
+          NotFoundException, ExecutionException, InterruptedException {
     BaseVimInstance vimInstance = vimManagement.query(id, projectId);
     if (vimInstance == null)
       throw new NotFoundException("VIM Instance with ID " + id + " not found.");

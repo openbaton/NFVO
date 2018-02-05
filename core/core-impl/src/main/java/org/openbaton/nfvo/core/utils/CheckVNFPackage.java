@@ -243,7 +243,7 @@ public class CheckVNFPackage {
   }
 
   public static void compareNFVOVersions(String vnfPackageNfvoVersion, String actualNfvoVersion)
-      throws IncompatibleVNFPackage, NotFoundException {
+      throws IncompatibleVNFPackage {
     if (!areNFVOVersionsCompatible(actualNfvoVersion, vnfPackageNfvoVersion))
       throw new IncompatibleVNFPackage(
           "The NFVO Version: "

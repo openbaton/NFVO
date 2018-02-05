@@ -40,6 +40,6 @@ public interface KeyManagement {
       throws NoSuchAlgorithmException, IOException, AlreadyExistingException;
 
   Key addKey(String projectId, String name, String key)
-      throws UnsupportedEncodingException, NoSuchAlgorithmException, BadFormatException,
+      throws NoSuchAlgorithmException, BadFormatException,
           AlreadyExistingException;
 }

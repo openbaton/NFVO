@@ -92,8 +92,7 @@ public class VnfStateHandler implements org.openbaton.vnfm.interfaces.state.VnfS
 
   @Override
   @Async
-  public Future<NFVMessage> executeAction(NFVMessage nfvMessage)
-      throws ExecutionException, InterruptedException {
+  public Future<NFVMessage> executeAction(NFVMessage nfvMessage) {
     return executeActionNotAsync(nfvMessage);
   }
 

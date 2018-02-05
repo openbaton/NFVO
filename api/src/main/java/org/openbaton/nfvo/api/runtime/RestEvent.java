@@ -77,8 +77,8 @@ public class RestEvent {
       @RequestBody @Valid EventEndpoint endpoint,
       @RequestHeader(value = "project-id") String projectId,
       @RequestHeader(value = "authorization") String token)
-      throws MissingParameterException, IllegalBlockSizeException, NoSuchPaddingException,
-          BadPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadFormatException,
+      throws MissingParameterException,
+          BadFormatException,
           NotFoundException, BadRequestException {
     String[] tokenArray = token.split(" ");
     if (tokenArray.length < 2) throw new BadFormatException("The passed token has a wrong format.");

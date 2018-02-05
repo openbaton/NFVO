@@ -45,7 +45,7 @@ public interface NetworkServiceRecordManagement {
       Map<String, Set<String>> vduVimInstances,
       Map<String, Configuration> configurations,
       String monitoringIp)
-      throws VimException, NotFoundException, PluginException, MissingParameterException,
+      throws VimException, NotFoundException, PluginException,
           BadRequestException, IOException, AlreadyExistingException, BadFormatException,
           ExecutionException, InterruptedException;
 
@@ -60,7 +60,7 @@ public interface NetworkServiceRecordManagement {
       Map vduVimInstances,
       Map configurations,
       String monitoringIp)
-      throws VimException, PluginException, NotFoundException, MissingParameterException,
+      throws VimException, PluginException, NotFoundException,
           BadRequestException, IOException, AlreadyExistingException, BadFormatException,
           ExecutionException, InterruptedException;
 
@@ -207,7 +207,7 @@ public interface NetworkServiceRecordManagement {
 
   VirtualNetworkFunctionRecord restartVnfr(
       NetworkServiceRecord nsr, String vnfrId, String imageName, String projectId)
-      throws NotFoundException, AlreadyExistingException, IOException, BadRequestException,
+      throws NotFoundException, IOException, BadRequestException,
           VimException, PluginException, ExecutionException, InterruptedException,
           BadFormatException;
 }

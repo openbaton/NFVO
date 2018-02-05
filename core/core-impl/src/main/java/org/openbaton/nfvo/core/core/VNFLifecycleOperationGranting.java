@@ -60,7 +60,7 @@ public class VNFLifecycleOperationGranting
   @Override
   public Map<String, BaseVimInstance> grantLifecycleOperation(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
-      throws VimException, PluginException {
+      throws VimException {
     Map<String, BaseVimInstance> result = new HashMap<>();
 
     //HashMap holds how many VNFCInstances are needed to deploy on a specific VimInstance

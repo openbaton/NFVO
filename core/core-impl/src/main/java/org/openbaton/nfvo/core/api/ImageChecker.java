@@ -40,8 +40,7 @@ public class ImageChecker {
 
   @Async
   public void checkImageStatus(BaseVimInstance vimInstance)
-      throws InterruptedException, IOException, VimException, PluginException, ExecutionException,
-          BadRequestException, AlreadyExistingException {
+      throws InterruptedException, IOException, VimException, PluginException, ExecutionException {
 
     for (int i = 0; i < imageStatusTimeout; i++) {
 

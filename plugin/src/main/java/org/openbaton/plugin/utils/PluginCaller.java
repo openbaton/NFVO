@@ -88,7 +88,7 @@ public class PluginCaller {
       int port,
       String virtualHost,
       int managementPort)
-      throws TimeoutException, IOException, NotFoundException {
+      throws IOException, NotFoundException {
     this(pluginId, brokerIp, username, password, port, virtualHost, managementPort, 500000);
   }
 

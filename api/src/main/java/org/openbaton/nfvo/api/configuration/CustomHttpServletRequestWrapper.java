@@ -63,7 +63,7 @@ public class CustomHttpServletRequestWrapper extends HttpServletRequestWrapper {
   }
 
   @Override
-  public BufferedReader getReader() throws IOException {
+  public BufferedReader getReader() {
     return new BufferedReader(new InputStreamReader(this.getInputStream()));
   }
 
