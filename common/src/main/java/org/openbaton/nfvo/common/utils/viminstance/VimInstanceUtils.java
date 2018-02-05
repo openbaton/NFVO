@@ -1,10 +1,9 @@
 package org.openbaton.nfvo.common.utils.viminstance;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.databind.ser.Serializers;
 import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
@@ -179,11 +178,10 @@ public class VimInstanceUtils {
                       && ((DockerImage) i).getTags().contains(imageName))
           .collect(Collectors.toList());
     } else if (vimInstance instanceof AmazonVimInstance) {
-      return ((AmazonVimInstance) vimInstance)
-          .getImages()
-          .stream()
-          .filter(i -> ((AWSImage) i).getName().equals(imageName))
-          .collect(Collectors.toList());
+      //in case of Amazon Instance the image check is delegated to amazon plugin
+      AWSImage skipImage = new AWSImage();
+      skipImage.setExtId(imageName);
+      return Collections.singletonList(skipImage);
     } else {
       return vimInstance
           .getImages()
