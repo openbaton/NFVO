@@ -25,6 +25,7 @@ public class CPProperties {
   private String type = null;
   private String floatingIP = null;
   private int interfaceId = 0;
+  private Map<String, String> metadata;
 
   @SuppressWarnings({"unsafe", "unchecked"})
   public CPProperties(Object properties) {
@@ -40,6 +41,9 @@ public class CPProperties {
 
     if (propertiesMap.containsKey("interfaceId")) {
       this.interfaceId = (Integer) propertiesMap.get("interfaceId");
+    }
+    if (propertiesMap.containsKey("metadata")) {
+      metadata = (Map<String, String>) propertiesMap.get("metadata");
     }
   }
 
@@ -70,5 +74,9 @@ public class CPProperties {
   @Override
   public String toString() {
     return "CP Properties: \n" + "Type: " + type + "\n" + "FloatingIp: " + floatingIP + "\n";
+  }
+
+  public Map<String, String> getMetadata() {
+    return metadata;
   }
 }

@@ -17,7 +17,6 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import org.openbaton.catalogue.mano.common.Event;
@@ -145,7 +144,7 @@ public class UpdatevnfrTask extends AbstractTask {
     }
     virtualNetworkFunctionRecord_nfvo.setVdu(vdus);
     log.debug("Update: VDUs of VNFR " + virtualNetworkFunctionRecord_nfvo.getId() + ": " + vdus);
-    setHistoryLifecycleEvent(new Date());
+    setHistoryLifecycleEvent();
     virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord_nfvo);
     log.info("Update: Finished with VNFR: " + virtualNetworkFunctionRecord_nfvo.getName());
     //        vnfmSender.sendCommand(nfvMessage, getTempDestination());

@@ -71,8 +71,8 @@ public class CheckVNFPackage {
       String vnfdCommonKey = (String) vnfdParameters.get(commonKey);
       String vnfPackageCommonKey = (String) vnfPackageMetadataParameters.get(commonKey);
       if (vnfdCommonKey == null || vnfPackageCommonKey == null)
-        throw new NullPointerException(
-            "Not defined " + commonKey + " in VNFD or VNF package metadata");
+        throw new NotFoundException(
+            "Not defined '" + commonKey + "' in VNFD or VNF package metadata");
       if (!vnfdCommonKey.equals(vnfPackageCommonKey))
         throw new VNFPackageFormatException(
             "VNFD and VNF package has different '" + commonKey + "', it must be the same");

@@ -17,7 +17,6 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -84,7 +83,7 @@ public class ScaledTask extends AbstractTask {
             + virtualNetworkFunctionRecord.getId()
             + ") received hibernate version = "
             + virtualNetworkFunctionRecord.getHbVersion());
-    setHistoryLifecycleEvent(new Date());
+    setHistoryLifecycleEvent();
     saveVirtualNetworkFunctionRecord();
 
     //If the VNFCInstace is in standby the NFVO doesn't have to configure the VNF source dependencies

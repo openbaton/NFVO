@@ -21,7 +21,6 @@ import java.util.concurrent.ExecutionException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.VimException;
 
-/** Created by lto on 08/07/15. */
 public interface VnfmReceiver {
 
   String actionFinished(String nfvMessage)

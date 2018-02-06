@@ -25,6 +25,7 @@ import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VNFPackageMetadata;
+import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
 import org.openbaton.catalogue.nfvo.images.NFVImage;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
@@ -43,26 +44,14 @@ import org.openbaton.exceptions.WrongAction;
 /** Created by mpa on 05/05/15. */
 public interface VNFPackageManagement {
 
-  /** This operation allows submitting and validating the VNF Package. */
-  VirtualNetworkFunctionDescriptor onboard(byte[] pack, String projectId)
-      throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage,
-          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException,
-          InterruptedException, EntityUnreachableException, BadFormatException, ExecutionException;
-
-  /** This operation allows submitting and validating the VNF Package from the marketplace. */
   /**
    * This operation handles reading the Metadata of the VNF Package
    *
    * @param metadata
    * @param vnfPackage
-   * @param imageDetails
    * @param image
    */
-  Map<String, Object> handleMetadata(
-      Map<String, Object> metadata,
-      VNFPackage vnfPackage,
-      Map<String, Object> imageDetails,
-      NFVImage image)
+  VNFPackage handleMetadata(Map<String, Object> metadata, VNFPackage vnfPackage, NFVImage image)
       throws IncompatibleVNFPackage, BadFormatException;
 
   VirtualNetworkFunctionDescriptor add(
@@ -79,22 +68,20 @@ public interface VNFPackageManagement {
    * @param vnfPackage
    * @param imageFile
    * @param virtualNetworkFunctionDescriptor
-   * @param metadata
    * @param image
-   * @param imageDetails
+   * @param metadata
    * @param projectId
    */
-  void handleImage(
+  BaseNfvImage handleImage(
       VNFPackage vnfPackage,
       byte[] imageFile,
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
-      Map<String, Object> metadata,
       NFVImage image,
-      Map<String, Object> imageDetails,
+      Map<String, Object> metadata,
       String projectId)
       throws NotFoundException, PluginException, VimException, BadRequestException, IOException,
           AlreadyExistingException, InterruptedException, EntityUnreachableException,
-          ExecutionException;
+          ExecutionException, BadFormatException;
 
   /**
    * This operation allows submitting and validating the VNF Package from the marketplace.

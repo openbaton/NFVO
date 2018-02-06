@@ -98,13 +98,14 @@ public class RestNetworkServiceRecord {
     produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.CREATED)
+  @Deprecated
   public NetworkServiceRecord create(
       @RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor,
       @RequestHeader(value = "project-id") String projectId,
       @RequestBody(required = false) String bodyJson)
       throws InterruptedException, ExecutionException, VimException, NotFoundException,
-          BadFormatException, VimDriverException, QuotaExceededException, PluginException,
-          MissingParameterException, BadRequestException, IOException, AlreadyExistingException {
+          BadFormatException, PluginException, MissingParameterException, BadRequestException,
+          IOException, AlreadyExistingException {
 
     JsonObject jsonObject;
     try {
@@ -166,8 +167,8 @@ public class RestNetworkServiceRecord {
       @RequestHeader(value = "project-id") String projectId,
       @RequestBody(required = false) JsonObject body)
       throws InterruptedException, ExecutionException, VimException, NotFoundException,
-          BadFormatException, VimDriverException, QuotaExceededException, PluginException,
-          MissingParameterException, BadRequestException, IOException, AlreadyExistingException {
+          BadFormatException, PluginException, MissingParameterException, BadRequestException,
+          IOException, AlreadyExistingException {
 
     String monitoringIp = null;
     List keys = null;
@@ -214,8 +215,8 @@ public class RestNetworkServiceRecord {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
-      throws VimException, InterruptedException, ExecutionException, NotFoundException,
-          BadFormatException, WrongStatusException {
+      throws InterruptedException, ExecutionException, NotFoundException, BadFormatException,
+          WrongStatusException {
     networkServiceRecordManagement.delete(id, projectId);
   }
 
@@ -232,8 +233,8 @@ public class RestNetworkServiceRecord {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void resume(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
-      throws VimException, InterruptedException, ExecutionException, NotFoundException,
-          BadFormatException, WrongStatusException {
+      throws InterruptedException, ExecutionException, NotFoundException, BadFormatException,
+          WrongStatusException {
     networkServiceRecordManagement.resume(id, projectId);
   }
 
@@ -260,8 +261,8 @@ public class RestNetworkServiceRecord {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void multipleDelete(
       @RequestBody @Valid List<String> ids, @RequestHeader(value = "project-id") String projectId)
-      throws InterruptedException, ExecutionException, WrongStatusException, VimException,
-          NotFoundException, BadFormatException {
+      throws InterruptedException, ExecutionException, WrongStatusException, NotFoundException,
+          BadFormatException {
     for (String id : ids) {
       networkServiceRecordManagement.delete(id, projectId);
     }
@@ -423,8 +424,7 @@ public class RestNetworkServiceRecord {
       @RequestBody @Valid List<String> ids,
       @PathVariable("idNsr") String idNsr,
       @RequestHeader(value = "project-id") String projectId)
-      throws InterruptedException, ExecutionException, WrongStatusException, VimException,
-          NotFoundException {
+      throws NotFoundException {
     log.trace("NSR ID: " + idNsr + " Project ID: " + projectId + " VNFR IDs: " + ids);
     for (String idVnfr : ids) {
       networkServiceRecordManagement.deleteVNFRecord(idNsr, idVnfr, projectId);
@@ -737,8 +737,7 @@ public class RestNetworkServiceRecord {
       @PathVariable("idVdu") String idVdu,
       @PathVariable("idVNFCI") String idVNFCI,
       @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException, BadFormatException, WrongStatusException, ExecutionException,
-          InterruptedException {
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
     log.debug("Received: " + nfvMessage);
     networkServiceRecordManagement.executeAction(nfvMessage, id, idVnf, idVdu, idVNFCI, projectId);
   }

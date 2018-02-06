@@ -61,7 +61,7 @@ public class NetworkServiceRecord extends BaseEntity {
 
   private String version;
 
-  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
   private Set<VirtualLinkRecord> vlr;
 
   @OneToMany(

@@ -196,11 +196,13 @@ configure_for_upgrade () {
 
     # Extract the properties keys from the old properties file
     awk -F'=' '{if($0 ~ "=") {print $1 "="}}' /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.old > /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.old_keys
+    sed -i '/\.[a-zA-Z\-]*\ *=/b; /.*=/d' /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.old_keys
     sed -i s/\#//g /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.old_keys
     sed -i s/\ //g /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.old_keys
 
     # Extract the properties keys from the new properties file
     awk -F'=' '{if($0 ~ "=") {print $1 "="}}' /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new > /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new_keys
+    sed -i '/\.[a-zA-Z\-]*\ *=/b; /.*=/d' /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new_keys
     sed -i s/\#//g /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new_keys
     sed -i s/\ //g /tmp/${OPENBATON_COMPONENT_CONFIG_FILE}.new_keys
 

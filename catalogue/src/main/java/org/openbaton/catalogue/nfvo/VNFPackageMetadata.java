@@ -37,7 +37,6 @@ import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
 import org.openbaton.catalogue.util.BaseEntity;
 import org.openbaton.catalogue.util.IdGenerator;
 
-/** Created by mpa on 22/05/16. */
 @Entity
 public class VNFPackageMetadata extends BaseEntity {
 
