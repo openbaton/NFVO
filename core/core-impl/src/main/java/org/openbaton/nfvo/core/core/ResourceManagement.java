@@ -187,7 +187,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
       org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim =
           vimBroker.getVim(vimInstance.getType());
       log.info("rebuilding vnfcInstance: " + vnfcInstance.getHostname());
-      vim.operate(vimInstance, vdu, operation).get();
+      vim.operate(vimInstance, vdu, vnfcInstance, operation).get();
     }
     return new AsyncResult<>(null);
   }

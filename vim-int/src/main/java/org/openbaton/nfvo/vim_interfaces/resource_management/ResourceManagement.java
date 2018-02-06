@@ -100,11 +100,16 @@ public interface ResourceManagement {
    *
    * @param vimInstance the {@link BaseVimInstance} on which to operate
    * @param vdu the {@link VirtualDeploymentUnit} on which to operate
+   * @param vnfcInstance the {@link VNFCInstance} on which to operate
    * @param operation the operation to perform
    * @return Future of {@link Void}
    * @throws VimException in case of exception
    */
-  Future<Void> operate(BaseVimInstance vimInstance, VirtualDeploymentUnit vdu, String operation)
+  Future<Void> operate(
+      BaseVimInstance vimInstance,
+      VirtualDeploymentUnit vdu,
+      VNFCInstance vnfcInstance,
+      String operation)
       throws VimException;
 
   /**

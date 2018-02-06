@@ -898,24 +898,25 @@ public class GenericVIM extends Vim {
   @Override
   @Async
   public Future<Void> operate(
-      BaseVimInstance vimInstance, VirtualDeploymentUnit vdu, String operation)
+      BaseVimInstance vimInstance,
+      VirtualDeploymentUnit vdu,
+      VNFCInstance vnfcInstance,
+      String operation)
       throws VimException {
     switch (operation) {
       case "rebuild":
-        for (VNFCInstance vnfcInstance : vdu.getVnfc_instance()) {
-          String imageId = this.chooseImage(vdu.getVm_image(), vimInstance);
-          try {
-            client.rebuildServer(vimInstance, vnfcInstance.getVc_id(), imageId);
-          } catch (VimDriverException vde) {
-            throw new VimException(
-                "Not rebuild VM with ExtId "
-                    + vnfcInstance.getVc_id()
-                    + " successfully from VimInstance "
-                    + vimInstance.getName()
-                    + ". Caused by: "
-                    + vde.getMessage(),
-                vde);
-          }
+        String imageId = this.chooseImage(vdu.getVm_image(), vimInstance);
+        try {
+          client.rebuildServer(vimInstance, vnfcInstance.getVc_id(), imageId);
+        } catch (VimDriverException vde) {
+          throw new VimException(
+              "Not rebuild VM with ExtId "
+                  + vnfcInstance.getVc_id()
+                  + " successfully from VimInstance "
+                  + vimInstance.getName()
+                  + ". Caused by: "
+                  + vde.getMessage(),
+              vde);
         }
         break;
       default:

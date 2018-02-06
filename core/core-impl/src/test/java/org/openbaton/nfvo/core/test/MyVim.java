@@ -145,7 +145,10 @@ public class MyVim extends Vim {
 
   @Override
   public Future<Void> operate(
-      BaseVimInstance vimInstance, VirtualDeploymentUnit vdu, String operation) {
+      BaseVimInstance vimInstance,
+      VirtualDeploymentUnit vdu,
+      VNFCInstance vnfcInstance,
+      String operation) {
     return null;
   }
 
