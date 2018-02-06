@@ -249,6 +249,8 @@ public class VNFPackageManagement
         handleVnfPackageMetadata(
             metadata, vnfPackage, virtualNetworkFunctionDescriptor.getEndpoint(), projectId, "tar");
 
+    virtualNetworkFunctionDescriptor.setProjectId(projectId);
+
     nsdUtils.fetchVimInstances(virtualNetworkFunctionDescriptor, projectId);
     nsdUtils.checkIntegrity(virtualNetworkFunctionDescriptor);
 
@@ -265,7 +267,6 @@ public class VNFPackageManagement
 
     vnfPackage.setImage(image);
 
-    virtualNetworkFunctionDescriptor.setProjectId(projectId);
     vnfPackage.setProjectId(projectId);
     // check if package already exists
 
