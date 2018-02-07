@@ -18,8 +18,16 @@
 package org.openbaton.nfvo.core.api;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 import javax.persistence.EntityManager;
@@ -40,7 +48,9 @@ import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
 import org.openbaton.nfvo.common.utils.viminstance.VimInstanceUtils;
-import org.openbaton.nfvo.core.interfaces.*;
+import org.openbaton.nfvo.core.interfaces.DependencyManagement;
+import org.openbaton.nfvo.core.interfaces.EventDispatcher;
+import org.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.openbaton.nfvo.core.utils.NSDUtils;
 import org.openbaton.nfvo.core.utils.NSRUtils;
@@ -67,7 +77,7 @@ public class NetworkServiceRecordManagement
     implements org.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement {
 
   private final Logger log = LoggerFactory.getLogger(this.getClass());
-  @Autowired private ThreadPoolTaskExecutor asyncExecutor;
+  @Autowired private ThreadPoolTaskExecutor executor;
   @Autowired private EventDispatcher publisher;
   @Autowired private NetworkServiceRecordRepository nsrRepository;
   @Autowired private NetworkServiceDescriptorRepository nsdRepository;
@@ -78,7 +88,6 @@ public class NetworkServiceRecordManagement
   @Autowired private VnfmManager vnfmManager;
   @Autowired private VnfStateHandler vnfStateHandler;
   @Autowired private ResourceManagement resourceManagement;
-  @Autowired private NetworkManagement networkManagement;
   @Autowired private DependencyManagement dependencyManagement;
   @Autowired private VNFCRepository vnfcRepository;
   @Autowired private VduRepository vduRepository;
@@ -86,11 +95,14 @@ public class NetworkServiceRecordManagement
   @Autowired private VnfmEndpointRepository vnfmManagerEndpointRepository;
   @Autowired private VimBroker vimBroker;
   @Autowired private EntityManager entityManager;
+  @Autowired private KeyRepository keyRepository;
+  @Autowired private VnfPackageRepository vnfPackageRepository;
+  @Autowired private VimManagement vimManagement;
 
   @Value("${nfvo.delete.vnfr.wait.timeout:60}")
   private int timeout;
 
-  @Value("${nfvo.delete.vnfr.wait:false}")
+  @Value("${nfvo.delete.vnfr.wait:true}")
   private boolean removeAfterTimeout;
 
   @Value("${nfvo.delete.all-status:true}")
@@ -101,10 +113,6 @@ public class NetworkServiceRecordManagement
 
   @Value("${nfvo.quota.check.failOnException:true}")
   private boolean failingQuotaCheckOnException;
-
-  @Autowired private KeyRepository keyRepository;
-  @Autowired private VnfPackageRepository vnfPackageRepository;
-  @Autowired private VimManagement vimManagement;
 
   @Override
   public NetworkServiceRecord onboard(
@@ -1634,14 +1642,16 @@ public class NetworkServiceRecordManagement
 
     if (!networkServiceRecord.getVnfr().isEmpty()) {
       networkServiceRecord.setStatus(Status.TERMINATED); // TODO maybe terminating?
+      for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr()) {
+        vnfmManager.release(vnfr);
+      }
       for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord :
-          networkServiceRecord.getVnfr()) {
+          vnfrRepository.findByParentNsId(networkServiceRecord.getId())) {
         if (removeAfterTimeout) {
           VNFRTerminator terminator = new VNFRTerminator();
           terminator.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
-          this.asyncExecutor.submit(terminator);
+          this.executor.submit(terminator);
         }
-        vnfmManager.release(virtualNetworkFunctionRecord);
       }
     } else {
       nsrRepository.delete(networkServiceRecord.getId());
@@ -1763,7 +1773,6 @@ public class NetworkServiceRecordManagement
     }
   }
 
-  @ConfigurationProperties
   class VNFRTerminator implements Runnable {
 
     private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
@@ -1782,7 +1791,6 @@ public class NetworkServiceRecordManagement
               vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
           log.debug(
               "Terminating the VNFR not yet removed: " + virtualNetworkFunctionRecord.getName());
-          //          vnfStateHandler.terminate(virtualNetworkFunctionRecord);
           virtualNetworkFunctionRecord
               .getVdu()
               .stream()

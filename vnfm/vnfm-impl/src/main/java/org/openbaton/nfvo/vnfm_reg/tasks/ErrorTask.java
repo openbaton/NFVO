@@ -25,7 +25,6 @@ import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-/** Created by lto on 06/08/15. */
 @Service
 @Scope("prototype")
 public class ErrorTask extends AbstractTask {
@@ -68,7 +67,7 @@ public class ErrorTask extends AbstractTask {
   }
 
   @Override
-  public NFVMessage doWork() {
+  public NFVMessage doWork() throws Exception {
 
     if (log.isDebugEnabled()) {
       log.error("ERROR from VNFM: ", this.getException());

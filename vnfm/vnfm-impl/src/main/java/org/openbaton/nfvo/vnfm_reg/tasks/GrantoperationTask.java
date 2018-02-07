@@ -39,6 +39,7 @@ import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.NsrNotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.common.utils.viminstance.VimInstanceUtils;
@@ -221,6 +222,11 @@ public class GrantoperationTask extends AbstractTask {
     synchronized (lock) {
       vimInstance = vimManagement.query(vimInstance.getId(), vimInstance.getProjectId());
       vimInstance = vimManagement.refresh(vimInstance, true).get();
+      if (!networkServiceRecordRepository.exists(virtualNetworkFunctionRecord.getParent_ns_id()))
+        throw new NsrNotFoundException(
+            String.format(
+                "NSR with id [%s] was not found, probably deleted during deploying",
+                virtualNetworkFunctionRecord.getParent_ns_id()));
       NetworkServiceRecord networkServiceRecord =
           networkServiceRecordRepository.findFirstById(
               virtualNetworkFunctionRecord.getParent_ns_id());

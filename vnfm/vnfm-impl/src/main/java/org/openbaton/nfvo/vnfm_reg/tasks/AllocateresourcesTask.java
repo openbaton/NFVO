@@ -27,6 +27,7 @@ import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.security.Key;
+import org.openbaton.exceptions.NsrNotFoundException;
 import org.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
@@ -34,13 +35,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-/** Created by lto on 06/08/15. */
 @Service
 @Scope("prototype")
 public class AllocateresourcesTask extends AbstractTask {
-  @Autowired private ResourceManagement resourceManagement;
+
   private Map<String, BaseVimInstance> vims;
   private String userData;
+
+  @Autowired private ResourceManagement resourceManagement;
   @Autowired private VimRepository vimRepository;
 
   @Override
@@ -56,7 +58,6 @@ public class AllocateresourcesTask extends AbstractTask {
 
   @Override
   protected NFVMessage doWork() throws Exception {
-    if (virtualNetworkFunctionRecord.getName().contains("client")) log.info("client");
     log.info(
         "Executing task: AllocateResources for VNFR: " + virtualNetworkFunctionRecord.getName());
     log.trace(
@@ -90,7 +91,14 @@ public class AllocateresourcesTask extends AbstractTask {
     }
 
     setHistoryLifecycleEvent();
-    saveVirtualNetworkFunctionRecord();
+
+    try {
+      saveVirtualNetworkFunctionRecord();
+    } catch (NsrNotFoundException e) {
+      //TODO considering deleting VMs if the NSR was deleted while deploying them
+      log.error(e.getMessage());
+      throw e;
+    }
 
     OrVnfmGenericMessage orVnfmGenericMessage =
         new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.ALLOCATE_RESOURCES);

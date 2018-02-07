@@ -58,7 +58,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
-/** Created by lto on 11/05/15. */
 @Service
 @Scope
 @ConfigurationProperties

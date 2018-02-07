@@ -339,7 +339,6 @@ public class VnfmManager
           networkServiceRecord.getProjectId());
       nsrRepository.delete(networkServiceRecord);
       if (dedicatedNetworks) {
-
         networkServiceRecord
             .getVlr()
             .parallelStream()
@@ -361,8 +360,6 @@ public class VnfmManager
                 });
       }
     }
-
-    log.trace("Thread: " + Thread.currentThread().getId() + " finished findAndSet");
   }
 
   private void publishEvent(Action action, Serializable payload, String projectId) {

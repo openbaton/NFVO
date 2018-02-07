@@ -22,31 +22,22 @@ import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.openbaton.nfvo.repositories.VNFCInstanceRepository;
+import org.openbaton.exceptions.NsrNotFoundException;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-/** Created by fmu on 19/08/16. */
 @Service
 @Scope("prototype")
 @ConfigurationProperties(prefix = "nfvo.stop")
 public class StopTask extends AbstractTask {
 
-  @Autowired private VNFCInstanceRepository vnfcInstanceRepository;
-
-  private String ordered;
   private VNFCInstance vnfcInstance;
 
   @Override
   public boolean isAsync() {
     return true;
-  }
-
-  public void setOrdered(String ordered) {
-    this.ordered = ordered;
   }
 
   public VNFCInstance getVnfcInstance() {
@@ -58,7 +49,7 @@ public class StopTask extends AbstractTask {
   }
 
   @Override
-  public NFVMessage doWork() {
+  public NFVMessage doWork() throws NsrNotFoundException {
     log.info("Stopped VNFR: " + virtualNetworkFunctionRecord.getName());
     VirtualNetworkFunctionRecord existing =
         vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
