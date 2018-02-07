@@ -31,8 +31,7 @@ public interface VNFLifecycleOperationGranting {
    * a new or existing VNF. The sub-type of lifecycle operation is parameterized in the operation.
    */
   Map<String, BaseVimInstance> grantLifecycleOperation(
-      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
-      throws VimException, PluginException;
+      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException;
 
   BaseVimInstance checkQuotaOnVimInstance(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, BaseVimInstance vimInstance)

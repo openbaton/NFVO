@@ -21,8 +21,6 @@ import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 import javax.validation.Valid;
 import org.openbaton.catalogue.security.Key;
@@ -70,8 +68,8 @@ public class RestKeys {
   @ResponseStatus(HttpStatus.CREATED)
   public Key importKey(
       @RequestHeader(value = "project-id") String projectId, @RequestBody @Valid Key key)
-      throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeySpecException,
-          BadFormatException, AlreadyExistingException {
+      throws UnsupportedEncodingException, NoSuchAlgorithmException, BadFormatException,
+          AlreadyExistingException {
     return keyManagement.addKey(projectId, key.getName(), key.getPublicKey());
   }
 
@@ -93,8 +91,7 @@ public class RestKeys {
   @ResponseStatus(HttpStatus.CREATED)
   public String generateKey(
       @RequestHeader(value = "project-id") String projectId, @RequestBody String name)
-      throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeySpecException,
-          IOException, AlreadyExistingException {
+      throws NoSuchAlgorithmException, IOException, AlreadyExistingException {
     log.debug("Generating key with name: " + name);
     return keyManagement.generateKey(projectId, name);
   }

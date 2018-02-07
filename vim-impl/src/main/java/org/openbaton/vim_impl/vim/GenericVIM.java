@@ -897,8 +897,34 @@ public class GenericVIM extends Vim {
   }
 
   @Override
-  public void operate(VirtualDeploymentUnit vdu, String operation) {
-    throw new UnsupportedOperationException("Not yet implemented");
+  @Async
+  public Future<Void> operate(
+      BaseVimInstance vimInstance,
+      VirtualDeploymentUnit vdu,
+      VNFCInstance vnfcInstance,
+      String operation)
+      throws VimException {
+    switch (operation) {
+      case "rebuild":
+        String imageId = this.chooseImage(vdu.getVm_image(), vimInstance);
+        try {
+          client.rebuildServer(vimInstance, vnfcInstance.getVc_id(), imageId);
+        } catch (VimDriverException vde) {
+          throw new VimException(
+              "Not rebuild VM with ExtId "
+                  + vnfcInstance.getVc_id()
+                  + " successfully from VimInstance "
+                  + vimInstance.getName()
+                  + ". Caused by: "
+                  + vde.getMessage(),
+              vde);
+        }
+        break;
+      default:
+        log.error("Operation not supported");
+        break;
+    }
+    return new AsyncResult<>(null);
   }
 
   @Override

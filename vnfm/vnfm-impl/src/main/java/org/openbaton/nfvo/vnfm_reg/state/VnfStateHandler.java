@@ -92,13 +92,11 @@ public class VnfStateHandler implements org.openbaton.vnfm.interfaces.state.VnfS
 
   @Override
   @Async
-  public Future<NFVMessage> executeAction(NFVMessage nfvMessage)
-      throws ExecutionException, InterruptedException {
+  public Future<NFVMessage> executeAction(NFVMessage nfvMessage) {
     return executeActionNotAsync(nfvMessage);
   }
 
-  private Future<NFVMessage> executeActionNotAsync(NFVMessage nfvMessage)
-      throws ExecutionException, InterruptedException {
+  private Future<NFVMessage> executeActionNotAsync(NFVMessage nfvMessage) {
     String actionName = nfvMessage.getAction().toString().replace("_", "").toLowerCase();
     String beanName = actionName + "Task";
     log.debug("Looking for bean called: " + beanName);

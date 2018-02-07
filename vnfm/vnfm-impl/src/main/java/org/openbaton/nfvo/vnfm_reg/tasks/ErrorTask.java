@@ -68,7 +68,7 @@ public class ErrorTask extends AbstractTask {
   }
 
   @Override
-  public NFVMessage doWork() throws Exception {
+  public NFVMessage doWork() {
 
     if (log.isDebugEnabled()) {
       log.error("ERROR from VNFM: ", this.getException());

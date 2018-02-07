@@ -21,8 +21,6 @@ import com.google.gson.Gson;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.common.configuration.RabbitConfiguration;
 import org.openbaton.vnfm.interfaces.manager.VnfmReceiver;
 import org.openbaton.vnfm.interfaces.state.VnfStateHandler;
@@ -63,8 +61,7 @@ public class RabbitVnfmReceiver implements VnfmReceiver {
           key = RabbitConfiguration.QUEUE_NAME_VNFM_CORE_ACTIONS_REPLY
         )
   )
-  public String actionFinished(String nfvMessage)
-      throws NotFoundException, VimException, ExecutionException, InterruptedException {
+  public String actionFinished(String nfvMessage) throws ExecutionException, InterruptedException {
     NFVMessage message = gson.fromJson(nfvMessage, NFVMessage.class);
     log.debug("NFVO - core module received (via MB): " + message.getAction());
 
@@ -97,7 +94,7 @@ public class RabbitVnfmReceiver implements VnfmReceiver {
         )
   )
   public void actionFinishedVoid(String nfvMessage)
-      throws NotFoundException, VimException, ExecutionException, InterruptedException {
+      throws ExecutionException, InterruptedException {
     NFVMessage message = gson.fromJson(nfvMessage, NFVMessage.class);
     log.debug("NFVO - core module received (via MB)" + message.getAction());
 

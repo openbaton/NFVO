@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 import org.openbaton.catalogue.mano.common.monitoring.AbstractVirtualizedResourceAlarm;
 import org.openbaton.catalogue.mano.common.monitoring.Alarm;
 import org.openbaton.catalogue.mano.common.monitoring.AlarmEndpoint;
@@ -60,7 +59,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
       String name,
       String managementPort,
       int pluginTimeout)
-      throws IOException, TimeoutException, NotFoundException {
+      throws IOException, NotFoundException {
     log.trace("Creating PluginCaller");
     if (name == null) {
       name = "";

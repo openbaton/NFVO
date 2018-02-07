@@ -37,8 +37,7 @@ public class HistoryInterceptor extends HandlerInterceptorAdapter {
       HttpServletRequest request,
       HttpServletResponse response,
       Object handler,
-      ModelAndView modelAndView)
-      throws Exception {
+      ModelAndView modelAndView) {
     //    super.postHandle(request, response, handler, modelAndView);
     log.trace("Calling addHistoryAction");
     if (!request.getMethod().equalsIgnoreCase("post")

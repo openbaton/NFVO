@@ -17,17 +17,14 @@
 
 package org.openbaton.nfvo.core.core;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import org.apache.commons.net.util.SubnetUtils;
 import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
 import org.openbaton.catalogue.nfvo.networks.Network;
 import org.openbaton.catalogue.nfvo.networks.Subnet;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.util.IdGenerator;
-import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
@@ -53,8 +50,7 @@ public class NetworkManagement implements org.openbaton.nfvo.core.interfaces.Net
 
   @Override
   public synchronized BaseNetwork add(BaseVimInstance vimInstance, BaseNetwork network)
-      throws VimException, PluginException, BadRequestException, IOException,
-          AlreadyExistingException, ExecutionException, InterruptedException {
+      throws VimException, PluginException, BadRequestException {
     log.info("Creating network " + network.getName() + " on vim " + vimInstance.getName());
     org.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement vim;
     vim = vimBroker.getVim(vimInstance.getType());

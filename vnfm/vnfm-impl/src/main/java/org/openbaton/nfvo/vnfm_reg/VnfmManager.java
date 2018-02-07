@@ -34,24 +34,15 @@ import java.util.concurrent.Future;
 import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.api.DeployNSRBody;
-import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.openbaton.catalogue.mano.descriptor.VNFComponent;
-import org.openbaton.catalogue.mano.descriptor.VNFDependency;
-import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.Action;
-import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
-import org.openbaton.catalogue.nfvo.Script;
-import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.catalogue.nfvo.*;
+import org.openbaton.catalogue.nfvo.messages.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmLogMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmScalingMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmUpdateMessage;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
@@ -492,6 +483,41 @@ public class VnfmManager
 
     vnfStateHandler.executeAction(vnfmSender.sendCommand(message, endpoint));
     return new AsyncResult<>(null);
+  }
+
+  @Override
+  public void restartVnfr(VirtualNetworkFunctionRecord vnfr)
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
+    VnfmManagerEndpoint endpoint = generator.getVnfm(vnfr.getEndpoint());
+    if (endpoint == null) {
+      throw new NotFoundException(
+          "VnfManager of type "
+              + vnfr.getType()
+              + " (endpoint = "
+              + vnfr.getEndpoint()
+              + ") is not registered");
+    }
+
+    VirtualNetworkFunctionDescriptor vnfd =
+        vnfdRepository.findFirstByIdAndProjectId(
+            vnfr.getDescriptor_reference(), vnfr.getProjectId());
+
+    Map<String, Set<String>> vduVimInstances = new HashMap<>();
+    for (VirtualDeploymentUnit vdu : vnfd.getVdu())
+      vduVimInstances.put(vdu.getId(), vdu.getVimInstanceName());
+
+    NetworkServiceRecord nsr =
+        nsrRepository.findFirstByIdAndProjectId(vnfr.getParent_ns_id(), vnfr.getProjectId());
+
+    VnfmSender vnfmSender = generator.getVnfmSender(vnfd);
+    OrVnfmInstantiateMessage message =
+        generator.getNextMessage(vnfd, vduVimInstances, nsr, null, null);
+    // Set the vnfr in the message, so the allocate resources will be skipped
+    message.setVnfr(vnfr);
+    log.debug("----------Executing ACTION: " + message.getAction());
+
+    vnfStateHandler.executeAction(vnfmSender.sendCommand(message, endpoint));
+    log.info("Sent " + message.getAction() + " to VNF: " + vnfd.getName());
   }
 
   @Override
