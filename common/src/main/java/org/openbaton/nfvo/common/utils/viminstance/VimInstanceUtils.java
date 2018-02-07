@@ -1,9 +1,6 @@
 package org.openbaton.nfvo.common.utils.viminstance;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.apache.commons.net.util.SubnetUtils;
 import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
@@ -13,6 +10,7 @@ import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.openbaton.catalogue.nfvo.ImageStatus;
+import org.openbaton.catalogue.nfvo.images.AWSImage;
 import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
 import org.openbaton.catalogue.nfvo.images.DockerImage;
 import org.openbaton.catalogue.nfvo.images.NFVImage;
@@ -20,6 +18,7 @@ import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
 import org.openbaton.catalogue.nfvo.networks.DockerNetwork;
 import org.openbaton.catalogue.nfvo.networks.Network;
 import org.openbaton.catalogue.nfvo.networks.Subnet;
+import org.openbaton.catalogue.nfvo.viminstances.AmazonVimInstance;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.nfvo.viminstances.DockerVimInstance;
 import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
@@ -180,6 +179,11 @@ public class VimInstanceUtils {
                       && !((DockerImage) i).getTags().isEmpty()
                       && ((DockerImage) i).getTags().contains(imageName))
           .collect(Collectors.toList());
+    } else if (vimInstance instanceof AmazonVimInstance) {
+      //in case of Amazon Instance the image check is delegated to amazon plugin
+      AWSImage skipImage = new AWSImage();
+      skipImage.setExtId(imageName);
+      return Collections.singletonList(skipImage);
     } else {
       return vimInstance
           .getImages()
