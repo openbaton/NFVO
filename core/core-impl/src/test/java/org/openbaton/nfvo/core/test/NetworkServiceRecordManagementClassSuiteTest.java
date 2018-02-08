@@ -84,6 +84,7 @@ import org.openbaton.nfvo.core.utils.NSDUtils;
 import org.openbaton.nfvo.repositories.ConfigurationRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
+import org.openbaton.nfvo.repositories.VNFRRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
 import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
@@ -125,6 +126,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
   @Mock private ConfigurationRepository configurationRepository;
   @Mock private VnfmManager vnfmManager;
   @Mock private EventDispatcher publisher;
+  @Mock private VNFRRepository vnfrRepository;
 
   @Before
   public void init()
@@ -217,8 +219,9 @@ public class NetworkServiceRecordManagementClassSuiteTest {
           WrongStatusException, PluginException, BadFormatException {
     NetworkServiceRecord nsd_exp = createNetworkServiceRecord();
     when(resourceManagement.release(any(VirtualDeploymentUnit.class), any(VNFCInstance.class)))
-        .thenReturn(new AsyncResult<Void>(null));
+        .thenReturn(new AsyncResult<>(null));
     when(nsrRepository.findFirstByIdAndProjectId(nsd_exp.getId(), projectId)).thenReturn(nsd_exp);
+    when(vnfrRepository.findByParentNsId(anyString())).thenReturn(new ArrayList<>());
     Configuration system = new Configuration();
     system.setConfigurationParameters(new HashSet<>());
     ConfigurationParameter configurationParameter = new ConfigurationParameter();
