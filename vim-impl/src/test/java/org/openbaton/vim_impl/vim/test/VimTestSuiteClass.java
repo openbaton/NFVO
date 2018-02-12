@@ -24,7 +24,6 @@ import static org.mockito.Matchers.anySet;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
-import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -142,7 +141,7 @@ public class VimTestSuiteClass {
   }
 
   @Test
-  public void testVimOpenstack() throws VimDriverException, VimException, RemoteException {
+  public void testVimOpenstack() throws VimDriverException, VimException {
     VirtualDeploymentUnit vdu = createVDU();
     VirtualNetworkFunctionRecord vnfr = createVNFR();
 

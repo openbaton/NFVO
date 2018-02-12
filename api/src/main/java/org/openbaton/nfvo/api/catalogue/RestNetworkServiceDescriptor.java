@@ -198,8 +198,7 @@ public class RestNetworkServiceDescriptor {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void multipleDelete(
       @RequestBody @Valid List<String> ids, @RequestHeader(value = "project-id") String projectId)
-      throws InterruptedException, ExecutionException, WrongStatusException, VimException,
-          NotFoundException, EntityInUseException, BadRequestException {
+      throws WrongStatusException, NotFoundException, EntityInUseException, BadRequestException {
     for (String id : ids) networkServiceDescriptorManagement.delete(id, projectId);
   }
 

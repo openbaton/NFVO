@@ -171,7 +171,7 @@ public class MessageGenerator implements org.openbaton.vnfm.interfaces.manager.M
     extension.put("nsr-id", networkServiceRecord.getId());
 
     HashSet<Key> keys;
-    if (body.getKeys() != null) {
+    if (body != null && body.getKeys() != null) {
       keys = new HashSet<>(body.getKeys());
     } else {
       keys = new HashSet<>();
@@ -202,7 +202,7 @@ public class MessageGenerator implements org.openbaton.vnfm.interfaces.manager.M
 
   private Map<String, String> fillAccessibilityConfigurationParameters(
       Map<String, String> extension, VirtualNetworkFunctionDescriptor vnfd, DeployNSRBody body) {
-    if (body.getConfigurations().get(vnfd.getName()) == null) return extension;
+    if (body == null || body.getConfigurations().get(vnfd.getName()) == null) return extension;
     for (ConfigurationParameter passedConfigurationParameter :
         body.getConfigurations().get(vnfd.getName()).getConfigurationParameters()) {
       if (passedConfigurationParameter.getConfKey().equalsIgnoreCase("ssh_username")

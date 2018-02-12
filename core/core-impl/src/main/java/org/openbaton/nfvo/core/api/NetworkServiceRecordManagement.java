@@ -34,26 +34,9 @@ import javax.persistence.EntityManager;
 import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.Ip;
-import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
-import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.openbaton.catalogue.mano.descriptor.VNFComponent;
-import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
-import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
-import org.openbaton.catalogue.mano.record.Status;
-import org.openbaton.catalogue.mano.record.VNFCInstance;
-import org.openbaton.catalogue.mano.record.VNFRecordDependency;
-import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.Action;
-import org.openbaton.catalogue.nfvo.ApplicationEventNFVO;
-import org.openbaton.catalogue.nfvo.Configuration;
-import org.openbaton.catalogue.nfvo.ConfigurationParameter;
-import org.openbaton.catalogue.nfvo.HistoryLifecycleEvent;
-import org.openbaton.catalogue.nfvo.Quota;
-import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
-import org.openbaton.catalogue.nfvo.VNFPackage;
-import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
+import org.openbaton.catalogue.mano.descriptor.*;
+import org.openbaton.catalogue.mano.record.*;
+import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmHealVNFRequestMessage;
@@ -62,31 +45,16 @@ import org.openbaton.catalogue.nfvo.messages.VnfmOrHealedMessage;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
 import org.openbaton.catalogue.security.Key;
-import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.exceptions.BadFormatException;
-import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimException;
-import org.openbaton.exceptions.WrongStatusException;
+import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
+import org.openbaton.nfvo.common.utils.viminstance.VimInstanceUtils;
 import org.openbaton.nfvo.core.interfaces.DependencyManagement;
 import org.openbaton.nfvo.core.interfaces.EventDispatcher;
 import org.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.openbaton.nfvo.core.utils.NSDUtils;
 import org.openbaton.nfvo.core.utils.NSRUtils;
-import org.openbaton.nfvo.repositories.KeyRepository;
-import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
-import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
-import org.openbaton.nfvo.repositories.VNFCRepository;
-import org.openbaton.nfvo.repositories.VNFDRepository;
-import org.openbaton.nfvo.repositories.VNFRRepository;
-import org.openbaton.nfvo.repositories.VNFRecordDependencyRepository;
-import org.openbaton.nfvo.repositories.VduRepository;
-import org.openbaton.nfvo.repositories.VimRepository;
-import org.openbaton.nfvo.repositories.VnfPackageRepository;
-import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
+import org.openbaton.nfvo.repositories.*;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.openbaton.vnfm.interfaces.manager.VnfmManager;
 import org.openbaton.vnfm.interfaces.state.VnfStateHandler;
@@ -109,7 +77,7 @@ public class NetworkServiceRecordManagement
     implements org.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement {
 
   private final Logger log = LoggerFactory.getLogger(this.getClass());
-  @Autowired private ThreadPoolTaskExecutor asyncExecutor;
+  @Autowired private ThreadPoolTaskExecutor executor;
   @Autowired private EventDispatcher publisher;
   @Autowired private NetworkServiceRecordRepository nsrRepository;
   @Autowired private NetworkServiceDescriptorRepository nsdRepository;
@@ -127,11 +95,14 @@ public class NetworkServiceRecordManagement
   @Autowired private VnfmEndpointRepository vnfmManagerEndpointRepository;
   @Autowired private VimBroker vimBroker;
   @Autowired private EntityManager entityManager;
+  @Autowired private KeyRepository keyRepository;
+  @Autowired private VnfPackageRepository vnfPackageRepository;
+  @Autowired private VimManagement vimManagement;
 
   @Value("${nfvo.delete.vnfr.wait.timeout:60}")
   private int timeout;
 
-  @Value("${nfvo.delete.vnfr.wait:false}")
+  @Value("${nfvo.delete.vnfr.wait:true}")
   private boolean removeAfterTimeout;
 
   @Value("${nfvo.delete.all-status:true}")
@@ -142,10 +113,6 @@ public class NetworkServiceRecordManagement
 
   @Value("${nfvo.quota.check.failOnException:true}")
   private boolean failingQuotaCheckOnException;
-
-  @Autowired private KeyRepository keyRepository;
-  @Autowired private VnfPackageRepository vnfPackageRepository;
-  @Autowired private VimManagement vimManagement;
 
   @Override
   public NetworkServiceRecord onboard(
@@ -245,6 +212,69 @@ public class NetworkServiceRecordManagement
       log.debug("Found keys: " + body.getKeys());
     }
     return scaleOutNsr(nsr, vnfd, projectId, body);
+  }
+
+  @Override
+  public VirtualNetworkFunctionRecord restartVnfr(
+      NetworkServiceRecord nsr, String vnfrId, String imageName, String projectId)
+      throws NotFoundException, IOException, BadRequestException, VimException, PluginException,
+          ExecutionException, InterruptedException, BadFormatException {
+
+    // check if the nsr status is in ACTIVE
+    if (!nsrRepository.existsByIdAndProjectIdAndStatus(nsr.getId(), projectId, Status.ACTIVE))
+      throw new BadRequestException("NSR is not in ACTIVE status");
+
+    // Check if the vnfr exists and belongs to the nsr
+    VirtualNetworkFunctionRecord vnfr =
+        vnfrRepository.findByIdAndParent_ns_idAndProjectId(vnfrId, nsr.getId(), projectId);
+    if (vnfr == null)
+      throw new NotFoundException(
+          "Not found VNFR with id: " + vnfrId + " in NSR with id: " + nsr.getId());
+
+    // check if the image is available in the vim
+    if (imageName != null && !imageName.isEmpty()) {
+      for (VirtualDeploymentUnit vdu : vnfr.getVdu()) {
+        boolean imageNameSpecifiedDiffers = !vdu.getVm_image().iterator().next().equals(imageName);
+        if (imageNameSpecifiedDiffers) {
+          for (VNFCInstance vnfcInstance : vdu.getVnfc_instance()) {
+            BaseVimInstance vimInstance =
+                vimInstanceRepository.findFirstByIdAndProjectId(
+                    vnfcInstance.getVim_id(), projectId);
+            if (!vimInstance.getType().equals("test")) {
+              vimManagement.refresh(vimInstance, false).get();
+              if (VimInstanceUtils.findActiveImagesByName(vimInstance, imageName).size() == 0)
+                throw new NotFoundException(
+                    "Not found image " + imageName + " in vim: " + vimInstance.getName());
+            }
+          }
+          // the image specified replaces the old one
+          vdu.getVm_image().clear();
+          vdu.getVm_image().add(imageName);
+        }
+      }
+    }
+
+    // set nsr status to null since the virtual resources (virtual machines) are going
+    // to be rebuilt. Setting the status not to ACTIVE also prevent other actions to be performed
+    nsrRepository.setStatus(nsr.getId(), Status.NULL);
+
+    // rebuild VNF, namely rebuild all the vnfc instances in every vdu
+    try {
+      for (VirtualDeploymentUnit vdu : vnfr.getVdu()) {
+        resourceManagement.operate(vdu, "rebuild").get();
+      }
+    } catch (PluginException | VimException | ExecutionException | InterruptedException e) {
+      nsrRepository.setStatus(nsr.getId(), Status.ERROR);
+      throw e;
+    }
+    // save image in the vnfr
+    // it is done after the rebuild in case exceptions make the rebuild fail
+    vnfr = vnfrRepository.save(vnfr);
+
+    // execute restart vnfr
+    vnfmManager.restartVnfr(vnfr);
+
+    return vnfr;
   }
 
   private NetworkServiceRecord scaleOutNsr(
@@ -1050,8 +1080,8 @@ public class NetworkServiceRecordManagement
       String projectID,
       DeployNSRBody body,
       String monitoringIp)
-      throws NotFoundException, VimException, PluginException, BadRequestException, IOException,
-          AlreadyExistingException, BadFormatException, ExecutionException, InterruptedException {
+      throws NotFoundException, VimException, BadRequestException, BadFormatException,
+          ExecutionException, InterruptedException {
     log.trace("Fetched NetworkServiceDescriptor: " + networkServiceDescriptor);
 
     log.debug("VNFD are: ");
@@ -1612,14 +1642,16 @@ public class NetworkServiceRecordManagement
 
     if (!networkServiceRecord.getVnfr().isEmpty()) {
       networkServiceRecord.setStatus(Status.TERMINATED); // TODO maybe terminating?
+      for (VirtualNetworkFunctionRecord vnfr : networkServiceRecord.getVnfr()) {
+        vnfmManager.release(vnfr);
+      }
       for (VirtualNetworkFunctionRecord virtualNetworkFunctionRecord :
-          networkServiceRecord.getVnfr()) {
+          vnfrRepository.findByParentNsId(networkServiceRecord.getId())) {
         if (removeAfterTimeout) {
           VNFRTerminator terminator = new VNFRTerminator();
           terminator.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
-          this.asyncExecutor.submit(terminator);
+          this.executor.submit(terminator);
         }
-        vnfmManager.release(virtualNetworkFunctionRecord);
       }
     } else {
       nsrRepository.delete(networkServiceRecord.getId());
@@ -1741,7 +1773,6 @@ public class NetworkServiceRecordManagement
     }
   }
 
-  @ConfigurationProperties
   class VNFRTerminator implements Runnable {
 
     private VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
@@ -1760,7 +1791,6 @@ public class NetworkServiceRecordManagement
               vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
           log.debug(
               "Terminating the VNFR not yet removed: " + virtualNetworkFunctionRecord.getName());
-          //          vnfStateHandler.terminate(virtualNetworkFunctionRecord);
           virtualNetworkFunctionRecord
               .getVdu()
               .stream()

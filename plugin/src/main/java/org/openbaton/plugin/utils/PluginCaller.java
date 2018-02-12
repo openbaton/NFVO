@@ -88,7 +88,7 @@ public class PluginCaller {
       int port,
       String virtualHost,
       int managementPort)
-      throws TimeoutException, IOException, NotFoundException {
+      throws IOException, NotFoundException {
     this(pluginId, brokerIp, username, password, port, virtualHost, managementPort, 500000);
   }
 
@@ -101,7 +101,7 @@ public class PluginCaller {
       String virtualHost,
       int managementPort,
       long timeout)
-      throws IOException, TimeoutException, NotFoundException {
+      throws IOException, NotFoundException {
     this.pluginId =
         getFullPluginId(pluginId, brokerIp, username, password, virtualHost, managementPort);
     this.managementPort = managementPort;
@@ -219,7 +219,8 @@ public class PluginCaller {
             pluginException =
                 new PluginException(
                     gson.fromJson(exceptionJson.getAsJsonObject(), VimDriverException.class));
-            log.debug(
+            log.error("Got Vim Driver Exception with cause: " + pluginException.getMessage());
+            log.error(
                 "Got Vim Driver Exception with server: "
                     + ((VimDriverException) pluginException.getCause()).getServer());
           } catch (Exception ignored) {

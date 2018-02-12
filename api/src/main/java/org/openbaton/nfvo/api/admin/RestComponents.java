@@ -31,7 +31,6 @@ import javax.crypto.NoSuchPaddingException;
 import javax.validation.Valid;
 import org.openbaton.catalogue.api.ServiceCreateBody;
 import org.openbaton.catalogue.security.ServiceMetadata;
-import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.core.interfaces.ComponentManager;
@@ -86,8 +85,7 @@ public class RestComponents {
       @RequestHeader(value = "project-id") String projectId,
       //      @RequestBody @Valid JsonObject serviceCreateBody)
       @RequestBody @Valid ServiceCreateBody serviceCreateBody)
-      throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, BadRequestException,
-          NotFoundException, MissingParameterException {
+      throws NotFoundException, MissingParameterException {
 
     //    if (!serviceCreateBody.has("name"))
     //      throw new BadRequestException("The request's json body has to contain a name property.");
@@ -143,9 +141,8 @@ public class RestComponents {
   )
   @ResponseStatus(HttpStatus.CREATED)
   public JsonObject registerService(@RequestBody String serviceRegisterBody)
-      throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NotFoundException,
-          InvalidKeyException, BadPaddingException, NoSuchPaddingException,
-          IllegalBlockSizeException {
+      throws NoSuchAlgorithmException, NotFoundException, InvalidKeyException, BadPaddingException,
+          NoSuchPaddingException, IllegalBlockSizeException {
 
     JsonObject response = new JsonObject();
     response.add("token", new JsonPrimitive(componentManager.registerService(serviceRegisterBody)));
@@ -162,8 +159,7 @@ public class RestComponents {
   @ResponseStatus(HttpStatus.OK)
   @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
   public void deleteService(
-      @RequestHeader(value = "project-id") String projectId, @PathVariable("id") String id)
-      throws IOException {
+      @RequestHeader(value = "project-id") String projectId, @PathVariable("id") String id) {
     log.debug("id is " + id);
     componentManager.removeService(id);
   }
@@ -180,7 +176,7 @@ public class RestComponents {
   )
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-  public void multipleDelete(@RequestBody @Valid List<String> ids) throws IOException {
+  public void multipleDelete(@RequestBody @Valid List<String> ids) {
     if (componentManager != null) {
       for (String id : ids) {
         log.info("Removing Service with id: " + id);
@@ -198,8 +194,7 @@ public class RestComponents {
   )
   @ResponseStatus(HttpStatus.OK)
   @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-  public List<ServiceMetadata> listServices(@RequestHeader(value = "project-id") String projectId)
-      throws IOException {
+  public List<ServiceMetadata> listServices(@RequestHeader(value = "project-id") String projectId) {
 
     return (List<ServiceMetadata>) componentManager.listServices();
   }

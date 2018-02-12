@@ -2,8 +2,6 @@ package org.openbaton.nfvo.common.utils.viminstance;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import com.fasterxml.jackson.databind.ser.Serializers;
 import org.apache.commons.net.util.SubnetUtils;
 import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;

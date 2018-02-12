@@ -18,7 +18,6 @@
 package org.openbaton.nfvo.core.api;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
@@ -50,7 +49,7 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
   }
 
   @Override
-  public Key queryById(String projectId, String id) throws NotFoundException {
+  public Key queryById(String projectId, String id) {
     return keyRepository.findFirstByIdAndProjectId(id, projectId);
   }
 
@@ -91,8 +90,7 @@ public class KeyManagement implements org.openbaton.nfvo.core.interfaces.KeyMana
 
   @Override
   public Key addKey(String projectId, String name, String key)
-      throws UnsupportedEncodingException, NoSuchAlgorithmException, BadFormatException,
-          AlreadyExistingException {
+      throws NoSuchAlgorithmException, BadFormatException, AlreadyExistingException {
     if (keyRepository.findKey(projectId, name) != null)
       throw new AlreadyExistingException("A key with the name " + name + " exists already.");
     Key keyToAdd = new Key();

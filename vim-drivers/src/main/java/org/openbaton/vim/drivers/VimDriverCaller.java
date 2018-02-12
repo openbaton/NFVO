@@ -27,7 +27,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeoutException;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.nfvo.Quota;
@@ -71,7 +70,7 @@ public class VimDriverCaller extends VimDriver {
       String name,
       String managementPort,
       int pluginTimeout)
-      throws IOException, TimeoutException, NotFoundException {
+      throws IOException, NotFoundException {
     log.trace("Creating PluginCaller");
     if (name == null) {
       name = "";
@@ -129,6 +128,24 @@ public class VimDriverCaller extends VimDriver {
       throw new VimDriverException(e.getMessage());
     }
     return (List<Server>) res;
+  }
+
+  @Override
+  public Server rebuildServer(BaseVimInstance vimInstance, String serverId, String imageId)
+      throws VimDriverException {
+    List<Serializable> params = new LinkedList<>();
+    params.add(vimInstance);
+    params.add(serverId);
+    params.add(imageId);
+    Serializable res;
+    try {
+      res = pluginCaller.executeRPC("rebuildServer", params, Server.class);
+    } catch (IOException | InterruptedException e) {
+      throw new VimDriverException(e.getMessage());
+    } catch (PluginException e) {
+      throw new VimDriverException(e.getMessage(), e.getCause());
+    }
+    return (Server) res;
   }
 
   @Override

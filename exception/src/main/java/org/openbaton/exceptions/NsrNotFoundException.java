@@ -17,12 +17,12 @@
 
 package org.openbaton.exceptions;
 
-public class NotFoundException extends Exception {
-  public NotFoundException(String msg) {
+public class NsrNotFoundException extends NotFoundException {
+  public NsrNotFoundException(String msg) {
     super(msg);
   }
 
-  public NotFoundException(Throwable e) {
+  public NsrNotFoundException(Throwable e) {
     super(e);
   }
 }

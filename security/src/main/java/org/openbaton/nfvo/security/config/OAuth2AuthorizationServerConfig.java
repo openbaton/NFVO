@@ -73,7 +73,7 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
   }
 
   @Override
-  public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+  public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
     endpoints.authenticationManager(this.authenticationManager).tokenStore(this.tokenStore);
   }
 

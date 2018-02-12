@@ -27,11 +27,10 @@ import org.openbaton.exceptions.PasswordWeakException;
 public interface UserManagement {
 
   /** @param user */
-  User add(User user)
-      throws PasswordWeakException, NotAllowedException, BadRequestException, NotFoundException;
+  User add(User user) throws PasswordWeakException, BadRequestException;
 
   /** @param user */
-  void delete(User user) throws NotAllowedException;
+  void delete(User user);
 
   /** @param new_user */
   User update(User new_user) throws NotAllowedException, BadRequestException, NotFoundException;

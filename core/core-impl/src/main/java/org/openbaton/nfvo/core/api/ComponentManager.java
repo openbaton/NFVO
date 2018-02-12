@@ -25,8 +25,6 @@ import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
 import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
 import org.openbaton.catalogue.security.ServiceMetadata;
-import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
@@ -119,7 +117,6 @@ public class ComponentManager implements org.openbaton.nfvo.core.interfaces.Comp
           | NoSuchAlgorithmException
           | InvalidKeyException
           | BadPaddingException
-          | IOException
           | IllegalBlockSizeException e) {
         e.printStackTrace();
         continue;
@@ -436,8 +433,6 @@ public class ComponentManager implements org.openbaton.nfvo.core.interfaces.Comp
                             } catch (VimException
                                 | PluginException
                                 | IOException
-                                | AlreadyExistingException
-                                | BadRequestException
                                 | InterruptedException
                                 | ExecutionException e) {
                               e.printStackTrace();

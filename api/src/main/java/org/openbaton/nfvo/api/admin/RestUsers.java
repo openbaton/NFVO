@@ -89,8 +89,7 @@ public class RestUsers {
   )
   @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void delete(@PathVariable("id") String id)
-      throws NotAllowedException, NotFoundException, BadRequestException {
+  public void delete(@PathVariable("id") String id) throws NotAllowedException, NotFoundException {
     log.info("Removing user with id " + id);
     if (isAdmin()) {
       if (!userManagement.getCurrentUser().getId().equals(id)) {
@@ -114,8 +113,7 @@ public class RestUsers {
     consumes = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void multipleDelete(@RequestBody @Valid List<String> ids)
-      throws NotAllowedException, NotFoundException {
+  public void multipleDelete(@RequestBody @Valid List<String> ids) throws NotFoundException {
     if (userManagement != null) {
       for (String id : ids) {
         log.info("removing User with id " + id);
@@ -227,7 +225,7 @@ public class RestUsers {
     }
   }
 
-  public boolean isAdmin() throws NotAllowedException, NotFoundException {
+  public boolean isAdmin() throws NotFoundException {
     User currentUser = userManagement.getCurrentUser();
     log.trace("Check user if admin: " + currentUser.getUsername());
     for (Role role : currentUser.getRoles()) {

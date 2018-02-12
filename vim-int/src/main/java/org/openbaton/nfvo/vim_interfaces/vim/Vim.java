@@ -18,7 +18,6 @@
 package org.openbaton.nfvo.vim_interfaces.vim;
 
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.nfvo.vim_interfaces.flavor_management.DeploymentFlavorManagement;
@@ -105,7 +104,7 @@ public abstract class Vim
                   pluginTimeout);
         }
       }
-    } catch (TimeoutException | NotFoundException | IOException e) {
+    } catch (NotFoundException | IOException e) {
       throw new PluginException("Error instantiating plugin: " + e.getMessage(), e);
     }
   }
