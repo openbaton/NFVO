@@ -34,7 +34,9 @@ public class VimInstanceUtils {
       ((DockerVimInstance) vim).setCa("**********");
       ((DockerVimInstance) vim).setDockerKey("**********");
       ((DockerVimInstance) vim).setCert("**********");
-    } else if (vim.getClass().getCanonicalName().equals(AmazonVimInstance.class.getCanonicalName())) {
+    } else if (vim.getClass()
+        .getCanonicalName()
+        .equals(AmazonVimInstance.class.getCanonicalName())) {
       ((AmazonVimInstance) vim).setSecretKey("**********");
     }
   }
@@ -56,13 +58,13 @@ public class VimInstanceUtils {
       ((DockerVimInstance) vimNew).setCa(((DockerVimInstance) vimOld).getCa());
       ((DockerVimInstance) vimNew).setDockerKey(((DockerVimInstance) vimOld).getDockerKey());
       ((DockerVimInstance) vimNew).setCert(((DockerVimInstance) vimOld).getCert());
-    } else if  (vimNew
-            .getClass()
-            .getCanonicalName()
-            .equals(AmazonVimInstance.class.getCanonicalName())) {
+    } else if (vimNew
+        .getClass()
+        .getCanonicalName()
+        .equals(AmazonVimInstance.class.getCanonicalName())) {
       if (((AmazonVimInstance) vimNew).getSecretKey().equals("**********")
-              || ((AmazonVimInstance) vimNew).getSecretKey().isEmpty()
-              || ((AmazonVimInstance) vimNew).getSecretKey() == null) {
+          || ((AmazonVimInstance) vimNew).getSecretKey().isEmpty()
+          || ((AmazonVimInstance) vimNew).getSecretKey() == null) {
         ((AmazonVimInstance) vimNew).setSecretKey(((AmazonVimInstance) vimOld).getSecretKey());
       }
     }
