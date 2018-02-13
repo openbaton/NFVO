@@ -195,31 +195,31 @@ public class GrantoperationTask extends AbstractTask {
       BaseVimInstance vimInstance, VirtualDeploymentUnit virtualDeploymentUnit)
       throws VimException, NotFoundException, BadRequestException, AlreadyExistingException,
           IOException, InterruptedException, ExecutionException, PluginException {
-    // check images
-    if (!vimInstance.getType().equals("test")) {
-      log.debug(
-          String.format(
-              "One of the images %s must be available in the VimInstance %s",
-              virtualDeploymentUnit.getVm_image(), vimInstance.getName()));
-      BaseVimInstance finalVimInstance = vimInstance;
-      if (virtualDeploymentUnit
-          .getVm_image()
-          .stream()
-          .noneMatch(
-              name -> VimInstanceUtils.findActiveImagesByName(finalVimInstance, name).size() > 0))
-        throw new VimException(
-            String.format(
-                "None of the images %s where found on the chosen vim instance %s",
-                virtualDeploymentUnit.getVm_image(), vimInstance.getName()));
-    }
-    //check networks
-
-    String key = String.format("%s%s", vimInstance.getName(), vimInstance.getProjectId());
     Object lock;
+    String key = String.format("%s%s", vimInstance.getName(), vimInstance.getProjectId());
     synchronized (lockMap) {
       lock = lockMap.computeIfAbsent(key, k -> new Object());
     }
     synchronized (lock) {
+      // check images
+      if (!vimInstance.getType().equals("test")) {
+        log.debug(
+            String.format(
+                "One of the images %s must be available in the VimInstance %s",
+                virtualDeploymentUnit.getVm_image(), vimInstance.getName()));
+        BaseVimInstance finalVimInstance = vimInstance;
+        if (virtualDeploymentUnit
+            .getVm_image()
+            .stream()
+            .noneMatch(
+                name -> VimInstanceUtils.findActiveImagesByName(finalVimInstance, name).size() > 0))
+          throw new VimException(
+              String.format(
+                  "None of the images %s where found on the chosen vim instance %s",
+                  virtualDeploymentUnit.getVm_image(), vimInstance.getName()));
+      }
+      //check networks
+
       vimInstance = vimManagement.query(vimInstance.getId(), vimInstance.getProjectId());
       vimInstance = vimManagement.refresh(vimInstance, true).get();
       if (!networkServiceRecordRepository.exists(virtualNetworkFunctionRecord.getParent_ns_id()))
