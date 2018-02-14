@@ -62,16 +62,16 @@ import org.springframework.stereotype.Service;
 public class GrantoperationTask extends AbstractTask {
 
   @Autowired private VnfPlacementManagement vnfPlacementManagement;
-
-  @Value("${nfvo.quota.check:true}")
-  private boolean checkQuota;
-
   @Autowired private VNFLifecycleOperationGranting lifecycleOperationGranting;
   @Autowired private NetworkServiceDescriptorRepository networkServiceDescriptorRepository;
   @Autowired private NetworkManagement networkManagement;
   @Autowired private VimManagement vimManagement;
-  private static Map<String, Object> lockMap = new HashMap<>();
   @Autowired private VirtualLinkRecordRepository vlrRepository;
+
+  @Value("${nfvo.quota.check:true}")
+  private boolean checkQuota;
+
+  private final static Map<String, Object> lockMap = new HashMap<>();
 
   @Value("${nfvo.networks.dedicated:false}")
   private boolean dedicatedNetworks;
@@ -193,8 +193,8 @@ public class GrantoperationTask extends AbstractTask {
 
   private void performChecks(
       BaseVimInstance vimInstance, VirtualDeploymentUnit virtualDeploymentUnit)
-      throws VimException, NotFoundException, BadRequestException, AlreadyExistingException,
-          IOException, InterruptedException, ExecutionException, PluginException {
+      throws VimException, NotFoundException, BadRequestException,
+      IOException, InterruptedException, ExecutionException, PluginException {
     Object lock;
     String key = String.format("%s%s", vimInstance.getName(), vimInstance.getProjectId());
     synchronized (lockMap) {
