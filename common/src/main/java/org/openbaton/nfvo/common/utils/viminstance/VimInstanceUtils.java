@@ -300,7 +300,8 @@ public class VimInstanceUtils {
   public static boolean isVNFDConnectionPointExisting(
       VNFDConnectionPoint vnfdConnectionPoint, BaseNetwork network) {
     if (network.getName().equals(vnfdConnectionPoint.getVirtual_link_reference())
-        || network.getExtId().equals(vnfdConnectionPoint.getVirtual_link_reference())) {
+        || network.getExtId().equals(vnfdConnectionPoint.getVirtual_link_reference())
+        || network.getExtId().equals(vnfdConnectionPoint.getVirtual_link_reference_id())) {
       if (vnfdConnectionPoint.getFixedIp() != null
           && !vnfdConnectionPoint.getFixedIp().equals("")) {
         if (network instanceof Network) {
