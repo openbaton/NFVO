@@ -42,10 +42,7 @@ import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmHealVNFRequestMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmStartStopMessage;
 import org.openbaton.catalogue.nfvo.messages.VnfmOrHealedMessage;
-import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
-import org.openbaton.catalogue.nfvo.networks.DockerNetwork;
 import org.openbaton.catalogue.nfvo.networks.Network;
-import org.openbaton.catalogue.nfvo.networks.Subnet;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
 import org.openbaton.catalogue.security.Key;
@@ -173,7 +170,7 @@ public class NetworkServiceRecordManagement
       List keys,
       Map vduVimInstances,
       Map configurations)
-          throws NotFoundException, BadRequestException, MissingParameterException {
+      throws NotFoundException, BadRequestException, MissingParameterException {
     //Check if the NSR exists
     log.info("Looking for NetworkServiceRecord with id: " + nsrId);
     NetworkServiceRecord nsr = nsrRepository.findFirstById(nsrId);
@@ -288,7 +285,8 @@ public class NetworkServiceRecordManagement
       NetworkServiceRecord networkServiceRecord,
       VirtualNetworkFunctionDescriptor vnfd,
       String projectId,
-      DeployNSRBody body) throws MissingParameterException, BadRequestException, NotFoundException {
+      DeployNSRBody body)
+      throws MissingParameterException, BadRequestException, NotFoundException {
     Map<String, List<String>> vduVimInstances = new HashMap<>();
     log.info("Scaling NetworkServiceRecord: " + networkServiceRecord.getName());
     log.trace("Scaling NetworkServiceRecord: " + networkServiceRecord);

@@ -201,7 +201,7 @@ public interface NetworkServiceRecordManagement {
       List keys,
       Map vduVimInstances,
       Map configurations)
-          throws NotFoundException, BadRequestException, MissingParameterException;
+      throws NotFoundException, BadRequestException, MissingParameterException;
 
   VirtualNetworkFunctionRecord restartVnfr(
       NetworkServiceRecord nsr, String vnfrId, String imageName, String projectId)
