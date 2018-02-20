@@ -24,11 +24,9 @@ import static org.mockito.Matchers.anySet;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
-import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -48,13 +46,12 @@ import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.catalogue.nfvo.ImageStatus;
 import org.openbaton.catalogue.nfvo.Server;
 import org.openbaton.catalogue.nfvo.images.NFVImage;
 import org.openbaton.catalogue.nfvo.networks.Network;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
-import org.openbaton.catalogue.security.Key;
-import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
@@ -135,7 +132,7 @@ public class VimTestSuiteClass {
   }
 
   @Test
-  public void testVimBrokers() throws PluginException {
+  public void testVimBrokers() {
     //    Assert.assertNotNull(vimBroker);
     //    Vim genericVim = vimBroker.getVim("generic");
     //    Assert.assertEquals(genericVim.getClass(), GenericVIM.class);
@@ -144,18 +141,14 @@ public class VimTestSuiteClass {
   }
 
   @Test
-  public void testVimOpenstack() throws VimDriverException, VimException, RemoteException {
+  public void testVimOpenstack() throws VimDriverException, VimException {
     VirtualDeploymentUnit vdu = createVDU();
     VirtualNetworkFunctionRecord vnfr = createVNFR();
-    ArrayList<String> networks = new ArrayList<>();
-    networks.add("network1");
-    ArrayList<String> secGroups = new ArrayList<>();
-    secGroups.add("secGroup1");
 
     Server server = new Server();
     server.setExtId(environment.getProperty("mocked_id"));
-    server.setIps(new HashMap<String, List<String>>());
-    server.setFloatingIps(new HashMap<String, String>());
+    server.setIps(new HashMap<>());
+    server.setFloatingIps(new HashMap<>());
     //TODO use the method launchInstanceAndWait properly
     when(vimDriverCaller.launchInstanceAndWait(
             any(BaseVimInstance.class),
@@ -179,8 +172,8 @@ public class VimTestSuiteClass {
               vnfr,
               vdu.getVnfc().iterator().next(),
               "",
-              new HashMap<String, String>(),
-              new HashSet<Key>());
+              new HashMap<>(),
+              new HashSet<>());
       String expectedId = id.get().getVc_id();
       log.debug(expectedId + " == " + environment.getProperty("mocked_id"));
       Assert.assertEquals(expectedId, environment.getProperty("mocked_id"));
@@ -198,8 +191,8 @@ public class VimTestSuiteClass {
         vnfr,
         vdu.getVnfc().iterator().next(),
         "",
-        new HashMap<String, String>(),
-        new HashSet<Key>());
+        new HashMap<>(),
+        new HashSet<>());
   }
 
   private VirtualNetworkFunctionRecord createVNFR() {
@@ -232,10 +225,10 @@ public class VimTestSuiteClass {
     monitoring_parameter.add("parameter_3");
     vdu.setMonitoring_parameter(monitoring_parameter);
     vdu.setComputation_requirement("m1.small");
-    Set<String> vm_images = new HashSet<>();
+    Set<String> vm_images = new LinkedHashSet<>();
     vm_images.add("image_1234");
     vdu.setVm_image(vm_images);
-    vimInstance.setFlavours(new HashSet<DeploymentFlavour>());
+    vimInstance.setFlavours(new HashSet<>());
     DeploymentFlavour deploymentFlavour = new DeploymentFlavour();
     deploymentFlavour.setExtId("ext_id");
     deploymentFlavour.setFlavour_key("m1.small");
@@ -265,6 +258,7 @@ public class VimTestSuiteClass {
             NFVImage nfvImage = new NFVImage();
             nfvImage.setName("image_1234");
             nfvImage.setExtId("ext_id");
+            nfvImage.setStatus(ImageStatus.ACTIVE.name());
             add(nfvImage);
           }
         });

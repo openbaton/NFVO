@@ -23,7 +23,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.tosca.exceptions.NotFoundException;
@@ -34,14 +36,21 @@ import org.openbaton.tosca.templates.TopologyTemplate.Nodes.VDU.VDUNodeTemplate;
 import org.openbaton.tosca.templates.TopologyTemplate.Nodes.VL.VLNodeTemplate;
 import org.openbaton.tosca.templates.TopologyTemplate.TopologyTemplate;
 import org.openbaton.tosca.templates.VNFDTemplate;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
-/** Created by rvl on 16.08.16. */
+@RunWith(SpringRunner.class)
+@TestExecutionListeners({DependencyInjectionTestExecutionListener.class})
+@TestPropertySource(properties = {"timezone = GMT", "port: 4242"})
 public class ToscaTest {
 
   @Test
+  @Ignore
   public void testVNFDTemplate() throws FileNotFoundException {
 
     InputStream vnfdFile =
@@ -58,6 +67,7 @@ public class ToscaTest {
   }
 
   @Test
+  @Ignore
   public void testGetNodesFromVNFDTemplate() throws FileNotFoundException, NotFoundException {
 
     InputStream vnfdFile =
@@ -76,6 +86,7 @@ public class ToscaTest {
   }
 
   @Test
+  @Ignore
   public void testGettingVDUNodes() throws FileNotFoundException {
 
     InputStream cpFile =
@@ -96,6 +107,7 @@ public class ToscaTest {
   }
 
   @Test
+  @Ignore
   public void testGettingVLNodes() throws FileNotFoundException {
 
     InputStream cpFile =
@@ -116,6 +128,7 @@ public class ToscaTest {
   }
 
   @Test
+  @Ignore
   public void testTopologyTemplate() throws FileNotFoundException {
 
     InputStream cpFile =
@@ -132,6 +145,7 @@ public class ToscaTest {
   }
 
   @Test
+  @Ignore
   public void testGettingCPNodes() throws FileNotFoundException {
 
     InputStream cpFile =
@@ -152,6 +166,7 @@ public class ToscaTest {
   }
 
   @Test
+  @Ignore
   public void testCreatingVNFDInstance() throws FileNotFoundException, NotFoundException {
 
     InputStream vnfdFile =
@@ -173,6 +188,7 @@ public class ToscaTest {
   }
 
   @Test
+  @Ignore
   public void testVNFDServerIperf() throws NotFoundException, FileNotFoundException {
 
     InputStream vnfdFile =
@@ -193,6 +209,7 @@ public class ToscaTest {
   }
 
   @Test
+  @Ignore
   public void testNSDIperfTemplate() throws FileNotFoundException, NotFoundException {
 
     InputStream nsdFile =
@@ -214,6 +231,7 @@ public class ToscaTest {
   }
 
   @Test
+  @Ignore
   public void testMultipleVLs() throws FileNotFoundException, NotFoundException {
 
     InputStream nsdFile =
@@ -235,6 +253,7 @@ public class ToscaTest {
   }
 
   @Test
+  @Ignore
   public void testNSDIperfASTemplate() throws FileNotFoundException, NotFoundException {
 
     InputStream nsdFile =

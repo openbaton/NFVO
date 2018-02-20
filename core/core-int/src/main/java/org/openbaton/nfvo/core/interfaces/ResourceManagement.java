@@ -29,7 +29,6 @@ import org.openbaton.catalogue.nfvo.Server;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 
 /** Created by mpa on 30/04/15. */
@@ -76,7 +75,8 @@ public interface ResourceManagement {
    * Examples on compute resources can include (but not limited to): start, stop, pause, suspend,
    * capture snapshot, etc.
    */
-  void operate(VirtualDeploymentUnit vdu, String operation);
+  Future<Void> operate(VirtualDeploymentUnit vdu, String operation)
+      throws PluginException, ExecutionException, InterruptedException, VimException;
 
   /**
    * This operation allows de-allocating and terminating an instantiated virtualised resource. This
@@ -116,6 +116,5 @@ public interface ResourceManagement {
       VNFComponent componentToAdd,
       BaseVimInstance vimInstance,
       String userdata)
-      throws InterruptedException, ExecutionException, PluginException, VimException,
-          VimDriverException;
+      throws InterruptedException, ExecutionException, PluginException, VimException;
 }

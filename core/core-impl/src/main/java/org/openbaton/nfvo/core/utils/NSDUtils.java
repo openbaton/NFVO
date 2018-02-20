@@ -50,7 +50,6 @@ import org.openbaton.catalogue.nfvo.images.DockerImage;
 import org.openbaton.catalogue.nfvo.images.NFVImage;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
-import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.CyclicDependenciesException;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.openbaton.exceptions.NotFoundException;
@@ -115,7 +114,6 @@ public class NSDUtils {
     for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
         networkServiceDescriptor.getVnfd()) {
       for (VnfmManagerEndpoint endpoint : endpoints) {
-        log.debug(endpoint.getType() + " == " + virtualNetworkFunctionDescriptor.getEndpoint());
         if (endpoint.getType().equals(virtualNetworkFunctionDescriptor.getEndpoint())
             && endpoint.isActive()
             && endpoint.isEnabled()) {
@@ -281,8 +279,7 @@ public class NSDUtils {
   }
 
   public void fetchDependencies(NetworkServiceDescriptor networkServiceDescriptor)
-      throws NotFoundException, BadFormatException, CyclicDependenciesException,
-          NetworkServiceIntegrityException {
+      throws NotFoundException, CyclicDependenciesException, NetworkServiceIntegrityException {
     /* Fetching dependencies */
     DirectedPseudograph<String, DefaultEdge> g = new DirectedPseudograph<>(DefaultEdge.class);
 

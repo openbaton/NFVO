@@ -31,7 +31,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-/** Created by lto on 17/10/16. */
 @Service
 public class HistoryManagement implements org.openbaton.nfvo.core.interfaces.HistoryManagement {
 
@@ -48,6 +47,8 @@ public class HistoryManagement implements org.openbaton.nfvo.core.interfaces.His
 
   @Value("${nfvo.history.clear:false}")
   private boolean clearHistory;
+
+  private static final Object lock = new Object();
 
   @PostConstruct
   private void init() {
@@ -81,14 +82,16 @@ public class HistoryManagement implements org.openbaton.nfvo.core.interfaces.His
       historyEntity.setResult(result);
       historyEntity.setTimestamp(new Date().getTime());
 
-      if (historyEntityRepository.count() >= maxHistoryEntities) {
-        HistoryEntity entity =
-            historyEntityRepository.findAll(
-                    new Sort(new Sort.Order(Sort.Direction.ASC, "timestamp")))[
-                0];
-        historyEntityRepository.delete(entity.getId());
+      synchronized (lock) {
+        if (historyEntityRepository.count() >= maxHistoryEntities) {
+          HistoryEntity entity =
+              historyEntityRepository.findAll(
+                      new Sort(new Sort.Order(Sort.Direction.ASC, "timestamp")))[
+                  0];
+          historyEntityRepository.delete(entity.getId());
+        }
+        historyEntityRepository.save(historyEntity);
       }
-      historyEntityRepository.save(historyEntity);
     }
   }
 

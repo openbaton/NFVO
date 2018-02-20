@@ -1,6 +1,5 @@
 package org.openbaton.nfvo.core.interfaces;
 
-import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -11,7 +10,6 @@ import org.openbaton.catalogue.security.ServiceMetadata;
 import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.NotFoundException;
 
-/** Created by lto on 04/04/2017. */
 public interface ComponentManager {
 
   String registerService(String body)
@@ -19,13 +17,11 @@ public interface ComponentManager {
           NoSuchAlgorithmException, NoSuchPaddingException, NotFoundException;
 
   String createService(String serviceName, String projectId, List<String> projects)
-      throws NoSuchAlgorithmException, IOException, NotFoundException, MissingParameterException;
+      throws NotFoundException, MissingParameterException;
 
-  String enableManager(String message) throws IOException;
+  String enableManager(String message);
 
-  boolean isService(String token)
-      throws InvalidKeyException, BadPaddingException, NoSuchAlgorithmException,
-          IllegalBlockSizeException, NoSuchPaddingException;
+  boolean isService(String token);
 
   Iterable<ServiceMetadata> listServices();
 

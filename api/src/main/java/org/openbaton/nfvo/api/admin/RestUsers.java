@@ -89,8 +89,7 @@ public class RestUsers {
   )
   @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void delete(@PathVariable("id") String id)
-      throws NotAllowedException, NotFoundException, BadRequestException {
+  public void delete(@PathVariable("id") String id) throws NotAllowedException, NotFoundException {
     log.info("Removing user with id " + id);
     if (isAdmin()) {
       if (!userManagement.getCurrentUser().getId().equals(id)) {
@@ -114,8 +113,7 @@ public class RestUsers {
     consumes = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void multipleDelete(@RequestBody @Valid List<String> ids)
-      throws NotAllowedException, NotFoundException {
+  public void multipleDelete(@RequestBody @Valid List<String> ids) throws NotFoundException {
     if (userManagement != null) {
       for (String id : ids) {
         log.info("removing User with id " + id);
@@ -186,7 +184,7 @@ public class RestUsers {
   }
 
   @ApiOperation(
-    value = "Changing the current User’s password",
+    value = "Changing the current User's password",
     notes = "The current user can change his password by providing a new one"
   )
   @RequestMapping(
@@ -204,8 +202,8 @@ public class RestUsers {
   }
 
   @ApiOperation(
-    value = "Changing a User’s password",
-    notes = "If you want to change another User’s password, you have to be an admin"
+    value = "Changing a User's password",
+    notes = "If you want to change another User's password, you have to be an admin"
   )
   @RequestMapping(
     value = "changepwd/{username}",
@@ -227,7 +225,7 @@ public class RestUsers {
     }
   }
 
-  public boolean isAdmin() throws NotAllowedException, NotFoundException {
+  public boolean isAdmin() throws NotFoundException {
     User currentUser = userManagement.getCurrentUser();
     log.trace("Check user if admin: " + currentUser.getUsername());
     for (Role role : currentUser.getRoles()) {

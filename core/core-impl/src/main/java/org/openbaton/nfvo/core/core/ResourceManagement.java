@@ -139,7 +139,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
       VNFComponent component,
       String userdata,
       Set<Key> keys)
-      throws InterruptedException, ExecutionException, VimException, PluginException {
+      throws InterruptedException, ExecutionException, VimException {
 
     log.trace("UserData is: " + userdata);
     Map<String, String> floatinIps = new HashMap<>();
@@ -179,7 +179,18 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
   public void migrate(VirtualDeploymentUnit vdu) {}
 
   @Override
-  public void operate(VirtualDeploymentUnit vdu, String operation) {}
+  @Async
+  public Future<Void> operate(VirtualDeploymentUnit vdu, String operation)
+      throws PluginException, ExecutionException, InterruptedException, VimException {
+    for (VNFCInstance vnfcInstance : vdu.getVnfc_instance()) {
+      BaseVimInstance vimInstance = vimInstanceRepository.findFirstById(vnfcInstance.getVim_id());
+      org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim =
+          vimBroker.getVim(vimInstance.getType());
+      log.info("rebuilding vnfcInstance: " + vnfcInstance.getHostname());
+      vim.operate(vimInstance, vdu, vnfcInstance, operation).get();
+    }
+    return new AsyncResult<>(null);
+  }
 
   @Override
   @Async
@@ -215,8 +226,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
       VNFComponent componentToAdd,
       BaseVimInstance vimInstance,
       String userdata)
-      throws InterruptedException, ExecutionException, PluginException, VimException,
-          VimDriverException {
+      throws InterruptedException, ExecutionException, PluginException, VimException {
     org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim;
     vim = vimBroker.getVim(vimInstance.getType());
     log.debug("Executing allocate with Vim: " + vim.getClass().getSimpleName());

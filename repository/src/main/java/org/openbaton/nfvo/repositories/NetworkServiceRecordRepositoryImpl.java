@@ -22,10 +22,10 @@ import java.util.Date;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
+import org.openbaton.exceptions.NsrNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-/** Created by mob on 03.09.15. */
 public class NetworkServiceRecordRepositoryImpl implements NetworkServiceRecordRepositoryCustom {
 
   @Autowired private NetworkServiceRecordRepository networkServiceRecordRepository;
@@ -36,13 +36,20 @@ public class NetworkServiceRecordRepositoryImpl implements NetworkServiceRecordR
 
   @Override
   @Transactional
-  public VirtualNetworkFunctionRecord addVnfr(VirtualNetworkFunctionRecord vnfr, String id) {
-    vnfr = vnfrRepository.save(vnfr);
-    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
-    NetworkServiceRecord nsr = networkServiceRecordRepository.findFirstById(id);
-    nsr.setUpdatedAt(format.format(new Date()));
-    nsr.getVnfr().add(vnfr);
-    return vnfr;
+  public VirtualNetworkFunctionRecord addVnfr(VirtualNetworkFunctionRecord vnfr, String nsrId)
+      throws NsrNotFoundException {
+    if (networkServiceRecordRepository.exists(nsrId)) {
+      vnfr = vnfrRepository.save(vnfr);
+      SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+      NetworkServiceRecord nsr = networkServiceRecordRepository.findFirstById(nsrId);
+      nsr.setUpdatedAt(format.format(new Date()));
+      nsr.getVnfr().add(vnfr);
+      return vnfr;
+    }
+    vnfrRepository.delete(vnfr.getId());
+    throw new NsrNotFoundException(
+        String.format(
+            "NSR with id [%s] does not exist, may be already deleted, ignoring save", nsrId));
   }
 
   @Override

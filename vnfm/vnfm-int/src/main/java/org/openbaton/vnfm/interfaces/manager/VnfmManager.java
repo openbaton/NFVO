@@ -74,6 +74,9 @@ public interface VnfmManager {
           Map<String, List<String>> vduVimInstances)
           throws NotFoundException;
 
+  void restartVnfr(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
+
   Future<Void> removeVnfcDependency(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFCInstance vnfcInstance)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;

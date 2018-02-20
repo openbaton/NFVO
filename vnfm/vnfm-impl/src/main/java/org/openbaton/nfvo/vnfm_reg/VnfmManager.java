@@ -47,13 +47,17 @@ import org.openbaton.catalogue.security.Key;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.PluginException;
+import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.common.internal.model.EventFinishNFVO;
 import org.openbaton.nfvo.common.internal.model.EventNFVO;
+import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.VNFDRepository;
 import org.openbaton.nfvo.repositories.VNFRRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
+import org.openbaton.nfvo.repositories.VirtualLinkRecordRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
 import org.openbaton.vnfm.interfaces.manager.MessageGenerator;
 import org.openbaton.vnfm.interfaces.sender.VnfmSender;
@@ -96,9 +100,14 @@ public class VnfmManager
   @Autowired private VNFRRepository vnfrRepository;
   @Autowired private VimRepository vimInstanceRepository;
   @Autowired private MessageGenerator generator;
+  @Autowired private VimManagement vimManagement;
+  @Autowired private VirtualLinkRecordRepository vlrRepository;
 
   @Value("${nfvo.start.ordered:false}")
   private boolean ordered;
+
+  @Value("${nfvo.networks.dedicated:false}")
+  private boolean dedicatedNetworks;
 
   private static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
     List<Entry<K, V>> list = new LinkedList<>(map.entrySet());
@@ -394,6 +403,13 @@ public class VnfmManager
             status = vnfr.getStatus();
           }
         }
+        status =
+            networkServiceRecord
+                    .getVnfr()
+                    .stream()
+                    .anyMatch(vnfr -> vnfr.getStatus().ordinal() == Status.TERMINATED.ordinal())
+                ? Status.TERMINATED
+                : status;
 
         log.debug("Setting NSR status to: " + status);
         networkServiceRecord.setStatus(status);
@@ -456,23 +472,45 @@ public class VnfmManager
             }
           } catch (OptimisticLockingFailureException e) {
             log.error(
-                "FFFF OptimisticLockingFailureException while setting the task of the NSR. Don't worry we will try it"
-                    + " again.");
+                "Got OptimisticLockingFailureException while setting the task of the NSR. Don't worry I'll try again.");
             savedNsr = false;
           }
         } else {
           log.debug("Nsr is ACTIVE but not all vnfr have been received");
         }
       } while (!savedNsr);
-    } else if (status.ordinal() == Status.TERMINATED.ordinal()) {
+    } else if (status.ordinal() == Status.TERMINATED.ordinal()
+        && networkServiceRecord
+            .getVnfr()
+            .stream()
+            .allMatch(vnfr -> vnfr.getStatus().ordinal() == Status.TERMINATED.ordinal())) {
       publishEvent(
           Action.RELEASE_RESOURCES_FINISH,
           networkServiceRecord,
           networkServiceRecord.getProjectId());
       nsrRepository.delete(networkServiceRecord);
+      if (dedicatedNetworks) {
+        networkServiceRecord
+            .getVlr()
+            .parallelStream()
+            .filter(
+                virtualLinkRecord ->
+                    vlrRepository.findByExtId(virtualLinkRecord.getExtId()).size() == 0)
+            .forEach(
+                vlr -> {
+                  try {
+                    log.info(
+                        String.format("Deleting Network: %s [%s]", vlr.getName(), vlr.getExtId()));
+                    vimManagement.deleteNetwork(vlr);
+                  } catch (PluginException | VimException e) {
+                    e.printStackTrace();
+                    log.error(String.format("Not Able to delete network %s!", vlr.getExtId()));
+                  } catch (NotFoundException e) {
+                    log.warn(String.format("%s. probably already deleted...", e.getMessage()));
+                  }
+                });
+      }
     }
-
-    log.trace("Thread: " + Thread.currentThread().getId() + " finished findAndSet");
   }
 
   private void publishEvent(Action action, Serializable payload, String projectId) {
@@ -593,6 +631,41 @@ public class VnfmManager
 
     vnfStateHandler.executeAction(vnfmSender.sendCommand(message, endpoint));
     return new AsyncResult<>(null);
+  }
+
+  @Override
+  public void restartVnfr(VirtualNetworkFunctionRecord vnfr)
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
+    VnfmManagerEndpoint endpoint = generator.getVnfm(vnfr.getEndpoint());
+    if (endpoint == null) {
+      throw new NotFoundException(
+          "VnfManager of type "
+              + vnfr.getType()
+              + " (endpoint = "
+              + vnfr.getEndpoint()
+              + ") is not registered");
+    }
+
+    VirtualNetworkFunctionDescriptor vnfd =
+        vnfdRepository.findFirstByIdAndProjectId(
+            vnfr.getDescriptor_reference(), vnfr.getProjectId());
+
+    Map<String, Set<String>> vduVimInstances = new HashMap<>();
+    for (VirtualDeploymentUnit vdu : vnfd.getVdu())
+      vduVimInstances.put(vdu.getId(), vdu.getVimInstanceName());
+
+    NetworkServiceRecord nsr =
+        nsrRepository.findFirstByIdAndProjectId(vnfr.getParent_ns_id(), vnfr.getProjectId());
+
+    VnfmSender vnfmSender = generator.getVnfmSender(vnfd);
+    OrVnfmInstantiateMessage message =
+        generator.getNextMessage(vnfd, vduVimInstances, nsr, null, null);
+    // Set the vnfr in the message, so the allocate resources will be skipped
+    message.setVnfr(vnfr);
+    log.debug("----------Executing ACTION: " + message.getAction());
+
+    vnfStateHandler.executeAction(vnfmSender.sendCommand(message, endpoint));
+    log.info("Sent " + message.getAction() + " to VNF: " + vnfd.getName());
   }
 
   @Override

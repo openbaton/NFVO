@@ -1,16 +1,16 @@
 package org.openbaton.nfvo.common.utils.viminstance;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+import org.apache.commons.net.util.SubnetUtils;
 import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.openbaton.catalogue.nfvo.ImageStatus;
+import org.openbaton.catalogue.nfvo.images.AWSImage;
 import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
 import org.openbaton.catalogue.nfvo.images.DockerImage;
 import org.openbaton.catalogue.nfvo.images.NFVImage;
@@ -18,6 +18,7 @@ import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
 import org.openbaton.catalogue.nfvo.networks.DockerNetwork;
 import org.openbaton.catalogue.nfvo.networks.Network;
 import org.openbaton.catalogue.nfvo.networks.Subnet;
+import org.openbaton.catalogue.nfvo.viminstances.AmazonVimInstance;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.nfvo.viminstances.DockerVimInstance;
 import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
@@ -33,6 +34,10 @@ public class VimInstanceUtils {
       ((DockerVimInstance) vim).setCa("**********");
       ((DockerVimInstance) vim).setDockerKey("**********");
       ((DockerVimInstance) vim).setCert("**********");
+    } else if (vim.getClass()
+        .getCanonicalName()
+        .equals(AmazonVimInstance.class.getCanonicalName())) {
+      ((AmazonVimInstance) vim).setSecretKey("**********");
     }
   }
 
@@ -41,7 +46,11 @@ public class VimInstanceUtils {
         .getClass()
         .getCanonicalName()
         .equals(OpenstackVimInstance.class.getCanonicalName())) {
-      ((OpenstackVimInstance) vimNew).setPassword(((OpenstackVimInstance) vimOld).getPassword());
+      if (((OpenstackVimInstance) vimNew).getPassword().equals("**********")
+          || ((OpenstackVimInstance) vimNew).getPassword().isEmpty()
+          || ((OpenstackVimInstance) vimNew).getPassword() == null) {
+        ((OpenstackVimInstance) vimNew).setPassword(((OpenstackVimInstance) vimOld).getPassword());
+      }
     } else if (vimNew
         .getClass()
         .getCanonicalName()
@@ -49,6 +58,15 @@ public class VimInstanceUtils {
       ((DockerVimInstance) vimNew).setCa(((DockerVimInstance) vimOld).getCa());
       ((DockerVimInstance) vimNew).setDockerKey(((DockerVimInstance) vimOld).getDockerKey());
       ((DockerVimInstance) vimNew).setCert(((DockerVimInstance) vimOld).getCert());
+    } else if (vimNew
+        .getClass()
+        .getCanonicalName()
+        .equals(AmazonVimInstance.class.getCanonicalName())) {
+      if (((AmazonVimInstance) vimNew).getSecretKey().equals("**********")
+          || ((AmazonVimInstance) vimNew).getSecretKey().isEmpty()
+          || ((AmazonVimInstance) vimNew).getSecretKey() == null) {
+        ((AmazonVimInstance) vimNew).setSecretKey(((AmazonVimInstance) vimOld).getSecretKey());
+      }
     }
   }
 
@@ -157,14 +175,28 @@ public class VimInstanceUtils {
       return ((OpenstackVimInstance) vimInstance)
           .getImages()
           .stream()
-          .filter(i -> ((NFVImage) i).getName().equals(imageName))
+          .filter(
+              i ->
+                  ((NFVImage) i).getName() != null
+                      && ((NFVImage) i).getName().equals(imageName)
+                      && (((NFVImage) i).getStatus() == null
+                          || ((NFVImage) i).getStatus().ordinal() == ImageStatus.ACTIVE.ordinal()))
           .collect(Collectors.toList());
     } else if (vimInstance instanceof DockerVimInstance) {
       return ((DockerVimInstance) vimInstance)
           .getImages()
           .stream()
-          .filter(i -> ((DockerImage) i).getTags().contains(imageName))
+          .filter(
+              i ->
+                  ((DockerImage) i).getTags() != null
+                      && !((DockerImage) i).getTags().isEmpty()
+                      && ((DockerImage) i).getTags().contains(imageName))
           .collect(Collectors.toList());
+    } else if (vimInstance instanceof AmazonVimInstance) {
+      //in case of Amazon Instance the image check is delegated to amazon plugin
+      AWSImage skipImage = new AWSImage();
+      skipImage.setExtId(imageName);
+      return Collections.singletonList(skipImage);
     } else {
       return vimInstance
           .getImages()
@@ -210,6 +242,39 @@ public class VimInstanceUtils {
     }
   }
 
+  public static BaseNetwork createBaseNetwork(
+      NetworkServiceDescriptor networkServiceDescriptor,
+      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
+      VirtualLinkRecord vlr,
+      BaseVimInstance vimInstance)
+      throws BadRequestException {
+    if (vimInstance instanceof OpenstackVimInstance) {
+      Network network = new Network();
+      HashSet<Subnet> subnets = new HashSet<>();
+      Subnet subnet = new Subnet();
+      subnet.setName(String.format("%s_subnet", vlr.getName()));
+      subnet.setDns(vlr.getDns());
+      subnet.setCidr(
+          getCidrFromVLName(
+              vlr.getName(), networkServiceDescriptor, virtualNetworkFunctionDescriptor));
+      subnets.add(subnet);
+      network.setSubnets(subnets);
+      network.setName(vlr.getName());
+      return network;
+    } else if (vimInstance instanceof DockerVimInstance) {
+      DockerNetwork networkdc = new DockerNetwork();
+      networkdc.setName(vlr.getName());
+      networkdc.setSubnet(
+          getCidrFromVLName(
+              vlr.getName(), networkServiceDescriptor, virtualNetworkFunctionDescriptor));
+      return networkdc;
+    } else {
+      BaseNetwork networkb = new BaseNetwork();
+      networkb.setName(vlr.getName());
+      return networkb;
+    }
+  }
+
   private static String getCidrFromVLName(
       String virtual_link_reference,
       NetworkServiceDescriptor networkServiceDescriptor,
@@ -230,5 +295,48 @@ public class VimInstanceUtils {
             "Connection Point with Virtual link reference %s points to non defined Virtual Link. Please add a VL in the "
                 + "VNFD or NSD or change the VL reference",
             virtual_link_reference));
+  }
+
+  public static boolean isVNFDConnectionPointExisting(
+      VNFDConnectionPoint vnfdConnectionPoint, BaseNetwork network) {
+    if (network.getName().equals(vnfdConnectionPoint.getVirtual_link_reference())
+        || network.getExtId().equals(vnfdConnectionPoint.getVirtual_link_reference())) {
+      if (vnfdConnectionPoint.getFixedIp() != null
+          && !vnfdConnectionPoint.getFixedIp().equals("")) {
+        if (network instanceof Network) {
+          Network osNet = (Network) network;
+          return osNet.getSubnets() == null
+              || osNet.getSubnets().size() <= 0
+              || osNet
+                  .getSubnets()
+                  .stream()
+                  .anyMatch(
+                      subnet ->
+                          new SubnetUtils(subnet.getCidr())
+                              .getInfo()
+                              .isInRange(vnfdConnectionPoint.getFixedIp()));
+        } else if (network instanceof DockerNetwork) {
+          DockerNetwork dockerNetwork = (DockerNetwork) network;
+          return new SubnetUtils(dockerNetwork.getSubnet())
+              .getInfo()
+              .isInRange(vnfdConnectionPoint.getFixedIp());
+        } else return true;
+      } else {
+        return true;
+      }
+    } else return false;
+  }
+
+  public static boolean isVLRExisting(
+      VirtualLinkRecord virtualLinkRecord, BaseNetwork network, boolean dedicatedNetworks) {
+    boolean checkNamesAndIds =
+        network.getName().equals(virtualLinkRecord.getName())
+            || network.getExtId().equals(virtualLinkRecord.getName())
+            || network.getExtId().equals(virtualLinkRecord.getExtId());
+    if (dedicatedNetworks)
+      return virtualLinkRecord.getExtId() != null
+          && !virtualLinkRecord.getExtId().equals("")
+          && checkNamesAndIds;
+    else return checkNamesAndIds;
   }
 }

@@ -17,7 +17,6 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -217,19 +216,6 @@ public class ScalingTask extends AbstractTask {
                           vdu, virtualNetworkFunctionRecord, componentToAdd, vimInstance, userdata)
                       .get());
         }
-      } catch (VimDriverException e) {
-        log.error(e.getLocalizedMessage());
-        virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
-        OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
-        errorMessage.setMessage(
-            "Error creating VM for VNFR ("
-                + virtualNetworkFunctionRecord.getId()
-                + ") while scaling out. Please consider enabling checkQuota ;)");
-        errorMessage.setVnfr(virtualNetworkFunctionRecord);
-        errorMessage.setAction(Action.ERROR);
-        saveVirtualNetworkFunctionRecord();
-        vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
-        return errorMessage;
       } catch (ExecutionException | VimException exception) {
         VimException e;
         if (exception instanceof VimException) e = (VimException) exception;
@@ -253,7 +239,7 @@ public class ScalingTask extends AbstractTask {
         return errorMessage;
       }
     }
-    setHistoryLifecycleEvent(new Date());
+    setHistoryLifecycleEvent();
     saveVirtualNetworkFunctionRecord();
     log.trace(
         "VNFR ("

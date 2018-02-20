@@ -17,7 +17,6 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -67,7 +66,7 @@ public class HealTask extends AbstractTask {
             + virtualNetworkFunctionRecord.getName()
             + " has finished Healing");
 
-    setHistoryLifecycleEvent(new Date());
+    setHistoryLifecycleEvent();
     saveVirtualNetworkFunctionRecord();
 
     // read property file if to execute the healed task

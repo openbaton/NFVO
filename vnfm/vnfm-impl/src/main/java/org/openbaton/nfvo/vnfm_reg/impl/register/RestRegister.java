@@ -86,7 +86,7 @@ public class RestRegister extends VnfmRegister {
   }
 
   @Scheduled(initialDelay = 15000, fixedDelay = 20000)
-  public void checkHeartBeat() throws MalformedURLException {
+  public void checkHeartBeat() {
     for (VnfmManagerEndpoint endpoint : vnfmEndpointRepository.findAll()) {
       if (endpoint.getEndpointType().ordinal() == EndpointType.REST.ordinal()) {
         if (endpoint.isEnabled()) {

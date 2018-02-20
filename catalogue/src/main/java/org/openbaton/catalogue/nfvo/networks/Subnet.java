@@ -17,7 +17,10 @@
 
 package org.openbaton.catalogue.nfvo.networks;
 
+import java.util.List;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import org.openbaton.catalogue.util.BaseEntity;
 
 @Entity
@@ -68,6 +71,17 @@ public class Subnet extends BaseEntity {
 
   public void setGatewayIp(String gatewayIp) {
     this.gatewayIp = gatewayIp;
+  }
+
+  @ElementCollection(fetch = FetchType.EAGER)
+  private List<String> dns;
+
+  public List<String> getDns() {
+    return dns;
+  }
+
+  public void setDns(List<String> dns) {
+    this.dns = dns;
   }
 
   @Override
