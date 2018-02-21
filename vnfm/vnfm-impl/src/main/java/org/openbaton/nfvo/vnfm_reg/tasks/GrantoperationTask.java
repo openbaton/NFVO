@@ -79,8 +79,8 @@ public class GrantoperationTask extends AbstractTask {
   protected NFVMessage doWork() throws Exception {
     log.info("Executing task: GrantOperation on VNFR: " + virtualNetworkFunctionRecord.getName());
 
+//    setHistoryLifecycleEvent();
     //Save the vnfr since in the grantLifecycleOperation method we use vdu.getId()
-    setHistoryLifecycleEvent();
     saveVirtualNetworkFunctionRecord();
 
     Map<String, BaseVimInstance> vimInstancesChosen = new HashMap<>();
@@ -200,6 +200,9 @@ public class GrantoperationTask extends AbstractTask {
       lock = lockMap.computeIfAbsent(key, k -> new Object());
     }
     synchronized (lock) {
+      vimInstance = vimManagement.query(vimInstance.getId(), vimInstance.getProjectId());
+      vimInstance = vimManagement.refresh(vimInstance, true).get();
+
       // check images
       if (!vimInstance.getType().equals("test")) {
         log.debug(
@@ -217,10 +220,8 @@ public class GrantoperationTask extends AbstractTask {
                   "None of the images %s where found on the chosen vim instance %s",
                   virtualDeploymentUnit.getVm_image(), vimInstance.getName()));
       }
-      //check networks
 
-      vimInstance = vimManagement.query(vimInstance.getId(), vimInstance.getProjectId());
-      vimInstance = vimManagement.refresh(vimInstance, true).get();
+      //check networks
       if (!networkServiceRecordRepository.exists(virtualNetworkFunctionRecord.getParent_ns_id()))
         throw new NsrNotFoundException(
             String.format(

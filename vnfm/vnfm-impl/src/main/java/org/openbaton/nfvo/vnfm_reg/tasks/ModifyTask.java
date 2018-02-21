@@ -104,9 +104,6 @@ public class ModifyTask extends AbstractTask {
     vnfmSender =
         this.getVnfmSender(
             vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
-    /*vnfmSender.sendCommand(
-    new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.START),
-    vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));*/
     vnfStateHandler.executeAction(
         vnfmSender.sendCommand(
             new OrVnfmStartStopMessage(virtualNetworkFunctionRecord, null, Action.START),

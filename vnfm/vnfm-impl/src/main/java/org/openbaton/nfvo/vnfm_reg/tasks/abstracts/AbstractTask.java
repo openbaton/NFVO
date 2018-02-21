@@ -264,7 +264,12 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
               + ". ",
           e);
     } else {
-      log.error("There was an uncaught exception. Message is: " + e.getMessage());
+      log.error(
+          String.format(
+              "There was an uncaught exception for VNFR %s in task %s. Message is: %s",
+              virtualNetworkFunctionRecord.getName(),
+              virtualNetworkFunctionRecord.getTask(),
+              e.getMessage()));
     }
 
     EventFinishEvent eventFinishEvent = new EventFinishEvent();
@@ -451,7 +456,7 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
     return true;
   }
 
-  protected void setHistoryLifecycleEvent() {
+  protected synchronized void setHistoryLifecycleEvent() {
     HistoryLifecycleEvent lifecycleEvent = new HistoryLifecycleEvent();
     lifecycleEvent.setEvent(event);
     SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd'-'HH:mm:ss:SSS'-'z");
@@ -486,26 +491,24 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
       virtualNetworkFunctionRecord
           .getVdu()
           .forEach(
-              vdu -> {
-                log.trace(
-                    this.event
-                        + ": VDU ("
-                        + vdu.getId()
-                        + ") received with hibernate version = "
-                        + vdu.getHbVersion());
-              });
+              vdu ->
+                  log.trace(
+                      this.event
+                          + ": VDU ("
+                          + vdu.getId()
+                          + ") received with hibernate version = "
+                          + vdu.getHbVersion()));
 
       existing
           .getVdu()
           .forEach(
-              vdu -> {
-                log.trace(
-                    this.event
-                        + ": VDU ("
-                        + vdu.getId()
-                        + ") existing hibernate version is = "
-                        + vdu.getHbVersion());
-              });
+              vdu ->
+                  log.trace(
+                      this.event
+                          + ": VDU ("
+                          + vdu.getId()
+                          + ") existing hibernate version is = "
+                          + vdu.getHbVersion()));
     }
   }
 }
