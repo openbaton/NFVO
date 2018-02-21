@@ -200,7 +200,8 @@ public interface NetworkServiceRecordManagement {
       String projectId,
       List keys,
       Map vduVimInstances,
-      Map configurations)
+      Map configurations,
+      String monitoringIp)
       throws NotFoundException, BadRequestException, MissingParameterException;
 
   VirtualNetworkFunctionRecord restartVnfr(

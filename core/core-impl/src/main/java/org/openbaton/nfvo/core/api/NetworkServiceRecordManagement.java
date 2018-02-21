@@ -168,7 +168,8 @@ public class NetworkServiceRecordManagement
       String projectId,
       List keys,
       Map vduVimInstances,
-      Map configurations)
+      Map configurations,
+      String monitoringIp)
       throws NotFoundException, BadRequestException, MissingParameterException {
     //Check if the NSR exists
     log.info("Looking for NetworkServiceRecord with id: " + nsrId);
@@ -185,7 +186,7 @@ public class NetworkServiceRecordManagement
           "VNFD with id " + vnfdId + " was not found in the project with id " + projectId);
     }
     DeployNSRBody body = getDeployNSRBody(keys, vduVimInstances, configurations, projectId);
-    return scaleOutNsr(nsr, vnfd, projectId, body);
+    return scaleOutNsr(nsr, vnfd, projectId, body, monitoringIp);
   }
 
   @Override
@@ -255,7 +256,8 @@ public class NetworkServiceRecordManagement
       NetworkServiceRecord networkServiceRecord,
       VirtualNetworkFunctionDescriptor vnfd,
       String projectId,
-      DeployNSRBody body)
+      DeployNSRBody body,
+      String monitoringIp)
       throws MissingParameterException, BadRequestException, NotFoundException {
     Map<String, Set<String>> vduVimInstances = new HashMap<>();
     log.info("Scaling NetworkServiceRecord: " + networkServiceRecord.getName());
@@ -332,7 +334,7 @@ public class NetworkServiceRecordManagement
 
     checkConfigParameter(vnfd, body);
 
-    vnfmManager.addVnfr(networkServiceRecord, vnfd, body, vduVimInstances);
+    vnfmManager.addVnfr(networkServiceRecord, vnfd, body, vduVimInstances, monitoringIp);
     log.debug("Returning NSR " + networkServiceRecord.getName());
     return networkServiceRecord;
   }

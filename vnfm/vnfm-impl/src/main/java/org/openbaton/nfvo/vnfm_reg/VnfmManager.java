@@ -169,10 +169,19 @@ public class VnfmManager
   @Async
   public Future<Void> addVnfr(
       NetworkServiceRecord networkServiceRecord,
-      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
+      VirtualNetworkFunctionDescriptor vnfd,
       DeployNSRBody body,
-      Map<String, Set<String>> vduVimInstances)
+      Map<String, Set<String>> vduVimInstances,
+      String monitoringIp)
       throws NotFoundException {
+
+    //    vnfStateHandler.handleVNF(
+    //            networkServiceDescriptor,
+    //            networkServiceRecord,
+    //            body,
+    //            vduVimInstances,
+    //            vnfd,
+    //            monitoringIp);
 
     //    try {
     //

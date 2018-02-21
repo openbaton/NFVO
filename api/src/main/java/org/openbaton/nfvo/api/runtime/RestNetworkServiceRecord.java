@@ -218,13 +218,20 @@ public class RestNetworkServiceRecord {
 
     log.debug("Json Body is" + jsonObject);
     Type mapType = new TypeToken<Map<String, Configuration>>() {}.getType();
+
+    String monitoringIp = null;
+    if (jsonObject.has("monitoringIp")) {
+      monitoringIp = jsonObject.get("monitoringIp").getAsString();
+    }
+
     return networkServiceRecordManagement.scaleOutNsr(
         nsrId,
         vnfdId,
         projectId,
         gson.fromJson(jsonObject.getAsJsonArray("keys"), List.class),
         gson.fromJson(jsonObject.getAsJsonObject("vduVimInstances"), Map.class),
-        gson.fromJson(jsonObject.get("configurations"), mapType));
+        gson.fromJson(jsonObject.get("configurations"), mapType),
+        monitoringIp);
   }
 
   /**
