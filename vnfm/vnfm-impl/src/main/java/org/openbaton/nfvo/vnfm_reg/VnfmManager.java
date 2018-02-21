@@ -384,7 +384,7 @@ public class VnfmManager
                       .findFirstById(networkServiceRecord.getDescriptor_reference())
                       .getVnfd()
                       .size()
-                  != networkServiceRecord.getVnfr().size()) {
+                  > networkServiceRecord.getVnfr().size()) {
             log.debug(
                 "Not all the VNFR have been created yet, it is useless to set the NSR status.");
             return;
