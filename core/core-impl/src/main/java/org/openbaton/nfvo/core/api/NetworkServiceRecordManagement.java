@@ -170,7 +170,8 @@ public class NetworkServiceRecordManagement
       Map vduVimInstances,
       Map configurations,
       String monitoringIp)
-      throws NotFoundException, BadRequestException, MissingParameterException {
+      throws NotFoundException, BadRequestException, InterruptedException, BadFormatException,
+          ExecutionException {
     //Check if the NSR exists
     log.info("Looking for NetworkServiceRecord with id: " + nsrId);
     NetworkServiceRecord nsr = nsrRepository.findFirstByIdAndProjectId(nsrId, projectId);
@@ -258,7 +259,8 @@ public class NetworkServiceRecordManagement
       String projectId,
       DeployNSRBody body,
       String monitoringIp)
-      throws MissingParameterException, BadRequestException, NotFoundException {
+      throws BadRequestException, NotFoundException, InterruptedException, BadFormatException,
+          ExecutionException {
     Map<String, Set<String>> vduVimInstances = new HashMap<>();
     log.info("Scaling NetworkServiceRecord: " + networkServiceRecord.getName());
     log.trace("Scaling NetworkServiceRecord: " + networkServiceRecord);

@@ -64,14 +64,13 @@ public interface VnfmManager {
       List<String> vimInstanceNames)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 
-  @Async
-  Future<Void> addVnfr(
+  void addVnfr(
       NetworkServiceRecord networkServiceRecord,
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
       DeployNSRBody body,
       Map<String, Set<String>> vduVimInstances,
       String monitoringIp)
-      throws NotFoundException;
+      throws NotFoundException, InterruptedException, BadFormatException, ExecutionException;
 
   void restartVnfr(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;

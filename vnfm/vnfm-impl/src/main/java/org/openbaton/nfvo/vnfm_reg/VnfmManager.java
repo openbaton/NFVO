@@ -166,22 +166,19 @@ public class VnfmManager
   }
 
   @Override
-  @Async
-  public Future<Void> addVnfr(
+  public void addVnfr(
       NetworkServiceRecord networkServiceRecord,
       VirtualNetworkFunctionDescriptor vnfd,
       DeployNSRBody body,
       Map<String, Set<String>> vduVimInstances,
       String monitoringIp)
-      throws NotFoundException {
+      throws NotFoundException, InterruptedException, BadFormatException, ExecutionException {
 
-    //    vnfStateHandler.handleVNF(
-    //            networkServiceDescriptor,
-    //            networkServiceRecord,
-    //            body,
-    //            vduVimInstances,
-    //            vnfd,
-    //            monitoringIp);
+    NetworkServiceDescriptor nsd =
+        nsdRepository.findFirstByIdAndProjectId(
+            networkServiceRecord.getDescriptor_reference(), networkServiceRecord.getProjectId());
+
+    vnfStateHandler.handleVNF(nsd, networkServiceRecord, body, vduVimInstances, vnfd, monitoringIp);
 
     //    try {
     //
@@ -307,7 +304,6 @@ public class VnfmManager
     //      log.error("", e);
     //      throw e;
     //    }
-    return null;
   }
 
   //  private Map<String, String> getExtension() {

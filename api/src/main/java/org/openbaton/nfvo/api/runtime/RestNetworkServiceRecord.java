@@ -214,7 +214,8 @@ public class RestNetworkServiceRecord {
       @PathVariable("vnfdId") String vnfdId,
       @RequestHeader(value = "project-id") String projectId,
       @RequestBody(required = false) JsonObject jsonObject)
-      throws NotFoundException, MissingParameterException, BadRequestException {
+      throws NotFoundException, MissingParameterException, BadRequestException,
+          InterruptedException, BadFormatException, ExecutionException {
 
     log.debug("Json Body is" + jsonObject);
     Type mapType = new TypeToken<Map<String, Configuration>>() {}.getType();
