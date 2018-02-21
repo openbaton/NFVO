@@ -173,14 +173,10 @@ public class NetworkServiceRecordManagement
       throws NotFoundException, BadRequestException, MissingParameterException {
     //Check if the NSR exists
     log.info("Looking for NetworkServiceRecord with id: " + nsrId);
-    NetworkServiceRecord nsr = nsrRepository.findFirstById(nsrId);
+    NetworkServiceRecord nsr = nsrRepository.findFirstByIdAndProjectId(nsrId, projectId);
     if (nsr == null) {
-      throw new NotFoundException("NSR with id " + nsrId + " was not found");
-    }
-    //Check if the NSR belongs to the current project
-    if (!nsr.getProjectId().equals(projectId)) {
-      throw new UnauthorizedUserException(
-          "NSD " + nsrId + " not under the project (" + projectId + ") chosen ...");
+      throw new NotFoundException(
+          "NSR with id " + nsrId + " was not found in the project with id " + projectId);
     }
     //Check if the VNFD exists
     VirtualNetworkFunctionDescriptor vnfd = vnfdRepository.findFirstById(vnfdId);
