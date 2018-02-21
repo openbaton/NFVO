@@ -24,6 +24,7 @@ import static org.openbaton.nfvo.core.test.TestUtils.createMaxQuota;
 import static org.openbaton.nfvo.core.test.TestUtils.createMinQuota;
 import static org.openbaton.nfvo.core.test.TestUtils.createVimInstance;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -127,7 +128,7 @@ public class VNFLifecycleOperationGrantingClassSuiteTest {
     highAvailability.setResiliencyLevel(ResiliencyLevel.ACTIVE_STANDBY_STATELESS);
     vdu.setHigh_availability(highAvailability);
     vdu.setVm_image(
-        new HashSet<String>() {
+        new ArrayList<String>() {
           {
             add("mocked_image");
           }

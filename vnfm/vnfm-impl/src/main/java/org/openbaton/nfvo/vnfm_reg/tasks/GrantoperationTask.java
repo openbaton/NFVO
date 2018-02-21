@@ -36,7 +36,6 @@ import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGrantLifecycleOperationMessage;
 import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
-import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.NsrNotFoundException;
@@ -71,7 +70,7 @@ public class GrantoperationTask extends AbstractTask {
   @Value("${nfvo.quota.check:true}")
   private boolean checkQuota;
 
-  private final static Map<String, Object> lockMap = new HashMap<>();
+  private static final Map<String, Object> lockMap = new HashMap<>();
 
   @Value("${nfvo.networks.dedicated:false}")
   private boolean dedicatedNetworks;
@@ -193,8 +192,8 @@ public class GrantoperationTask extends AbstractTask {
 
   private void performChecks(
       BaseVimInstance vimInstance, VirtualDeploymentUnit virtualDeploymentUnit)
-      throws VimException, NotFoundException, BadRequestException,
-      IOException, InterruptedException, ExecutionException, PluginException {
+      throws VimException, NotFoundException, BadRequestException, IOException,
+          InterruptedException, ExecutionException, PluginException {
     Object lock;
     String key = String.format("%s%s", vimInstance.getName(), vimInstance.getProjectId());
     synchronized (lockMap) {
