@@ -78,8 +78,8 @@ public class GrantoperationTask extends AbstractTask {
   @Override
   protected NFVMessage doWork() throws Exception {
     log.info("Executing task: GrantOperation on VNFR: " + virtualNetworkFunctionRecord.getName());
+    printOldAndNewHibernateVersion();
 
-//    setHistoryLifecycleEvent();
     //Save the vnfr since in the grantLifecycleOperation method we use vdu.getId()
     saveVirtualNetworkFunctionRecord();
 
@@ -87,35 +87,6 @@ public class GrantoperationTask extends AbstractTask {
 
     if (!checkQuota) {
       log.warn("Checking quota is disabled, please consider to enable it");
-
-      log.trace(
-          "VNFR ("
-              + virtualNetworkFunctionRecord.getId()
-              + ") received hibernate version is: "
-              + virtualNetworkFunctionRecord.getHbVersion());
-
-      VirtualNetworkFunctionRecord existing =
-          vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
-
-      virtualNetworkFunctionRecord
-          .getVdu()
-          .forEach(
-              vdu ->
-                  log.trace(
-                      "VDU ("
-                          + vdu.getId()
-                          + ") received with hibernate version = "
-                          + vdu.getHbVersion()));
-
-      existing
-          .getVdu()
-          .forEach(
-              vdu ->
-                  log.trace(
-                      "VDU ("
-                          + vdu.getId()
-                          + ") existing hibernate version is = "
-                          + vdu.getHbVersion()));
 
       for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
         BaseVimInstance vimInstance =
@@ -134,6 +105,7 @@ public class GrantoperationTask extends AbstractTask {
               + ") current hibernate version is: "
               + virtualNetworkFunctionRecord.getHbVersion());
 
+      setHistoryLifecycleEvent();
       OrVnfmGrantLifecycleOperationMessage nfvMessage = new OrVnfmGrantLifecycleOperationMessage();
       nfvMessage.setGrantAllowed(true);
       nfvMessage.setVduVim(vimInstancesChosen);
@@ -183,6 +155,7 @@ public class GrantoperationTask extends AbstractTask {
             + virtualNetworkFunctionRecord.getId()
             + ") current hibernate version is: "
             + virtualNetworkFunctionRecord.getHbVersion());
+    setHistoryLifecycleEvent();
     OrVnfmGrantLifecycleOperationMessage nfvMessage = new OrVnfmGrantLifecycleOperationMessage();
     nfvMessage.setGrantAllowed(true);
     nfvMessage.setVduVim(vimInstancesChosen);

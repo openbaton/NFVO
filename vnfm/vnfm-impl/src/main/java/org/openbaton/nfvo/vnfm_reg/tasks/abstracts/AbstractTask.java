@@ -471,7 +471,7 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
   }
 
   protected void printOldAndNewHibernateVersion() {
-    if (vnfrRepository.exists(virtualNetworkFunctionRecord.getId())) {
+    if (virtualNetworkFunctionRecord.getId() != null && vnfrRepository.exists(virtualNetworkFunctionRecord.getId())) {
       VirtualNetworkFunctionRecord existing =
           vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
 
