@@ -224,7 +224,7 @@ public class RestNetworkServiceRecord {
         projectId,
         gson.fromJson(jsonObject.getAsJsonArray("keys"), List.class),
         gson.fromJson(jsonObject.getAsJsonObject("vduVimInstances"), Map.class),
-        (Map) gson.fromJson(jsonObject.get("configurations"), mapType));
+        gson.fromJson(jsonObject.get("configurations"), mapType));
   }
 
   /**
