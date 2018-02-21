@@ -171,7 +171,7 @@ public class VnfmManager
       NetworkServiceRecord networkServiceRecord,
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
       DeployNSRBody body,
-      Map<String, List<String>> vduVimInstances)
+      Map<String, Set<String>> vduVimInstances)
       throws NotFoundException {
 
     //    try {

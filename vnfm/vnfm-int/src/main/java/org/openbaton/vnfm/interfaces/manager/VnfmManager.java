@@ -69,7 +69,7 @@ public interface VnfmManager {
       NetworkServiceRecord networkServiceRecord,
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
       DeployNSRBody body,
-      Map<String, List<String>> vduVimInstances)
+      Map<String, Set<String>> vduVimInstances)
       throws NotFoundException;
 
   void restartVnfr(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
