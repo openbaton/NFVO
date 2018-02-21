@@ -179,14 +179,11 @@ public class NetworkServiceRecordManagement
           "NSR with id " + nsrId + " was not found in the project with id " + projectId);
     }
     //Check if the VNFD exists
-    VirtualNetworkFunctionDescriptor vnfd = vnfdRepository.findFirstById(vnfdId);
+    VirtualNetworkFunctionDescriptor vnfd =
+        vnfdRepository.findFirstByIdAndProjectId(vnfdId, projectId);
     if (vnfd == null) {
-      throw new NotFoundException("VNFD with id " + vnfdId + " was not found");
-    }
-    //Check if the VNFD belongs the current project
-    if (!vnfd.getProjectId().equals(projectId)) {
-      throw new UnauthorizedUserException(
-          "VNFD " + vnfdId + " not under the project (" + projectId + ") chosen ...");
+      throw new NotFoundException(
+          "VNFD with id " + vnfdId + " was not found in the project with id " + projectId);
     }
 
     DeployNSRBody body = new DeployNSRBody();
