@@ -30,7 +30,6 @@ import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
-import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGrantLifecycleOperationMessage;
@@ -261,7 +260,7 @@ public class GrantoperationTask extends AbstractTask {
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("That's impossible"));
         virtualLinkRecord.setExtId(net.getExtId());
-        virtualLinkRecord.setName(net.getName());
+        //        virtualLinkRecord.setName(net.getName());
         virtualLinkRecord.setParent_ns(networkServiceRecord.getId());
         virtualLinkRecord.setVim_id(vimInstance.getId());
         virtualLinkRecord = vlrRepository.save(virtualLinkRecord);
@@ -269,7 +268,7 @@ public class GrantoperationTask extends AbstractTask {
           for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point()) {
             if (virtualLinkRecord
                 .getName()
-                .contains(vnfdConnectionPoint.getVirtual_link_reference())) {
+                .equals(vnfdConnectionPoint.getVirtual_link_reference())) {
               vnfdConnectionPoint.setVirtual_link_reference(net.getName());
               vnfdConnectionPoint.setVirtual_link_reference_id(virtualLinkRecord.getExtId());
             }
@@ -283,7 +282,7 @@ public class GrantoperationTask extends AbstractTask {
               .getVlr()
               .forEach(
                   vlr -> {
-                    if (vlr.getName().contains(vnfdConnectionPoint.getVirtual_link_reference())) {
+                    if (vlr.getName().equals(vnfdConnectionPoint.getVirtual_link_reference())) {
                       vnfdConnectionPoint.setVirtual_link_reference(vlr.getName());
                       vnfdConnectionPoint.setVirtual_link_reference_id(vlr.getExtId());
                       log.debug(
