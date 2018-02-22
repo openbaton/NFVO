@@ -30,13 +30,11 @@ import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
-import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGrantLifecycleOperationMessage;
 import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
-import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.NsrNotFoundException;
@@ -71,7 +69,7 @@ public class GrantoperationTask extends AbstractTask {
   @Value("${nfvo.quota.check:true}")
   private boolean checkQuota;
 
-  private final static Map<String, Object> lockMap = new HashMap<>();
+  private static final Map<String, Object> lockMap = new HashMap<>();
 
   @Value("${nfvo.networks.dedicated:false}")
   private boolean dedicatedNetworks;
@@ -79,44 +77,15 @@ public class GrantoperationTask extends AbstractTask {
   @Override
   protected NFVMessage doWork() throws Exception {
     log.info("Executing task: GrantOperation on VNFR: " + virtualNetworkFunctionRecord.getName());
+    printOldAndNewHibernateVersion();
 
     //Save the vnfr since in the grantLifecycleOperation method we use vdu.getId()
-    setHistoryLifecycleEvent();
     saveVirtualNetworkFunctionRecord();
 
     Map<String, BaseVimInstance> vimInstancesChosen = new HashMap<>();
 
     if (!checkQuota) {
       log.warn("Checking quota is disabled, please consider to enable it");
-
-      log.trace(
-          "VNFR ("
-              + virtualNetworkFunctionRecord.getId()
-              + ") received hibernate version is: "
-              + virtualNetworkFunctionRecord.getHbVersion());
-
-      VirtualNetworkFunctionRecord existing =
-          vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
-
-      virtualNetworkFunctionRecord
-          .getVdu()
-          .forEach(
-              vdu ->
-                  log.trace(
-                      "VDU ("
-                          + vdu.getId()
-                          + ") received with hibernate version = "
-                          + vdu.getHbVersion()));
-
-      existing
-          .getVdu()
-          .forEach(
-              vdu ->
-                  log.trace(
-                      "VDU ("
-                          + vdu.getId()
-                          + ") existing hibernate version is = "
-                          + vdu.getHbVersion()));
 
       for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
         BaseVimInstance vimInstance =
@@ -135,6 +104,7 @@ public class GrantoperationTask extends AbstractTask {
               + ") current hibernate version is: "
               + virtualNetworkFunctionRecord.getHbVersion());
 
+      setHistoryLifecycleEvent();
       OrVnfmGrantLifecycleOperationMessage nfvMessage = new OrVnfmGrantLifecycleOperationMessage();
       nfvMessage.setGrantAllowed(true);
       nfvMessage.setVduVim(vimInstancesChosen);
@@ -184,6 +154,7 @@ public class GrantoperationTask extends AbstractTask {
             + virtualNetworkFunctionRecord.getId()
             + ") current hibernate version is: "
             + virtualNetworkFunctionRecord.getHbVersion());
+    setHistoryLifecycleEvent();
     OrVnfmGrantLifecycleOperationMessage nfvMessage = new OrVnfmGrantLifecycleOperationMessage();
     nfvMessage.setGrantAllowed(true);
     nfvMessage.setVduVim(vimInstancesChosen);
@@ -193,14 +164,17 @@ public class GrantoperationTask extends AbstractTask {
 
   private void performChecks(
       BaseVimInstance vimInstance, VirtualDeploymentUnit virtualDeploymentUnit)
-      throws VimException, NotFoundException, BadRequestException,
-      IOException, InterruptedException, ExecutionException, PluginException {
+      throws VimException, NotFoundException, BadRequestException, IOException,
+          InterruptedException, ExecutionException, PluginException {
     Object lock;
     String key = String.format("%s%s", vimInstance.getName(), vimInstance.getProjectId());
     synchronized (lockMap) {
       lock = lockMap.computeIfAbsent(key, k -> new Object());
     }
     synchronized (lock) {
+      vimInstance = vimManagement.query(vimInstance.getId(), vimInstance.getProjectId());
+      vimInstance = vimManagement.refresh(vimInstance, true).get();
+
       // check images
       if (!vimInstance.getType().equals("test")) {
         log.debug(
@@ -218,10 +192,8 @@ public class GrantoperationTask extends AbstractTask {
                   "None of the images %s where found on the chosen vim instance %s",
                   virtualDeploymentUnit.getVm_image(), vimInstance.getName()));
       }
-      //check networks
 
-      vimInstance = vimManagement.query(vimInstance.getId(), vimInstance.getProjectId());
-      vimInstance = vimManagement.refresh(vimInstance, true).get();
+      //check networks
       if (!networkServiceRecordRepository.exists(virtualNetworkFunctionRecord.getParent_ns_id()))
         throw new NsrNotFoundException(
             String.format(
@@ -250,6 +222,10 @@ public class GrantoperationTask extends AbstractTask {
           .stream()
           .filter(
               virtualLinkRecord -> {
+                log.debug(
+                    String.format(
+                        "Checking VLR %s for VNFR [%s]",
+                        virtualLinkRecord, virtualNetworkFunctionRecord.getName()));
                 for (BaseNetwork net : finalVimInstance1.getNetworks()) {
                   if (VimInstanceUtils.isVLRExisting(virtualLinkRecord, net, dedicatedNetworks))
                     return false;
@@ -284,34 +260,42 @@ public class GrantoperationTask extends AbstractTask {
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("That's impossible"));
         virtualLinkRecord.setExtId(net.getExtId());
+        //        virtualLinkRecord.setName(net.getName());
         virtualLinkRecord.setParent_ns(networkServiceRecord.getId());
         virtualLinkRecord.setVim_id(vimInstance.getId());
         virtualLinkRecord = vlrRepository.save(virtualLinkRecord);
-        for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
-          for (VNFComponent vnfComponent : vdu.getVnfc()) {
-            for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point()) {
-              if (vnfdConnectionPoint
-                  .getVirtual_link_reference()
-                  .equals(virtualLinkRecord.getName())) {
-                vnfdConnectionPoint.setVirtual_link_reference_id(virtualLinkRecord.getExtId());
-              }
+        for (VNFComponent vnfComponent : virtualDeploymentUnit.getVnfc()) {
+          for (VNFDConnectionPoint vnfdConnectionPoint : vnfComponent.getConnection_point()) {
+            if (virtualLinkRecord
+                .getName()
+                .equals(vnfdConnectionPoint.getVirtual_link_reference())) {
+              vnfdConnectionPoint.setVirtual_link_reference(net.getName());
+              vnfdConnectionPoint.setVirtual_link_reference_id(virtualLinkRecord.getExtId());
             }
           }
         }
-
-        saveVirtualNetworkFunctionRecord();
       }
-      vimInstance = vimManagement.refresh(vimInstance, false).get();
+      vimManagement.refresh(vimInstance, false).get();
       for (VNFComponent vnfc : virtualDeploymentUnit.getVnfc()) {
         for (VNFDConnectionPoint vnfdConnectionPoint : vnfc.getConnection_point()) {
-          for (BaseNetwork network : vimInstance.getNetworks()) {
-            if (VimInstanceUtils.isVNFDConnectionPointExisting(vnfdConnectionPoint, network)) {
-              vnfdConnectionPoint.setVirtual_link_reference_id(network.getExtId());
-              break;
-            }
-          }
+          networkServiceRecord
+              .getVlr()
+              .forEach(
+                  vlr -> {
+                    if (vlr.getName().equals(vnfdConnectionPoint.getVirtual_link_reference())) {
+                      vnfdConnectionPoint.setVirtual_link_reference(vlr.getName());
+                      vnfdConnectionPoint.setVirtual_link_reference_id(vlr.getExtId());
+                      log.debug(
+                          String.format(
+                              "VNFR [%s] set CP [%s] to ExtID [%s]",
+                              virtualNetworkFunctionRecord.getName(),
+                              vnfdConnectionPoint.getVirtual_link_reference(),
+                              vnfdConnectionPoint.getVirtual_link_reference_id()));
+                    }
+                  });
         }
       }
+      saveVirtualNetworkFunctionRecord();
     }
   }
 

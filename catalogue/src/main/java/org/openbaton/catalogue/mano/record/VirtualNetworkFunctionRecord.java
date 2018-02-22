@@ -64,7 +64,8 @@ public class VirtualNetworkFunctionRecord extends BaseEntity {
 
   @OneToMany(
     cascade = {CascadeType.ALL},
-    fetch = FetchType.EAGER
+    fetch = FetchType.EAGER,
+    orphanRemoval = true
   )
   private Set<HistoryLifecycleEvent> lifecycle_event_history;
   /** A language attribute may be specified to identify default localisation/language */
