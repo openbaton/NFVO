@@ -171,7 +171,7 @@ public class NetworkServiceRecordManagement
       Map configurations,
       String monitoringIp)
       throws NotFoundException, BadRequestException, InterruptedException, BadFormatException,
-          ExecutionException {
+          ExecutionException, CyclicDependenciesException, NetworkServiceIntegrityException {
     //Check if the NSR exists
     log.info("Looking for NetworkServiceRecord with id: " + nsrId);
     NetworkServiceRecord nsr = nsrRepository.findFirstByIdAndProjectId(nsrId, projectId);
@@ -260,7 +260,7 @@ public class NetworkServiceRecordManagement
       DeployNSRBody body,
       String monitoringIp)
       throws BadRequestException, NotFoundException, InterruptedException, BadFormatException,
-          ExecutionException {
+          ExecutionException, CyclicDependenciesException, NetworkServiceIntegrityException {
     Map<String, Set<String>> vduVimInstances = new HashMap<>();
     log.info("Scaling NetworkServiceRecord: " + networkServiceRecord.getName());
     log.trace("Scaling NetworkServiceRecord: " + networkServiceRecord);
@@ -269,6 +269,10 @@ public class NetworkServiceRecordManagement
     log.info("Checking if all vnfm are registered and active");
     Iterable<VnfmManagerEndpoint> endpoints = vnfmManagerEndpointRepository.findAll();
     nsdUtils.checkEndpoint(vnfd.getEndpoint(), endpoints);
+
+    NetworkServiceDescriptor nsd =
+        nsdRepository.findFirstByIdAndProjectId(
+            networkServiceRecord.getDescriptor_reference(), projectId);
 
     boolean savedNsrSuccessfully = false;
     int attempt = 0;
@@ -311,7 +315,16 @@ public class NetworkServiceRecordManagement
       // TODO it better: Check if the chosen VIM has ENOUGH Resources for deployment
       //checkQuotaForNS();
 
-      //NSRUtils.setDependencies(networkServiceDescriptor, networkServiceRecord);
+      //get the set of all vnfDependencies
+      Set<VNFDependency> vnfDependencySet = nsdUtils.getVNFDependenciesFromRequires(vnfd, nsd);
+      vnfDependencySet.addAll(new HashSet<>(nsd.getVnf_dependency()));
+
+      //get the set of all VNFD
+      Set<VirtualNetworkFunctionDescriptor> vnfdSet = new HashSet<>(nsd.getVnfd());
+      vnfdSet.add(vnfd);
+
+      //set the dependencies
+      NSRUtils.setDependencies(vnfdSet, vnfDependencySet, networkServiceRecord);
 
       vnfd.setProjectId(projectId);
       try {
@@ -331,6 +344,15 @@ public class NetworkServiceRecordManagement
         log.warn("OptimisticLockingFailureException while creating the NSR. We will try it again.");
         savedNsrSuccessfully = false;
         attempt++;
+      }
+    }
+
+    for (VNFRecordDependency vnfrd : networkServiceRecord.getVnf_dependency()) {
+      if (vnfrd.getTarget().equals(vnfd.getName())) {
+        for (String vnfrSourceName : vnfrd.getIdType().keySet()) {
+          VirtualNetworkFunctionRecord vnfrSource = getVNFR(networkServiceRecord, vnfrSourceName);
+          dependencyManagement.fillDependecyParameters(vnfrSource);
+        }
       }
     }
 

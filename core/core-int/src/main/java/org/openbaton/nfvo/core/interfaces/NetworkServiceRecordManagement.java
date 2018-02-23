@@ -203,7 +203,8 @@ public interface NetworkServiceRecordManagement {
       Map configurations,
       String monitoringIp)
       throws NotFoundException, BadRequestException, MissingParameterException,
-          InterruptedException, BadFormatException, ExecutionException;
+          InterruptedException, BadFormatException, ExecutionException, CyclicDependenciesException,
+          NetworkServiceIntegrityException;
 
   VirtualNetworkFunctionRecord restartVnfr(
       NetworkServiceRecord nsr, String vnfrId, String imageName, String projectId)
