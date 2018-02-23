@@ -347,6 +347,7 @@ public class NetworkServiceRecordManagement
       }
     }
 
+    // If the new VNF is a target, we need to fill the dependencies of its sources
     for (VNFRecordDependency vnfrd : networkServiceRecord.getVnf_dependency()) {
       if (vnfrd.getTarget().equals(vnfd.getName())) {
         for (String vnfrSourceName : vnfrd.getIdType().keySet()) {
