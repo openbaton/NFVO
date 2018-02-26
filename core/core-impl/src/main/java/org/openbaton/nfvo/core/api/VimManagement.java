@@ -192,7 +192,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
       return new AsyncResult<>(vimInstance);
     }
 
-    log.info("Refreshing vim");
+    log.info(String.format("Refreshing vim %s", vimInstance.getName()));
     String key = String.format("%s%s", vimInstance.getName(), vimInstance.getProjectId());
     Object lock;
     synchronized (lockMap) {
