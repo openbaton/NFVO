@@ -68,6 +68,16 @@ public abstract class AbstractVirtualLink extends BaseEntity {
 
   private String cidr;
 
+  private String poolName;
+
+  public String getPoolName() {
+    return poolName;
+  }
+
+  public void setPoolName(String poolName) {
+    this.poolName = poolName;
+  }
+
   public String getCidr() {
     return cidr;
   }
@@ -156,6 +166,9 @@ public abstract class AbstractVirtualLink extends BaseEntity {
         + '\''
         + ", cidr='"
         + cidr
+        + '\''
+        + ", poolName='"
+        + poolName
         + '\''
         + "} "
         + super.toString();

@@ -30,6 +30,7 @@ public class Subnet extends BaseEntity {
   private String networkId;
   private String cidr;
   private String gatewayIp;
+  private String externalNetworkName;
 
   public Subnet() {}
 
@@ -84,6 +85,14 @@ public class Subnet extends BaseEntity {
     this.dns = dns;
   }
 
+  public String getExternalNetworkName() {
+    return externalNetworkName;
+  }
+
+  public void setExternalNetworkName(String externalNetworkName) {
+    this.externalNetworkName = externalNetworkName;
+  }
+
   @Override
   public String toString() {
     return "Subnet{"
@@ -101,6 +110,9 @@ public class Subnet extends BaseEntity {
         + '\''
         + ", gatewayIp='"
         + gatewayIp
+        + '\''
+        + ", externalNetworkName='"
+        + externalNetworkName
         + '\''
         + "} "
         + super.toString();

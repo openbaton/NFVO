@@ -588,16 +588,16 @@ public class GenericVIM extends Vim {
           e);
     }
     if (network instanceof Network) {
-      Network osNetowork = (Network) network;
+      Network osNetwork = (Network) network;
       log.debug(
           "Creating Subnets for Network with name: "
               + network.getName()
               + " on VimInstance "
               + vimInstance.getName()
               + " -> Subnets: "
-              + osNetowork.getSubnets());
+              + osNetwork.getSubnets());
       Set<Subnet> createdSubnets = new HashSet<>();
-      for (Subnet subnet : osNetowork.getSubnets()) {
+      for (Subnet subnet : osNetwork.getSubnets()) {
         try {
           log.debug(
               "Creating Subnet with name: "
@@ -659,7 +659,7 @@ public class GenericVIM extends Vim {
               + " on VimInstnace "
               + vimInstance.getName()
               + " -> Subnets: "
-              + osNetowork.getSubnets());
+              + osNetwork.getSubnets());
     }
     return createdNetwork;
   }

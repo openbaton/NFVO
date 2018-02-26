@@ -44,9 +44,6 @@ public class VirtualLinkDescriptor extends AbstractVirtualLink {
         + ", descriptor_version='"
         + descriptor_version
         + '\''
-        + ", poolName='"
-        + poolName
-        + '\''
         + ", number_of_endpoints="
         + number_of_endpoints
         + ", connection="
@@ -61,9 +58,6 @@ public class VirtualLinkDescriptor extends AbstractVirtualLink {
   private String vendor;
   /** Version of this VLD */
   private String descriptor_version;
-
-  /** Public ip pool */
-  private String poolName;
 
   public List<String> getDns() {
     return dns;
@@ -90,14 +84,6 @@ public class VirtualLinkDescriptor extends AbstractVirtualLink {
   private Security vld_security;
 
   public VirtualLinkDescriptor() {}
-
-  public String getPoolName() {
-    return poolName;
-  }
-
-  public void setPoolName(String poolName) {
-    this.poolName = poolName;
-  }
 
   public String getName() {
     return name;
