@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.ExecutionException;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.exceptions.AlreadyExistingException;
@@ -115,7 +116,7 @@ public class RestCSAR {
       throws IOException, PluginException, VimException, NotFoundException, IncompatibleVNFPackage,
           org.openbaton.tosca.exceptions.NotFoundException, BadRequestException,
           AlreadyExistingException, BadFormatException, InterruptedException,
-          EntityUnreachableException {
+          EntityUnreachableException, ExecutionException {
     Gson gson = new Gson();
     JsonObject jsonObject = gson.fromJson(link, JsonObject.class);
     if (!jsonObject.has("link"))
@@ -141,7 +142,7 @@ public class RestCSAR {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     byte[] bytes = new byte[1024];
     int n = in.read(bytes);
-    while (-1 != n) {
+    while (n != 1) {
       out.write(bytes, 0, n);
     }
 
@@ -172,7 +173,7 @@ public class RestCSAR {
           NetworkServiceIntegrityException, BadFormatException, CyclicDependenciesException,
           EntityInUseException, org.openbaton.tosca.exceptions.NotFoundException,
           BadRequestException, AlreadyExistingException, InterruptedException,
-          EntityUnreachableException {
+          EntityUnreachableException, ExecutionException {
     Gson gson = new Gson();
     JsonObject jsonObject = gson.fromJson(link, JsonObject.class);
     if (!jsonObject.has("link"))

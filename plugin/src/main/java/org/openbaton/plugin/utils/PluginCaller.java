@@ -17,23 +17,10 @@
 
 package org.openbaton.plugin.utils;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
+import com.google.gson.*;
+import com.rabbitmq.client.*;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.AMQP.BasicProperties.Builder;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.DefaultConsumer;
-import com.rabbitmq.client.Envelope;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Type;
@@ -68,7 +55,6 @@ public class PluginCaller {
   private final String virtualHost;
   private final long timeout;
   private ConnectionFactory factory;
-  private Connection connection;
   private Gson gson =
       new GsonBuilder()
           .registerTypeHierarchyAdapter(byte[].class, new ByteArrayToBase64TypeAdapter())
@@ -102,7 +88,7 @@ public class PluginCaller {
       int port,
       String virtualHost,
       int managementPort)
-      throws TimeoutException, IOException, NotFoundException {
+      throws IOException, NotFoundException {
     this(pluginId, brokerIp, username, password, port, virtualHost, managementPort, 500000);
   }
 
@@ -115,7 +101,7 @@ public class PluginCaller {
       String virtualHost,
       int managementPort,
       long timeout)
-      throws IOException, TimeoutException, NotFoundException {
+      throws IOException, NotFoundException {
     this.pluginId =
         getFullPluginId(pluginId, brokerIp, username, password, virtualHost, managementPort);
     this.managementPort = managementPort;
@@ -146,10 +132,6 @@ public class PluginCaller {
     }
   }
 
-  public void close() throws IOException {
-    connection.close();
-  }
-
   private String getFullPluginId(
       String pluginId,
       String brokerIp,
@@ -171,96 +153,93 @@ public class PluginCaller {
   public Serializable executeRPC(String methodName, Collection<Serializable> args, Type returnType)
       throws IOException, InterruptedException, PluginException {
 
-    try {
-      connection = factory.newConnection();
+    try (Connection connection = factory.newConnection()) {
+      Channel channel = connection.createChannel();
+      String replyQueueName = channel.queueDeclare().getQueue();
+      String exchange = "openbaton-exchange";
+      channel.queueBind(replyQueueName, exchange, replyQueueName);
+      String corrId = UUID.randomUUID().toString();
+      BasicProperties props = new Builder().correlationId(corrId).replyTo(replyQueueName).build();
+
+      PluginMessage pluginMessage = new PluginMessage();
+      pluginMessage.setMethodName(methodName);
+      pluginMessage.setParameters(args);
+
+      String message = gson.toJson(pluginMessage);
+      channel.basicPublish(exchange, pluginId, props, message.getBytes());
+
+      final BlockingQueue<String> response = new ArrayBlockingQueue<String>(1);
+
+      channel.basicConsume(
+          replyQueueName,
+          true,
+          new DefaultConsumer(channel) {
+            @Override
+            public void handleDelivery(
+                String consumerTag, Envelope envelope, BasicProperties properties, byte[] body)
+                throws IOException {
+              if (properties.getCorrelationId().equals(corrId)) {
+                response.offer(new String(body, "UTF-8"));
+              }
+            }
+          });
+
+      //Check if plugin is still up
+      if (!RabbitManager.getQueues(brokerIp, username, password, virtualHost, managementPort)
+          .contains(pluginId)) {
+        throw new PluginException("Plugin with id: " + pluginId + " not existing anymore...");
+      }
+      if (returnType != null) {
+        String res = response.take();
+        JsonObject jsonObject = gson.fromJson(res, JsonObject.class);
+
+        JsonElement exceptionJson = jsonObject.get("exception");
+        if (exceptionJson == null) {
+          JsonElement answerJson = jsonObject.get("answer");
+
+          Serializable ret;
+          if (answerJson == null) {
+            throw new PluginException(
+                "Plugin return null without throwing exception... It is hard to understand for me what went wrong, i am"
+                    + " only a (free) sofware...");
+          }
+          if (answerJson.isJsonPrimitive()) {
+            ret = gson.fromJson(answerJson.getAsJsonPrimitive(), returnType);
+          } else if (answerJson.isJsonArray()) {
+            ret = gson.fromJson(answerJson.getAsJsonArray(), returnType);
+          } else {
+            ret = gson.fromJson(answerJson.getAsJsonObject(), returnType);
+          }
+
+          log.trace("answer is: " + ret);
+          return ret;
+        } else {
+          PluginException pluginException;
+          try {
+            pluginException =
+                new PluginException(
+                    gson.fromJson(exceptionJson.getAsJsonObject(), VimDriverException.class));
+            log.error("Got Vim Driver Exception with cause: " + pluginException.getMessage());
+            log.error(
+                "Got Vim Driver Exception with server: "
+                    + ((VimDriverException) pluginException.getCause()).getServer());
+          } catch (Exception ignored) {
+            channel.queueDelete(replyQueueName);
+            pluginException =
+                new PluginException(
+                    gson.fromJson(exceptionJson.getAsJsonObject(), Throwable.class));
+          }
+          throw pluginException;
+        }
+      } else {
+        try {
+          channel.queueDelete(replyQueueName);
+        } catch (Exception ignored) {
+        }
+        return null;
+      }
     } catch (TimeoutException e) {
       throw new PluginException("Could not open a connection after timeout.");
-    }
-    Channel channel = connection.createChannel();
-    String replyQueueName = channel.queueDeclare().getQueue();
-    String exchange = "openbaton-exchange";
-    channel.queueBind(replyQueueName, exchange, replyQueueName);
-    String corrId = UUID.randomUUID().toString();
-    BasicProperties props = new Builder().correlationId(corrId).replyTo(replyQueueName).build();
-
-    PluginMessage pluginMessage = new PluginMessage();
-    pluginMessage.setMethodName(methodName);
-    pluginMessage.setParameters(args);
-
-    String message = gson.toJson(pluginMessage);
-    channel.basicPublish(exchange, pluginId, props, message.getBytes());
-
-    final BlockingQueue<String> response = new ArrayBlockingQueue<String>(1);
-
-    channel.basicConsume(
-        replyQueueName,
-        true,
-        new DefaultConsumer(channel) {
-          @Override
-          public void handleDelivery(
-              String consumerTag, Envelope envelope, BasicProperties properties, byte[] body)
-              throws IOException {
-            if (properties.getCorrelationId().equals(corrId)) {
-              response.offer(new String(body, "UTF-8"));
-            }
-          }
-        });
-
-    //Check if plugin is still up
-    if (!RabbitManager.getQueues(brokerIp, username, password, virtualHost, managementPort)
-        .contains(pluginId)) {
-      connection.close();
-      throw new PluginException("Plugin with id: " + pluginId + " not existing anymore...");
-    }
-    if (returnType != null) {
-      String res = response.take();
-      JsonObject jsonObject = gson.fromJson(res, JsonObject.class);
-
-      JsonElement exceptionJson = jsonObject.get("exception");
-      if (exceptionJson == null) {
-        JsonElement answerJson = jsonObject.get("answer");
-
-        Serializable ret;
-        if (answerJson == null) {
-          throw new PluginException(
-              "Plugin return null without throwing exception... It is hard to understand for me what went wrong, i am"
-                  + " only a (free) sofware...");
-        }
-        if (answerJson.isJsonPrimitive()) {
-          ret = gson.fromJson(answerJson.getAsJsonPrimitive(), returnType);
-        } else if (answerJson.isJsonArray()) {
-          ret = gson.fromJson(answerJson.getAsJsonArray(), returnType);
-        } else {
-          ret = gson.fromJson(answerJson.getAsJsonObject(), returnType);
-        }
-
-        log.trace("answer is: " + ret);
-        connection.close();
-        return ret;
-      } else {
-        PluginException pluginException;
-        try {
-          pluginException =
-              new PluginException(
-                  gson.fromJson(exceptionJson.getAsJsonObject(), VimDriverException.class));
-          log.debug(
-              "Got Vim Driver Exception with server: "
-                  + ((VimDriverException) pluginException.getCause()).getServer());
-        } catch (Exception ignored) {
-          channel.queueDelete(replyQueueName);
-          pluginException =
-              new PluginException(gson.fromJson(exceptionJson.getAsJsonObject(), Throwable.class));
-        }
-        connection.close();
-        throw pluginException;
-      }
-    } else {
-      try {
-        channel.queueDelete(replyQueueName);
-      } catch (Exception ignored) {
-      }
-      connection.close();
-      return null;
     }
   }
 }

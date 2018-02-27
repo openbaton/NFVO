@@ -22,8 +22,8 @@ import java.util.Date;
 import javax.annotation.PostConstruct;
 import org.openbaton.catalogue.security.HistoryEntity;
 import org.openbaton.catalogue.security.User;
+import org.openbaton.nfvo.core.interfaces.UserManagement;
 import org.openbaton.nfvo.repositories.HistoryEntityRepository;
-import org.openbaton.nfvo.security.interfaces.UserManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-/** Created by lto on 17/10/16. */
 @Service
 public class HistoryManagement implements org.openbaton.nfvo.core.interfaces.HistoryManagement {
 
@@ -48,6 +47,8 @@ public class HistoryManagement implements org.openbaton.nfvo.core.interfaces.His
 
   @Value("${nfvo.history.clear:false}")
   private boolean clearHistory;
+
+  private static final Object lock = new Object();
 
   @PostConstruct
   private void init() {
@@ -66,11 +67,10 @@ public class HistoryManagement implements org.openbaton.nfvo.core.interfaces.His
         log.trace("skipping method get or put");
         return;
       }
-      User user = null;
+      User user;
       try {
         user = userManagement.getCurrentUser();
       } catch (org.openbaton.exceptions.NotFoundException ex) {
-        //log.warn("Not storing requests from anonymousUser");
         return;
       }
 
@@ -82,14 +82,16 @@ public class HistoryManagement implements org.openbaton.nfvo.core.interfaces.His
       historyEntity.setResult(result);
       historyEntity.setTimestamp(new Date().getTime());
 
-      if (historyEntityRepository.count() >= maxHistoryEntities) {
-        HistoryEntity entity =
-            historyEntityRepository.findAll(
-                    new Sort(new Sort.Order(Sort.Direction.ASC, "timestamp")))[
-                0];
-        historyEntityRepository.delete(entity.getId());
+      synchronized (lock) {
+        if (historyEntityRepository.count() >= maxHistoryEntities) {
+          HistoryEntity entity =
+              historyEntityRepository.findAll(
+                      new Sort(new Sort.Order(Sort.Direction.ASC, "timestamp")))[
+                  0];
+          historyEntityRepository.delete(entity.getId());
+        }
+        historyEntityRepository.save(historyEntity);
       }
-      historyEntityRepository.save(historyEntity);
     }
   }
 

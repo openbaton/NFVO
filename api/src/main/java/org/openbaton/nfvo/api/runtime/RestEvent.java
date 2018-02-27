@@ -18,12 +18,17 @@ package org.openbaton.nfvo.api.runtime;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
 import org.openbaton.catalogue.nfvo.Action;
 import org.openbaton.catalogue.nfvo.EventEndpoint;
+import org.openbaton.exceptions.BadFormatException;
+import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.nfvo.api.utils.Utils;
+import org.openbaton.nfvo.core.interfaces.ComponentManager;
 import org.openbaton.nfvo.core.interfaces.EventDispatcher;
 import org.openbaton.nfvo.core.interfaces.EventManagement;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +52,9 @@ public class RestEvent {
   private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
   @Autowired private EventDispatcher eventDispatcher;
-
+  @Autowired private ComponentManager componentManager;
   @Autowired private EventManagement eventManagement;
+  @Autowired private Utils utils;
 
   /**
    * Adds a new EventEndpoint to the EventEndpoint repository
@@ -64,9 +70,25 @@ public class RestEvent {
   @ResponseStatus(HttpStatus.CREATED)
   public EventEndpoint register(
       @RequestBody @Valid EventEndpoint endpoint,
-      @RequestHeader(value = "project-id") String projectId)
-      throws MissingParameterException {
-    endpoint.setProjectId(projectId);
+      @RequestHeader(value = "project-id") String projectId,
+      @RequestHeader(value = "authorization") String token)
+      throws MissingParameterException, BadFormatException, NotFoundException, BadRequestException {
+    String[] tokenArray = token.split(" ");
+    if (tokenArray.length < 2) throw new BadFormatException("The passed token has a wrong format.");
+    token = tokenArray[1];
+    if (endpoint.getProjectId() == null || endpoint.getProjectId().equals(""))
+      endpoint.setProjectId(projectId);
+    if ((!componentManager.isService(token) && !utils.isAdmin())
+        && endpoint.getProjectId().equals("*"))
+      throw new BadRequestException("Only services and admin can register to all events");
+    if (!utils.isAdmin()
+        && !componentManager.isService(token)
+        && utils
+            .getCurrentUser()
+            .getRoles()
+            .stream()
+            .noneMatch(r -> r.getProject().equals(endpoint.getProjectId())))
+      throw new BadRequestException("Only services and admin can register to all events");
     return eventDispatcher.register(gson.toJson(endpoint));
   }
 
@@ -77,9 +99,7 @@ public class RestEvent {
    */
   @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void unregister(
-      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException {
+  public void unregister(@PathVariable("id") String id) throws NotFoundException {
     eventDispatcher.unregister(id);
   }
 
@@ -87,7 +107,7 @@ public class RestEvent {
    * Removes multiple EventEndpoint from the EventEndpoint repository
    *
    * @param ids: The List of the EventEndpoint Id to be deleted
-   * @throws NotFoundException
+   * @throws NotFoundException if the requested event endpoint does not exist
    */
   @RequestMapping(
     value = "/multipledelete",
@@ -95,16 +115,17 @@ public class RestEvent {
     consumes = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void multipleDelete(
-      @RequestBody @Valid List<String> ids, @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException {
+  public void multipleDelete(@RequestBody @Valid List<String> ids) throws NotFoundException {
     for (String id : ids) eventDispatcher.unregister(id);
   }
 
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public List<EventEndpoint> getEventEndpoints(
       @RequestHeader(value = "project-id") String projectId) {
-    return (List<EventEndpoint>) eventManagement.queryByProjectId(projectId);
+    List<EventEndpoint> eventEndpoints = new ArrayList<>();
+    eventManagement.queryByProjectId(projectId).forEach(eventEndpoints::add);
+    eventManagement.queryByProjectId("*").forEach(eventEndpoints::add);
+    return eventEndpoints;
   }
 
   @RequestMapping(

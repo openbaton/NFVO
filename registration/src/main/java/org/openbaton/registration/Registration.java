@@ -35,6 +35,22 @@ public class Registration {
   private static Logger log = LoggerFactory.getLogger(Registration.class);
   private Gson gson;
 
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername(String username) {
+    this.username = username;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
+  }
+
   private String username;
   private String password;
 
@@ -150,10 +166,13 @@ public class Registration {
     final String corrId = UUID.randomUUID().toString();
 
     AMQP.BasicProperties props =
-        new AMQP.BasicProperties.Builder().correlationId(corrId).replyTo(replyQueueName).build();
+        new AMQP.BasicProperties.Builder()
+            .correlationId(corrId)
+            .contentType("text/plain")
+            .replyTo(replyQueueName)
+            .build();
 
-    final BlockingQueue<ManagerCredentials> response =
-        new ArrayBlockingQueue<ManagerCredentials>(1);
+    final BlockingQueue<ManagerCredentials> response = new ArrayBlockingQueue<>(1);
 
     channel.basicConsume(
         replyQueueName,
@@ -161,8 +180,7 @@ public class Registration {
         new DefaultConsumer(channel) {
           @Override
           public void handleDelivery(
-              String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
-              throws IOException {
+              String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) {
             if (properties.getCorrelationId().equals(corrId)) {
               String bodyString = new String(body);
               ManagerCredentials managerCredentials =
@@ -227,7 +245,10 @@ public class Registration {
     channel.queueDeclarePassive("nfvo.manager.handling");
     channel.basicQos(1);
 
-    channel.basicPublish("openbaton-exchange", "nfvo.manager.handling", null, message.getBytes());
+    AMQP.BasicProperties props =
+        new AMQP.BasicProperties.Builder().contentType("text/plain").build();
+
+    channel.basicPublish("openbaton-exchange", "nfvo.manager.handling", props, message.getBytes());
     channel.close();
     connection.close();
   }

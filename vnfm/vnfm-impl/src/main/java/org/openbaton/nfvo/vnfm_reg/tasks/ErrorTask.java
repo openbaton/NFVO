@@ -17,7 +17,6 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
-import java.util.Date;
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
@@ -26,7 +25,6 @@ import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-/** Created by lto on 06/08/15. */
 @Service
 @Scope("prototype")
 public class ErrorTask extends AbstractTask {
@@ -52,9 +50,17 @@ public class ErrorTask extends AbstractTask {
   @Override
   protected void setDescription() {
     if (exception != null) {
-      if (exception.getMessage().length() > 1024) {
-        description = exception.getMessage().substring(0, 1024);
-      } else description = exception.getMessage();
+      if (exception.getMessage() != null) {
+        if (exception.getMessage().length() > 1024) {
+          description = exception.getMessage().substring(0, 1024);
+        } else description = exception.getMessage();
+      } else if (exception.getLocalizedMessage() != null) {
+        if (exception.getLocalizedMessage().length() > 1024) {
+          description = exception.getLocalizedMessage().substring(0, 1024);
+        } else description = exception.getMessage();
+      } else {
+        description = "An Error Occurred in this VNFR, check the VNFM logs for more info";
+      }
     } else {
       description = "An Error Occurred in this VNFR, check the VNFM logs for more info";
     }
@@ -96,7 +102,7 @@ public class ErrorTask extends AbstractTask {
           "Received ERROR message from VNFM related to VNFR: "
               + virtualNetworkFunctionRecord.getName());
       virtualNetworkFunctionRecord.setStatus(Status.ERROR);
-      setHistoryLifecycleEvent(new Date());
+      setHistoryLifecycleEvent();
       saveVirtualNetworkFunctionRecord();
     } else {
       log.error(

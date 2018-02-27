@@ -50,7 +50,6 @@ import org.openbaton.catalogue.nfvo.images.DockerImage;
 import org.openbaton.catalogue.nfvo.images.NFVImage;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
-import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.CyclicDependenciesException;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
 import org.openbaton.exceptions.NotFoundException;
@@ -115,7 +114,6 @@ public class NSDUtils {
     for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
         networkServiceDescriptor.getVnfd()) {
       for (VnfmManagerEndpoint endpoint : endpoints) {
-        log.debug(endpoint.getType() + " == " + virtualNetworkFunctionDescriptor.getEndpoint());
         if (endpoint.getType().equals(virtualNetworkFunctionDescriptor.getEndpoint())
             && endpoint.isActive()
             && endpoint.isEnabled()) {
@@ -229,13 +227,16 @@ public class NSDUtils {
     for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
       if (vdu.getVimInstanceName() != null) {
         for (String name : vdu.getVimInstanceName()) {
-          log.debug("vim instance name=" + name);
+          String vimName;
+          if (name.contains(":")) {
+            vimName = name.split(":")[0];
+          } else {
+            vimName = name;
+          }
+          log.debug("vim instance name=" + vimName);
           boolean fetched = false;
           for (BaseVimInstance vimInstance : vimInstances) {
-            if ((vimInstance.getName() != null
-                && vimInstance.getName().equals(name)) /*|| (vimInstance.getId() !=
-            null && vimInstance.getId().equals(name_id))
-                                */) {
+            if ((vimInstance.getName() != null && vimInstance.getName().equals(vimName))) {
               log.info("Found vimInstance: " + vimInstance.getName());
               fetched = true;
               break;
@@ -243,7 +244,7 @@ public class NSDUtils {
           }
           if (!fetched) {
             throw new NotFoundException(
-                "Not found VimInstance with name " + name + " in the catalogue");
+                "Not found VimInstance with name " + vimName + " in the catalogue");
           }
         }
       } else {
@@ -256,8 +257,7 @@ public class NSDUtils {
   }
 
   public void fetchDependencies(NetworkServiceDescriptor networkServiceDescriptor)
-      throws NotFoundException, BadFormatException, CyclicDependenciesException,
-          NetworkServiceIntegrityException {
+      throws NotFoundException, CyclicDependenciesException, NetworkServiceIntegrityException {
     /* Fetching dependencies */
     DirectedPseudograph<String, DefaultEdge> g = new DirectedPseudograph<>(DefaultEdge.class);
 
@@ -527,7 +527,8 @@ public class NSDUtils {
     BaseVimInstance vimInstance = null;
     for (BaseVimInstance vi :
         vimRepository.findByProjectId(virtualNetworkFunctionDescriptor.getProjectId())) {
-      if (vimName.equals(vi.getName())) {
+      if ((vimName.contains(":") && vimName.split(":")[0].equals(vi.getName()))
+          || (!vimName.contains(":") && vimName.equals(vi.getName()))) {
         vimInstance = vi;
         log.debug("Got vim with auth: " + vimInstance.getAuthUrl());
         break;
@@ -562,6 +563,9 @@ public class NSDUtils {
             "At least one VDU in the VNFD "
                 + virtualNetworkFunctionDescriptor.getName()
                 + " does not contain an image.");
+      }
+      if (vdu.getName() == null || vdu.getName().equalsIgnoreCase("")) {
+        vdu.setName("vdu" + i);
       }
       vdu.setProjectId(virtualNetworkFunctionDescriptor.getProjectId());
     }
@@ -762,19 +766,20 @@ public class NSDUtils {
         log.debug("Checking image: " + image);
         if (imageNames.contains(image) || imageIds.contains(image)) {
           found = true;
+          break;
         }
-        if (!found) {
-          throw new NetworkServiceIntegrityException(
-              "Regarding the VirtualNetworkFunctionDescriptor "
-                  + virtualNetworkFunctionDescriptor.getName()
-                  + ": in one of the VirtualDeploymentUnit, image"
-                  + image
-                  + " is not contained into the images of the vimInstance "
-                  + "chosen. Please choose one from: "
-                  + imageNames
-                  + " or from "
-                  + imageIds);
-        }
+      }
+      if (!found) {
+        throw new NetworkServiceIntegrityException(
+            "Regarding the VirtualNetworkFunctionDescriptor "
+                + virtualNetworkFunctionDescriptor.getName()
+                + ": in one of the VirtualDeploymentUnit, none of the images "
+                + virtualDeploymentUnit.getVm_image()
+                + " is not contained into the images of the vimInstance "
+                + "chosen. Please choose one from: "
+                + imageNames
+                + " or from "
+                + imageIds);
       }
     }
   }

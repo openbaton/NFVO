@@ -1,14 +1,13 @@
 package org.openbaton.nfvo.system;
 
-import java.util.concurrent.Executor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.AsyncConfigurerSupport;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-/** Created by mob on 09/02/2017. */
 /*
 This class enable the entire application to use methods annotated with @Async
 The Executor, which will be used, can be configured here.
@@ -31,12 +30,12 @@ public class AsyncExecutorConfig extends AsyncConfigurerSupport {
 
   @Override
   @Bean
-  public Executor getAsyncExecutor() {
-    if (maxPoolSize < 0) maxPoolSize = Integer.MAX_VALUE;
+  @Scope("prototype")
+  public ThreadPoolTaskExecutor getAsyncExecutor() {
     ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
     executor.setCorePoolSize(corePoolSize);
     executor.setQueueCapacity(queueCapacity);
-    executor.setMaxPoolSize(maxPoolSize);
+    executor.setMaxPoolSize(maxPoolSize > 0 ? maxPoolSize : Integer.MAX_VALUE);
     executor.setKeepAliveSeconds(keepAliveSeconds);
     executor.setThreadNamePrefix("OpenBatonAsyncTask-");
     executor.initialize();

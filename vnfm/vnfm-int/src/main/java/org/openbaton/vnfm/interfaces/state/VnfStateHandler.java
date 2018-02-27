@@ -21,7 +21,8 @@ public interface VnfStateHandler {
       NetworkServiceRecord networkServiceRecord,
       DeployNSRBody body,
       Map<String, Set<String>> vduVimInstances,
-      VirtualNetworkFunctionDescriptor vnfd)
+      VirtualNetworkFunctionDescriptor vnfd,
+      String monitoringIp)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 
   @Async
@@ -29,8 +30,7 @@ public interface VnfStateHandler {
       throws ExecutionException, InterruptedException;
 
   @Async
-  Future<NFVMessage> executeAction(NFVMessage nfvMessage)
-      throws ExecutionException, InterruptedException;
+  Future<NFVMessage> executeAction(NFVMessage nfvMessage);
 
   void terminate(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 

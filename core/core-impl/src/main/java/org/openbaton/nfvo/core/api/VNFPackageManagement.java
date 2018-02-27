@@ -28,10 +28,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,7 +39,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.regex.Pattern;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
@@ -54,20 +51,16 @@ import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.AdditionalRepoInfo;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.ConfigurationParameter;
-import org.openbaton.catalogue.nfvo.ImageMetadata;
 import org.openbaton.catalogue.nfvo.PackageType;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VNFPackageMetadata;
 import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
-import org.openbaton.catalogue.nfvo.images.DockerImage;
 import org.openbaton.catalogue.nfvo.images.NFVImage;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.DescriptorWrongFormat;
-import org.openbaton.exceptions.EntityUnreachableException;
 import org.openbaton.exceptions.ExistingVNFPackage;
 import org.openbaton.exceptions.IncompatibleVNFPackage;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
@@ -77,11 +70,8 @@ import org.openbaton.exceptions.VNFPackageFormatException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.exceptions.WrongAction;
 import org.openbaton.nfvo.common.utils.schema.SchemaValidator;
-import org.openbaton.nfvo.core.interfaces.VnfPlacementManagement;
-import org.openbaton.nfvo.core.utils.CheckVNFDescriptor;
 import org.openbaton.nfvo.core.utils.CheckVNFPackage;
 import org.openbaton.nfvo.core.utils.NSDUtils;
-import org.openbaton.nfvo.core.utils.Utils;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.ScriptRepository;
 import org.openbaton.nfvo.repositories.VNFDRepository;
@@ -96,14 +86,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.json.YamlJsonParser;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
-import org.yaml.snakeyaml.error.YAMLException;
+import org.yaml.snakeyaml.Yaml;
 
-/** Created by lto on 22/07/15. */
 @Service
 @Scope
 @ConfigurationProperties
@@ -114,6 +102,9 @@ public class VNFPackageManagement
 
   @Value("${vnfd.vnfp.cascade.delete:false}")
   private boolean cascadeDelete;
+
+  @Value("${nfvo.version.check:true}")
+  private boolean checkNfvoVersion;
   // This is only in case you run the NFVO from IDE
   @Value("${nfvo.version:}")
   private String nfvoVersion;
@@ -129,203 +120,72 @@ public class VNFPackageManagement
   @Autowired private NetworkServiceDescriptorRepository nsdRepository;
   @Autowired private VnfmManager vnfmManager;
   @Autowired private ImageChecker imageChecker;
-  @Autowired private VnfPlacementManagement vnfPlacementManagement;
   @Autowired private VNFPackageMetadataRepository vnfPackageMetadataRepository;
-
   @Autowired private org.openbaton.nfvo.core.interfaces.VimManagement vimManagement;
+
   private static ReentrantLock lock = new ReentrantLock();
 
-  public boolean isCascadeDelete() {
-    return cascadeDelete;
-  }
-
-  public void setCascadeDelete(boolean cascadeDelete) {
-    this.cascadeDelete = cascadeDelete;
-  }
-
-  @Override
-  public synchronized VirtualNetworkFunctionDescriptor onboard(byte[] pack, String projectId)
-      throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage,
-          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException,
-          InterruptedException, EntityUnreachableException, BadFormatException {
-    log.info("Onboarding VNF Package...");
-    for (BaseVimInstance vimInstance : vimInstanceRepository.findByProjectId(projectId))
-      vimManagement.refresh(vimInstance, false);
-    VNFPackage vnfPackage = new VNFPackage();
-    vnfPackage.setScripts(new HashSet<>());
-    Map<String, Object> metadata = null;
-    VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = null;
-    byte[] imageFile = null;
-    NFVImage image = new NFVImage();
-
-    InputStream tarStream;
-    ArchiveInputStream myTarFile;
-    try {
-      tarStream = new ByteArrayInputStream(pack);
-      myTarFile = new ArchiveStreamFactory().createArchiveInputStream("tar", tarStream);
-    } catch (ArchiveException e) {
-      e.printStackTrace();
-      throw new IOException();
-    }
-    TarArchiveEntry entry;
-    Map<String, Object> imageDetails = new HashMap<>();
-    try {
-      while ((entry = (TarArchiveEntry) myTarFile.getNextEntry()) != null) {
-        /* Get the name of the file */
-        if (entry.isFile() && !entry.getName().startsWith("./._")) {
-          log.debug("file inside tar: " + entry.getName());
-          byte[] content = new byte[(int) entry.getSize()];
-          myTarFile.read(content, 0, content.length);
-          if (entry.getName().equals("Metadata.yaml")) {
-            YamlJsonParser yaml = new YamlJsonParser();
-            try {
-              metadata = yaml.parseMap(new String(content));
-            } catch (YAMLException e) {
-              e.printStackTrace();
-              throw new BadFormatException(
-                  "The VNFPackage's Metadata.yaml file could not be parsed.");
-            }
-            imageDetails = handleMetadata(metadata, vnfPackage, imageDetails, image);
-
-          } else if (!entry.getName().startsWith("scripts/") && entry.getName().endsWith(".json")) {
-            //this must be the vnfd
-            //and has to be onboarded in the catalogue
-            String json = new String(content);
-            log.trace("Content of json is: " + json);
-            Set<ValidationMessage> errors =
-                SchemaValidator.validateSchema(
-                    VirtualNetworkFunctionDescriptor.class.getCanonicalName(), json);
-            if (errors.size() > 0) {
-              StringBuilder builder = new StringBuilder();
-              for (ValidationMessage s : errors) {
-                String message = s.getMessage();
-                builder.append(message).append(", ");
-              }
-              throw new BadFormatException(builder.toString());
-            }
-            try {
-              virtualNetworkFunctionDescriptor =
-                  mapper.fromJson(json, VirtualNetworkFunctionDescriptor.class);
-            } catch (JsonSyntaxException e) {
-              e.printStackTrace();
-              throw new BadFormatException(
-                  "The VNFPackage's VNFD file "
-                      + entry.getName()
-                      + " contains invalid Json syntax: "
-                      + e.getMessage());
-            }
-
-            if (virtualNetworkFunctionDescriptor.getVdu() == null
-                || virtualNetworkFunctionDescriptor.getVdu().isEmpty())
-              throw new BadFormatException(
-                  "The VNFD defined in the file "
-                      + entry.getName()
-                      + " does not contain any VDUs.");
-            if (virtualNetworkFunctionDescriptor.getName() == null
-                || virtualNetworkFunctionDescriptor.getName().equals(""))
-              throw new BadFormatException(
-                  "The VNFD defined in the file " + entry.getName() + " has no name.");
-
-            int i = 1;
-            for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
-              if (vdu.getName() == null) {
-                vdu.setName(virtualNetworkFunctionDescriptor.getName() + "-" + i);
-                i++;
-              }
-            }
-            for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
-              log.debug("vdu name: " + vdu.getName());
-            }
-            log.debug("Created VNFD: " + virtualNetworkFunctionDescriptor.getName());
-            log.trace("Created VNFD: " + virtualNetworkFunctionDescriptor);
-            nsdUtils.fetchVimInstances(virtualNetworkFunctionDescriptor, projectId);
-          } else if (entry.getName().endsWith(".img")) {
-            //this must be the image
-            //and has to be upladed to the RIGHT vim
-            imageFile = content;
-            log.debug("imageFile is: " + entry.getName());
-            throw new VimException(
-                "Uploading an image file from the VNFPackage is not supported at this moment. Please use the image link"
-                    + ".");
-          } else if (entry.getName().startsWith("scripts/")) {
-            Script script = new Script();
-            script.setName(entry.getName().substring(8));
-            script.setPayload(content);
-            vnfPackage.getScripts().add(script);
-          }
-        }
+  private VirtualNetworkFunctionDescriptor handleVirtualNetworkFunctionDescriptor(byte[] content)
+      throws BadRequestException, IOException, BadFormatException {
+    VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor;
+    String json = new String(content);
+    log.debug("Content of json is: " + json);
+    Set<ValidationMessage> errors =
+        SchemaValidator.validateSchema(VirtualNetworkFunctionDescriptor.class, json);
+    if (errors.size() > 0) {
+      StringBuilder builder = new StringBuilder();
+      for (ValidationMessage s : errors) {
+        String message = s.getMessage();
+        builder.append(message).append(", ");
       }
-    } catch (IOException e) {
+      throw new BadFormatException(builder.toString());
+    }
+    try {
+      virtualNetworkFunctionDescriptor =
+          mapper.fromJson(json, VirtualNetworkFunctionDescriptor.class);
+    } catch (JsonSyntaxException e) {
       e.printStackTrace();
-      throw new BadFormatException("The file seems not to be a tar file: " + e.getMessage());
+      throw new BadFormatException(
+          "The VNFPackage's VNFD file contains invalid Json syntax: " + e.getMessage());
     }
 
-    handleImage(
-        vnfPackage,
-        imageFile,
-        virtualNetworkFunctionDescriptor,
-        metadata,
-        image,
-        imageDetails,
-        projectId);
+    if (virtualNetworkFunctionDescriptor.getVdu() == null
+        || virtualNetworkFunctionDescriptor.getVdu().isEmpty())
+      throw new BadFormatException("The VNFD defined in the file does not contain any VDUs.");
+    if (virtualNetworkFunctionDescriptor.getName() == null
+        || virtualNetworkFunctionDescriptor.getName().equals(""))
+      throw new BadFormatException("The VNFD defined in the file has no name.");
 
-    vnfPackage.setImage(image);
-    myTarFile.close();
-    virtualNetworkFunctionDescriptor.setProjectId(projectId);
-    vnfPackage.setProjectId(projectId);
-    for (VirtualNetworkFunctionDescriptor vnfd : vnfdRepository.findByProjectId(projectId)) {
-      if (vnfd.getVendor().equals(virtualNetworkFunctionDescriptor.getVendor())
-          && vnfd.getName().equals(virtualNetworkFunctionDescriptor.getName())
-          && vnfd.getHbVersion().equals(virtualNetworkFunctionDescriptor.getHbVersion())) {
-        throw new AlreadyExistingException(
-            "A VNFD with this vendor, name and version is already existing");
+    int i = 1;
+    for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
+      if (vdu.getName() == null) {
+        vdu.setName(virtualNetworkFunctionDescriptor.getName() + "-" + i);
+        i++;
       }
     }
-
-    try {
-      nsdUtils.checkIntegrity(virtualNetworkFunctionDescriptor);
-    } catch (NetworkServiceIntegrityException e) {
-      NetworkServiceIntegrityException e2 =
-          new NetworkServiceIntegrityException(
-              "There are problems in the VNFPackage's VNFD file "
-                  + entry.getName()
-                  + ": "
-                  + e.getMessage(),
-              e);
-      throw e2;
+    for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
+      log.debug("vdu name: " + vdu.getName());
     }
-
-    vnfPackage = vnfPackageRepository.save(vnfPackage);
-    virtualNetworkFunctionDescriptor.setVnfPackageLocation(vnfPackage.getId());
-    virtualNetworkFunctionDescriptor = vnfdRepository.save(virtualNetworkFunctionDescriptor);
-    log.trace("Persisted " + virtualNetworkFunctionDescriptor);
-    log.trace(
-        "Onboarded VNFPackage ("
-            + virtualNetworkFunctionDescriptor.getVnfPackageLocation()
-            + ") successfully");
+    log.debug("Created VNFD: " + virtualNetworkFunctionDescriptor.getName());
     return virtualNetworkFunctionDescriptor;
   }
 
   @Override
   public synchronized VirtualNetworkFunctionDescriptor add(
       byte[] pack, boolean isImageIncluded, String projectId, boolean fromMarketPlace)
-      throws IOException, VimException, NotFoundException, SQLException, PluginException,
-          ExistingVNFPackage, DescriptorWrongFormat, VNFPackageFormatException,
-          IncompatibleVNFPackage, BadRequestException, AlreadyExistingException,
-          NetworkServiceIntegrityException, EntityUnreachableException, InterruptedException,
-          BadFormatException {
+      throws IOException, VimException, NotFoundException, PluginException, ExistingVNFPackage,
+          VNFPackageFormatException, IncompatibleVNFPackage, BadRequestException,
+          AlreadyExistingException, NetworkServiceIntegrityException, InterruptedException,
+          BadFormatException, ExecutionException {
 
     CheckVNFPackage.checkStructure(pack, isImageIncluded, fromMarketPlace);
 
     VNFPackage vnfPackage = new VNFPackage();
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = null;
-    VNFPackageMetadata vnfPackageMetadata = new VNFPackageMetadata();
     NFVImage image = new NFVImage();
-    ImageMetadata imageMetadata = new ImageMetadata();
 
-    Map<String, Object> imageDetails = null;
     Map<String, Object> metadata = null;
-
+    byte[] imageFile = new byte[0];
     try (ArchiveInputStream tarFile =
         new ArchiveStreamFactory()
             .createArchiveInputStream("tar", new ByteArrayInputStream(pack))) {
@@ -334,147 +194,25 @@ public class VNFPackageManagement
       while ((entry = (TarArchiveEntry) tarFile.getNextEntry()) != null) {
         if (entry.isFile() && !entry.getName().startsWith("./._")) {
           byte[] content = new byte[(int) entry.getSize()];
-          tarFile.read(content, 0, content.length);
-          if (entry.getName().equals("Metadata.yaml")) {
-            metadata = Utils.getMapFromYamlFile(content);
-            vnfPackage.setName((String) metadata.get("name"));
-
-            vnfPackageMetadata.setName((String) metadata.get("name"));
-            vnfPackage.setName((String) metadata.get("name"));
-
-            //Check version compatibility between VNF Package and actual NFVO
-            String vnfPackageNFVOVersion = null;
-            if (metadata.containsKey("nfvo-version")) {
-              vnfPackageNFVOVersion = (String) metadata.get("nfvo-version");
-            }
-            if (metadata.containsKey("nfvo_version")) {
-              vnfPackageNFVOVersion = (String) metadata.get("nfvo_version");
-            }
-            CheckVNFPackage.compareNFVOVersions(
-                vnfPackageNFVOVersion, getNfvoVersionWithoutSNAPSHOT());
-
-            vnfPackage.setNfvo_version(vnfPackageNFVOVersion);
-            vnfPackageMetadata.setNfvoVersion(vnfPackageNFVOVersion);
-
-            if (metadata.containsKey("vendor")) {
-              vnfPackageMetadata.setVendor((String) metadata.get("vendor"));
-            } else {
-              vnfPackageMetadata.setVendor((String) metadata.get("provider"));
-            }
-
-            if (metadata.containsKey("version")) {
-              vnfPackageMetadata.setVersion(String.valueOf(metadata.get("version")));
-            } else {
-              log.warn(
-                  "The VNF Package Metadata does not contain the field \"version\". Setting version 1.0 by default");
-              vnfPackageMetadata.setVersion("1.0");
-            }
-
-            if (metadata.containsKey("vim-types")) {
-              HashSet<String> vimTypes = new HashSet<String>((ArrayList) metadata.get("vim-types"));
-              vnfPackageMetadata.setVimTypes(vimTypes);
-              vnfPackage.setVimTypes(vimTypes);
-            } else {
-              LinkedHashSet<String> vimTypes = new LinkedHashSet<>();
-              vnfPackageMetadata.setVimTypes(vimTypes);
-              vimTypes.addAll((ArrayList) metadata.get("vim_types"));
-              vnfPackage.setVimTypes(vimTypes);
-            }
-
-            vnfPackageMetadata.setDescription((String) metadata.get("description"));
-            vnfPackageMetadata.setRequirements((Map) metadata.get("requirements"));
-
-            // Optional keys
-            vnfPackageMetadata.setTag((String) metadata.get("tag"));
-            vnfPackage.setScriptsLink((String) metadata.get("scripts-link"));
-            vnfPackageMetadata.setOsId((String) metadata.get("os-id"));
-            vnfPackageMetadata.setOsVersion(String.valueOf(metadata.get("os-version")));
-            vnfPackageMetadata.setOsArchitecture((String) metadata.get("os-architecture"));
-
-            if (metadata.containsKey("additional-repos")) {
-              List<Map<String, Object>> repoConfigurationInfoList =
-                  (List<Map<String, Object>>) metadata.get("additional-repos");
-              for (Map<String, Object> rci : repoConfigurationInfoList) {
-                String packageTypeString = (String) rci.get("type");
-                PackageType packageType =
-                    packageTypeString.equalsIgnoreCase("rpm") ? PackageType.RPM : PackageType.DEB;
-                AdditionalRepoInfo additionalRepoInfo = new AdditionalRepoInfo(packageType);
-                if (rci.containsKey("key-url"))
-                  additionalRepoInfo.setKeyUrl((String) rci.get("key-url"));
-                Set<String> configurationInfo = (Set<String>) rci.get("configuration");
-                additionalRepoInfo.setConfiguration(configurationInfo);
-                vnfPackageMetadata.addRepoConfigurationInfo(additionalRepoInfo);
-              }
-            }
-
-            imageDetails = (Map<String, Object>) metadata.get("image");
-            imageMetadata.setUpload((String) imageDetails.get("option"));
-
-            if (imageDetails.containsKey("ids")) {
-              imageMetadata.setIds(new HashSet<String>((ArrayList) imageDetails.get("ids")));
-            } else {
-              imageMetadata.setIds(new HashSet<String>());
-            }
-            if (imageDetails.containsKey("names")) {
-              imageMetadata.setNames(new HashSet<String>((ArrayList) imageDetails.get("names")));
-            } else {
-              imageMetadata.setNames(new HashSet<String>());
-            }
-            if (imageDetails.containsKey("link")) {
-              imageMetadata.setLink((String) imageDetails.get("link"));
-            } else {
-              imageMetadata.setLink(null);
-            }
-
-            //If upload==true -> create a new Image
-            if (imageDetails.get("upload").equals("true")
-                || imageDetails.get("upload").equals("check")) {
-              vnfPackage.setImageLink((String) imageDetails.get("link"));
-              Map<String, Object> imageConfig = (Map<String, Object>) metadata.get("image-config");
-
-              image.setName((String) imageConfig.get("name"));
-              image.setDiskFormat(((String) imageConfig.get("diskFormat")).toUpperCase());
-              image.setContainerFormat(((String) imageConfig.get("containerFormat")).toUpperCase());
-
-              image.setMinCPU(Integer.toString((Integer) imageConfig.get("minCPU")));
-              image.setMinDiskSpace(Long.parseLong(imageConfig.get("minDisk").toString()));
-              image.setMinRam(Long.parseLong(imageConfig.get("minRam").toString()));
-
-              image.setIsPublic((boolean) imageConfig.get("isPublic"));
-            }
+          if (tarFile.read(content, 0, content.length) != content.length) {
+            throw new IOException(String.format("Error reading from %s", entry.getName()));
+          }
+          if (entry.getName().equalsIgnoreCase("metadata.yaml")) {
+            Yaml yaml = new Yaml();
+            String yamlString = new String(content);
+            metadata = (Map<String, Object>) yaml.load(yamlString);
+            vnfPackage = handleMetadata(metadata, vnfPackage, image);
           } else if (!entry.getName().startsWith("scripts/") && entry.getName().endsWith(".json")) {
             //this must be the vnfd
-            String json = new String(content);
-            CheckVNFDescriptor.checkIntegrity(json);
-
-            virtualNetworkFunctionDescriptor =
-                mapper.fromJson(json, VirtualNetworkFunctionDescriptor.class);
-
-            int i = 1;
-            for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
-              if (vdu.getName() == null) {
-                vdu.setName(virtualNetworkFunctionDescriptor.getName() + "-" + i);
-                i++;
-              }
-            }
-            for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
-              log.debug("vdu name: " + vdu.getName());
-            }
-
-            log.debug("Created VNFD: " + virtualNetworkFunctionDescriptor.getName());
-            log.trace("Created VNFD: " + virtualNetworkFunctionDescriptor);
-            nsdUtils.fetchVimInstances(virtualNetworkFunctionDescriptor, projectId);
-
-            vnfPackageMetadata.setVnfmType(virtualNetworkFunctionDescriptor.getEndpoint());
-
-            //vnfPackageMetadata.setVnfd(virtualNetworkFunctionDescriptor);
-
+            virtualNetworkFunctionDescriptor = handleVirtualNetworkFunctionDescriptor(content);
           } else if (entry.getName().startsWith("scripts/")) {
             Script script = new Script();
             script.setName(entry.getName().substring(8));
             script.setPayload(content);
-            if (vnfPackage.getScripts() == null) vnfPackage.setScripts(new HashSet<Script>());
+            if (vnfPackage.getScripts() == null) vnfPackage.setScripts(new HashSet<>());
             vnfPackage.getScripts().add(script);
+          } else if (!entry.getName().startsWith("scripts/") && entry.getName().endsWith(".json")) {
+            imageFile = content;
           }
         }
       }
@@ -486,19 +224,9 @@ public class VNFPackageManagement
       throw new VNFPackageFormatException(
           "Error reading the VNF package, ensure the archive is not corrupted", e);
     }
-    lock.lock();
-    try {
-      handleImage(
-          vnfPackage,
-          null,
-          virtualNetworkFunctionDescriptor,
-          metadata,
-          image,
-          imageDetails,
-          projectId);
-    } finally {
-      lock.unlock();
-    }
+    if (virtualNetworkFunctionDescriptor == null)
+      throw new BadFormatException("Missing VNFD in pacakge");
+    if (metadata == null) throw new BadFormatException("Missing Metadata.yaml in pacakge");
 
     if (virtualNetworkFunctionDescriptor.getVnfPackageLocation() != null) {
       throw new BadFormatException("VnfPackageLocation must be empty");
@@ -510,29 +238,35 @@ public class VNFPackageManagement
       vnfPackage.setScripts(new HashSet<>());
     }
 
+    lock.lock();
+    try {
+      handleImage(
+          vnfPackage, imageFile, virtualNetworkFunctionDescriptor, image, metadata, projectId);
+    } finally {
+      lock.unlock();
+    }
+    VNFPackageMetadata vnfPackageMetadata =
+        handleVnfPackageMetadata(
+            metadata, vnfPackage, virtualNetworkFunctionDescriptor.getEndpoint(), projectId, "tar");
+
+    virtualNetworkFunctionDescriptor.setProjectId(projectId);
+
+    nsdUtils.fetchVimInstances(virtualNetworkFunctionDescriptor, projectId);
+    nsdUtils.checkIntegrity(virtualNetworkFunctionDescriptor);
+
     Map<String, Object> vnfPackageMetadataParameters = new HashMap<>();
-    vnfPackageMetadataParameters.put("name", vnfPackageMetadata.getName());
-    vnfPackageMetadataParameters.put("vendor", vnfPackageMetadata.getVendor());
+    vnfPackageMetadataParameters.put("name", metadata.get("name"));
+    vnfPackageMetadataParameters.put(
+        "vendor",
+        metadata.get("vendor") == null ? metadata.get("provider") : metadata.get("vendor"));
 
     Map<String, Object> vnfdParameters = new HashMap<>();
     vnfdParameters.put("name", virtualNetworkFunctionDescriptor.getName());
     vnfdParameters.put("vendor", virtualNetworkFunctionDescriptor.getVendor());
     CheckVNFPackage.checkCommonParametersWithVNFD(vnfPackageMetadataParameters, vnfdParameters);
 
-    //vnfPackageMetadata.setVnfPackage(vnfPackage);
-    //vnfPackageMetadata.setNfvImage(image);
-
-    //vnfPackageMetadata.setImageMetadata(imageMetadata);
-
-    //vnfPackageMetadata.setVnfPackageFileName(fileName);
-    vnfPackageMetadata.setProjectId(projectId);
-    //vnfPackageMetadata.setVnfPackageFile(pack);
-    //vnfPackageMetadata.setMd5sum(DigestUtils.md5DigestAsHex(pack));
-    vnfPackageMetadata.setType("tar");
-    vnfPackage.setVnfPackageMetadata(vnfPackageMetadata);
     vnfPackage.setImage(image);
 
-    virtualNetworkFunctionDescriptor.setProjectId(projectId);
     vnfPackage.setProjectId(projectId);
     // check if package already exists
 
@@ -554,19 +288,8 @@ public class VNFPackageManagement
       throw new ExistingVNFPackage("VNF package already exists.");
     }
 
-    nsdUtils.checkIntegrity(virtualNetworkFunctionDescriptor);
-
-    // check if it is the first and set to default
-    //    if(!vnfPackageMetadataRepository.findAllByNameAndVendor(vnfPackageMetadata.getName(),vnfPackageMetadata.getVendor()).iterator().hasNext()){
-    //      log.debug("Setting VNF package to default");
-    //      vnfPackageMetadata.setDefaultFlag(true);
-    //    }
-    //    else vnfPackageMetadata.setDefaultFlag(false);
-    //vnfPackageMetadataRepository.save(vnfPackageMetadata);
-    /* Done in the nsdCheckutils */
     vnfPackage = vnfPackageRepository.save(vnfPackage);
-    //    vnfPackage = vnfPackageRepository.findFirstById(virtualNetworkFunctionDescriptor.getVnfPackageLocation());
-    log.trace("Persisted " + vnfPackage);
+    // TODO understand this
     vnfPackageMetadataRepository.setVNFPackageId(vnfPackage.getId());
 
     virtualNetworkFunctionDescriptor.setVnfPackageLocation(vnfPackage.getId());
@@ -575,8 +298,7 @@ public class VNFPackageManagement
     virtualNetworkFunctionDescriptor.setUpdatedAt(format.format(new Date()));
     virtualNetworkFunctionDescriptor = setIPConfigurations(virtualNetworkFunctionDescriptor);
     virtualNetworkFunctionDescriptor = vnfdRepository.save(virtualNetworkFunctionDescriptor);
-    log.trace("Persisted " + virtualNetworkFunctionDescriptor);
-    log.trace(
+    log.debug(
         "Onboarded VNFPackage ("
             + virtualNetworkFunctionDescriptor.getVnfPackageLocation()
             + ") successfully");
@@ -584,8 +306,7 @@ public class VNFPackageManagement
   }
 
   private VirtualNetworkFunctionDescriptor setIPConfigurations(
-      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor)
-      throws DescriptorWrongFormat {
+      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor) {
     // If the VNF manager is not the fixed-host then skip this part
     if (!virtualNetworkFunctionDescriptor.getEndpoint().equalsIgnoreCase("fixed-host"))
       return virtualNetworkFunctionDescriptor;
@@ -671,17 +392,94 @@ public class VNFPackageManagement
     return virtualNetworkFunctionDescriptor;
   }
 
-  @Override
-  public Map<String, Object> handleMetadata(
+  private VNFPackageMetadata handleVnfPackageMetadata(
       Map<String, Object> metadata,
       VNFPackage vnfPackage,
-      Map<String, Object> imageDetails,
-      NFVImage image)
-      throws IncompatibleVNFPackage, BadFormatException {
+      String endpoint,
+      String projectId,
+      String type)
+      throws NotFoundException, IncompatibleVNFPackage {
+    VNFPackageMetadata vnfPackageMetadata = new VNFPackageMetadata();
+    vnfPackageMetadata.setName((String) metadata.get("name"));
+    vnfPackage.setName((String) metadata.get("name"));
+    vnfPackageMetadata.setVnfmType(endpoint);
+    //Check version compatibility between VNF Package and actual NFVO
+    String vnfPackageNFVOVersion = null;
+    vnfPackageMetadata.setProjectId(projectId);
+    vnfPackageMetadata.setType(type);
+    if (metadata.containsKey("nfvo-version")) {
+      vnfPackageNFVOVersion = (String) metadata.get("nfvo-version");
+    }
+    if (metadata.containsKey("nfvo_version")) {
+      vnfPackageNFVOVersion = (String) metadata.get("nfvo_version");
+    }
+    if (checkNfvoVersion) {
+      CheckVNFPackage.compareNFVOVersions(vnfPackageNFVOVersion, getNfvoVersionWithoutSNAPSHOT());
+    }
+
+    vnfPackage.setNfvo_version(vnfPackageNFVOVersion);
+    vnfPackageMetadata.setNfvoVersion(vnfPackageNFVOVersion);
+
+    if (metadata.containsKey("vendor")) {
+      vnfPackageMetadata.setVendor((String) metadata.get("vendor"));
+    } else {
+      vnfPackageMetadata.setVendor((String) metadata.get("provider"));
+    }
+
+    if (metadata.containsKey("version")) {
+      vnfPackageMetadata.setVersion(String.valueOf(metadata.get("version")));
+    } else {
+      log.warn(
+          "The VNF Package Metadata does not contain the field \"version\". Setting version 1.0 by default");
+      vnfPackageMetadata.setVersion("1.0");
+    }
+
+    if (metadata.containsKey("vim-types")) {
+      HashSet<String> vimTypes = new HashSet<String>((ArrayList) metadata.get("vim-types"));
+      vnfPackageMetadata.setVimTypes(vimTypes);
+      vnfPackage.setVimTypes(vimTypes);
+    } else {
+      LinkedHashSet<String> vimTypes = new LinkedHashSet<>();
+      vnfPackageMetadata.setVimTypes(vimTypes);
+      vimTypes.addAll((ArrayList) metadata.get("vim_types"));
+      vnfPackage.setVimTypes(vimTypes);
+    }
+
+    vnfPackageMetadata.setDescription((String) metadata.get("description"));
+    vnfPackageMetadata.setRequirements((Map) metadata.get("requirements"));
+
+    // Optional keys
+    vnfPackageMetadata.setTag((String) metadata.get("tag"));
+    vnfPackage.setScriptsLink((String) metadata.get("scripts-link"));
+    vnfPackageMetadata.setOsId((String) metadata.get("os-id"));
+    vnfPackageMetadata.setOsVersion(String.valueOf(metadata.get("os-version")));
+    vnfPackageMetadata.setOsArchitecture((String) metadata.get("os-architecture"));
+
+    if (metadata.containsKey("additional-repos")) {
+      List<Map<String, Object>> repoConfigurationInfoList =
+          (List<Map<String, Object>>) metadata.get("additional-repos");
+      for (Map<String, Object> rci : repoConfigurationInfoList) {
+        String packageTypeString = (String) rci.get("type");
+        PackageType packageType =
+            packageTypeString.equalsIgnoreCase("rpm") ? PackageType.RPM : PackageType.DEB;
+        AdditionalRepoInfo additionalRepoInfo = new AdditionalRepoInfo(packageType);
+        if (rci.containsKey("key-url")) additionalRepoInfo.setKeyUrl((String) rci.get("key-url"));
+        Set<String> configurationInfo = (Set<String>) rci.get("configuration");
+        additionalRepoInfo.setConfiguration(configurationInfo);
+        vnfPackageMetadata.addRepoConfigurationInfo(additionalRepoInfo);
+      }
+    }
+    vnfPackage.setVnfPackageMetadata(vnfPackageMetadata);
+    return vnfPackageMetadata;
+  }
+
+  public VNFPackage handleMetadata(
+      Map<String, Object> metadata, VNFPackage vnfPackage, NFVImage image)
+      throws BadFormatException {
 
     //Get configuration for NFVImage
-    String[] REQUIRED_PACKAGE_KEYS = new String[] {"name", "image", "vim_types"};
-    for (String requiredKey : REQUIRED_PACKAGE_KEYS) {
+    String[] requiredPackageKeys = new String[] {"name", "image", "vim_types"};
+    for (String requiredKey : requiredPackageKeys) {
       if (!metadata.containsKey(requiredKey)) {
         throw new BadFormatException(
             "Not found " + requiredKey + " of VNFPackage in Metadata.yaml");
@@ -691,58 +489,22 @@ public class VNFPackageManagement
             "Not defined " + requiredKey + " of VNFPackage in Metadata.yaml");
       }
     }
-    String[] actualNfvoVersion;
-    try {
-      actualNfvoVersion = getNfvoVersionSplitted();
-    } catch (NotFoundException ne) {
-      log.warn(ne.getMessage());
-      actualNfvoVersion = null;
-    }
-
     vnfPackage.setName((String) metadata.get("name"));
-    if (metadata.containsKey("nfvo_version") && actualNfvoVersion != null) {
-
-      String nfvoVersionString = (String) metadata.get("nfvo_version");
-      String[] nfvoVersion = nfvoVersionString.split(Pattern.quote("."));
-
-      if (nfvoVersion[0].equals(actualNfvoVersion[0])
-          && nfvoVersion[1].equals(actualNfvoVersion[1])) {
-        vnfPackage.setNfvo_version(nfvoVersionString);
-      } else {
-        throw new IncompatibleVNFPackage(
-            "The NFVO Version: "
-                + nfvoVersion[0]
-                + "."
-                + nfvoVersion[1]
-                + ".X"
-                + " specified in the Metadata"
-                + " is not compatible with the this NFVOs version: "
-                + actualNfvoVersion[0]
-                + "."
-                + actualNfvoVersion[1]
-                + ".X");
-      }
-    } else {
-      //TODO throw exception
-      log.warn(
-          "Missing 'nfvo_version' parameter in the vnfpackage, or the orchestrator does not expose its version number");
-    }
 
     if (metadata.containsKey("scripts-link")) {
       vnfPackage.setScriptsLink((String) metadata.get("scripts-link"));
     }
     if (metadata.containsKey("vim_types")) {
-      LinkedHashSet<String> vimTypes = new LinkedHashSet<>();
-      vimTypes.addAll((ArrayList) metadata.get("vim_types"));
+      LinkedHashSet<String> vimTypes = new LinkedHashSet<>((ArrayList) metadata.get("vim_types"));
       vnfPackage.setVimTypes(vimTypes);
     } else {
       log.warn("vim_types is not specified! it is not possible to check the vim");
     }
     if (metadata.containsKey("image")) {
-      imageDetails = (Map<String, Object>) metadata.get("image");
-      String[] REQUIRED_IMAGE_DETAILS = new String[] {"upload"};
+      Map<String, Object> imageDetails = (Map<String, Object>) metadata.get("image");
+      String[] requiredImageDetails = new String[] {"upload"};
       log.debug("image: " + imageDetails);
-      for (String requiredKey : REQUIRED_IMAGE_DETAILS) {
+      for (String requiredKey : requiredImageDetails) {
         if (!imageDetails.containsKey(requiredKey)) {
           throw new BadFormatException(
               "Not found key: " + requiredKey + "of image in Metadata.yaml");
@@ -752,18 +514,17 @@ public class VNFPackageManagement
               "Not defined value of key: " + requiredKey + " of image in Metadata.yaml");
         }
       }
-      //If upload==true -> create a new Image
       if (imageDetails.get("upload").equals("true") || imageDetails.get("upload").equals("check")) {
         vnfPackage.setImageLink((String) imageDetails.get("link"));
         if (metadata.containsKey("image-config")) {
           log.debug("image-config: " + metadata.get("image-config"));
           Map<String, Object> imageConfig = (Map<String, Object>) metadata.get("image-config");
           //Check if all required keys are available
-          String[] REQUIRED_IMAGE_CONFIG =
+          String[] requiredImageConfig =
               new String[] {
                 "name", "diskFormat", "containerFormat", "minCPU", "minDisk", "minRam", "isPublic"
               };
-          for (String requiredKey : REQUIRED_IMAGE_CONFIG) {
+          for (String requiredKey : requiredImageConfig) {
             if (!imageConfig.containsKey(requiredKey)) {
               throw new BadFormatException(
                   "Not found key: " + requiredKey + " of image-config in Metadata.yaml");
@@ -781,6 +542,7 @@ public class VNFPackageManagement
           image.setMinRam((Integer) imageConfig.get("minRam"));
           image.setIsPublic(
               Boolean.parseBoolean(Integer.toString((Integer) imageConfig.get("minRam"))));
+          vnfPackage.setImage(image);
         } else {
           throw new BadFormatException(
               "The image-config is not defined. Please define it to upload a new image");
@@ -791,290 +553,87 @@ public class VNFPackageManagement
           "The image details are not defined. Please define it to use the right image");
     }
 
-    return imageDetails;
+    return vnfPackage;
   }
 
   @Override
-  public void handleImage(
+  public BaseNfvImage handleImage(
       VNFPackage vnfPackage,
       byte[] imageFile,
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
-      Map<String, Object> metadata,
       NFVImage image,
-      Map<String, Object> imageDetails,
+      Map<String, Object> metadata,
       String projectId)
       throws NotFoundException, PluginException, VimException, BadRequestException, IOException,
-          AlreadyExistingException, InterruptedException, EntityUnreachableException {
-    if (metadata == null) {
-      throw new NotFoundException("VNFPackageManagement: Not found Metadata.yaml");
-    }
+          AlreadyExistingException, InterruptedException, ExecutionException, BadFormatException {
+
     if (vnfPackage.getScriptsLink() != null) {
-      if (!vnfPackage.getScripts().isEmpty()) {
+      if (vnfPackage.getScripts() != null && !vnfPackage.getScripts().isEmpty()) {
         log.debug(
             "VNFPackageManagement: Remove scripts got by scripts/ because the scripts-link is defined");
-        vnfPackage.setScripts(new HashSet<Script>());
+        vnfPackage.setScripts(new HashSet<>());
       }
     }
+    Map<String, Object> imageDetails = (Map<String, Object>) metadata.get("image");
 
-    List<String> vimInstances = new ArrayList<>();
     if (imageDetails.get("upload").equals("check")) {
-      if (vnfPackage.getImageLink() == null && imageFile == null) {
-        throw new NotFoundException(
-            "VNFPackageManagement: For option upload=check you must define an image. Neither the image link is "
-                + "defined nor the image file is available. Please define at least one if you want to upload a new image");
-      }
+      throw new BadFormatException("Option 'check' selected is not available use true or false");
     }
 
-    for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
-      if (vdu.getVimInstanceName() == null || vdu.getVimInstanceName().isEmpty()) {
-        vdu.setVimInstanceName(new LinkedHashSet<>());
-        vdu.getVimInstanceName()
-            .addAll(
-                vnfPlacementManagement.chose(
-                    virtualNetworkFunctionDescriptor, vnfPackage.getVimTypes(), projectId));
-      } else {
-        if (vnfPackage.getVimTypes() != null && !vnfPackage.getVimTypes().isEmpty()) {
-          for (String vimInstanceName : vdu.getVimInstanceName()) {
-            for (BaseVimInstance vi : vimInstanceRepository.findByProjectId(projectId)) {
-              if (vi.getName().equals(vimInstanceName)) {
-                if (!vnfPackage.getVimTypes().contains(vi.getType())) {
-                  throw new BadRequestException(
-                      "A VIM defined in VNFD "
-                          + virtualNetworkFunctionDescriptor.getName()
-                          + " is not supported based on the VIM types provided in the VNF Package");
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+    virtualNetworkFunctionDescriptor
+        .getVdu()
+        .parallelStream()
+        .filter(virtualDeploymentUnit -> virtualDeploymentUnit.getVimInstanceName() == null)
+        .forEach(
+            virtualDeploymentUnit -> virtualDeploymentUnit.setVimInstanceName(new HashSet<>()));
+
     if (imageDetails.get("upload").equals("true")) {
-      log.debug("VNFPackageManagement: Uploading a new Image");
+      log.info("Uploading a new Image");
       if (vnfPackage.getImageLink() == null && imageFile == null) {
         throw new NotFoundException(
             "VNFPackageManagement: Neither the image link is defined nor the image file is available. Please define "
                 + "at least one if you want to upload a new image");
-      } else if (vnfPackage.getImageLink() != null
-          && virtualNetworkFunctionDescriptor.getVdu() != null) {
-        log.debug("VNFPackageManagement: Uploading a new Image by using the image link");
-        for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
-          if (vdu.getVimInstanceName() != null && !vdu.getVimInstanceName().isEmpty()) {
-            for (String vimName : vdu.getVimInstanceName()) {
-              BaseVimInstance vimInstance = null;
+      }
 
-              for (BaseVimInstance vi : vimInstanceRepository.findByProjectId(projectId)) {
-                if (vimName.equals(vi.getName())) {
-                  vimInstance = vi;
-                }
-              }
-
-              image = addNfvImage(vnfPackage, image, vimInstances, vdu, vimInstance);
+      for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
+        if (vdu.getVimInstanceName() != null && !vdu.getVimInstanceName().isEmpty()) {
+          for (String vimName : vdu.getVimInstanceName()) {
+            BaseVimInstance vimInstance =
+                vimInstanceRepository.findByProjectIdAndName(projectId, vimName);
+            Vim vim = vimBroker.getVim(vimInstance.getType());
+            if (vnfPackage.getImageLink() != null
+                && virtualNetworkFunctionDescriptor.getVdu() != null) {
+              log.debug("Uploading a new Image by using the image link");
+              image = vim.add(vimInstance, image, vnfPackage.getImageLink());
+            } else if (imageFile != null) {
+              log.debug("Uploading a new Image by using the image file");
+              image = vim.add(vimInstance, image, imageFile);
             }
-          }
-        }
-      } else if (imageFile != null) {
-        log.debug("VNFPackageManagement: Uploading a new Image by using the image file");
-        for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
-          if (vdu.getVimInstanceName() != null && !vdu.getVimInstanceName().isEmpty()) {
-            for (String vimName : vdu.getVimInstanceName()) {
-              BaseVimInstance vimInstance = null;
-
-              for (BaseVimInstance vi : vimInstanceRepository.findByProjectId(projectId)) {
-                if (vimName.equals(vi.getName())) {
-                  vimInstance = vi;
-                }
-              }
-
-              if (!vimInstances.contains(
-                  vimInstance.getId())) { // check if we didn't already upload it
-                Vim vim = vimBroker.getVim(vimInstance.getType());
-                log.debug(
-                    "VNFPackageManagement: Uploading a new Image to VimInstance "
-                        + vimInstance.getName());
-                image = vim.add(vimInstance, image, imageFile);
-                if (vdu.getVm_image() == null) {
-                  vdu.setVm_image(new HashSet<>());
-                }
-                vdu.getVm_image().add(image.getExtId());
-                vimInstances.add(vimInstance.getId());
-                vimManagement.refresh(vimInstance, true);
-
-                imageChecker.checkImageStatus(vimInstance);
-              }
+            if (vdu.getVm_image() == null) {
+              vdu.setVm_image(new LinkedHashSet<>());
             }
+            vdu.getVm_image().add(image.getExtId());
+            vimInstance = vimManagement.refresh(vimInstance, true).get();
+            imageChecker.checkImageStatus(vimInstance);
           }
+        } else {
+          throw new BadRequestException(
+              "Upload was specified 'true' but no vimInstanceName was specified in the vdu. Please specify where to upload the image");
         }
       }
     } else {
-      if (imageDetails.get("upload").equals("check")
-          && !imageDetails.containsKey("ids")
-          && !imageDetails.containsKey("names")) {
-        throw new NotFoundException(
-            "VNFPackageManagement: Upload option 'check' requires at least a list of ids or names to find "
-                + "the right image.");
-      }
-      for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
-
-        Set<String> vimInstanceNames = vdu.getVimInstanceName();
-
-        for (String vimName : vimInstanceNames) {
-
-          BaseVimInstance vimInstance = null;
-
-          for (BaseVimInstance vi : vimInstanceRepository.findByProjectId(projectId)) {
-            if (vimName.equals(vi.getName())) {
-              vimInstance = vi;
-            }
-          }
-
-          if (vimInstance == null) {
-            throw new NotFoundException(
-                "Vim Instance with name " + vimName + " was not found in project: " + projectId);
-          }
-
-          boolean found = false;
-          vimManagement.refresh(vimInstance, false);
-          //First, check for image ids
-          if (imageDetails.containsKey("ids")) {
-            for (BaseNfvImage nfvImage : vimInstance.getImages()) {
-              if (((List) imageDetails.get("ids")).contains(nfvImage.getExtId())) {
-                if (!found) {
-                  vdu.getVm_image().add(nfvImage.getExtId());
-                  found = true;
-                } else {
-                  throw new NotFoundException(
-                      "VNFPackageManagement: Multiple images found with the defined list of IDs. Do not know "
-                          + "which one to choose");
+      List<String> names = (List<String>) imageDetails.get("names");
+      List<String> ids = (List<String>) imageDetails.get("ids");
+      virtualNetworkFunctionDescriptor
+          .getVdu()
+          .forEach(
+              virtualDeploymentUnit -> {
+                if (virtualDeploymentUnit.getVm_image() == null) {
+                  virtualDeploymentUnit.setVm_image(new LinkedHashSet<>());
                 }
-              }
-            }
-          }
-
-          //If no one was found, check for the names
-          List imageNamesMetadata = (List) imageDetails.get("names");
-          if (!found) {
-            if (imageDetails.containsKey("names")) {
-              for (BaseNfvImage nfvImage : vimInstance.getImages()) {
-                if (matchNames(imageNamesMetadata, nfvImage)) {
-                  if (!found) {
-                    vdu.getVm_image().add(nfvImage.getExtId());
-                    found = true;
-                  } else {
-                    throw new NotFoundException(
-                        "VNFPackageManagement: Multiple images found with the same name. Do not know which one to"
-                            + " choose. To avoid this, define the id");
-                  }
-                }
-              }
-            }
-          }
-          if (!found) {
-            for (BaseNfvImage nfvImage : vimInstance.getImages()) {
-              if (matchNames(vdu.getVm_image(), nfvImage)) {
-                if (!found) {
-                  found = true;
-                }
-              }
-            }
-          }
-          //if no image was found with the defined ids or names, the image doesn't exist
-          if (!found) {
-            if (imageDetails.get("upload").equals("check")) {
-              if (vnfPackage.getImageLink() == null && imageFile == null) {
-                throw new NotFoundException(
-                    "VNFPackageManagement: Neither the image link is defined nor the image file is available. "
-                        + "Please define at least one if you want to upload a new image");
-              } else if (vnfPackage.getImageLink() != null) {
-                log.debug("VNFPackageManagement: Uploading a new Image by using the image link");
-                image = addNfvImage(vnfPackage, image, vimInstances, vdu, vimInstance);
-              } else if (imageFile != null) {
-                log.debug("VNFPackageManagement: Uploading a new Image by using the image file");
-                if (!vimInstances.contains(
-                    vimInstance.getId())) { // check if we didn't already upload it
-                  Vim vim = vimBroker.getVim(vimInstance.getType());
-                  log.debug(
-                      "VNFPackageManagement: Uploading a new Image to VimInstance "
-                          + vimInstance.getName());
-                  image = vim.add(vimInstance, image, imageFile);
-                  if (vdu.getVm_image() == null) {
-                    vdu.setVm_image(new HashSet<>());
-                  }
-                  vimInstances.add(vimInstance.getId());
-                  vdu.getVm_image().add(image.getExtId());
-                  vimManagement.refresh(vimInstance, true);
-
-                  imageChecker.checkImageStatus(vimInstance);
-                }
-              }
-            } else {
-              throw new NotFoundException(
-                  "VNFPackageManagement: Neither the defined image ids nor the names were found. Use upload option "
-                      + "'check' to get sure that the image will be available");
-            }
-          } else {
-            log.debug(
-                "Image "
-                    + image.getName()
-                    + " provided in uploaded package "
-                    + vnfPackage.getName()
-                    + " is available on VIM");
-          }
-
-          //        } else { // vimInstanceName is not defined, just put the name into the vdu
-          if (imageDetails.containsKey("names")) {
-            List names = imageNamesMetadata;
-            log.debug("Adding names: " + names);
-            vdu.getVm_image().addAll(names);
-          } else if (imageDetails.containsKey("ids")) {
-            List ids = (List) imageDetails.get("ids");
-            log.debug("Adding ids: " + ids);
-            vdu.getVm_image().addAll(ids);
-          } else {
-            log.debug(
-                "Neither names or ids are provided in the VNF Package. Just onboard without any images from the package.");
-          }
-        }
-      }
-    }
-  }
-
-  private boolean matchNames(Collection<String> imageNamesMetadata, BaseNfvImage nfvImage) {
-    return imageNamesMetadata
-        .stream()
-        .anyMatch(
-            name -> {
-              if (nfvImage instanceof NFVImage) {
-                NFVImage osImage = (NFVImage) nfvImage;
-                return name.equals(osImage.getName());
-              } else if (nfvImage instanceof DockerImage) {
-                DockerImage dockerImage = (DockerImage) nfvImage;
-                return dockerImage.getTags().contains(name);
-              } else return nfvImage.getExtId().equals(name);
-            });
-  }
-
-  private NFVImage addNfvImage(
-      VNFPackage vnfPackage,
-      NFVImage image,
-      List<String> vimInstances,
-      VirtualDeploymentUnit vdu,
-      BaseVimInstance vimInstance)
-      throws PluginException, VimException, IOException, BadRequestException,
-          AlreadyExistingException, InterruptedException {
-    if (!vimInstances.contains(vimInstance.getId())) { // check if we didn't already upload it
-      Vim vim = vimBroker.getVim(vimInstance.getType());
-      log.debug(
-          "VNFPackageManagement: Uploading a new Image to VimInstance " + vimInstance.getName());
-      image = vim.add(vimInstance, image, vnfPackage.getImageLink());
-      if (vdu.getVm_image() == null) {
-        vdu.setVm_image(new HashSet<>());
-      }
-      vdu.getVm_image().add(image.getExtId());
-      vimInstances.add(vimInstance.getId());
-      vimManagement.refresh(vimInstance, true);
-
-      imageChecker.checkImageStatus(vimInstance);
+                if (ids != null) virtualDeploymentUnit.getVm_image().addAll(ids);
+                if (names != null) virtualDeploymentUnit.getVm_image().addAll(names);
+              });
     }
     return image;
   }
@@ -1082,7 +641,7 @@ public class VNFPackageManagement
   public VirtualNetworkFunctionDescriptor onboardFromMarket(String link, String projectId)
       throws IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
           NotFoundException, PluginException, NetworkServiceIntegrityException, BadRequestException,
-          InterruptedException, EntityUnreachableException, BadFormatException {
+          InterruptedException, BadFormatException {
     log.debug("This is download link" + link);
     URL packageLink;
     try {
@@ -1092,24 +651,21 @@ public class VNFPackageManagement
       throw new BadFormatException("The provided link " + link + " is not a valid URL.");
     }
 
-    InputStream in = new BufferedInputStream(packageLink.openStream());
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    byte[] bytes = new byte[1024];
-    int n;
-    while (-1 != (n = in.read(bytes))) {
-      out.write(bytes, 0, n);
+    byte[] packageOnboard;
+    try (InputStream in = new BufferedInputStream(packageLink.openStream());
+        ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+      byte[] bytes = new byte[1024];
+      int n;
+      while (-1 != (n = in.read(bytes))) {
+        out.write(bytes, 0, n);
+      }
+      packageOnboard = out.toByteArray();
     }
-    out.close();
-    in.close();
-    byte[] packageOnboard = out.toByteArray();
     log.debug("Downloaded " + packageOnboard.length + " bytes");
     VirtualNetworkFunctionDescriptor vnfd;
     try {
       vnfd = add(packageOnboard, false, projectId, true);
-    } catch (SQLException
-        | ExistingVNFPackage
-        | DescriptorWrongFormat
-        | VNFPackageFormatException e) {
+    } catch (ExistingVNFPackage | VNFPackageFormatException | ExecutionException e) {
       if (log.isDebugEnabled()) log.error(e.getMessage(), e);
       else log.error(e.getMessage());
       throw new BadRequestException(e.getMessage());
@@ -1122,7 +678,7 @@ public class VNFPackageManagement
       String link, String projectId)
       throws IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
           NotFoundException, PluginException, NetworkServiceIntegrityException, BadRequestException,
-          InterruptedException, EntityUnreachableException {
+          InterruptedException {
     log.debug("Onboard from Package Repository, this is the download link: " + link);
     URL packageLink = new URL(link);
 
@@ -1140,20 +696,15 @@ public class VNFPackageManagement
     VirtualNetworkFunctionDescriptor vnfd;
     try {
       vnfd = add(packageOnboard, false, projectId, false);
-    } catch (SQLException
-        | ExistingVNFPackage
-        | DescriptorWrongFormat
+    } catch (ExistingVNFPackage
         | BadFormatException
-        | VNFPackageFormatException e) {
+        | VNFPackageFormatException
+        | ExecutionException e) {
       if (log.isDebugEnabled()) log.error(e.getMessage(), e);
       else log.error(e.getMessage());
       throw new BadRequestException(e.getMessage());
     }
     return vnfd;
-  }
-
-  private String[] getNfvoVersionSplitted() throws NotFoundException {
-    return getNfvoVersionWithoutSNAPSHOT().split(Pattern.quote("."));
   }
 
   private String getNfvoVersionWithoutSNAPSHOT() throws NotFoundException {
@@ -1191,7 +742,7 @@ public class VNFPackageManagement
   }
 
   @Override
-  public VNFPackage query(String id, String projectId) throws NotFoundException {
+  public VNFPackage query(String id, String projectId) {
     return vnfPackageRepository.findFirstByIdAndProjectId(id, projectId);
   }
 
@@ -1249,10 +800,6 @@ public class VNFPackageManagement
         } else {
           log.debug("VNFD " + virtualNetworkFunctionDescriptor.getId() + " will not be removed");
         }
-        //        throw new WrongAction(
-        //            "It is not possible to remove the vnfPackage with id "
-        //                + id
-        //                + ", a VNFD referencing it is still onboarded");
       }
     }
     if (cascadeDelete) {

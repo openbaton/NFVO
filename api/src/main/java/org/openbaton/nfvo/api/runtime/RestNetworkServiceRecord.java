@@ -55,7 +55,6 @@ import org.openbaton.exceptions.QuotaExceededException;
 import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.exceptions.WrongStatusException;
-import org.openbaton.nfvo.api.exceptions.StateException;
 import org.openbaton.nfvo.api.model.DependencyObject;
 import org.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
 import org.slf4j.Logger;
@@ -99,13 +98,14 @@ public class RestNetworkServiceRecord {
     produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.CREATED)
+  @Deprecated
   public NetworkServiceRecord create(
       @RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor,
       @RequestHeader(value = "project-id") String projectId,
       @RequestBody(required = false) String bodyJson)
       throws InterruptedException, ExecutionException, VimException, NotFoundException,
-          BadFormatException, VimDriverException, QuotaExceededException, PluginException,
-          MissingParameterException, BadRequestException, IOException, AlreadyExistingException {
+          BadFormatException, PluginException, MissingParameterException, BadRequestException,
+          IOException, AlreadyExistingException {
 
     JsonObject jsonObject;
     try {
@@ -167,8 +167,8 @@ public class RestNetworkServiceRecord {
       @RequestHeader(value = "project-id") String projectId,
       @RequestBody(required = false) JsonObject body)
       throws InterruptedException, ExecutionException, VimException, NotFoundException,
-          BadFormatException, VimDriverException, QuotaExceededException, PluginException,
-          MissingParameterException, BadRequestException, IOException, AlreadyExistingException {
+          BadFormatException, PluginException, MissingParameterException, BadRequestException,
+          IOException, AlreadyExistingException {
 
     String monitoringIp = null;
     List keys = null;
@@ -215,14 +215,9 @@ public class RestNetworkServiceRecord {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
-      throws VimException, InterruptedException, ExecutionException, NotFoundException,
-          BadFormatException {
-    try {
-      networkServiceRecordManagement.delete(id, projectId);
-    } catch (WrongStatusException e) {
-      e.printStackTrace();
-      throw new StateException(id);
-    }
+      throws InterruptedException, ExecutionException, NotFoundException, BadFormatException,
+          WrongStatusException {
+    networkServiceRecordManagement.delete(id, projectId);
   }
 
   /**
@@ -238,14 +233,8 @@ public class RestNetworkServiceRecord {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void resume(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
-      throws VimException, InterruptedException, ExecutionException, NotFoundException,
-          BadFormatException {
-    try {
-      networkServiceRecordManagement.resume(id, projectId);
-    } catch (WrongStatusException e) {
-      e.printStackTrace();
-      throw new StateException(id);
-    }
+      throws InterruptedException, ExecutionException, NotFoundException, BadFormatException {
+    networkServiceRecordManagement.resume(id, projectId);
   }
 
   /**
@@ -271,8 +260,8 @@ public class RestNetworkServiceRecord {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void multipleDelete(
       @RequestBody @Valid List<String> ids, @RequestHeader(value = "project-id") String projectId)
-      throws InterruptedException, ExecutionException, WrongStatusException, VimException,
-          NotFoundException, BadFormatException {
+      throws InterruptedException, ExecutionException, WrongStatusException, NotFoundException,
+          BadFormatException {
     for (String id : ids) {
       networkServiceRecordManagement.delete(id, projectId);
     }
@@ -434,8 +423,7 @@ public class RestNetworkServiceRecord {
       @RequestBody @Valid List<String> ids,
       @PathVariable("idNsr") String idNsr,
       @RequestHeader(value = "project-id") String projectId)
-      throws InterruptedException, ExecutionException, WrongStatusException, VimException,
-          NotFoundException {
+      throws NotFoundException {
     log.trace("NSR ID: " + idNsr + " Project ID: " + projectId + " VNFR IDs: " + ids);
     for (String idVnfr : ids) {
       networkServiceRecordManagement.deleteVNFRecord(idNsr, idVnfr, projectId);
@@ -459,8 +447,7 @@ public class RestNetworkServiceRecord {
       @PathVariable("idVnf") String idVnf,
       @PathVariable("idVdu") String idVdu,
       @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException, BadFormatException, WrongStatusException, BadRequestException,
-          ExecutionException, InterruptedException {
+      throws NotFoundException, BadFormatException, WrongStatusException, BadRequestException {
     if (!body.has("vnfComponent"))
       throw new BadRequestException(
           "The passed request body is not correct. It should include a field named: vnfComponent");
@@ -489,8 +476,7 @@ public class RestNetworkServiceRecord {
       @PathVariable("id") String id,
       @PathVariable("idVnf") String idVnf,
       @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException, BadFormatException, WrongStatusException, BadRequestException,
-          ExecutionException, InterruptedException {
+      throws NotFoundException, BadFormatException, WrongStatusException, BadRequestException {
     if (!body.has("vnfComponent"))
       throw new BadRequestException(
           "The passed request body is not correct. It should include a field named: vnfComponent");
@@ -563,8 +549,7 @@ public class RestNetworkServiceRecord {
       @PathVariable("idVdu") String idVdu,
       @PathVariable("idVNFCI") String idVNFCI,
       @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException, BadFormatException, WrongStatusException, ExecutionException,
-          InterruptedException {
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
     log.debug("start a VNF component instance");
     networkServiceRecordManagement.startVNFCInstance(id, idVnf, idVdu, idVNFCI, projectId);
   }
@@ -582,14 +567,30 @@ public class RestNetworkServiceRecord {
       @PathVariable("idVdu") String idVdu,
       @PathVariable("idVNFCI") String idVNFCI,
       @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException, BadFormatException, WrongStatusException, ExecutionException,
-          InterruptedException {
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
     log.debug("stop a VNF component instance");
     networkServiceRecordManagement.stopVNFCInstance(id, idVnf, idVdu, idVNFCI, projectId);
   }
 
-  /////// Fault management utilities
-  @ApiOperation(value = "", notes = "", hidden = true)
+  /**
+   * Add a VNF Component (VNFC) in standby to a specific VNF. A standby VNFC is a VNFC instantiated
+   * configured but not started.
+   *
+   * @param body VNF Component to add as JSON.
+   * @param id NSR Id
+   * @param idVnf VNF Id of the target VNF
+   * @param idVdu VDU Id
+   * @param projectId Project Id
+   * @throws NotFoundException
+   * @throws BadFormatException
+   * @throws WrongStatusException
+   * @throws ExecutionException
+   * @throws InterruptedException
+   */
+  @ApiOperation(
+    value = "Add a VNFC in standby",
+    notes = "Instantiate and configure a new VNFC without start it, namely in standby"
+  )
   @RequestMapping(
     value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}/vnfcinstances/standby",
     method = RequestMethod.POST,
@@ -603,8 +604,7 @@ public class RestNetworkServiceRecord {
       @PathVariable("idVnf") String idVnf,
       @PathVariable("idVdu") String idVdu,
       @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException, BadFormatException, WrongStatusException, ExecutionException,
-          InterruptedException {
+      throws NotFoundException, BadFormatException, WrongStatusException {
     VNFComponent component =
         gson.fromJson(body.getAsJsonObject("vnfComponent"), VNFComponent.class);
     List<String> vimInstanceNames =
@@ -618,7 +618,27 @@ public class RestNetworkServiceRecord {
         id, idVnf, idVdu, component, "standby", projectId, vimInstanceNames);
   }
 
-  @ApiOperation(value = "", notes = "", hidden = true)
+  /**
+   * Execute the switch to standby action on a VNFR. This action starts the standby VNFC and sets
+   * the failed VNFC in failed state. Eventually configures the dependent VNFRs.
+   *
+   * @param failedVnfcInstance failed VNFC instance as JSON
+   * @param id NSR Id
+   * @param idVnf VNFR Id
+   * @param idVdu VDU Id
+   * @param idVNFC VNFC Id of the standby VNFC
+   * @param projectId Project Id
+   * @throws NotFoundException
+   * @throws BadFormatException
+   * @throws WrongStatusException
+   * @throws ExecutionException
+   * @throws InterruptedException
+   */
+  @ApiOperation(
+    value = "Execute the switch to standby action on a VNFR",
+    notes =
+        "This action starts the standby VNFC and sets the failed VNFC in failed state. Eventually configures the dependent VNFRs"
+  )
   @RequestMapping(
     value = "{id}/vnfrecords/{idVnf}/vdunits/{idVdu}/vnfcinstances/{idVNFC}/switchtostandby",
     method = RequestMethod.POST,
@@ -711,8 +731,7 @@ public class RestNetworkServiceRecord {
       @PathVariable("idVdu") String idVdu,
       @PathVariable("idVNFCI") String idVNFCI,
       @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException, BadFormatException, WrongStatusException, ExecutionException,
-          InterruptedException {
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
     log.debug("Received: " + nfvMessage);
     networkServiceRecordManagement.executeAction(nfvMessage, id, idVnf, idVdu, idVNFCI, projectId);
   }
@@ -760,6 +779,33 @@ public class RestNetworkServiceRecord {
     nsr.getVnfr().add(vnfRecord);
     networkServiceRecordManagement.update(nsr, idNsr, projectId);
     return vnfRecord;
+  }
+
+  @ApiOperation(
+    value = "Restarts a VNFR in an NSR",
+    notes = "Restarts a VNFR, rebuilding to a different image if specified"
+  )
+  @RequestMapping(
+    value = "{idNsr}/vnfrecords/{idVnfr}/restart",
+    method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  public void restartVNFR(
+      @RequestBody @Valid JsonObject body,
+      @PathVariable("idNsr") String nsrId,
+      @PathVariable("idVnfr") String vnfrId,
+      @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException, InterruptedException, BadRequestException, AlreadyExistingException,
+          VimException, ExecutionException, PluginException, IOException, BadFormatException {
+    log.debug("Received request for restarting a VNFR");
+    if (!body.has("imageName") || !body.getAsJsonPrimitive("imageName").isString())
+      throw new BadRequestException(
+          "The passed JSON is not correct. It should include a string field named: imageName");
+    String imageName = body.getAsJsonPrimitive("imageName").getAsString();
+    //check if nsr exists
+    NetworkServiceRecord nsr = networkServiceRecordManagement.query(nsrId, projectId);
+    networkServiceRecordManagement.restartVnfr(nsr, vnfrId, imageName, projectId);
   }
 
   /**
@@ -962,8 +1008,8 @@ public class RestNetworkServiceRecord {
       @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException {
     NetworkServiceRecord nsr = networkServiceRecordManagement.query(id, projectId);
-    PhysicalNetworkFunctionRecord pDescriptor = findPNFD(nsr.getPnfr(), id_pnf);
-    nsr.getVnfr().remove(pDescriptor);
+    PhysicalNetworkFunctionRecord physicalNetworkFunctionRecord = findPNFD(nsr.getPnfr(), id_pnf);
+    nsr.getPnfr().remove(physicalNetworkFunctionRecord);
   }
 
   /**
@@ -1034,15 +1080,10 @@ public class RestNetworkServiceRecord {
       @PathVariable("id_vnf") String id_vnf,
       @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException {
-    LinkedHashSet<HistoryLifecycleEvent> lifecycle_event_history =
-        (LinkedHashSet<HistoryLifecycleEvent>)
-            networkServiceRecordManagement
-                .getVirtualNetworkFunctionRecord(id, id_vnf, projectId)
-                .getLifecycle_event_history();
-    //    Collections.sort(
-    //        lifecycle_event_history,
-    //        new PropertyComparator<HistoryLifecycleEvent>("timestamp", true, true));
-    return lifecycle_event_history;
+    return (LinkedHashSet<HistoryLifecycleEvent>)
+        networkServiceRecordManagement
+            .getVirtualNetworkFunctionRecord(id, id_vnf, projectId)
+            .getLifecycle_event_history();
   }
 
   // TODO The Rest of the classes

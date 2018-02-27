@@ -21,25 +21,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.validation.Valid;
-import org.openbaton.catalogue.security.BaseUser;
 import org.openbaton.catalogue.security.Project;
 import org.openbaton.catalogue.security.Role;
-import org.openbaton.catalogue.security.ServiceMetadata;
-import org.openbaton.catalogue.security.User;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.EntityInUseException;
 import org.openbaton.exceptions.NotAllowedException;
 import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.nfvo.repositories.ServiceRepository;
-import org.openbaton.nfvo.security.interfaces.ProjectManagement;
-import org.openbaton.nfvo.security.interfaces.UserManagement;
+import org.openbaton.nfvo.api.utils.Utils;
+import org.openbaton.nfvo.core.interfaces.ProjectManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,15 +42,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Created by lto on 25/05/16. */
 @RestController
 @RequestMapping("/api/v1/projects")
 public class RestProject {
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private ProjectManagement projectManagement;
-  @Autowired private UserManagement userManagement;
-  @Autowired private ServiceRepository serviceRepository;
+  @Autowired private Utils utils;
 
   /**
    * Adds a new Project to the Projects repository
@@ -77,7 +69,7 @@ public class RestProject {
   public Project create(@RequestBody @Valid Project project)
       throws NotAllowedException, NotFoundException {
     log.info("Adding Project: " + project.getName());
-    if (isAdmin()) {
+    if (utils.isAdmin()) {
       return projectManagement.add(project);
     } else {
       throw new NotAllowedException("Forbidden to create project " + project.getName());
@@ -98,7 +90,7 @@ public class RestProject {
   public void delete(@PathVariable("id") String id)
       throws NotAllowedException, NotFoundException, EntityInUseException, BadRequestException {
     log.info("Removing Project with id " + id);
-    if (isAdmin()) {
+    if (utils.isAdmin()) {
       projectManagement.delete(projectManagement.query(id));
     } else {
       throw new NotAllowedException("Forbidden to delete project " + id);
@@ -117,7 +109,7 @@ public class RestProject {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void multipleDelete(@RequestBody @Valid List<String> ids)
       throws NotAllowedException, NotFoundException, EntityInUseException, BadRequestException {
-    if (isAdmin()) {
+    if (utils.isAdmin()) {
       for (String id : ids) {
         projectManagement.delete(projectManagement.query(id));
       }
@@ -133,15 +125,15 @@ public class RestProject {
    */
   @ApiOperation(value = "Retrieve all Projects", notes = "Returns all the created projects")
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public @ResponseBody Set<Project> findAll() throws NotFoundException, NotAllowedException {
+  public @ResponseBody Set<Project> findAll() throws NotFoundException {
     log.trace("Finding all Projects");
     Set<Project> projects = new HashSet<>();
-    if (isAdmin()) {
+    if (utils.isAdmin()) {
       for (Project project : projectManagement.query()) {
         projects.add(project);
       }
     } else {
-      for (Project project : projectManagement.query(getCurrentUser())) {
+      for (Project project : projectManagement.query(utils.getCurrentUser())) {
         projects.add(project);
       }
     }
@@ -164,10 +156,10 @@ public class RestProject {
       throw new NotFoundException("Not found project " + id);
     }
     log.trace("Found Project: " + project);
-    if (isAdmin()) {
+    if (utils.isAdmin()) {
       return project;
     } else {
-      for (Role role : getCurrentUser().getRoles()) {
+      for (Role role : utils.getCurrentUser().getRoles()) {
         if (role.getProject().equals(project.getName())) {
           return project;
         }
@@ -195,51 +187,10 @@ public class RestProject {
   @ResponseStatus(HttpStatus.ACCEPTED)
   public Project update(@RequestBody @Valid Project new_project)
       throws NotFoundException, NotAllowedException {
-    if (isAdmin()) {
+    if (utils.isAdmin()) {
       return projectManagement.update(new_project);
     } else {
       throw new NotAllowedException("Forbidden to update project " + new_project.getName());
     }
-  }
-
-  private ServiceMetadata getCurrentService() throws NotFoundException {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication == null) {
-      throw new NotFoundException("authentication invalid");
-    }
-    String currentServiceName = authentication.getName();
-    ServiceMetadata serviceMetadata = serviceRepository.findByName(currentServiceName);
-    if (serviceMetadata != null) {
-      return serviceMetadata;
-    } else {
-      throw new NotFoundException("Service with name " + currentServiceName + " not found");
-    }
-  }
-
-  private BaseUser getCurrentUser() throws NotFoundException {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication == null) {
-      throw new NotFoundException("authentication invalid");
-    }
-    String currentUserName = authentication.getName();
-    User user;
-    try {
-      user = userManagement.queryByName(currentUserName);
-    } catch (NotFoundException e) {
-      return serviceRepository.findByName(currentUserName);
-    }
-    return user;
-  }
-
-  public boolean isAdmin() throws NotAllowedException, NotFoundException {
-    BaseUser currentUser = getCurrentUser();
-
-    log.trace("Check user if admin: " + currentUser.getId());
-    for (Role role : currentUser.getRoles()) {
-      if (role.getRole().ordinal() == Role.RoleEnum.ADMIN.ordinal()) {
-        return true;
-      }
-    }
-    return false;
   }
 }

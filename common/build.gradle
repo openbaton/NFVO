@@ -22,7 +22,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.bmuschko:gradle-nexus-plugin:2.3'
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
     }
 }
 
@@ -33,6 +33,7 @@ dependencies {
     compile project(':catalogue')
     compile project(':exception')
     compile 'org.apache.commons:commons-text:1.1'
+    compile group: 'commons-net', name: 'commons-net', version: '3.6'
     compile 'org.springframework.boot:spring-boot-starter-amqp:' + springBootVersion
     compile 'com.google.code.gson:gson:2.8.0'
     // SCHEMA VALIDATION

@@ -39,6 +39,7 @@ import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.openbaton.catalogue.util.EventFinishEvent;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.exceptions.NsrNotFoundException;
 import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.common.internal.model.EventFinishNFVO;
@@ -62,17 +63,20 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-/** Created by lto on 06/08/15. */
-
 /** Putting these annotations only here won't work. */
 @Service
 @Scope("prototype")
 public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.tasks.AbstractTask {
+
   protected Logger log = LoggerFactory.getLogger(AbstractTask.class);
+
   private Action action;
   private static ReentrantLock lock = new ReentrantLock();
+  private ApplicationEventPublisher publisher;
 
   protected abstract void setEvent();
+
+  protected VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
 
   protected abstract void setDescription();
 
@@ -83,36 +87,37 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
   @Qualifier("vnfmRegister")
   protected VnfmRegister vnfmRegister;
 
+  @Autowired private ConfigurableApplicationContext context;
   @Autowired protected VnfStateHandler vnfStateHandler;
-
-  protected VirtualNetworkFunctionRecord virtualNetworkFunctionRecord;
-
   @Autowired protected VNFRRepository vnfrRepository;
-
   @Autowired protected VnfmManager vnfmManager;
   @Autowired protected NetworkServiceRecordRepository networkServiceRecordRepository;
-  @Autowired private ConfigurableApplicationContext context;
-  private ApplicationEventPublisher publisher;
 
-  protected void saveVirtualNetworkFunctionRecord() {
+  protected void saveVirtualNetworkFunctionRecord() throws NsrNotFoundException {
+
     lock.lock();
-    try {
-      log.trace(
-          "ACTION is: " + action + " and the VNFR id is: " + virtualNetworkFunctionRecord.getId());
-      SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
-      if (virtualNetworkFunctionRecord.getId() == null
-          || virtualNetworkFunctionRecord.getId().isEmpty()) {
-        virtualNetworkFunctionRecord.setCreatedAt(format.format(new Date()));
-        virtualNetworkFunctionRecord.setUpdatedAt(format.format(new Date()));
-        virtualNetworkFunctionRecord =
-            networkServiceRecordRepository.addVnfr(
-                virtualNetworkFunctionRecord, virtualNetworkFunctionRecord.getParent_ns_id());
-      } else {
-        virtualNetworkFunctionRecord.setUpdatedAt(format.format(new Date()));
-        virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
+    if (networkServiceRecordRepository.exists(virtualNetworkFunctionRecord.getParent_ns_id())) {
+      try {
+        log.trace(
+            "ACTION is: "
+                + action
+                + " and the VNFR id is: "
+                + virtualNetworkFunctionRecord.getId());
+        SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+        if (virtualNetworkFunctionRecord.getId() == null
+            || virtualNetworkFunctionRecord.getId().isEmpty()) {
+          virtualNetworkFunctionRecord.setCreatedAt(format.format(new Date()));
+          virtualNetworkFunctionRecord.setUpdatedAt(format.format(new Date()));
+          virtualNetworkFunctionRecord =
+              networkServiceRecordRepository.addVnfr(
+                  virtualNetworkFunctionRecord, virtualNetworkFunctionRecord.getParent_ns_id());
+        } else {
+          virtualNetworkFunctionRecord.setUpdatedAt(format.format(new Date()));
+          virtualNetworkFunctionRecord = vnfrRepository.save(virtualNetworkFunctionRecord);
+        }
+      } finally {
+        lock.unlock();
       }
-    } finally {
-      lock.unlock();
     }
   }
 
@@ -146,6 +151,8 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
       setDescription();
       setEvent();
       result = this.doWork();
+    } catch (NsrNotFoundException e) {
+      log.warn(e.getLocalizedMessage());
     } catch (ExecutionException e) {
       if (e.getCause() instanceof VimException) {
 
@@ -171,7 +178,11 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
           }
         }
         virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
-        saveVirtualNetworkFunctionRecord();
+        try {
+          saveVirtualNetworkFunctionRecord();
+        } catch (NotFoundException e1) {
+          log.error(e1.getLocalizedMessage());
+        }
         return new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
       } else if (e.getCause() instanceof VimDriverException) {
         return handleVimDriverException((VimDriverException) e.getCause());
@@ -209,7 +220,11 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
     lifecycleEvent.setExecutedAt(format.format(new Date()));
     virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
     virtualNetworkFunctionRecord.setStatus(Status.ERROR);
-    saveVirtualNetworkFunctionRecord();
+    try {
+      saveVirtualNetworkFunctionRecord();
+    } catch (NotFoundException e1) {
+      log.error(e1.getMessage());
+    }
     return new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
   }
 
@@ -235,16 +250,10 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
       vnfStateHandler.executeAction(
           vnfmSender.sendCommand(
               message, vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint())));
-    } catch (NotFoundException e1) {
-      e1.printStackTrace();
-      throw new RuntimeException(e1);
-    } catch (BadFormatException e1) {
-      e1.printStackTrace();
-      throw new RuntimeException(e1);
-    } catch (ExecutionException e1) {
-      e1.printStackTrace();
-      throw new RuntimeException(e1);
-    } catch (InterruptedException e1) {
+    } catch (NotFoundException
+        | BadFormatException
+        | InterruptedException
+        | ExecutionException e1) {
       e1.printStackTrace();
       throw new RuntimeException(e1);
     }
@@ -261,7 +270,11 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
     EventFinishEvent eventFinishEvent = new EventFinishEvent();
     eventFinishEvent.setAction(Action.ERROR);
     virtualNetworkFunctionRecord.setStatus(Status.ERROR);
-    saveVirtualNetworkFunctionRecord();
+    try {
+      saveVirtualNetworkFunctionRecord();
+    } catch (NotFoundException e1) {
+      log.error(e1.getMessage());
+    }
     log.info(
         "Saved the VNFR "
             + virtualNetworkFunctionRecord.getName()
@@ -272,7 +285,7 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
     this.publisher.publishEvent(event);
   }
 
-  protected abstract NFVMessage doWork() throws Exception, BadFormatException;
+  protected abstract NFVMessage doWork() throws Exception;
 
   public boolean isAsync() {
     return true;
@@ -438,7 +451,7 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
     return true;
   }
 
-  protected void setHistoryLifecycleEvent(Date date) {
+  protected void setHistoryLifecycleEvent() {
     HistoryLifecycleEvent lifecycleEvent = new HistoryLifecycleEvent();
     lifecycleEvent.setEvent(event);
     SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd'-'HH:mm:ss:SSS'-'z");
@@ -452,59 +465,47 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
     log.debug("Added lifecycle event history: " + lifecycleEvent);
   }
 
-  protected void setHistoryLifecycleEvent(String customEvent, String message) {
-    HistoryLifecycleEvent lifecycleEvent = new HistoryLifecycleEvent();
-    lifecycleEvent.setEvent(customEvent);
-    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd'-'HH:mm:ss:SSS'-'z");
-    lifecycleEvent.setExecutedAt(format.format(new Date()));
-    lifecycleEvent.setDescription(message);
-
-    if (virtualNetworkFunctionRecord.getLifecycle_event_history() == null) {
-      virtualNetworkFunctionRecord.setLifecycle_event_history(new LinkedHashSet<>());
-    }
-    virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
-    log.debug("Added lifecycle event history: " + lifecycleEvent);
-  }
-
   protected void printOldAndNewHibernateVersion() {
-    VirtualNetworkFunctionRecord existing =
-        vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
+    if (vnfrRepository.exists(virtualNetworkFunctionRecord.getId())) {
+      VirtualNetworkFunctionRecord existing =
+          vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
 
-    log.trace(
-        this.event
-            + ": VDU ("
-            + virtualNetworkFunctionRecord.getId()
-            + ") received with hibernate version = "
-            + virtualNetworkFunctionRecord.getHbVersion());
-    log.trace(
-        this.event
-            + ": VDU ("
-            + existing.getId()
-            + ") existing hibernate version is = "
-            + existing.getHbVersion());
+      log.trace(
+          this.event
+              + ": VDU ("
+              + virtualNetworkFunctionRecord.getId()
+              + ") received with hibernate version = "
+              + virtualNetworkFunctionRecord.getHbVersion());
+      log.trace(
+          this.event
+              + ": VDU ("
+              + existing.getId()
+              + ") existing hibernate version is = "
+              + existing.getHbVersion());
 
-    virtualNetworkFunctionRecord
-        .getVdu()
-        .forEach(
-            vdu -> {
-              log.trace(
-                  this.event
-                      + ": VDU ("
-                      + vdu.getId()
-                      + ") received with hibernate version = "
-                      + vdu.getHbVersion());
-            });
+      virtualNetworkFunctionRecord
+          .getVdu()
+          .forEach(
+              vdu -> {
+                log.trace(
+                    this.event
+                        + ": VDU ("
+                        + vdu.getId()
+                        + ") received with hibernate version = "
+                        + vdu.getHbVersion());
+              });
 
-    existing
-        .getVdu()
-        .forEach(
-            vdu -> {
-              log.trace(
-                  this.event
-                      + ": VDU ("
-                      + vdu.getId()
-                      + ") existing hibernate version is = "
-                      + vdu.getHbVersion());
-            });
+      existing
+          .getVdu()
+          .forEach(
+              vdu -> {
+                log.trace(
+                    this.event
+                        + ": VDU ("
+                        + vdu.getId()
+                        + ") existing hibernate version is = "
+                        + vdu.getHbVersion());
+              });
+    }
   }
 }

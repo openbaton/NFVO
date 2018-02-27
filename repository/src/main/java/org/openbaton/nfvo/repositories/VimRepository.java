@@ -21,7 +21,6 @@ import java.util.List;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.springframework.data.repository.CrudRepository;
 
-/** Created by lto on 06/05/15. */
 public interface VimRepository
     extends CrudRepository<BaseVimInstance, String>, VimRepositoryCustom {
   BaseVimInstance findFirstById(String id);

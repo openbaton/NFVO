@@ -18,19 +18,17 @@
 package org.openbaton.nfvo.core.interfaces;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VNFPackageMetadata;
+import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
 import org.openbaton.catalogue.nfvo.images.NFVImage;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.DescriptorWrongFormat;
-import org.openbaton.exceptions.EntityUnreachableException;
 import org.openbaton.exceptions.ExistingVNFPackage;
 import org.openbaton.exceptions.IncompatibleVNFPackage;
 import org.openbaton.exceptions.NetworkServiceIntegrityException;
@@ -43,35 +41,22 @@ import org.openbaton.exceptions.WrongAction;
 /** Created by mpa on 05/05/15. */
 public interface VNFPackageManagement {
 
-  /** This operation allows submitting and validating the VNF Package. */
-  VirtualNetworkFunctionDescriptor onboard(byte[] pack, String projectId)
-      throws IOException, VimException, NotFoundException, PluginException, IncompatibleVNFPackage,
-          AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException,
-          InterruptedException, EntityUnreachableException, BadFormatException;
-
-  /** This operation allows submitting and validating the VNF Package from the marketplace. */
   /**
    * This operation handles reading the Metadata of the VNF Package
    *
    * @param metadata
    * @param vnfPackage
-   * @param imageDetails
    * @param image
    */
-  Map<String, Object> handleMetadata(
-      Map<String, Object> metadata,
-      VNFPackage vnfPackage,
-      Map<String, Object> imageDetails,
-      NFVImage image)
+  VNFPackage handleMetadata(Map<String, Object> metadata, VNFPackage vnfPackage, NFVImage image)
       throws IncompatibleVNFPackage, BadFormatException;
 
   VirtualNetworkFunctionDescriptor add(
       byte[] pack, boolean isImageIncluded, String projectId, boolean fromMarketPlace)
-      throws IOException, VimException, NotFoundException, SQLException, PluginException,
-          ExistingVNFPackage, DescriptorWrongFormat, VNFPackageFormatException,
-          IncompatibleVNFPackage, BadRequestException, AlreadyExistingException,
-          NetworkServiceIntegrityException, EntityUnreachableException, InterruptedException,
-          BadFormatException;
+      throws IOException, VimException, NotFoundException, PluginException, ExistingVNFPackage,
+          VNFPackageFormatException, IncompatibleVNFPackage, BadRequestException,
+          AlreadyExistingException, NetworkServiceIntegrityException, InterruptedException,
+          BadFormatException, ExecutionException;
 
   /**
    * This operation handles the data about the image of the vnf package
@@ -79,21 +64,19 @@ public interface VNFPackageManagement {
    * @param vnfPackage
    * @param imageFile
    * @param virtualNetworkFunctionDescriptor
-   * @param metadata
    * @param image
-   * @param imageDetails
+   * @param metadata
    * @param projectId
    */
-  void handleImage(
+  BaseNfvImage handleImage(
       VNFPackage vnfPackage,
       byte[] imageFile,
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
-      Map<String, Object> metadata,
       NFVImage image,
-      Map<String, Object> imageDetails,
+      Map<String, Object> metadata,
       String projectId)
       throws NotFoundException, PluginException, VimException, BadRequestException, IOException,
-          AlreadyExistingException, InterruptedException, EntityUnreachableException;
+          AlreadyExistingException, InterruptedException, ExecutionException, BadFormatException;
 
   /**
    * This operation allows submitting and validating the VNF Package from the marketplace.
@@ -104,7 +87,7 @@ public interface VNFPackageManagement {
   VirtualNetworkFunctionDescriptor onboardFromMarket(String link, String projectId)
       throws IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
           NotFoundException, PluginException, NetworkServiceIntegrityException, BadRequestException,
-          InterruptedException, EntityUnreachableException, BadFormatException;
+          InterruptedException, BadFormatException;
 
   /**
    * This operation allows submitting and validating the VNF Package from the Package Repository.
@@ -115,7 +98,7 @@ public interface VNFPackageManagement {
   VirtualNetworkFunctionDescriptor onboardFromPackageRepository(String link, String projectId)
       throws IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
           NotFoundException, PluginException, NetworkServiceIntegrityException, BadRequestException,
-          InterruptedException, EntityUnreachableException;
+          InterruptedException;
 
   /**
    * This operation allows disabling the VNF Package, so that it is not possible to instantiate any
@@ -129,7 +112,7 @@ public interface VNFPackageManagement {
   /** This operation allows updating the VNF Package. */
   VNFPackage update(String id, VNFPackage pack_new, String projectId) throws NotFoundException;
 
-  VNFPackage query(String id, String projectId) throws NotFoundException;
+  VNFPackage query(String id, String projectId);
 
   /** This operation is used to query information on VNF Packages. */
   Iterable<VNFPackage> query();

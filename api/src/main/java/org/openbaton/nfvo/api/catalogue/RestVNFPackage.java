@@ -79,7 +79,7 @@ public class RestVNFPackage {
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = null;
     try {
       virtualNetworkFunctionDescriptor = vnfPackageManagement.add(bytes, false, projectId, false);
-    } catch (ExistingVNFPackage | DescriptorWrongFormat | VNFPackageFormatException e) {
+    } catch (ExecutionException | ExistingVNFPackage | VNFPackageFormatException e) {
       if (log.isDebugEnabled()) log.error(e.getMessage(), e);
       else log.error(e.getMessage());
       throw new BadRequestException(e.getMessage());
@@ -185,7 +185,7 @@ public class RestVNFPackage {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void multipleDelete(
       @RequestBody @Valid List<String> ids, @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException, WrongAction {
+      throws WrongAction {
     for (String id : ids) vnfPackageManagement.delete(id, projectId);
   }
 

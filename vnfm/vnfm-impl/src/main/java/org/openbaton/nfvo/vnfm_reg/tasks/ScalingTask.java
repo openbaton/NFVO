@@ -17,7 +17,6 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -63,14 +62,6 @@ public class ScalingTask extends AbstractTask {
 
   private String userdata;
 
-  public boolean isCheckQuota() {
-    return checkQuota;
-  }
-
-  public void setCheckQuota(boolean checkQuota) {
-    this.checkQuota = checkQuota;
-  }
-
   @Override
   protected NFVMessage doWork() throws Exception {
 
@@ -108,6 +99,8 @@ public class ScalingTask extends AbstractTask {
             + virtualNetworkFunctionRecord.getId()
             + ") is: "
             + componentToAdd);
+    if (vdu == null)
+      throw new VimException("Error while scaling, no vdu found. This should not happen");
     Map<String, BaseVimInstance> vimInstanceMap = new HashMap<>();
     if (checkQuota) {
       if (vimInstance == null) {
@@ -223,20 +216,12 @@ public class ScalingTask extends AbstractTask {
                           vdu, virtualNetworkFunctionRecord, componentToAdd, vimInstance, userdata)
                       .get());
         }
-      } catch (VimDriverException e) {
-        log.error(e.getLocalizedMessage());
-        virtualNetworkFunctionRecord.setStatus(Status.ACTIVE);
-        OrVnfmErrorMessage errorMessage = new OrVnfmErrorMessage();
-        errorMessage.setMessage(
-            "Error creating VM for VNFR ("
-                + virtualNetworkFunctionRecord.getId()
-                + ") while scaling out. Please consider enabling checkQuota ;)");
-        errorMessage.setVnfr(virtualNetworkFunctionRecord);
-        errorMessage.setAction(Action.ERROR);
-        saveVirtualNetworkFunctionRecord();
-        vnfmManager.findAndSetNSRStatus(virtualNetworkFunctionRecord);
-        return errorMessage;
-      } catch (VimException e) {
+      } catch (ExecutionException | VimException exception) {
+        VimException e;
+        if (exception instanceof VimException) e = (VimException) exception;
+        else if (exception.getCause() instanceof VimException)
+          e = (VimException) exception.getCause();
+        else throw exception;
         log.error(e.getLocalizedMessage());
         if (e.getVnfcInstance() != null) {
           resourceManagement.release(vdu, e.getVnfcInstance());
@@ -254,7 +239,7 @@ public class ScalingTask extends AbstractTask {
         return errorMessage;
       }
     }
-    setHistoryLifecycleEvent(new Date());
+    setHistoryLifecycleEvent();
     saveVirtualNetworkFunctionRecord();
     log.trace(
         "VNFR ("
@@ -281,9 +266,5 @@ public class ScalingTask extends AbstractTask {
 
   public void setVimInstance(BaseVimInstance vimInstance) {
     this.vimInstance = vimInstance;
-  }
-
-  public BaseVimInstance getVimInstance() {
-    return vimInstance;
   }
 }

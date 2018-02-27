@@ -28,6 +28,7 @@ import org.openbaton.catalogue.util.IdGenerator;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
+import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.openbaton.nfvo.repositories.NetworkRepository;
 import org.openbaton.nfvo.vim_interfaces.vim.VimBroker;
 import org.slf4j.Logger;
@@ -36,7 +37,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-/** Created by mpa on 24.06.15. */
 @Service
 @Scope
 public class NetworkManagement implements org.openbaton.nfvo.core.interfaces.NetworkManagement {
@@ -46,9 +46,10 @@ public class NetworkManagement implements org.openbaton.nfvo.core.interfaces.Net
   @Autowired private VimBroker vimBroker;
 
   @Autowired private NetworkRepository networkRepository;
+  @Autowired private VimManagement vimInstanceRepository;
 
   @Override
-  public BaseNetwork add(BaseVimInstance vimInstance, BaseNetwork network)
+  public synchronized BaseNetwork add(BaseVimInstance vimInstance, BaseNetwork network)
       throws VimException, PluginException, BadRequestException {
     log.info("Creating network " + network.getName() + " on vim " + vimInstance.getName());
     org.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement vim;

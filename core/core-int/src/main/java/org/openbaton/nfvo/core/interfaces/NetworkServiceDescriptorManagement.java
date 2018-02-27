@@ -24,18 +24,7 @@ import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.exceptions.BadFormatException;
-import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.CyclicDependenciesException;
-import org.openbaton.exceptions.EntityInUseException;
-import org.openbaton.exceptions.EntityUnreachableException;
-import org.openbaton.exceptions.IncompatibleVNFPackage;
-import org.openbaton.exceptions.NetworkServiceIntegrityException;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimException;
-import org.openbaton.exceptions.WrongStatusException;
+import org.openbaton.exceptions.*;
 
 /** Created by mpa on 30/04/15. */
 public interface NetworkServiceDescriptorManagement {
@@ -49,7 +38,7 @@ public interface NetworkServiceDescriptorManagement {
       throws NotFoundException, NetworkServiceIntegrityException, CyclicDependenciesException,
           BadFormatException, EntityInUseException, BadRequestException, PluginException,
           IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
-          EntityUnreachableException, InterruptedException;
+          InterruptedException;
 
   NetworkServiceDescriptor onboardFromMarketplace(String link, String project_id)
       throws BadFormatException, CyclicDependenciesException, NetworkServiceIntegrityException,
@@ -102,7 +91,7 @@ public interface NetworkServiceDescriptorManagement {
    * @param idVnfd of VNFD
    */
   void deleteVnfDescriptor(String nsd, String idNsd, String idVnfd)
-      throws EntityInUseException, NotFoundException;
+      throws EntityInUseException, NotFoundException, NotAllowedException;
 
   /**
    * Returns the VirtualNetworkFunctionDescriptor selected by idVnfd into NSD with idNsd

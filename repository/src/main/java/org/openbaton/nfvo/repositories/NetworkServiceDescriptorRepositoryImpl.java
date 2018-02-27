@@ -105,7 +105,7 @@ public class NetworkServiceDescriptorRepositoryImpl
     SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
     NetworkServiceDescriptor nsd = networkServiceDescriptorRepository.findFirstById(idNsd);
     nsd.setUpdatedAt(format.format(new Date()));
-    nsd.getVnfd().remove(pnfDescriptorRepository.findOne(idPnf));
+    nsd.getPnfd().remove(pnfDescriptorRepository.findOne(idPnf));
     pnfDescriptorRepository.delete(idPnf);
   }
 

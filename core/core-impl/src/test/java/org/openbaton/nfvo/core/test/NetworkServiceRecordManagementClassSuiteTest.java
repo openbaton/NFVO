@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -48,21 +47,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
-import org.openbaton.catalogue.mano.common.AutoScalePolicy;
-import org.openbaton.catalogue.mano.common.ConnectionPoint;
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.common.HighAvailability;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.common.ResiliencyLevel;
 import org.openbaton.catalogue.mano.common.VNFDeploymentFlavour;
-import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
-import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VNFDependency;
-import org.openbaton.catalogue.mano.descriptor.VNFForwardingGraphDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
-import org.openbaton.catalogue.mano.descriptor.VirtualLinkDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
@@ -77,11 +70,8 @@ import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.MissingParameterException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.QuotaExceededException;
-import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.exceptions.WrongStatusException;
 import org.openbaton.nfvo.core.api.ConfigurationManagement;
@@ -94,6 +84,7 @@ import org.openbaton.nfvo.core.utils.NSDUtils;
 import org.openbaton.nfvo.repositories.ConfigurationRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
+import org.openbaton.nfvo.repositories.VNFRRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
 import org.openbaton.nfvo.repositories.VnfPackageRepository;
 import org.openbaton.nfvo.repositories.VnfmEndpointRepository;
@@ -135,11 +126,11 @@ public class NetworkServiceRecordManagementClassSuiteTest {
   @Mock private ConfigurationRepository configurationRepository;
   @Mock private VnfmManager vnfmManager;
   @Mock private EventDispatcher publisher;
+  @Mock private VNFRRepository vnfrRepository;
 
   @Before
   public void init()
-      throws ExecutionException, InterruptedException, VimDriverException, VimException,
-          PluginException, BadRequestException, IOException, AlreadyExistingException {
+      throws ExecutionException, InterruptedException, VimException, PluginException, IOException {
     MockitoAnnotations.initMocks(this);
     BaseVimInstance vimInstance = createVimInstance();
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionRecord =
@@ -183,7 +174,8 @@ public class NetworkServiceRecordManagementClassSuiteTest {
                 add(vnfmManagerEndpoint);
               }
             });
-    when(vimManagement.refresh(any(BaseVimInstance.class), anyBoolean())).thenReturn(vimInstance);
+    when(vimManagement.refresh(any(BaseVimInstance.class), anyBoolean()))
+        .thenReturn(new AsyncResult<>(vimInstance));
     when(vnfPackageRepository.findFirstById(anyString())).thenReturn(createVNFPackage());
     log.info("Starting test");
   }
@@ -223,12 +215,13 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 
   @Test
   public void nsrManagementDeleteTest()
-      throws VimException, InterruptedException, ExecutionException, NamingException,
-          NotFoundException, WrongStatusException, PluginException, BadFormatException {
+      throws VimException, InterruptedException, ExecutionException, NotFoundException,
+          WrongStatusException, PluginException, BadFormatException {
     NetworkServiceRecord nsd_exp = createNetworkServiceRecord();
     when(resourceManagement.release(any(VirtualDeploymentUnit.class), any(VNFCInstance.class)))
-        .thenReturn(new AsyncResult<Void>(null));
+        .thenReturn(new AsyncResult<>(null));
     when(nsrRepository.findFirstByIdAndProjectId(nsd_exp.getId(), projectId)).thenReturn(nsd_exp);
+    when(vnfrRepository.findByParentNsId(anyString())).thenReturn(new ArrayList<>());
     Configuration system = new Configuration();
     system.setConfigurationParameters(new HashSet<>());
     ConfigurationParameter configurationParameter = new ConfigurationParameter();
@@ -240,9 +233,8 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 
   @Test
   public void nsrManagementOnboardTest1()
-      throws NotFoundException, InterruptedException, ExecutionException, NamingException,
-          VimException, VimDriverException, BadFormatException, QuotaExceededException,
-          PluginException, MissingParameterException, BadRequestException, IOException,
+      throws NotFoundException, InterruptedException, ExecutionException, VimException,
+          BadFormatException, PluginException, BadRequestException, IOException,
           AlreadyExistingException {
     final NetworkServiceDescriptor nsd_exp = createNetworkServiceDescriptor();
     when(nsrRepository.save(any(NetworkServiceRecord.class)))
@@ -289,9 +281,8 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 
   @Test
   public void nsrManagementOnboardTest2()
-      throws NotFoundException, InterruptedException, ExecutionException, NamingException,
-          VimException, VimDriverException, BadFormatException, QuotaExceededException,
-          PluginException, MissingParameterException, BadRequestException, IOException,
+      throws NotFoundException, InterruptedException, ExecutionException, VimException,
+          BadFormatException, PluginException, BadRequestException, IOException,
           AlreadyExistingException {
     /** Initial settings */
     when(vimRepository.findByProjectIdAndName(anyString(), anyString()))
@@ -355,9 +346,8 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 
   @Test
   public void nsrManagementOnboardTest3()
-      throws NotFoundException, InterruptedException, ExecutionException, NamingException,
-          VimException, VimDriverException, BadFormatException, QuotaExceededException,
-          PluginException, MissingParameterException, BadRequestException, IOException,
+      throws NotFoundException, InterruptedException, ExecutionException, VimException,
+          BadFormatException, PluginException, BadRequestException, IOException,
           AlreadyExistingException {
     /** Initial settings */
     when(vimRepository.findByProjectIdAndName(anyString(), anyString()))
@@ -450,10 +440,10 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     nsd.getMonitoring_parameter().add("monitor3");
     nsd.setProjectId(projectId);
     //nsd.setLifecycle_event(new HashSet<LifecycleEvent>());
-    nsd.setPnfd(new HashSet<PhysicalNetworkFunctionDescriptor>());
-    nsd.setVnffgd(new HashSet<VNFForwardingGraphDescriptor>());
-    nsd.setVld(new HashSet<VirtualLinkDescriptor>());
-    nsd.setAuto_scale_policy(new HashSet<AutoScalePolicy>());
+    nsd.setPnfd(new HashSet<>());
+    nsd.setVnffgd(new HashSet<>());
+    nsd.setVld(new HashSet<>());
+    nsd.setAuto_scale_policy(new HashSet<>());
     nsd.setVnf_dependency(new HashSet<VNFDependency>());
     Set<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors = new HashSet<>();
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor1 =
@@ -468,7 +458,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     VNFDependency vnfDependency = new VNFDependency();
     vnfDependency.setSource(virtualNetworkFunctionDescriptor1.getName());
     vnfDependency.setTarget(virtualNetworkFunctionDescriptor2.getName());
-    vnfDependency.setParameters(new HashSet<String>());
+    vnfDependency.setParameters(new HashSet<>());
     nsd.getVnf_dependency().add(vnfDependency);
 
     return nsd;
@@ -481,14 +471,14 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     virtualNetworkFunctionDescriptor.setProjectId(projectId);
     virtualNetworkFunctionDescriptor.setEndpoint("test");
     virtualNetworkFunctionDescriptor.setName("" + ((int) (Math.random() * 10000)));
-    virtualNetworkFunctionDescriptor.setMonitoring_parameter(new HashSet<String>());
+    virtualNetworkFunctionDescriptor.setMonitoring_parameter(new HashSet<>());
     virtualNetworkFunctionDescriptor.getMonitoring_parameter().add("monitor1");
     virtualNetworkFunctionDescriptor.getMonitoring_parameter().add("monitor2");
     virtualNetworkFunctionDescriptor.getMonitoring_parameter().add("monitor3");
-    virtualNetworkFunctionDescriptor.setAuto_scale_policy(new HashSet<AutoScalePolicy>());
-    virtualNetworkFunctionDescriptor.setConnection_point(new HashSet<ConnectionPoint>());
-    virtualNetworkFunctionDescriptor.setVirtual_link(new HashSet<InternalVirtualLink>());
-    virtualNetworkFunctionDescriptor.setLifecycle_event(new HashSet<LifecycleEvent>());
+    virtualNetworkFunctionDescriptor.setAuto_scale_policy(new HashSet<>());
+    virtualNetworkFunctionDescriptor.setConnection_point(new HashSet<>());
+    virtualNetworkFunctionDescriptor.setVirtual_link(new HashSet<>());
+    virtualNetworkFunctionDescriptor.setLifecycle_event(new HashSet<>());
 
     virtualNetworkFunctionDescriptor.setDeployment_flavour(
         new HashSet<VNFDeploymentFlavour>() {
@@ -504,7 +494,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
           {
             VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
             vdu.setVm_image(
-                new HashSet<String>() {
+                new LinkedHashSet<String>() {
                   {
                     add("mocked_image");
                   }
@@ -514,8 +504,8 @@ public class NetworkServiceRecordManagementClassSuiteTest {
             highAvailability.setResiliencyLevel(ResiliencyLevel.ACTIVE_STANDBY_STATELESS);
             vdu.setHigh_availability(highAvailability);
             vdu.setComputation_requirement("high_requirements");
-            vdu.setVnfc(new HashSet<VNFComponent>());
-            vdu.setLifecycle_event(new HashSet<LifecycleEvent>());
+            vdu.setVnfc(new HashSet<>());
+            vdu.setLifecycle_event(new HashSet<>());
             vdu.setMonitoring_parameter(
                 new HashSet<String>() {
                   {
@@ -541,7 +531,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     nsr.setVendor("FOKUS");
     nsr.setProjectId(projectId);
     nsr.setStatus(Status.ACTIVE);
-    nsr.setMonitoring_parameter(new HashSet<String>());
+    nsr.setMonitoring_parameter(new HashSet<>());
     nsr.getMonitoring_parameter().add("monitor1");
     nsr.getMonitoring_parameter().add("monitor2");
     nsr.getMonitoring_parameter().add("monitor3");
@@ -570,15 +560,15 @@ public class NetworkServiceRecordManagementClassSuiteTest {
             highAvailability.setResiliencyLevel(ResiliencyLevel.ACTIVE_STANDBY_STATELESS);
             vdu.setHigh_availability(highAvailability);
             vdu.setVm_image(
-                new HashSet<String>() {
+                new LinkedHashSet<String>() {
                   {
                     add("mocked_image");
                   }
                 });
             vdu.setComputation_requirement("high_requirements");
-            vdu.setVnfc(new HashSet<VNFComponent>());
-            vdu.setVnfc_instance(new HashSet<VNFCInstance>());
-            vdu.setLifecycle_event(new HashSet<LifecycleEvent>());
+            vdu.setVnfc(new HashSet<>());
+            vdu.setVnfc_instance(new HashSet<>());
+            vdu.setLifecycle_event(new HashSet<>());
             vdu.setMonitoring_parameter(
                 new HashSet<String>() {
                   {

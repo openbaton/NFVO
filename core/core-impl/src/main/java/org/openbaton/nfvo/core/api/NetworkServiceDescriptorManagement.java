@@ -40,18 +40,7 @@ import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.nfvo.VNFPackageMetadata;
 import org.openbaton.catalogue.nfvo.VnfmManagerEndpoint;
-import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.exceptions.BadFormatException;
-import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.CyclicDependenciesException;
-import org.openbaton.exceptions.EntityInUseException;
-import org.openbaton.exceptions.EntityUnreachableException;
-import org.openbaton.exceptions.IncompatibleVNFPackage;
-import org.openbaton.exceptions.NetworkServiceIntegrityException;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimException;
-import org.openbaton.exceptions.WrongStatusException;
+import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.core.utils.NSDUtils;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
@@ -69,7 +58,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
-/** Created by lto on 11/05/15. */
 @Service
 @Scope
 @ConfigurationProperties
@@ -105,14 +93,6 @@ public class NetworkServiceDescriptorManagement
   @Autowired private VNFPackageManagement vnfPackageManagement;
   @Autowired private Gson gson;
 
-  public boolean isCascadeDelete() {
-    return cascadeDelete;
-  }
-
-  public void setCascadeDelete(boolean cascadeDelete) {
-    this.cascadeDelete = cascadeDelete;
-  }
-
   /**
    * This operation allows submitting and validating a Network Service Descriptor (NSD), including
    * any related VNFFGD and VLD.
@@ -123,7 +103,7 @@ public class NetworkServiceDescriptorManagement
       throws NotFoundException, NetworkServiceIntegrityException, CyclicDependenciesException,
           BadFormatException, EntityInUseException, BadRequestException, PluginException,
           IOException, AlreadyExistingException, IncompatibleVNFPackage, VimException,
-          EntityUnreachableException, InterruptedException {
+          InterruptedException {
     SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
     networkServiceDescriptor.setProjectId(projectId);
     log.info("Starting onboarding process for NSD: " + networkServiceDescriptor.getName());
@@ -235,7 +215,7 @@ public class NetworkServiceDescriptorManagement
   private List<String> getIds(List<String> market_ids, String project_id)
       throws NotFoundException, IOException, PluginException, VimException, IncompatibleVNFPackage,
           AlreadyExistingException, NetworkServiceIntegrityException, BadRequestException,
-          InterruptedException, EntityUnreachableException, BadFormatException {
+          InterruptedException, BadFormatException {
     List<String> not_found_ids = new ArrayList<>();
     not_found_ids.addAll(market_ids);
     List<String> vnfdIds = new ArrayList<>();
@@ -344,11 +324,20 @@ public class NetworkServiceDescriptorManagement
    */
   @Override
   public void deleteVnfDescriptor(String idNsd, String idVnfd, String projectId)
-      throws EntityInUseException, NotFoundException {
-    log.debug("Is there an NSD referencing it? " + nsdRepository.exists(idNsd));
-    if (nsdRepository.exists(idNsd)) {
-      throw new EntityInUseException(
-          "NSD with id: " + idNsd + " is still onboarded and referencing this VNFD");
+      throws EntityInUseException, NotFoundException, NotAllowedException {
+    //Get all NSD referencing the VNFD identified by idVnfd
+    List<NetworkServiceDescriptor> nsds =
+        nsdRepository.findByVnfd_idAndProjectId(idVnfd, projectId);
+
+    for (NetworkServiceDescriptor nsd : nsds) {
+      // If another NSD references such VNFD, this operation cannot be performed
+      if (!nsd.getId().equals(idNsd))
+        throw new EntityInUseException(
+            "NSD with id: " + nsd.getId() + " is still onboarded and referencing this VNFD");
+      // If this NSD contains only 1 VNFD, this operation cannot be performed (check integrity constraints in NSD)
+      else if (nsd.getId().equals(idNsd) && nsd.getVnfd().size() == 1) {
+        throw new NotAllowedException("NSD with id: " + idNsd + " cannot contain less than 1 vnfd");
+      }
     }
     log.info("Removing VnfDescriptor with id: " + idVnfd + " from NSD with id: " + idNsd);
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
@@ -559,7 +548,7 @@ public class NetworkServiceDescriptorManagement
       List<String> packageRepositoryIds, String projectId)
       throws IOException, BadRequestException, PluginException, AlreadyExistingException,
           NetworkServiceIntegrityException, IncompatibleVNFPackage, NotFoundException, VimException,
-          EntityUnreachableException, InterruptedException {
+          InterruptedException {
     List<String> vnfdIds = new ArrayList<>();
     for (String packageRepositorySymbolicId : packageRepositoryIds) {
       String link =

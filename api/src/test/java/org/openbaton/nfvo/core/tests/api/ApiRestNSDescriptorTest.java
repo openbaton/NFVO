@@ -37,18 +37,7 @@ import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.PhysicalNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFDependency;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.exceptions.BadFormatException;
-import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.CyclicDependenciesException;
-import org.openbaton.exceptions.EntityInUseException;
-import org.openbaton.exceptions.EntityUnreachableException;
-import org.openbaton.exceptions.IncompatibleVNFPackage;
-import org.openbaton.exceptions.NetworkServiceIntegrityException;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimException;
-import org.openbaton.exceptions.WrongStatusException;
+import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.api.catalogue.RestNetworkServiceDescriptor;
 import org.openbaton.nfvo.core.interfaces.NetworkServiceDescriptorManagement;
 import org.slf4j.Logger;
@@ -186,7 +175,7 @@ public class ApiRestNSDescriptorTest {
   }
 
   @Test
-  public void deleteVNFD() throws NotFoundException, EntityInUseException {
+  public void deleteVNFD() throws NotFoundException, EntityInUseException, NotAllowedException {
     when(nsdManagement.query(anyString(), anyString())).thenReturn(networkServiceDescriptor);
     VirtualNetworkFunctionDescriptor vnfd = networkServiceDescriptor.getVnfd().iterator().next();
     restNetworkService.deleteVirtualNetworkFunctionDescriptor(

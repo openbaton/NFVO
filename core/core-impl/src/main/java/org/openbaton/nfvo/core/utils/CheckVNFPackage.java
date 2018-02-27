@@ -36,7 +36,7 @@ public class CheckVNFPackage {
   private static final Logger log = LoggerFactory.getLogger(CheckVNFPackage.class);
 
   private static void checkRequiredFirstLevelMetadataKeys(
-      Map<String, Object> metadata, String[] keys) throws NotFoundException {
+      Map<String, Object> metadata, String[] keys) {
     for (String requiredKey : keys) {
       if (metadata.get(requiredKey) == null) {
         throw new NullPointerException(
@@ -45,8 +45,7 @@ public class CheckVNFPackage {
     }
   }
 
-  private static void checkRequiredImageDetailsKeys(Map<String, Object> imageDetails)
-      throws NotFoundException {
+  private static void checkRequiredImageDetailsKeys(Map<String, Object> imageDetails) {
     for (String requiredKey : REQUIRED_IMAGE_DETAILS) {
       if (imageDetails.get(requiredKey) == null) {
         throw new NullPointerException(
@@ -55,8 +54,7 @@ public class CheckVNFPackage {
     }
   }
 
-  private static void checkRequiredImageConfigKeys(Map<String, Object> imageConfig)
-      throws NotFoundException {
+  private static void checkRequiredImageConfigKeys(Map<String, Object> imageConfig) {
     for (String requiredKey : REQUIRED_IMAGE_CONFIG) {
       if (imageConfig.get(requiredKey) == null) {
         throw new NullPointerException("Not defined " + requiredKey + " of image in Metadata.yaml");
@@ -66,13 +64,13 @@ public class CheckVNFPackage {
 
   public static void checkCommonParametersWithVNFD(
       Map<String, Object> vnfdParameters, Map<String, Object> vnfPackageMetadataParameters)
-      throws NotFoundException, VNFPackageFormatException {
+      throws VNFPackageFormatException, NotFoundException {
     for (String commonKey : REQUIRED_VNF_PACKAGE_AND_VNFD_COMMON_KEYS) {
       String vnfdCommonKey = (String) vnfdParameters.get(commonKey);
       String vnfPackageCommonKey = (String) vnfPackageMetadataParameters.get(commonKey);
       if (vnfdCommonKey == null || vnfPackageCommonKey == null)
-        throw new NullPointerException(
-            "Not defined " + commonKey + " in VNFD or VNF package metadata");
+        throw new NotFoundException(
+            "Not defined '" + commonKey + "' in VNFD or VNF package metadata");
       if (!vnfdCommonKey.equals(vnfPackageCommonKey))
         throw new VNFPackageFormatException(
             "VNFD and VNF package has different '" + commonKey + "', it must be the same");
@@ -99,11 +97,16 @@ public class CheckVNFPackage {
           byte[] content = new byte[(int) entry.getSize()];
           tarFile.read(content, 0, content.length);
 
-          if (entry.getName().equals("Metadata.yaml")) {
+          if (entry.getName().equalsIgnoreCase("metadata.yaml")) {
             metadataFound = true;
 
-            Map<String, Object> metadata = Utils.getMapFromYamlFile(content);
-
+            Map<String, Object> metadata;
+            try {
+              metadata = Utils.getMapFromYamlFile(content);
+            } catch (IOException ioe) {
+              throw new VNFPackageFormatException(
+                  "Error reading the Metadata.yaml file: " + ioe.getMessage(), ioe);
+            }
             CheckVNFPackage.checkRequiredFirstLevelMetadataKeys(
                 metadata, REQUIRED_VNF_PACKAGE_IDENTIFIER_KEYS);
             CheckVNFPackage.checkRequiredFirstLevelMetadataKeys(
@@ -220,8 +223,8 @@ public class CheckVNFPackage {
       throw new VNFPackageFormatException("There is no Metadata.yaml in the VNF Package");
   }
 
-  private static boolean areNFVOVersionsCompatible(String nfvoVersion, String vnfPackageNFVOVersion)
-      throws IncompatibleVNFPackage, NotFoundException {
+  private static boolean areNFVOVersionsCompatible(
+      String nfvoVersion, String vnfPackageNFVOVersion) {
 
     if (nfvoVersion == null) throw new NullPointerException("The nfvo version in null");
     if (vnfPackageNFVOVersion.isEmpty())
@@ -240,7 +243,7 @@ public class CheckVNFPackage {
   }
 
   public static void compareNFVOVersions(String vnfPackageNfvoVersion, String actualNfvoVersion)
-      throws IncompatibleVNFPackage, NotFoundException {
+      throws IncompatibleVNFPackage {
     if (!areNFVOVersionsCompatible(actualNfvoVersion, vnfPackageNfvoVersion))
       throw new IncompatibleVNFPackage(
           "The NFVO Version: "

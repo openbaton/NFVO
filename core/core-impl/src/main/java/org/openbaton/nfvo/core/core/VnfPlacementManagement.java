@@ -19,6 +19,7 @@ package org.openbaton.nfvo.core.core;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
@@ -40,19 +41,21 @@ public class VnfPlacementManagement
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Override
-  public BaseVimInstance choseRandom(Set<String> vimInstanceName, String projectId) {
+  public BaseVimInstance choseRandom(Set<String> vimInstanceName, String projectId)
+      throws NotFoundException {
     if (!vimInstanceName.isEmpty()) {
       String name =
           vimInstanceName.toArray(new String[0])[
               (int) (Math.random() * 1000) % vimInstanceName.size()];
-      BaseVimInstance vimInstance = null;
-      for (BaseVimInstance vimInstance1 : vimInstanceRepository.findByProjectId(projectId))
-        if (vimInstance1.getName().equals(name)) {
-          vimInstance = vimInstance1;
-          break;
-        }
-      log.info("Chosen VimInstance: " + vimInstance.getName());
-      return vimInstance;
+      Optional<BaseVimInstance> instanceOptional =
+          vimInstanceRepository
+              .findByProjectId(projectId)
+              .stream()
+              .filter(v -> v.getName().equals(name))
+              .findAny();
+      log.info("Chosen VimInstance: " + instanceOptional);
+      if (instanceOptional.isPresent()) return instanceOptional.get();
+      else throw new NotFoundException("No Vim instance found for name " + name);
     } else {
       List<BaseVimInstance> vimInstances = vimInstanceRepository.findByProjectId(projectId);
 
@@ -72,7 +75,6 @@ public class VnfPlacementManagement
       for (BaseVimInstance vimInstance : vimInstances) {
         if (vimTypes.contains(vimInstance.getType())) {
           vimInstancesChosen.add(vimInstance.getName());
-          return vimInstancesChosen;
         }
       }
     } else {
