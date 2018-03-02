@@ -192,8 +192,9 @@ public class PluginCaller {
       }
       if (returnType != null) {
         String res = response.poll(this.timeout, TimeUnit.MILLISECONDS);
-        if (res == null){
-          throw new PluginException(String.format("Plugin did not responded after %d milliseconds", this.timeout));
+        if (res == null) {
+          throw new PluginException(
+              String.format("Plugin did not responded after %d milliseconds", this.timeout));
         }
         JsonObject jsonObject = gson.fromJson(res, JsonObject.class);
 
