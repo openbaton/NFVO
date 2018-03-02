@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import org.apache.commons.codec.binary.Base64;
 import org.openbaton.catalogue.nfvo.PluginMessage;
@@ -190,7 +191,10 @@ public class PluginCaller {
         throw new PluginException("Plugin with id: " + pluginId + " not existing anymore...");
       }
       if (returnType != null) {
-        String res = response.take();
+        String res = response.poll(this.timeout, TimeUnit.MILLISECONDS);
+        if (res == null){
+          throw new PluginException(String.format("Plugin did not responded after %d milliseconds", this.timeout));
+        }
         JsonObject jsonObject = gson.fromJson(res, JsonObject.class);
 
         JsonElement exceptionJson = jsonObject.get("exception");
