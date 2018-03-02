@@ -59,8 +59,8 @@ public class RestEvent {
   /**
    * Adds a new EventEndpoint to the EventEndpoint repository
    *
-   * @param endpoint : Image to add
-   * @return image: The image filled with values from the core
+   * @param endpoint : Event to add
+   * @return EventEndpoint: The Event filled with values from the core
    */
   @RequestMapping(
     method = RequestMethod.POST,
@@ -87,7 +87,18 @@ public class RestEvent {
             .getCurrentUser()
             .getRoles()
             .stream()
-            .noneMatch(r -> r.getProject().equals(endpoint.getProjectId())))
+            .noneMatch(
+                r -> {
+                  try {
+                    return r.getProject().equals(endpoint.getProjectId())
+                        || r.getProject()
+                            .equals(
+                                eventManagement.query(endpoint.getProjectId(), projectId).getId());
+                  } catch (NotFoundException e) {
+                    e.printStackTrace();
+                    return false;
+                  }
+                }))
       throw new BadRequestException("Only services and admin can register to all events");
     return eventDispatcher.register(gson.toJson(endpoint));
   }
