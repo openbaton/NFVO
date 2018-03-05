@@ -210,7 +210,8 @@ public class RestNetworkServiceRecord {
           NetworkServiceIntegrityException {
 
     log.debug("Json Body is" + jsonObject);
-    Type mapType = new TypeToken<Map<String, Configuration>>() {}.getType();
+    Type mapTypeConfigurations = new TypeToken<Map<String, Configuration>>() {}.getType();
+    Type mapTypeVduVimInstances = new TypeToken<Map<String, Set<String>>>() {}.getType();
 
     String monitoringIp = null;
     if (jsonObject.has("monitoringIp")) {
@@ -222,8 +223,8 @@ public class RestNetworkServiceRecord {
         vnfdId,
         projectId,
         gson.fromJson(jsonObject.getAsJsonArray("keys"), List.class),
-        gson.fromJson(jsonObject.getAsJsonObject("vduVimInstances"), Map.class),
-        gson.fromJson(jsonObject.get("configurations"), mapType),
+        gson.fromJson(jsonObject.getAsJsonObject("vduVimInstances"), mapTypeVduVimInstances),
+        gson.fromJson(jsonObject.get("configurations"), mapTypeConfigurations),
         monitoringIp);
   }
 
