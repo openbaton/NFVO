@@ -41,8 +41,9 @@ public class OpenstackVimInstance extends BaseVimInstance {
   @ElementCollection(fetch = FetchType.EAGER)
   private Set<String> securityGroups;
 
+  // can store a self signed certificate used by the OpenStack instance related to this VIM
   @Column(length = 3700)
-  private String trustedCertificate;
+  private String openstackSslCertificate;
 
   @OneToMany(
     fetch = FetchType.EAGER,
@@ -207,11 +208,11 @@ public class OpenstackVimInstance extends BaseVimInstance {
     this.keys = keys;
   }
 
-  public String getTrustedCertificate() {
-    return trustedCertificate;
+  public String getOpenstackSslCertificate() {
+    return openstackSslCertificate;
   }
 
-  public void setTrustedCertificate(String trustedCertificate) {
-    this.trustedCertificate = trustedCertificate;
+  public void setOpenstackSslCertificate(String openstackSslCertificate) {
+    this.openstackSslCertificate = openstackSslCertificate;
   }
 }
