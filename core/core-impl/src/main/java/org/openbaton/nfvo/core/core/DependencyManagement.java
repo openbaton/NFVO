@@ -27,6 +27,7 @@ import java.util.concurrent.ExecutionException;
 import javax.persistence.NoResultException;
 import org.hibernate.StaleObjectStateException;
 import org.openbaton.catalogue.mano.common.Ip;
+import org.openbaton.catalogue.mano.common.NetworkIps;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
@@ -222,20 +223,35 @@ public class DependencyManagement
           }
           vnfcDependencyParameters.getParameters().put(vnfcInstance.getId(), dependencyParameters);
         }
-        for (Ip ip : vnfcInstance.getIps()) {
-          if (parameterKeys.contains(ip.getNetName())) {
+        for (NetworkIps networkIps : vnfcInstance.getIps()) {
+          if (parameterKeys.contains(networkIps.getNetName())) {
             log.debug(
                 "Adding "
-                    + ip.getNetName()
+                    + networkIps.getNetName()
                     + "="
-                    + ip.getIp()
+                    + networkIps.getSubnetIps().iterator().next().getIp()
                     + ". VNFCInstance ID: "
                     + vnfcInstance.getId());
             vnfcDependencyParameters
                 .getParameters()
                 .get(vnfcInstance.getId())
                 .getParameters()
-                .put(ip.getNetName(), ip.getIp());
+                .put(networkIps.getNetName(), networkIps.getSubnetIps().iterator().next().getIp());
+          }
+          if (parameterKeys.contains(networkIps.getNetName() + "_ips")) {
+            log.debug(
+                "Adding "
+                    + networkIps.getNetName()
+                    + "_set"
+                    + "="
+                    + networkIps.printSubnetIps()
+                    + ". VNFCInstance ID: "
+                    + vnfcInstance.getId());
+            vnfcDependencyParameters
+                .getParameters()
+                .get(vnfcInstance.getId())
+                .getParameters()
+                .put(networkIps.getNetName() + "_ips", networkIps.printSubnetIps());
           }
         }
 

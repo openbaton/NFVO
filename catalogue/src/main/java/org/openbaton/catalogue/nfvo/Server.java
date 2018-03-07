@@ -19,9 +19,10 @@ package org.openbaton.catalogue.nfvo;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
+import org.openbaton.catalogue.mano.common.SubnetIp;
 import org.openbaton.catalogue.nfvo.images.NFVImage;
 
 public class Server implements Serializable {
@@ -34,7 +35,7 @@ public class Server implements Serializable {
   private String extendedStatus;
   private String extId;
 
-  private Map<String, List<String>> ips;
+  private Map<String, Set<SubnetIp>> ips;
 
   private Map<String, String> floatingIps;
 
@@ -69,11 +70,11 @@ public class Server implements Serializable {
     this.extId = extId;
   }
 
-  public Map<String, List<String>> getIps() {
+  public Map<String, Set<SubnetIp>> getIps() {
     return ips;
   }
 
-  public void setIps(Map<String, List<String>> ips) {
+  public void setIps(Map<String, Set<SubnetIp>> ips) {
     this.ips = ips;
   }
 

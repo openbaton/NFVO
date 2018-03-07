@@ -29,6 +29,8 @@ import java.util.Set;
 import java.util.concurrent.Future;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.Ip;
+import org.openbaton.catalogue.mano.common.NetworkIps;
+import org.openbaton.catalogue.mano.common.SubnetIp;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -1571,13 +1573,17 @@ public class GenericVIM extends Vim {
       }
     }
 
-    for (Entry<String, List<String>> network : server.getIps().entrySet()) {
-      Ip ip = new Ip();
-      ip.setNetName(network.getKey());
-      ip.setIp(network.getValue().iterator().next());
-      vnfcInstance.getIps().add(ip);
-      for (String ip1 : server.getIps().get(network.getKey())) {
-        vnfr.getVnf_address().add(ip1);
+    for (Entry<String, Set<SubnetIp>> network : server.getIps().entrySet()) {
+      NetworkIps networkIps = new NetworkIps();
+      networkIps.setNetName(network.getKey());
+      networkIps.setSubnetIps(new HashSet<>());
+      for (SubnetIp subnetIp : network.getValue()) {
+        networkIps.getSubnetIps().add(subnetIp);
+      }
+
+      vnfcInstance.getIps().add(networkIps);
+      for (SubnetIp ip : server.getIps().get(network.getKey())) {
+        vnfr.getVnf_address().add(ip.getIp());
       }
     }
     return vnfcInstance;

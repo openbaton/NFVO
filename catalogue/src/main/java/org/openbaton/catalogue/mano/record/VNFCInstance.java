@@ -24,6 +24,7 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import org.openbaton.catalogue.mano.common.Ip;
+import org.openbaton.catalogue.mano.common.NetworkIps;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 
 /** Created by lto on 08/09/15. */
@@ -45,7 +46,7 @@ public class VNFCInstance extends VNFComponent {
   private Set<Ip> floatingIps;
 
   @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-  private Set<Ip> ips;
+  private Set<NetworkIps> ips;
 
   public String getHostname() {
     return hostname;
@@ -120,11 +121,11 @@ public class VNFCInstance extends VNFComponent {
     this.floatingIps = floatingIps;
   }
 
-  public Set<Ip> getIps() {
+  public Set<NetworkIps> getIps() {
     return ips;
   }
 
-  public void setIps(Set<Ip> ips) {
+  public void setIps(Set<NetworkIps> ips) {
     this.ips = ips;
   }
 }

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.common.Ip;
+import org.openbaton.catalogue.mano.common.NetworkIps;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
@@ -176,8 +177,13 @@ public class ScaledTask extends AbstractTask {
             vnfcDP.getParameters().put(ip.getNetName() + "_floatingIp", ip.getIp());
           }
 
-          for (Ip ip : vnfcInstance.getIps()) {
-            vnfcDP.getParameters().put(ip.getNetName(), ip.getIp());
+          for (NetworkIps networkIps : vnfcInstance.getIps()) {
+            vnfcDP
+                .getParameters()
+                .put(networkIps.getNetName(), networkIps.getSubnetIps().iterator().next().getIp());
+            vnfcDP
+                .getParameters()
+                .put(networkIps.getNetName() + "_ips", networkIps.printSubnetIps());
           }
 
           vnfcDP.getParameters().put("hostname", vnfcInstance.getHostname());
