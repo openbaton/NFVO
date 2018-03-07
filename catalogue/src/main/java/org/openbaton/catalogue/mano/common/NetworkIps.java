@@ -53,9 +53,9 @@ public class NetworkIps extends BaseEntity {
     for (SubnetIp subnetIp : subnetIps) {
       retVal +=
           "{'"
-              + subnetIp.getSubnetName()
-              + "', '"
               + subnetIp.getIp()
+              + "', '"
+              + subnetIp.getSubnetName()
               + "', '"
               + subnetIp.getInterfaceId()
               + "'}";

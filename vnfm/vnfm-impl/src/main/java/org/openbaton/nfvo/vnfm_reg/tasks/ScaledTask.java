@@ -177,7 +177,7 @@ public class ScaledTask extends AbstractTask {
             vnfcDP.getParameters().put(ip.getNetName() + "_floatingIp", ip.getIp());
           }
 
-          for (NetworkIps networkIps : vnfcInstance.getIps()) {
+          for (NetworkIps networkIps : vnfcInstance.getFixedIps()) {
             vnfcDP
                 .getParameters()
                 .put(networkIps.getNetName(), networkIps.getSubnetIps().iterator().next().getIp());

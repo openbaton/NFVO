@@ -223,7 +223,7 @@ public class DependencyManagement
           }
           vnfcDependencyParameters.getParameters().put(vnfcInstance.getId(), dependencyParameters);
         }
-        for (NetworkIps networkIps : vnfcInstance.getIps()) {
+        for (NetworkIps networkIps : vnfcInstance.getFixedIps()) {
           if (parameterKeys.contains(networkIps.getNetName())) {
             log.debug(
                 "Adding "

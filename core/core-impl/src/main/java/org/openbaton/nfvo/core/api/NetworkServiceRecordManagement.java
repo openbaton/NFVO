@@ -963,7 +963,7 @@ public class NetworkServiceRecordManagement
     }
 
     resourceManagement.release(virtualDeploymentUnit, vnfcInstance);
-    for (NetworkIps networkIps : vnfcInstance.getIps()) {
+    for (NetworkIps networkIps : vnfcInstance.getFixedIps()) {
       for (SubnetIp subnetIp : networkIps.getSubnetIps()) {
         virtualNetworkFunctionRecord.getVnf_address().remove(subnetIp.getIp());
       }

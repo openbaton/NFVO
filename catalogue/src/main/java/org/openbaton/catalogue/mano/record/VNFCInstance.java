@@ -45,8 +45,12 @@ public class VNFCInstance extends VNFComponent {
   @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<Ip> floatingIps;
 
+  @Deprecated
   @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-  private Set<NetworkIps> ips;
+  private Set<Ip> ips;
+
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+  private Set<NetworkIps> fixedIps;
 
   public String getHostname() {
     return hostname;
@@ -121,11 +125,21 @@ public class VNFCInstance extends VNFComponent {
     this.floatingIps = floatingIps;
   }
 
-  public Set<NetworkIps> getIps() {
+  @Deprecated
+  public Set<Ip> getIps() {
     return ips;
   }
 
-  public void setIps(Set<NetworkIps> ips) {
+  @Deprecated
+  public void setIps(Set<Ip> ips) {
     this.ips = ips;
+  }
+
+  public Set<NetworkIps> getFixedIps() {
+    return fixedIps;
+  }
+
+  public void setFixedIps(Set<NetworkIps> fixedIps) {
+    this.fixedIps = fixedIps;
   }
 }

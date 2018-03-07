@@ -141,7 +141,7 @@ public class HealTask extends AbstractTask {
       for (Ip ip : vnfcInstance.getFloatingIps())
         vnfcDP.getParameters().put(ip.getNetName() + "_floatingIp", ip.getIp());
 
-      for (NetworkIps networkIps : vnfcInstance.getIps()) {
+      for (NetworkIps networkIps : vnfcInstance.getFixedIps()) {
         vnfcDP
             .getParameters()
             .put(networkIps.getNetName(), networkIps.getSubnetIps().iterator().next().getIp());
