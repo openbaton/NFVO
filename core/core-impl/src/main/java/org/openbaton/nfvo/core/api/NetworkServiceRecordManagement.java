@@ -172,13 +172,12 @@ public class NetworkServiceRecordManagement
       String monitoringIp)
       throws NotFoundException, BadRequestException, InterruptedException, BadFormatException,
           ExecutionException, CyclicDependenciesException, NetworkServiceIntegrityException {
-    //Check if the NSR exists
     log.info("Looking for NetworkServiceRecord with id: " + nsrId);
+    // check if the nsr status is in ACTIVE
+    if (!nsrRepository.existsByIdAndProjectIdAndStatus(nsrId, projectId, Status.ACTIVE))
+      throw new BadRequestException("NSR is not in ACTIVE status");
     NetworkServiceRecord nsr = nsrRepository.findFirstByIdAndProjectId(nsrId, projectId);
-    if (nsr == null) {
-      throw new NotFoundException(
-          "NSR with id " + nsrId + " was not found in the project with id " + projectId);
-    }
+
     //Check if the VNFD exists
     VirtualNetworkFunctionDescriptor vnfd =
         vnfdRepository.findFirstByIdAndProjectId(vnfdId, projectId);
