@@ -75,7 +75,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   @Autowired private VNFRRepository vnfrRepository;
 
   private static Map<String, Long> lastUpdateVim = new ConcurrentHashMap<>();
-  private static Map<String, Object> lockMap = new HashMap<>();
+  private static final Map<String, Object> lockMap = new HashMap<>();
 
   private final Logger log = LoggerFactory.getLogger(this.getClass());
 
