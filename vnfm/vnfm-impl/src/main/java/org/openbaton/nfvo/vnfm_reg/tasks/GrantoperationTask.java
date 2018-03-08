@@ -66,7 +66,7 @@ public class GrantoperationTask extends AbstractTask {
   @Autowired private VimManagement vimManagement;
   @Autowired private VirtualLinkRecordRepository vlrRepository;
 
-  @Value("${nfvo.quota.check:true}")
+  @Value("${nfvo.quota.check:false}")
   private boolean checkQuota;
 
   private static final Map<String, Object> lockMap = new HashMap<>();
@@ -269,7 +269,7 @@ public class GrantoperationTask extends AbstractTask {
             if (virtualLinkRecord
                 .getName()
                 .equals(vnfdConnectionPoint.getVirtual_link_reference())) {
-              vnfdConnectionPoint.setVirtual_link_reference(net.getName());
+              vnfdConnectionPoint.setVirtual_link_reference(virtualLinkRecord.getName());
               vnfdConnectionPoint.setVirtual_link_reference_id(virtualLinkRecord.getExtId());
             }
           }
