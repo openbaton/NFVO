@@ -203,6 +203,7 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
               action, virtualNetworkFunctionRecord, virtualNetworkFunctionRecord.getProjectId());
       EventNFVO eventNFVO = new EventNFVO(this);
       eventNFVO.setEventNFVO(eventPublic);
+      log.debug("Publishing eventNFVO for VNFR: " + virtualNetworkFunctionRecord.getName() + " and action " + action);
       publisher.publishEvent(eventNFVO);
       return null;
     } else {

@@ -76,4 +76,10 @@ public interface VnfmManager {
 
   void updateScript(Script script, String vnfPackageId)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
+
+  void updateVnfr(String nsrId, String vnfrId, String projectId)
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
+
+  void upgradeVnfr(String nsrId, String vnfrId, String projectId)
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 }

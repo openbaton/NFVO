@@ -760,25 +760,60 @@ public class RestNetworkServiceRecord {
 
   @ApiOperation(
     value = "Update a Virtual Network Function Record in a NSR",
-    notes = "Specify the ids of the VNFR and NSR which will be updated"
+    notes = "Specify the ids of the parent NSR and of the VNFR which will be updated"
+  )
+  @RequestMapping(value = "{idNsr}/vnfrecords/{idVnfr}/update", method = RequestMethod.POST)
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  public void updateVnfr(
+      @PathVariable("idNsr") String idNsr,
+      @PathVariable("idVnfr") String idVnfr,
+      @RequestHeader(value = "project-id") String projectId)
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
+    NetworkServiceRecord nsr = networkServiceRecordManagement.query(idNsr, projectId);
+    VirtualNetworkFunctionRecord vnfRecord =
+        networkServiceRecordManagement.getVirtualNetworkFunctionRecord(idNsr, idVnfr, projectId);
+    nsr.getVnfr().add(vnfRecord);
+
+    log.info("Executing UPDATE for VNFR: " + vnfRecord.getName());
+    networkServiceRecordManagement.updateVnfr(idNsr, idVnfr, projectId);
+  }
+
+  @ApiOperation(
+    value = "Upgrade a Virtual Network Function Record in a NSR",
+    notes = "Specify the ids of the parent NSR and of the VNFR which will be upgraded"
   )
   @RequestMapping(
-    value = "{idNsr}/vnfrecords/{idVnf}",
-    method = RequestMethod.PUT,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
+    value = "{idNsr}/vnfrecords/{idVnfr}/upgrade",
+    method = RequestMethod.POST,
+    consumes = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.ACCEPTED)
-  public VirtualNetworkFunctionRecord updateVNF(
-      @RequestBody @Valid VirtualNetworkFunctionRecord vnfRecord,
+  public void upgradeVnfr(
       @PathVariable("idNsr") String idNsr,
-      @PathVariable("idVnf") String idVnf,
-      @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException {
+      @PathVariable("idVnfr") String idVnfr,
+      @RequestHeader(value = "project-id") String projectId,
+      @RequestBody @Valid JsonObject body)
+      throws NotFoundException, BadFormatException, BadRequestException, ExecutionException,
+          InterruptedException, IOException, VimException, PluginException {
     NetworkServiceRecord nsr = networkServiceRecordManagement.query(idNsr, projectId);
+    VirtualNetworkFunctionRecord vnfRecord =
+        networkServiceRecordManagement.getVirtualNetworkFunctionRecord(idNsr, idVnfr, projectId);
     nsr.getVnfr().add(vnfRecord);
-    networkServiceRecordManagement.update(nsr, idNsr, projectId);
-    return vnfRecord;
+
+    String upgradeRequestEntityKey = "vnfdId";
+
+    if (!body.has(upgradeRequestEntityKey)
+        || !body.getAsJsonPrimitive(upgradeRequestEntityKey).isString())
+      throw new BadRequestException(
+          "The passed JSON is not correct. It should include a string field named: "
+              + upgradeRequestEntityKey);
+
+    //String vnfPackageId = body.getAsJsonPrimitive("vnfPackageId").getAsString();
+    String upgradeVnfdId = body.getAsJsonPrimitive(upgradeRequestEntityKey).getAsString();
+
+    log.info("Executing UPGRADE for VNFR: " + vnfRecord.getName());
+
+    networkServiceRecordManagement.upgradeVnfr(idNsr, idVnfr, projectId, upgradeVnfdId);
   }
 
   @ApiOperation(
