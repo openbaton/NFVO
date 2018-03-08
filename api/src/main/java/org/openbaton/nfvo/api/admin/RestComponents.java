@@ -83,38 +83,8 @@ public class RestComponents {
   @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
   public String createService(
       @RequestHeader(value = "project-id") String projectId,
-      //      @RequestBody @Valid JsonObject serviceCreateBody)
       @RequestBody @Valid ServiceCreateBody serviceCreateBody)
       throws NotFoundException, MissingParameterException {
-
-    //    if (!serviceCreateBody.has("name"))
-    //      throw new BadRequestException("The request's json body has to contain a name property.");
-    //    if (!serviceCreateBody.has("roles")) {
-    //      throw new BadRequestException(
-    //          "The request's json body has to contain a roles property as a list of project ids or names.");
-    //    }
-    //
-    //    String serviceName = null;
-    //    try {
-    //      serviceName = serviceCreateBody.getAsJsonPrimitive("name").getAsString();
-    //    } catch (ClassCastException e1) {
-    //      throw new BadRequestException(
-    //          "The request's json body has to have this form: {'name':'examplename', 'roles':['project1', 'project2'] }");
-    //    } catch (IllegalStateException e2) {
-    //      throw new BadRequestException(
-    //          "The request's json body has to have this form: {'name':'examplename', 'roles':['project1', 'project2'] }");
-    //    }
-    //    Type baseType = new TypeToken<List<String>>() {}.getType();
-    //    List<String> projects;
-    //    try {
-    //      projects = gson.fromJson(serviceCreateBody.get("roles").getAsJsonArray(), baseType);
-    //    } catch (ClassCastException e1) {
-    //      throw new BadRequestException(
-    //          "The request's json body has to have this form: {'name':'examplename', 'roles':['project1', 'project2'] }");
-    //    } catch (IllegalStateException e2) {
-    //      throw new BadRequestException(
-    //          "The request's json body has to have this form: {'name':'examplename', 'roles':['project1', 'project2'] }");
-    //    }
     String serviceName = serviceCreateBody.getName();
     List<String> projects = serviceCreateBody.getRoles();
     return componentManager.createService(serviceName, projectId, projects);
