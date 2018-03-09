@@ -1645,12 +1645,101 @@ public class NetworkServiceRecordManagement
     return instanceNames;
   }
 
+  /**
+   * Execute the update of a NSR
+   *
+   * @param newNsr
+   * @param idNsr
+   * @param projectId
+   * @return
+   * @throws NotFoundException
+   */
   @Override
-  public NetworkServiceRecord update(NetworkServiceRecord newRsr, String idNsr, String projectId)
+  public NetworkServiceRecord update(NetworkServiceRecord newNsr, String idNsr, String projectId)
       throws NotFoundException {
     // TODO not implemented yet
     log.warn("Updating NSRs is not yet implemented.");
     return query(idNsr, projectId);
+  }
+
+  /**
+   * Execute the update of a Virtual Network Function Record (VNFR) (The UPDATE is intended as the
+   * execution of the scripts associated to the lifecycle UPDATE by the VNF provider)
+   *
+   * @param nsrId
+   * @param vnfrId
+   * @param projectId
+   * @return
+   * @throws NotFoundException
+   */
+  @Override
+  public VirtualNetworkFunctionRecord updateVnfr(String nsrId, String vnfrId, String projectId)
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
+    VirtualNetworkFunctionRecord vnfr =
+        vnfrRepository.findByIdAndParent_ns_idAndProjectId(vnfrId, nsrId, projectId);
+    log.info("Updating VNFR: " + vnfr.getName());
+    vnfmManager.updateVnfr(nsrId, vnfrId, projectId);
+    return vnfr;
+  }
+
+  /**
+   * Execute the upgrade of a VNFR (The UPGRADE is intended as one of the following the rebuild of
+   * the VNFR (all the VNFC Instances, if many) using a new OS image and/or new VNF scripts
+   *
+   * @param nsrId
+   * @param vnfrId
+   * @param projectId
+   * @return
+   * @throws NotFoundException
+   */
+  @Override
+  public VirtualNetworkFunctionRecord upgradeVnfr(
+      String nsrId, String vnfrId, String projectId, String upgradeVnfdId)
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException,
+          IOException, BadRequestException, VimException, PluginException {
+
+    NetworkServiceRecord nsr = nsrRepository.findFirstByIdAndProjectId(nsrId, projectId);
+
+    VirtualNetworkFunctionRecord vnfr =
+        vnfrRepository.findByIdAndParent_ns_idAndProjectId(vnfrId, nsrId, projectId);
+    log.info("Upgrading VNFR: " + vnfr.getName() + " - " + vnfr.getId());
+
+    VirtualNetworkFunctionDescriptor upgradeVnfd =
+        vnfdRepository.findFirstByIdAndProjectId(upgradeVnfdId, projectId);
+    String upgradeVnfPackageId = upgradeVnfd.getVnfPackageLocation();
+
+    // Update VNFR references to new VNFD and VNF Package
+    log.debug("Upgrading VNFR: " + vnfrId + " - Setting new VNFD reference: " + upgradeVnfdId);
+    vnfr.setDescriptor_reference(upgradeVnfdId);
+    log.debug(
+        "Upgrading VNFR: "
+            + vnfrId
+            + " - Setting new VNFPackage reference: "
+            + upgradeVnfPackageId);
+    vnfr.setPackageId(upgradeVnfPackageId);
+
+    vnfr = vnfrRepository.save(vnfr);
+
+    // Use the first image found in the VDUs TODO: improve image choice for upgrade/rebuild
+    String rebuildImageName = null;
+    for (VirtualDeploymentUnit vdu : upgradeVnfd.getVdu()) {
+      if (vdu.getVm_image().size() > 0) {
+        rebuildImageName = vdu.getVm_image().iterator().next();
+        log.debug("Upgrading VNFR: " + vnfrId + " - Using image: " + rebuildImageName);
+        break;
+      }
+    }
+    if (rebuildImageName == null)
+      throw new NotFoundException("No images specified in new VNFD: " + upgradeVnfdId);
+
+    // Initialise the context for the automatic trigger of the NSR restart
+    vnfmManager.upgradeVnfr(nsrId, vnfr.getId(), projectId);
+
+    // Rebuild the VNF using the upgraded VNF Descriptor and VNF Package and after the rebuild will be finished the
+    // restart of the NSR will be automatically triggered
+    restartVnfr(nsr, vnfrId, rebuildImageName, projectId);
+
+    return vnfr;
   }
 
   @Override
