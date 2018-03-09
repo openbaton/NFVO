@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.exceptions.NotFoundException;
@@ -37,8 +36,7 @@ import org.springframework.stereotype.Service;
 public class VnfPlacementManagement
     implements org.openbaton.nfvo.core.interfaces.VnfPlacementManagement {
 
-  @Autowired
-  private VimRepository vimInstanceRepository;
+  @Autowired private VimRepository vimInstanceRepository;
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Override
