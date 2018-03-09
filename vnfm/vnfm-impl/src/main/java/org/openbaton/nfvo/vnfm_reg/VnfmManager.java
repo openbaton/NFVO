@@ -165,6 +165,22 @@ public class VnfmManager
     }
   }
 
+  @Override
+  public void addVnfr(
+      NetworkServiceRecord networkServiceRecord,
+      VirtualNetworkFunctionDescriptor vnfd,
+      DeployNSRBody body,
+      Map<String, Set<String>> vduVimInstances,
+      String monitoringIp)
+      throws NotFoundException, InterruptedException, BadFormatException, ExecutionException {
+
+    NetworkServiceDescriptor nsd =
+        nsdRepository.findFirstByIdAndProjectId(
+            networkServiceRecord.getDescriptor_reference(), networkServiceRecord.getProjectId());
+
+    vnfStateHandler.handleVNF(nsd, networkServiceRecord, body, vduVimInstances, vnfd, monitoringIp);
+  }
+
   private void fillVnfrNames(
       NetworkServiceDescriptor networkServiceDescriptor, Map<String, Integer> vnfrNamesWeighted) {
 
@@ -228,7 +244,7 @@ public class VnfmManager
                       .findFirstById(networkServiceRecord.getDescriptor_reference())
                       .getVnfd()
                       .size()
-                  != networkServiceRecord.getVnfr().size()) {
+                  > networkServiceRecord.getVnfr().size()) {
             log.debug(
                 "Not all the VNFR have been created yet, it is useless to set the NSR status.");
             return;
@@ -285,7 +301,7 @@ public class VnfmManager
                     .findFirstById(networkServiceRecord.getDescriptor_reference())
                     .getVnfd()
                     .size()
-                == networkServiceRecord.getVnfr().size();
+                <= networkServiceRecord.getVnfr().size();
         if (nsrFilledWithAllVnfr) {
           if (networkServiceRecord.getTask() == null) {
             networkServiceRecord.setTask("");

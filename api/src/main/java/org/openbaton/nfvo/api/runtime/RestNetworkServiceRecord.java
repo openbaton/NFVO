@@ -45,16 +45,7 @@ import org.openbaton.catalogue.nfvo.DependencyParameters;
 import org.openbaton.catalogue.nfvo.HistoryLifecycleEvent;
 import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.exceptions.BadFormatException;
-import org.openbaton.exceptions.BadRequestException;
-import org.openbaton.exceptions.MissingParameterException;
-import org.openbaton.exceptions.NotFoundException;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.QuotaExceededException;
-import org.openbaton.exceptions.VimDriverException;
-import org.openbaton.exceptions.VimException;
-import org.openbaton.exceptions.WrongStatusException;
+import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.api.model.DependencyObject;
 import org.openbaton.nfvo.core.interfaces.NetworkServiceRecordManagement;
 import org.slf4j.Logger;
@@ -200,6 +191,41 @@ public class RestNetworkServiceRecord {
     }
     return networkServiceRecordManagement.onboard(
         id, projectId, keys, vduVimInstances, configurations, monitoringIp);
+  }
+
+  @RequestMapping(
+    value = "{nsrId}/vnfd/{vnfdId}",
+    method = RequestMethod.PUT,
+    produces = MediaType.APPLICATION_JSON_VALUE,
+    consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ResponseStatus(HttpStatus.CREATED)
+  public NetworkServiceRecord scaleOut(
+      @PathVariable("nsrId") String nsrId,
+      @PathVariable("vnfdId") String vnfdId,
+      @RequestHeader(value = "project-id") String projectId,
+      @RequestBody(required = false) JsonObject jsonObject)
+      throws NotFoundException, MissingParameterException, BadRequestException,
+          InterruptedException, BadFormatException, ExecutionException, CyclicDependenciesException,
+          NetworkServiceIntegrityException {
+
+    log.debug("Json Body is" + jsonObject);
+    Type mapTypeConfigurations = new TypeToken<Map<String, Configuration>>() {}.getType();
+    Type mapTypeVduVimInstances = new TypeToken<Map<String, Set<String>>>() {}.getType();
+
+    String monitoringIp = null;
+    if (jsonObject.has("monitoringIp")) {
+      monitoringIp = jsonObject.get("monitoringIp").getAsString();
+    }
+
+    return networkServiceRecordManagement.scaleOutNsr(
+        nsrId,
+        vnfdId,
+        projectId,
+        gson.fromJson(jsonObject.getAsJsonArray("keys"), List.class),
+        gson.fromJson(jsonObject.getAsJsonObject("vduVimInstances"), mapTypeVduVimInstances),
+        gson.fromJson(jsonObject.get("configurations"), mapTypeConfigurations),
+        monitoringIp);
   }
 
   /**

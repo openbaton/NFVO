@@ -25,6 +25,7 @@ import java.util.concurrent.Future;
 import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
+import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
@@ -62,6 +63,14 @@ public interface VnfmManager {
       String mode,
       List<String> vimInstanceNames)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
+
+  void addVnfr(
+      NetworkServiceRecord networkServiceRecord,
+      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
+      DeployNSRBody body,
+      Map<String, Set<String>> vduVimInstances,
+      String monitoringIp)
+      throws NotFoundException, InterruptedException, BadFormatException, ExecutionException;
 
   void restartVnfr(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;

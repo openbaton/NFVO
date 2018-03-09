@@ -194,14 +194,17 @@ public interface NetworkServiceRecordManagement {
 
   List<NetworkServiceRecord> queryByProjectId(String projectId);
 
-  NetworkServiceRecord scaleOut(
+  NetworkServiceRecord scaleOutNsr(
       String nsrId,
       String vnfdId,
       String projectId,
       List keys,
       Map vduVimInstances,
-      Map configurations)
-      throws NotFoundException;
+      Map configurations,
+      String monitoringIp)
+      throws NotFoundException, BadRequestException, MissingParameterException,
+          InterruptedException, BadFormatException, ExecutionException, CyclicDependenciesException,
+          NetworkServiceIntegrityException;
 
   VirtualNetworkFunctionRecord restartVnfr(
       NetworkServiceRecord nsr, String vnfrId, String imageName, String projectId)

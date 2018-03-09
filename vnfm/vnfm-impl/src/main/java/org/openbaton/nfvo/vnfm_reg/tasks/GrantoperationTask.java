@@ -46,6 +46,7 @@ import org.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
 import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.openbaton.nfvo.core.interfaces.VnfPlacementManagement;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
+import org.openbaton.nfvo.repositories.VNFDRepository;
 import org.openbaton.nfvo.repositories.VirtualLinkRecordRepository;
 import org.openbaton.nfvo.vnfm_reg.tasks.abstracts.AbstractTask;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +66,7 @@ public class GrantoperationTask extends AbstractTask {
   @Autowired private NetworkManagement networkManagement;
   @Autowired private VimManagement vimManagement;
   @Autowired private VirtualLinkRecordRepository vlrRepository;
+  @Autowired private VNFDRepository vnfdRepository;
 
   @Value("${nfvo.quota.check:false}")
   private boolean checkQuota;
@@ -207,12 +209,21 @@ public class GrantoperationTask extends AbstractTask {
               networkServiceRecord.getDescriptor_reference());
 
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor =
-          networkServiceDescriptor
-              .getVnfd()
-              .stream()
-              .filter(vnfd -> vnfd.getName().equals(virtualNetworkFunctionRecord.getName()))
-              .findFirst()
-              .orElseThrow(() -> new NotFoundException("That's impossible"));
+          vnfdRepository.findFirstByIdAndProjectId(
+              virtualNetworkFunctionRecord.getDescriptor_reference(),
+              virtualNetworkFunctionRecord.getProjectId());
+      if (virtualNetworkFunctionDescriptor == null)
+        throw new NotFoundException(
+            "Vnfd not found with id "
+                + virtualNetworkFunctionRecord.getDescriptor_reference()
+                + " in project with id "
+                + virtualNetworkFunctionRecord.getProjectId());
+      // networkServiceDescriptor
+      //              .getVnfd()
+      //              .stream()
+      //              .filter(vnfd -> vnfd.getName().equals(virtualNetworkFunctionRecord.getName()))
+      //              .findFirst()
+      //              .orElseThrow(() -> new NotFoundException("That's impossible"));
 
       Exception[] ex = new Exception[1];
       Map<String, BaseNetwork> networkToAdd = new HashMap<>();
