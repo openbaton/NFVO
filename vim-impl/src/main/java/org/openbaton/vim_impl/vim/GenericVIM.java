@@ -1369,7 +1369,8 @@ public class GenericVIM extends Vim {
         }
       }
       if (networks.isEmpty()) {
-        throw new NullPointerException("networks is empty");
+        throw new NullPointerException(
+            String.format("No Connection points in one VNFC of the VNFR: %s", vnfr.getName()));
       }
       if (vimInstance instanceof AmazonVimInstance) {
         if (((AmazonVimInstance) vimInstance).getSecurityGroups() == null) {

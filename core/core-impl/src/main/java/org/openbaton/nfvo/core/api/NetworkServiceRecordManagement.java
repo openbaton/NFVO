@@ -587,6 +587,19 @@ public class NetworkServiceRecordManagement
       }
     }
 
+    networkServiceRecord
+        .getVlr()
+        .forEach(
+            vlr ->
+                component
+                    .getConnection_point()
+                    .forEach(
+                        cp -> {
+                          if (cp.getVirtual_link_reference().equals(vlr.getName())) {
+                            cp.setVirtual_link_reference_id(vlr.getExtId());
+                          }
+                        }));
+
     log.info(
         "Adding VNFComponent to VirtualNetworkFunctionRecord "
             + virtualNetworkFunctionRecord.getName());
@@ -1632,6 +1645,8 @@ public class NetworkServiceRecordManagement
   /**
    * Triggers the execution of an {@link org.openbaton.catalogue.nfvo.Action} on a specific
    * VNFCInstance.
+   *
+   * <p>
    *
    * <p>Note: Currently only the HEAL action is supported.
    *

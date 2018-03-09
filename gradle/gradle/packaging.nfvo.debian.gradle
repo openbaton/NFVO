@@ -30,11 +30,11 @@ ext {
 task logDebianPackageJavaDependency() {
     // print the logs about the correct java dependency
     doLast() {
-        if (project.hasProperty('javaVersion') && (javaVersion == "8")) {
-            println " * Adding debian package dependency to Java 8"
+        if (project.hasProperty('javaVersion') && (javaVersion == "7")) {
+            println " * Adding debian package dependency to Java 7"
         }
         else {
-            println " * Adding debian package dependency to Java 7"
+            println " * Adding debian package dependency to Java 8"
         }
     }
 }
@@ -58,11 +58,11 @@ task makeDeb(type: Deb, dependsOn: [jar, build, logDebianPackageJavaDependency])
     postUninstall file('gradle/gradle/scripts/debian/postrm')
 
     // set the correct java dependency
-    if (project.hasProperty('javaVersion') && (javaVersion == "8")) {
-        requires('openjdk-8-jre')
+    if (project.hasProperty('javaVersion') && (javaVersion == "7")) {
+        requires('openjdk-7-jre')
     }
     else {
-        requires('openjdk-7-jre')
+        requires('openjdk-8-jre')
     }
 
     requires('rabbitmq-server')

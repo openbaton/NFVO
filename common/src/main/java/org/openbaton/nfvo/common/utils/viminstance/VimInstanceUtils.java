@@ -34,6 +34,10 @@ public class VimInstanceUtils {
       ((DockerVimInstance) vim).setCa("**********");
       ((DockerVimInstance) vim).setDockerKey("**********");
       ((DockerVimInstance) vim).setCert("**********");
+    } else if (vim.getClass()
+        .getCanonicalName()
+        .equals(AmazonVimInstance.class.getCanonicalName())) {
+      ((AmazonVimInstance) vim).setSecretKey("**********");
     }
   }
 
@@ -54,6 +58,15 @@ public class VimInstanceUtils {
       ((DockerVimInstance) vimNew).setCa(((DockerVimInstance) vimOld).getCa());
       ((DockerVimInstance) vimNew).setDockerKey(((DockerVimInstance) vimOld).getDockerKey());
       ((DockerVimInstance) vimNew).setCert(((DockerVimInstance) vimOld).getCert());
+    } else if (vimNew
+        .getClass()
+        .getCanonicalName()
+        .equals(AmazonVimInstance.class.getCanonicalName())) {
+      if (((AmazonVimInstance) vimNew).getSecretKey().equals("**********")
+          || ((AmazonVimInstance) vimNew).getSecretKey().isEmpty()
+          || ((AmazonVimInstance) vimNew).getSecretKey() == null) {
+        ((AmazonVimInstance) vimNew).setSecretKey(((AmazonVimInstance) vimOld).getSecretKey());
+      }
     }
   }
 
@@ -287,7 +300,8 @@ public class VimInstanceUtils {
   public static boolean isVNFDConnectionPointExisting(
       VNFDConnectionPoint vnfdConnectionPoint, BaseNetwork network) {
     if (network.getName().equals(vnfdConnectionPoint.getVirtual_link_reference())
-        || network.getExtId().equals(vnfdConnectionPoint.getVirtual_link_reference())) {
+        || network.getExtId().equals(vnfdConnectionPoint.getVirtual_link_reference())
+        || network.getExtId().equals(vnfdConnectionPoint.getVirtual_link_reference_id())) {
       if (vnfdConnectionPoint.getFixedIp() != null
           && !vnfdConnectionPoint.getFixedIp().equals("")) {
         if (network instanceof Network) {

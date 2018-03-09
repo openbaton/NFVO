@@ -53,7 +53,8 @@ public class VnfPlacementManagement
               .stream()
               .filter(v -> v.getName().equals(name))
               .findAny();
-      log.info("Chosen VimInstance: " + instanceOptional);
+      instanceOptional.ifPresent(
+          i -> log.info("Chosen VimInstance: %s on testbed %s", i.getName(), name));
       if (instanceOptional.isPresent()) return instanceOptional.get();
       else throw new NotFoundException("No Vim instance found for name " + name);
     } else {
