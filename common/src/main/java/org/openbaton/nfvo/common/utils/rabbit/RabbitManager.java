@@ -21,15 +21,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -47,7 +43,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-/** Created by lto on 25/11/15. */
 @Service
 @Scope
 public class RabbitManager {
@@ -229,45 +224,6 @@ public class RabbitManager {
 
     if (response.getStatusLine().getStatusCode() == 404) {
       log.warn("User not found... the database is not consistent...");
-      return;
     }
   }
-
-  public static void createQueue(
-      String brokerIp,
-      int port,
-      String rabbitUsername,
-      String rabbitPassword,
-      String virtualHost,
-      String queue,
-      String exchange)
-      throws IOException, TimeoutException {
-    ConnectionFactory factory =
-        getConnectionFactory(brokerIp, port, rabbitUsername, rabbitPassword, virtualHost);
-    Connection connection = factory.newConnection();
-    Channel channel = connection.createChannel();
-    channel.exchangeDeclare(exchange, "topic", true);
-    channel.queueDeclare(queue, false, false, true, null);
-    channel.queueBind(queue, exchange, queue);
-    channel.basicQos(1);
-    channel.close();
-    connection.close();
-  }
-
-  private static ConnectionFactory getConnectionFactory(
-      String brokerIp, int port, String rabbitUsername, String rabbitPassword, String virtualHost) {
-    ConnectionFactory factory = new ConnectionFactory();
-    factory.setHost(brokerIp);
-    factory.setPort(port);
-    factory.setUsername(rabbitUsername);
-    factory.setPassword(rabbitPassword);
-    factory.setVirtualHost(virtualHost);
-    return factory;
-  }
-
-  /*
-    public static void main(String[] args) throws IOException {
-      System.out.println(getQueues("localhost", "admin", "openbaton", "/", 5672));
-    }
-  */
 }

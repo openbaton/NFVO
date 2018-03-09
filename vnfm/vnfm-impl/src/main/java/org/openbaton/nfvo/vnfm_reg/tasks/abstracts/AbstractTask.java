@@ -153,37 +153,11 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
       result = this.doWork();
     } catch (NsrNotFoundException e) {
       log.warn(e.getLocalizedMessage());
+    } catch (VimException e) {
+      return handleVimException(e);
     } catch (ExecutionException e) {
       if (e.getCause() instanceof VimException) {
-
-        e.printStackTrace();
-        log.error(e.getMessage());
-        HistoryLifecycleEvent lifecycleEvent = new HistoryLifecycleEvent();
-        lifecycleEvent.setEvent(Event.ERROR.name());
-        SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd'-'HH:mm:ss:SSS'-'z");
-        lifecycleEvent.setExecutedAt(format.format(new Date()));
-        lifecycleEvent.setDescription(e.getCause().getMessage());
-        VNFCInstance vnfcInstance = ((VimException) e.getCause()).getVnfcInstance();
-
-        if (vnfcInstance != null) {
-          log.info("The VM was not correctly deployed. ExtId is: " + vnfcInstance.getVc_id());
-          log.debug("Details are: " + vnfcInstance);
-          for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
-            if (vdu.getId()
-                .equals(((VimException) e.getCause()).getVirtualDeploymentUnit().getId())) {
-              vdu.getVnfc_instance().add(vnfcInstance);
-
-              log.debug("Found VDU and set vnfcInstance");
-            }
-          }
-        }
-        virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
-        try {
-          saveVirtualNetworkFunctionRecord();
-        } catch (NotFoundException e1) {
-          log.error(e1.getLocalizedMessage());
-        }
-        return new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
+        return handleVimException((VimException) e.getCause());
       } else if (e.getCause() instanceof VimDriverException) {
         return handleVimDriverException((VimDriverException) e.getCause());
       } else {
@@ -210,6 +184,39 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
     }
   }
 
+  private NFVMessage handleVimException(VimException e) {
+    e.printStackTrace();
+    log.error(e.getMessage());
+    HistoryLifecycleEvent lifecycleEvent = new HistoryLifecycleEvent();
+    lifecycleEvent.setEvent(Event.ERROR.name());
+    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd'-'HH:mm:ss:SSS'-'z");
+    lifecycleEvent.setExecutedAt(format.format(new Date()));
+    lifecycleEvent.setDescription(e.getMessage());
+    VNFCInstance vnfcInstance = e.getVnfcInstance();
+
+    if (vnfcInstance != null) {
+      log.info("The VM was not correctly deployed. ExtId is: " + vnfcInstance.getVc_id());
+      log.debug("Details are: " + vnfcInstance);
+      for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
+        if (vdu.getId().equals(e.getVirtualDeploymentUnit().getId())) {
+          if (vdu.getVnfc_instance() == null) {
+            vdu.setVnfc_instance(new LinkedHashSet<>());
+          }
+          vdu.getVnfc_instance().add(vnfcInstance);
+
+          log.debug("Found VDU and set vnfcInstance");
+        }
+      }
+    }
+    virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
+    try {
+      saveVirtualNetworkFunctionRecord();
+    } catch (NotFoundException e1) {
+      log.error(e1.getLocalizedMessage());
+    }
+    return new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
+  }
+
   private NFVMessage handleVimDriverException(VimDriverException e) {
     e.printStackTrace();
     log.error(e.getMessage());
@@ -218,6 +225,9 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
     lifecycleEvent.setDescription(e.getMessage());
     SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd'-'HH:mm:ss:SSS'-'z");
     lifecycleEvent.setExecutedAt(format.format(new Date()));
+    if (virtualNetworkFunctionRecord.getLifecycle_event_history() == null) {
+      virtualNetworkFunctionRecord.setLifecycle_event_history(new LinkedHashSet<>());
+    }
     virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
     virtualNetworkFunctionRecord.setStatus(Status.ERROR);
     try {
@@ -259,10 +269,7 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
     }
     if (log.isDebugEnabled()) {
       log.error(
-          "There was an uncaught exception in task: "
-              + virtualNetworkFunctionRecord.getTask()
-              + ". ",
-          e);
+          "There was an uncaught exception in task: " + virtualNetworkFunctionRecord.getTask(), e);
     } else {
       log.error(
           String.format(
@@ -275,6 +282,7 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
     EventFinishEvent eventFinishEvent = new EventFinishEvent();
     eventFinishEvent.setAction(Action.ERROR);
     virtualNetworkFunctionRecord.setStatus(Status.ERROR);
+    setHistoryLifecycleEvent();
     try {
       saveVirtualNetworkFunctionRecord();
     } catch (NotFoundException e1) {

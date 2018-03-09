@@ -30,7 +30,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-/** Created by lto on 27/05/15. */
 @Service
 @ConfigurationProperties
 public class RabbitRegister extends VnfmRegister {
