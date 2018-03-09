@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.exceptions.NotFoundException;
@@ -31,13 +32,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-/** Created by lto on 10/03/16. */
 @Service
 @Scope
 public class VnfPlacementManagement
     implements org.openbaton.nfvo.core.interfaces.VnfPlacementManagement {
 
-  @Autowired private VimRepository vimInstanceRepository;
+  @Autowired
+  private VimRepository vimInstanceRepository;
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Override
@@ -54,7 +55,7 @@ public class VnfPlacementManagement
               .filter(v -> v.getName().equals(name))
               .findAny();
       instanceOptional.ifPresent(
-          i -> log.info("Chosen VimInstance: %s on testbed %s", i.getName(), name));
+          i -> log.info(String.format("Chosen VimInstance: %s on testbed %s", i.getName(), name)));
       if (instanceOptional.isPresent()) return instanceOptional.get();
       else throw new NotFoundException("No Vim instance found for name " + name);
     } else {
