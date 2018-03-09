@@ -1636,7 +1636,6 @@ public class NetworkServiceRecordManagement
     return vnfr;
   }
 
-
   @Override
   public Iterable<NetworkServiceRecord> query() {
     return nsrRepository.findAll();
