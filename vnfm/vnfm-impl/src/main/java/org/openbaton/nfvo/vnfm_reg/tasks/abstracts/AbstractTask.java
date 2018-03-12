@@ -95,9 +95,9 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
 
   protected void saveVirtualNetworkFunctionRecord() throws NsrNotFoundException {
 
-    lock.lock();
     if (networkServiceRecordRepository.exists(virtualNetworkFunctionRecord.getParent_ns_id())) {
       try {
+        lock.lock();
         log.trace(
             "ACTION is: "
                 + action

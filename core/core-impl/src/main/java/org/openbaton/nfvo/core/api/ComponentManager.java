@@ -1,7 +1,7 @@
 package org.openbaton.nfvo.core.api;
 
 import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.createRabbitMqUser;
-import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.removeRabbitMqUser;
+import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.removeRabbitMqUserQuietly;
 import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.setRabbitMqUserPermissions;
 
 import com.google.gson.Gson;
@@ -347,13 +347,9 @@ public class ComponentManager implements org.openbaton.nfvo.core.interfaces.Comp
                   writePermissions,
                   readPermissions);
             } catch (Exception e) {
-              try {
-                removeRabbitMqUser(
-                    rabbitUsername, rabbitPassword, brokerIp, managementPort, username);
-              } catch (Exception e2) {
-                log.error("Clean up failed. Could not remove RabbitMQ user " + username);
-                e2.printStackTrace();
-              }
+              // remove the created RabbitMQ user again since the whole registration process failed
+              removeRabbitMqUserQuietly(
+                  rabbitUsername, rabbitPassword, brokerIp, managementPort, username);
               throw e;
             }
 
@@ -392,7 +388,7 @@ public class ComponentManager implements org.openbaton.nfvo.core.interfaces.Comp
                 vnfmRegister.unregister(
                     gson.fromJson(vnfmManagerEndpoint, VnfmManagerEndpoint.class));
 
-              removeRabbitMqUser(
+              removeRabbitMqUserQuietly(
                   rabbitUsername, rabbitPassword, brokerIp, managementPort, username);
             } else {
               log.warn(
