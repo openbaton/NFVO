@@ -27,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-/** Created by lto on 11/05/15. */
 @Service
 @Scope
 public class NFVImageManagement implements org.openbaton.nfvo.core.interfaces.NFVImageManagement {

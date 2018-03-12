@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import org.apache.commons.codec.binary.Base64;
 import org.openbaton.catalogue.nfvo.PluginMessage;
@@ -88,7 +89,7 @@ public class PluginCaller {
       int port,
       String virtualHost,
       int managementPort)
-      throws TimeoutException, IOException, NotFoundException {
+      throws IOException, NotFoundException {
     this(pluginId, brokerIp, username, password, port, virtualHost, managementPort, 500000);
   }
 
@@ -101,7 +102,7 @@ public class PluginCaller {
       String virtualHost,
       int managementPort,
       long timeout)
-      throws IOException, TimeoutException, NotFoundException {
+      throws IOException, NotFoundException {
     this.pluginId =
         getFullPluginId(pluginId, brokerIp, username, password, virtualHost, managementPort);
     this.managementPort = managementPort;
@@ -190,7 +191,11 @@ public class PluginCaller {
         throw new PluginException("Plugin with id: " + pluginId + " not existing anymore...");
       }
       if (returnType != null) {
-        String res = response.take();
+        String res = response.poll(this.timeout, TimeUnit.MILLISECONDS);
+        if (res == null) {
+          throw new PluginException(
+              String.format("Plugin did not responded after %d milliseconds", this.timeout));
+        }
         JsonObject jsonObject = gson.fromJson(res, JsonObject.class);
 
         JsonElement exceptionJson = jsonObject.get("exception");
@@ -219,7 +224,8 @@ public class PluginCaller {
             pluginException =
                 new PluginException(
                     gson.fromJson(exceptionJson.getAsJsonObject(), VimDriverException.class));
-            log.debug(
+            log.error("Got Vim Driver Exception with cause: " + pluginException.getMessage());
+            log.error(
                 "Got Vim Driver Exception with server: "
                     + ((VimDriverException) pluginException.getCause()).getServer());
           } catch (Exception ignored) {

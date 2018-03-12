@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-/** Created by rvl on 19.10.16. */
 @Service
 public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginManager {
 
@@ -54,7 +53,7 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
   @Value("${nfvo.rabbit.management.port:15672}")
   private String managementPort;
 
-  @Value("${nfvo.rabbit.brokerIp:localhost}")
+  @Value("${spring.rabbitmq.host:localhost}")
   private String brokerIp;
 
   @Value("${nfvo.plugin.installation-dir:./plugins}")

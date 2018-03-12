@@ -3,6 +3,7 @@ package org.openbaton.nfvo.common.utils.schema;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kjetland.jackson.jsonSchema.JsonSchemaGenerator;
 import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.ValidationMessage;
@@ -34,12 +35,24 @@ public class SchemaValidator {
     return factory.getSchema(schemaContent);
   }
 
-  public static Set<ValidationMessage> validateSchema(String jsonClassSchema, String jsonInstance)
+  public static Set<ValidationMessage> validateSchema(Class jsonClassSchema, String jsonInstance)
       throws BadRequestException, IOException {
 
-    JsonSchema finalSchema = getJsonSchemaFromStringContent(jsonClassSchema);
+    JsonSchema finalSchema =
+        getJsonSchemaFromStringContent(getJsonSchemaFromClass(jsonClassSchema));
     JsonNode node = getJsonNodeFromStringContent(jsonInstance);
 
     return finalSchema.validate(node);
+  }
+
+  @SuppressWarnings("unchecked")
+  private static String getJsonSchemaFromClass(Class javaClass) throws IOException {
+
+    ObjectMapper mapper = new ObjectMapper();
+    JsonSchemaGenerator schemaGen = new JsonSchemaGenerator(mapper);
+    JsonNode jsonSchema = schemaGen.generateJsonSchema(javaClass);
+    String jsonSchemaAsString = mapper.writeValueAsString(jsonSchema);
+    log.trace("The schema is: " + jsonSchemaAsString);
+    return jsonSchemaAsString;
   }
 }

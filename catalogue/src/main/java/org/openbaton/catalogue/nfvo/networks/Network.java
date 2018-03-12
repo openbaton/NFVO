@@ -28,6 +28,19 @@ public class Network extends BaseNetwork {
   private Boolean external = false;
   private Boolean extShared = false;
 
+  @Override
+  public String toString() {
+    return "Network{"
+        + "external="
+        + external
+        + ", extShared="
+        + extShared
+        + ", subnets="
+        + subnets
+        + "} "
+        + super.toString();
+  }
+
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<Subnet> subnets;
 
@@ -39,25 +52,6 @@ public class Network extends BaseNetwork {
 
   public void setExternal(Boolean external) {
     this.external = external;
-  }
-
-  @Override
-  public String toString() {
-    return "Network{"
-        + "name='"
-        + name
-        + '\''
-        + ", extId='"
-        + extId
-        + '\''
-        + ", external="
-        + external
-        + ", extShared="
-        + extShared
-        + ", subnets="
-        + subnets
-        + "} "
-        + super.toString();
   }
 
   public Boolean getExtShared() {

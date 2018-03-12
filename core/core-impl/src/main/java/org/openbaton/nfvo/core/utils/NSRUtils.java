@@ -18,6 +18,7 @@
 package org.openbaton.nfvo.core.utils;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -91,10 +92,10 @@ public class NSRUtils {
   }
 
   public static void setDependencies(
-      NetworkServiceDescriptor networkServiceDescriptor,
+      Set<VirtualNetworkFunctionDescriptor> vnfds,
+      Set<VNFDependency> vnfDependencies,
       NetworkServiceRecord networkServiceRecord) {
-
-    for (VNFDependency vnfDependency : networkServiceDescriptor.getVnf_dependency()) {
+    for (VNFDependency vnfDependency : vnfDependencies) {
       boolean found = false;
       for (VNFRecordDependency vnfRecordDependency : networkServiceRecord.getVnf_dependency()) {
         if (vnfRecordDependency
@@ -103,8 +104,7 @@ public class NSRUtils {
                 vnfDependency
                     .getTarget())) { // if there is a vnfRecordDepenendency with the same target
           // I find the source
-          for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
-              networkServiceDescriptor.getVnfd()) {
+          for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : vnfds) {
             log.debug(
                 "Source is: "
                     + vnfDependency.getSource()
@@ -143,8 +143,7 @@ public class NSRUtils {
         VNFRecordDependency vnfRecordDependency = new VNFRecordDependency();
         vnfRecordDependency.setIdType(new HashMap<>());
         vnfRecordDependency.setParameters(new HashMap<>());
-        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
-            networkServiceDescriptor.getVnfd()) {
+        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : vnfds) {
 
           if (vnfDependency.getSource().equals(virtualNetworkFunctionDescriptor.getName())) {
             vnfRecordDependency
@@ -180,15 +179,26 @@ public class NSRUtils {
     }
   }
 
+  public static void setDependencies(
+      NetworkServiceDescriptor networkServiceDescriptor,
+      NetworkServiceRecord networkServiceRecord) {
+    setDependencies(
+        networkServiceDescriptor.getVnfd(),
+        networkServiceDescriptor.getVnf_dependency(),
+        networkServiceRecord);
+  }
+
   private static VirtualLinkRecord createVirtualLinkRecord(
       VirtualLinkDescriptor virtualLinkDescriptor) {
     VirtualLinkRecord virtualLinkRecord = new VirtualLinkRecord();
+    virtualLinkRecord.setDns(new ArrayList<>());
     virtualLinkRecord.setName(virtualLinkDescriptor.getName());
     virtualLinkRecord.setConnectivity_type(virtualLinkDescriptor.getConnectivity_type());
     virtualLinkRecord.setDescriptor_reference(virtualLinkDescriptor.getId());
     virtualLinkRecord.setRoot_requirement(virtualLinkDescriptor.getRoot_requirement());
     virtualLinkRecord.setLeaf_requirement(virtualLinkDescriptor.getLeaf_requirement());
     virtualLinkRecord.setVendor(virtualLinkDescriptor.getVendor());
+    virtualLinkDescriptor.getDns().forEach(dns -> virtualLinkRecord.getDns().add(dns));
 
     virtualLinkRecord.setStatus(LinkStatus.LINKDOWN);
 

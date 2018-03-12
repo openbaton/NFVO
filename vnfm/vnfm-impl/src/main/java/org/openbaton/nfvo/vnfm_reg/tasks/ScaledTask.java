@@ -17,7 +17,6 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -79,12 +78,8 @@ public class ScaledTask extends AbstractTask {
         "NFVO: VirtualNetworkFunctionRecord "
             + virtualNetworkFunctionRecord.getName()
             + " has finished scaling");
-    log.trace(
-        "VNFR ("
-            + virtualNetworkFunctionRecord.getId()
-            + ") received hibernate version = "
-            + virtualNetworkFunctionRecord.getHbVersion());
-    setHistoryLifecycleEvent(new Date());
+    printOldAndNewHibernateVersion();
+    setHistoryLifecycleEvent();
     saveVirtualNetworkFunctionRecord();
 
     //If the VNFCInstace is in standby the NFVO doesn't have to configure the VNF source dependencies
@@ -140,12 +135,12 @@ public class ScaledTask extends AbstractTask {
           OrVnfmGenericMessage message = new OrVnfmGenericMessage(vnfr, Action.MODIFY);
 
           //new Dependency containing only the new VNFC
-          VNFRecordDependency dependency_new = new VNFRecordDependency();
-          dependency_new.setIdType(new HashMap<>());
+          VNFRecordDependency dependencyNew = new VNFRecordDependency();
+          dependencyNew.setIdType(new HashMap<>());
           for (Entry<String, String> entry : dependency.getIdType().entrySet()) {
-            dependency_new.getIdType().put(entry.getKey(), entry.getValue());
+            dependencyNew.getIdType().put(entry.getKey(), entry.getValue());
           }
-          dependency_new.setParameters(new HashMap<>());
+          dependencyNew.setParameters(new HashMap<>());
 
           DependencyParameters dependencyParameters = new DependencyParameters();
           dependencyParameters.setParameters(new HashMap<>());
@@ -162,11 +157,11 @@ public class ScaledTask extends AbstractTask {
           }
 
           dependencyParameters.getParameters().putAll(parametersNew);
-          dependency_new
+          dependencyNew
               .getParameters()
               .put(virtualNetworkFunctionRecord.getType(), dependencyParameters);
 
-          dependency_new.setVnfcParameters(new HashMap<>());
+          dependencyNew.setVnfcParameters(new HashMap<>());
           VNFCDependencyParameters vnfcDependencyParameters = new VNFCDependencyParameters();
           vnfcDependencyParameters.setParameters(new HashMap<>());
 
@@ -204,7 +199,7 @@ public class ScaledTask extends AbstractTask {
 
           vnfcDependencyParameters.getParameters().put(vnfcId, vnfcDP);
 
-          dependency_new
+          dependencyNew
               .getVnfcParameters()
               .put(virtualNetworkFunctionRecord.getType(), vnfcDependencyParameters);
           if (dependency.getVnfcParameters().get(virtualNetworkFunctionRecord.getType()) == null) {
@@ -230,11 +225,11 @@ public class ScaledTask extends AbstractTask {
               .getParameters()
               .putAll(vnfcDependencyParameters.getParameters());
 
-          dependency_new.setTarget(dependency.getTarget());
+          dependencyNew.setTarget(dependency.getTarget());
 
           //TODO Delete the failed dependency of the VNFCInstance in failed state
 
-          message.setVnfrd(dependency_new);
+          message.setVnfrd(dependencyNew);
 
           //need to update dependency
           vnfRecordDependencyRepository.save(dependency);
@@ -250,6 +245,7 @@ public class ScaledTask extends AbstractTask {
         }
       }
     }
+
     try {
       log.debug("Saving VNFC instance " + vnfcInstance.getId());
       vnfcInstanceRepository.save(vnfcInstance);

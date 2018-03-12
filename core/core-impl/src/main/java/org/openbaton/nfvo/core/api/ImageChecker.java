@@ -7,8 +7,6 @@ import org.openbaton.catalogue.nfvo.ImageStatus;
 import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
 import org.openbaton.catalogue.nfvo.images.NFVImage;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
-import org.openbaton.exceptions.AlreadyExistingException;
-import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.core.interfaces.VimManagement;
@@ -40,8 +38,7 @@ public class ImageChecker {
 
   @Async
   public void checkImageStatus(BaseVimInstance vimInstance)
-      throws InterruptedException, IOException, VimException, PluginException, ExecutionException,
-          BadRequestException, AlreadyExistingException {
+      throws InterruptedException, IOException, VimException, PluginException, ExecutionException {
 
     for (int i = 0; i < imageStatusTimeout; i++) {
 

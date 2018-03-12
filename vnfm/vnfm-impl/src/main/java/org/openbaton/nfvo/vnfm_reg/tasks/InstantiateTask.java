@@ -17,7 +17,6 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
-import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import org.openbaton.catalogue.mano.common.Event;
@@ -60,7 +59,7 @@ public class InstantiateTask extends AbstractTask {
   }
 
   @Override
-  protected NFVMessage doWork() throws Exception, BadFormatException {
+  protected NFVMessage doWork() throws Exception {
     log.info(
         "Start INSTANTIATE task for vnfr: "
             + virtualNetworkFunctionRecord.getName()
@@ -68,33 +67,9 @@ public class InstantiateTask extends AbstractTask {
             + virtualNetworkFunctionRecord.getId()
             + " his nsr id father is:"
             + virtualNetworkFunctionRecord.getParent_ns_id());
-    VirtualNetworkFunctionRecord existing =
-        vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
 
-    virtualNetworkFunctionRecord
-        .getVdu()
-        .forEach(
-            vdu -> {
-              log.trace(
-                  "INSTANTIATE VDU ("
-                      + vdu.getId()
-                      + ") received with hibernate version = "
-                      + vdu.getHbVersion());
-            });
-
-    if (existing != null) {
-      existing
-          .getVdu()
-          .forEach(
-              vdu -> {
-                log.trace(
-                    "INSTANTIATE VDU ("
-                        + vdu.getId()
-                        + ") existing hibernate version is = "
-                        + vdu.getHbVersion());
-              });
-    }
-
+    printOldAndNewHibernateVersion();
+    setHistoryLifecycleEvent();
     for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
       for (VNFCInstance vnfcInstance : vdu.getVnfc_instance()) {
         vnfcInstance.getConnection_point().removeIf(Objects::isNull);
@@ -103,7 +78,6 @@ public class InstantiateTask extends AbstractTask {
 
     dependencyManagement.fillDependecyParameters(virtualNetworkFunctionRecord);
     log.debug("Filled dependency parameters of " + virtualNetworkFunctionRecord.getName());
-    setHistoryLifecycleEvent(new Date());
     saveVirtualNetworkFunctionRecord();
     log.debug("Saved VNFR " + virtualNetworkFunctionRecord.getName());
     NetworkServiceRecord nsr =
@@ -175,9 +149,6 @@ public class InstantiateTask extends AbstractTask {
             + virtualNetworkFunctionRecord.getId()
             + ") hibernate version is = "
             + virtualNetworkFunctionRecord.getHbVersion());
-    /*vnfmSender.sendCommand(
-    new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.START),
-    vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));*/
     vnfStateHandler.executeAction(
         vnfmSender.sendCommand(
             new OrVnfmStartStopMessage(virtualNetworkFunctionRecord, null, Action.START),

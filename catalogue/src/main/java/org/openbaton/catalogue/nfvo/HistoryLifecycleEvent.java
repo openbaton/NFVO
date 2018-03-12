@@ -21,7 +21,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import org.openbaton.catalogue.util.BaseEntity;
 
-/** Created by lto on 18/10/16. */
 @Entity
 public class HistoryLifecycleEvent extends BaseEntity {
 

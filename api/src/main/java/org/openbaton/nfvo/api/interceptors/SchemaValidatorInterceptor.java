@@ -16,13 +16,10 @@
 
 package org.openbaton.nfvo.api.interceptors;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.MalformedJsonException;
-import com.kjetland.jackson.jsonSchema.JsonSchemaGenerator;
 import com.networknt.schema.ValidationMessage;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -67,7 +64,7 @@ public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
     }
     CustomHttpServletRequestWrapper wrapper = new CustomHttpServletRequestWrapper(request);
     String requestBody = wrapper.getBody();
-    String classSchema = null;
+    Class classSchema = null;
     Class<?> parameterClass = null;
     if (handler instanceof org.springframework.web.method.HandlerMethod) {
       org.springframework.web.method.HandlerMethod handlerMethod =
@@ -83,7 +80,7 @@ public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
                 && !parameterClass.isPrimitive()
                 && !Modifier.isAbstract(parameterClass.getModifiers())
                 && !parameterClass.getCanonicalName().equals(String.class.getCanonicalName())) {
-              classSchema = getJsonSchemaFromClass(parameterClass);
+              classSchema = parameterClass;
             }
           }
         }
@@ -100,12 +97,7 @@ public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
             .equals(NetworkServiceDescriptor.class.getCanonicalName())) {
           NetworkServiceDescriptor networkServiceDescriptor =
               gson.fromJson(requestBody, NetworkServiceDescriptor.class);
-          if (networkServiceDescriptor
-                  .getVnfd()
-                  .stream()
-                  .filter(vnfd -> vnfd.getId() != null)
-                  .count()
-              > 0) {
+          if (networkServiceDescriptor.getVnfd().stream().anyMatch(vnfd -> vnfd.getId() != null)) {
             Set<ValidationMessage> errors = new HashSet<>();
             //Validating VLDs
             networkServiceDescriptor
@@ -115,8 +107,7 @@ public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
                       try {
                         errors.addAll(
                             SchemaValidator.validateSchema(
-                                getJsonSchemaFromClass(VirtualLinkDescriptor.class),
-                                gson.toJson(vld)));
+                                VirtualLinkDescriptor.class, gson.toJson(vld)));
                       } catch (BadRequestException | IOException e) {
                         e.printStackTrace();
                       }
@@ -129,8 +120,7 @@ public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
                       try {
                         errors.addAll(
                             SchemaValidator.validateSchema(
-                                getJsonSchemaFromClass(VNFDependency.class),
-                                gson.toJson(vnfDependency)));
+                                VNFDependency.class, gson.toJson(vnfDependency)));
                       } catch (BadRequestException | IOException e) {
                         e.printStackTrace();
                       }
@@ -190,16 +180,5 @@ public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
       response.sendError(
           HttpServletResponse.SC_BAD_REQUEST, validationResult.toString().replace("$.", " "));
     }
-  }
-
-  @SuppressWarnings("unchecked")
-  private String getJsonSchemaFromClass(Class javaClass) throws IOException {
-
-    ObjectMapper mapper = new ObjectMapper();
-    JsonSchemaGenerator schemaGen = new JsonSchemaGenerator(mapper);
-    JsonNode jsonSchema = schemaGen.generateJsonSchema(javaClass);
-    String jsonSchemaAsString = mapper.writeValueAsString(jsonSchema);
-    log.trace("The schema is: " + jsonSchemaAsString);
-    return jsonSchemaAsString;
   }
 }

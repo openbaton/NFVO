@@ -17,7 +17,6 @@
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
 
-import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import org.openbaton.catalogue.mano.common.Event;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
@@ -59,7 +58,7 @@ public class ModifyTask extends AbstractTask {
             + virtualNetworkFunctionRecord.getId()
             + ") received hibernate version = "
             + virtualNetworkFunctionRecord.getHbVersion());
-    setHistoryLifecycleEvent(new Date());
+    setHistoryLifecycleEvent();
     saveVirtualNetworkFunctionRecord();
     log.trace(
         "VNFR ("
@@ -105,9 +104,6 @@ public class ModifyTask extends AbstractTask {
     vnfmSender =
         this.getVnfmSender(
             vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()).getEndpointType());
-    /*vnfmSender.sendCommand(
-    new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.START),
-    vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));*/
     vnfStateHandler.executeAction(
         vnfmSender.sendCommand(
             new OrVnfmStartStopMessage(virtualNetworkFunctionRecord, null, Action.START),

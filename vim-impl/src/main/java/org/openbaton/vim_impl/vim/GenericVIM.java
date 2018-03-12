@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Future;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
@@ -40,6 +41,7 @@ import org.openbaton.catalogue.nfvo.images.NFVImage;
 import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
 import org.openbaton.catalogue.nfvo.networks.Network;
 import org.openbaton.catalogue.nfvo.networks.Subnet;
+import org.openbaton.catalogue.nfvo.viminstances.AmazonVimInstance;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
 import org.openbaton.catalogue.security.Key;
@@ -826,18 +828,18 @@ public class GenericVIM extends Vim {
             + vimInstance.getName());
   }
 
-  protected String chooseImage(Collection<String> vmImages, BaseVimInstance vimInstance)
+  private String chooseImage(Collection<String> vmImages, BaseVimInstance vimInstance)
       throws VimException {
     log.debug("Choosing Image...");
     log.debug("Requested: " + vmImages);
 
     if (vmImages != null && !vmImages.isEmpty()) {
-      for (String image : vmImages) {
-        Collection<BaseNfvImage> imagesByName =
-            VimInstanceUtils.findActiveImagesByName(vimInstance, image);
-        if (imagesByName.size() > 0) {
-          //TODO implement choose
-          return imagesByName.iterator().next().getExtId();
+      //TODO implement choose, actually this should return the first one, so good
+      for (String imageName : vmImages) {
+        Optional<BaseNfvImage> extId =
+            VimInstanceUtils.findActiveImagesByName(vimInstance, imageName).stream().findFirst();
+        if (extId.isPresent()) {
+          return extId.get().getExtId();
         }
       }
       throw new VimException(
@@ -845,8 +847,7 @@ public class GenericVIM extends Vim {
               + vmImages
               + " on VimInstance "
               + vimInstance.getName());
-    }
-    throw new VimException("No Images are available on VimInstnace " + vimInstance.getName());
+    } else throw new VimException("No Images in the VDU");
   }
 
   @Override
@@ -896,8 +897,34 @@ public class GenericVIM extends Vim {
   }
 
   @Override
-  public void operate(VirtualDeploymentUnit vdu, String operation) {
-    throw new UnsupportedOperationException("Not yet implemented");
+  @Async
+  public Future<Void> operate(
+      BaseVimInstance vimInstance,
+      VirtualDeploymentUnit vdu,
+      VNFCInstance vnfcInstance,
+      String operation)
+      throws VimException {
+    switch (operation) {
+      case "rebuild":
+        String imageId = this.chooseImage(vdu.getVm_image(), vimInstance);
+        try {
+          client.rebuildServer(vimInstance, vnfcInstance.getVc_id(), imageId);
+        } catch (VimDriverException vde) {
+          throw new VimException(
+              "Not rebuild VM with ExtId "
+                  + vnfcInstance.getVc_id()
+                  + " successfully from VimInstance "
+                  + vimInstance.getName()
+                  + ". Caused by: "
+                  + vde.getMessage(),
+              vde);
+        }
+        break;
+      default:
+        log.error("Operation not supported");
+        break;
+    }
+    return new AsyncResult<>(null);
   }
 
   @Override
@@ -1314,7 +1341,9 @@ public class GenericVIM extends Vim {
     String flavorExtId;
     if (vimInstance instanceof OpenstackVimInstance)
       flavorExtId = getFlavorExtID(flavorKey, (OpenstackVimInstance) vimInstance);
-    else flavorExtId = "";
+    else if (vimInstance instanceof AmazonVimInstance) {
+      flavorExtId = vnfr.getDeployment_flavour_key();
+    } else flavorExtId = "";
 
     log.debug("Generating Hostname...");
     vdu.setHostname(vnfr.getName());
@@ -1340,12 +1369,19 @@ public class GenericVIM extends Vim {
         }
       }
       if (networks.isEmpty()) {
-        throw new NullPointerException("networks is empty");
+        throw new NullPointerException(
+            String.format("No Connection points in one VNFC of the VNFR: %s", vnfr.getName()));
+      }
+      if (vimInstance instanceof AmazonVimInstance) {
+        if (((AmazonVimInstance) vimInstance).getSecurityGroups() == null) {
+          securityGroups = new HashSet<>();
+        } else securityGroups = ((AmazonVimInstance) vimInstance).getSecurityGroups();
       }
       if (vimInstance instanceof OpenstackVimInstance) {
         if (((OpenstackVimInstance) vimInstance).getSecurityGroups() == null) {
           securityGroups = new HashSet<>();
         } else securityGroups = ((OpenstackVimInstance) vimInstance).getSecurityGroups();
+
         if (vdu.getMetadata() != null && vdu.getMetadata().containsKey("az")) {
           if (vimInstance.getMetadata() == null) vimInstance.setMetadata(new HashMap<>());
           vimInstance.getMetadata().put("az", vdu.getMetadata().get("az"));

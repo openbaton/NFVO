@@ -18,7 +18,6 @@
 package org.openbaton.nfvo.core.interfaces;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.AlreadyExistingException;
@@ -30,7 +29,7 @@ public interface KeyManagement {
 
   Iterable<Key> query(String projectId);
 
-  Key queryById(String projectId, String id) throws NotFoundException;
+  Key queryById(String projectId, String id);
 
   Key queryByName(String projectId, String name);
 
@@ -40,6 +39,5 @@ public interface KeyManagement {
       throws NoSuchAlgorithmException, IOException, AlreadyExistingException;
 
   Key addKey(String projectId, String name, String key)
-      throws UnsupportedEncodingException, NoSuchAlgorithmException, BadFormatException,
-          AlreadyExistingException;
+      throws NoSuchAlgorithmException, BadFormatException, AlreadyExistingException;
 }

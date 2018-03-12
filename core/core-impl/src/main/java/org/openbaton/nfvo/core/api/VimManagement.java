@@ -33,6 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
+import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VirtualLinkRecord;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
@@ -44,6 +45,7 @@ import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.repositories.ImageRepository;
+import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.VNFDRepository;
 import org.openbaton.nfvo.repositories.VNFRRepository;
 import org.openbaton.nfvo.repositories.VimRepository;
@@ -73,7 +75,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   @Autowired private VNFRRepository vnfrRepository;
 
   private static Map<String, Long> lastUpdateVim = new ConcurrentHashMap<>();
-  private static Map<String, Object> lockMap = new HashMap<>();
+  private static final Map<String, Object> lockMap = new HashMap<>();
 
   private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -90,6 +92,8 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
 
   @Value("${nfvo.vim.cache.timout:10000}")
   private long refreshCacheTimeout;
+
+  @Autowired private NetworkServiceRecordRepository nsrRepository;
 
   @Override
   @Async
@@ -109,11 +113,14 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
       throw new NotFoundException("Vim Instance with id " + id + " was not found");
     }
     if (checkForVimInVnfr) {
-      for (VirtualNetworkFunctionRecord vnfr : vnfrRepository.findByProjectId(projectId)) {
-        for (VirtualDeploymentUnit vdu : vnfr.getVdu()) {
-          if (vdu.getVimInstanceName().contains(vimInstance.getName())) {
-            throw new BadRequestException(
-                "Cannot delete VIM Instance " + vimInstance.getName() + " while it is in use.");
+
+      for (NetworkServiceRecord nsr : nsrRepository.findByProjectId(projectId)) {
+        for (VirtualNetworkFunctionRecord vnfr : nsr.getVnfr()) {
+          for (VirtualDeploymentUnit vdu : vnfr.getVdu()) {
+            if (vdu.getVimInstanceName().contains(vimInstance.getName())) {
+              throw new BadRequestException(
+                  "Cannot delete VIM Instance " + vimInstance.getName() + " while it is in use.");
+            }
           }
         }
       }
@@ -185,7 +192,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
       return new AsyncResult<>(vimInstance);
     }
 
-    log.info("Refreshing vim");
+    log.info(String.format("Refreshing vim %s", vimInstance.getName()));
     String key = String.format("%s%s", vimInstance.getName(), vimInstance.getProjectId());
     Object lock;
     synchronized (lockMap) {

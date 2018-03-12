@@ -125,7 +125,7 @@ public class RestProject {
    */
   @ApiOperation(value = "Retrieve all Projects", notes = "Returns all the created projects")
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public @ResponseBody Set<Project> findAll() throws NotFoundException, NotAllowedException {
+  public @ResponseBody Set<Project> findAll() throws NotFoundException {
     log.trace("Finding all Projects");
     Set<Project> projects = new HashSet<>();
     if (utils.isAdmin()) {

@@ -7,7 +7,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
@@ -86,7 +85,7 @@ public class KeyHelper {
   }
 
   public static String decryptNew(String encryptedValue, String keyValue)
-      throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IOException,
+      throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException,
           BadPaddingException, IllegalBlockSizeException {
     Key key = generateKey(keyValue.getBytes(StandardCharsets.UTF_8));
     Cipher c = Cipher.getInstance(AES_ALGORITHM);
@@ -157,8 +156,7 @@ public class KeyHelper {
     return res.toString();
   }
 
-  public static byte[] parsePublicKey(String decodedKey)
-      throws UnsupportedEncodingException, BadFormatException {
+  public static byte[] parsePublicKey(String decodedKey) throws BadFormatException {
     String[] decodedKeyArray = decodedKey.split(" ");
     if (decodedKeyArray.length <= 1)
       throw new BadFormatException(

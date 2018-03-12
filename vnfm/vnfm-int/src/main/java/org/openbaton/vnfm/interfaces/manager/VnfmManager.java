@@ -25,6 +25,7 @@ import java.util.concurrent.Future;
 import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
+import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
@@ -63,6 +64,17 @@ public interface VnfmManager {
       List<String> vimInstanceNames)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 
+  void addVnfr(
+      NetworkServiceRecord networkServiceRecord,
+      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
+      DeployNSRBody body,
+      Map<String, Set<String>> vduVimInstances,
+      String monitoringIp)
+      throws NotFoundException, InterruptedException, BadFormatException, ExecutionException;
+
+  void restartVnfr(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
+
   Future<Void> removeVnfcDependency(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord, VNFCInstance vnfcInstance)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
@@ -72,6 +84,12 @@ public interface VnfmManager {
   void removeVnfrName(String nsdId, String vnfrName);
 
   void updateScript(Script script, String vnfPackageId)
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
+
+  void updateVnfr(String nsrId, String vnfrId, String projectId)
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
+
+  void upgradeVnfr(String nsrId, String vnfrId, String projectId)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 
   void executeScript(String vnfrId, Script script)

@@ -30,7 +30,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
-/** Created by lto on 29.05.17. */
 @Service
 @EnableAsync
 public class VnfStateHandler implements org.openbaton.vnfm.interfaces.state.VnfStateHandler {
@@ -40,8 +39,7 @@ public class VnfStateHandler implements org.openbaton.vnfm.interfaces.state.VnfS
   @Autowired private org.openbaton.vnfm.interfaces.manager.MessageGenerator generator;
   @Autowired private ConfigurableApplicationContext context;
   @Autowired private NetworkServiceRecordRepository nsrRepository;
-
-  @Autowired private ThreadPoolTaskExecutor asyncExecutor;
+  @Autowired private ThreadPoolTaskExecutor executor;
 
   @Override
   @Async
@@ -92,13 +90,11 @@ public class VnfStateHandler implements org.openbaton.vnfm.interfaces.state.VnfS
 
   @Override
   @Async
-  public Future<NFVMessage> executeAction(NFVMessage nfvMessage)
-      throws ExecutionException, InterruptedException {
+  public Future<NFVMessage> executeAction(NFVMessage nfvMessage) {
     return executeActionNotAsync(nfvMessage);
   }
 
-  private Future<NFVMessage> executeActionNotAsync(NFVMessage nfvMessage)
-      throws ExecutionException, InterruptedException {
+  private Future<NFVMessage> executeActionNotAsync(NFVMessage nfvMessage) {
     String actionName = nfvMessage.getAction().toString().replace("_", "").toLowerCase();
     String beanName = actionName + "Task";
     log.debug("Looking for bean called: " + beanName);
@@ -138,13 +134,11 @@ public class VnfStateHandler implements org.openbaton.vnfm.interfaces.state.VnfS
               + ". Cyclic="
               + virtualNetworkFunctionRecord.hasCyclicDependency());
     }
-    log.trace("AsyncExecutor pool size: " + asyncExecutor.getPoolSize());
-    log.trace("AsyncExecutor active count: " + asyncExecutor.getActiveCount());
 
     if (isaReturningTask(nfvMessage.getAction())) {
-      return asyncExecutor.submit(task);
+      return executor.submit(task);
     } else {
-      asyncExecutor.submit(task);
+      executor.submit(task);
       return null;
     }
   }
@@ -155,7 +149,7 @@ public class VnfStateHandler implements org.openbaton.vnfm.interfaces.state.VnfS
     task.setAction(Action.RELEASE_RESOURCES);
     task.setVirtualNetworkFunctionRecord(virtualNetworkFunctionRecord);
 
-    this.asyncExecutor.submit(task);
+    this.executor.submit(task);
   }
 
   @Override
