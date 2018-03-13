@@ -252,7 +252,7 @@ public class RestNetworkServiceRecord {
     value = "Resume a failed Network Service Record",
     notes = "The id in the URL specifies the Network Service Record that will be resumed"
   )
-  @RequestMapping(value = "{id}/resume", method = RequestMethod.POST)
+  @RequestMapping(value = "{id}", method = RequestMethod.POST)    
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void resume(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
