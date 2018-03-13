@@ -35,7 +35,18 @@ import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.Ip;
 import org.openbaton.catalogue.mano.descriptor.*;
+import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
+import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
+import org.openbaton.catalogue.mano.descriptor.VNFComponent;
+import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
+import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
+import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.mano.record.*;
+import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
+import org.openbaton.catalogue.mano.record.Status;
+import org.openbaton.catalogue.mano.record.VNFCInstance;
+import org.openbaton.catalogue.mano.record.VNFRecordDependency;
+import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
@@ -1983,6 +1994,16 @@ public class NetworkServiceRecordManagement
         vnfStateHandler.sendMessageToVNFR(failedVnfr, orVnfmGenericMessage);
       }
     }
+  }
+
+  /**
+   * This operation is used to execute a script on a specific Virtual Network Function Record during
+   * runtime.
+   */
+  @Override
+  public void executeScript(String idNsr, String idVnfr, String projectId, Script script)
+      throws NotFoundException, InterruptedException, BadFormatException, ExecutionException {
+    vnfmManager.executeScript(idVnfr, script);
   }
 
   class VNFRTerminator implements Runnable {

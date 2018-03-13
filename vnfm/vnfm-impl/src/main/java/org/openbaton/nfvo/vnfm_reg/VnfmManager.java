@@ -35,6 +35,11 @@ import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.catalogue.nfvo.messages.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmExecuteScriptMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmLogMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmScalingMessage;
+import org.openbaton.catalogue.nfvo.messages.OrVnfmUpdateMessage;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
@@ -730,6 +735,17 @@ public class VnfmManager
         }
       }
     }
+  }
+
+  @Override
+  public void executeScript(String vnfrId, Script script)
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
+    VirtualNetworkFunctionRecord vnfr = vnfrRepository.findFirstById(vnfrId);
+    OrVnfmExecuteScriptMessage orVnfmExecuteScriptMessage = new OrVnfmExecuteScriptMessage();
+    orVnfmExecuteScriptMessage.setScript(script);
+    orVnfmExecuteScriptMessage.setVnfr(vnfr);
+
+    vnfStateHandler.sendMessageToVNFR(vnfr, orVnfmExecuteScriptMessage);
   }
 
   @Override

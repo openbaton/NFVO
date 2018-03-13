@@ -28,6 +28,7 @@ import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Configuration;
+import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.exceptions.*;
 
@@ -111,6 +112,13 @@ public interface NetworkServiceRecordManagement {
   /** This operation is used to resume a failed Network Service Record. */
   void resume(String id, String projectId)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
+
+  /**
+   * This operation is used to execute a script on a specific Virtual Network Function Record during
+   * runtime.
+   */
+  void executeScript(String idNsr, String idVnf, String projectId, Script script)
+      throws NotFoundException, InterruptedException, BadFormatException, ExecutionException;
 
   void deleteVNFRecord(String idNsr, String idVnf, String projectId) throws NotFoundException;
 

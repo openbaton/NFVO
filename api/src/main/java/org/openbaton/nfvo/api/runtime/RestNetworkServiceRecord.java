@@ -40,10 +40,7 @@ import org.openbaton.catalogue.mano.record.PhysicalNetworkFunctionRecord;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VNFRecordDependency;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
-import org.openbaton.catalogue.nfvo.Configuration;
-import org.openbaton.catalogue.nfvo.DependencyParameters;
-import org.openbaton.catalogue.nfvo.HistoryLifecycleEvent;
-import org.openbaton.catalogue.nfvo.VNFCDependencyParameters;
+import org.openbaton.catalogue.nfvo.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.api.model.DependencyObject;
@@ -261,6 +258,42 @@ public class RestNetworkServiceRecord {
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
       throws InterruptedException, ExecutionException, NotFoundException, BadFormatException {
     networkServiceRecordManagement.resume(id, projectId);
+  }
+
+  /**
+   * This operation is used to execute a script (or a command) on a specific VNF record during
+   * runtime
+   *
+   * @param idNsr : the id of Network Service Record
+   * @param idVnfr : the id of Virtual Network Function Record
+   * @throws NotFoundException
+   */
+  @ApiOperation(
+    value = "Execute a script (or a command) on a specific VNF record of a specific NS record",
+    notes = "The id of NSR and the id of the VNFR are specified in the URL"
+  )
+  @RequestMapping(value = "{idNsr}/vnfrecords/{idVnfr}/execute-script", method = RequestMethod.POST)
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void executeScript(
+      @PathVariable("idNsr") String idNsr,
+      @PathVariable("idVnfr") String idVnfr,
+      @RequestHeader(value = "project-id") String projectId,
+      @RequestBody String scriptContent)
+      throws InterruptedException, ExecutionException, NotFoundException, BadFormatException,
+          WrongStatusException {
+
+    VirtualNetworkFunctionRecord vnfr =
+        networkServiceRecordManagement.getVirtualNetworkFunctionRecord(idNsr, idVnfr, projectId);
+
+    // TODO: generate randomly script name
+    String scriptName = "ob_runtime_script";
+    Script script = new Script();
+    script.setName(scriptName);
+    script.setPayload(scriptContent.getBytes());
+
+    log.info("Executing script: " + script + " on VNFR: " + vnfr.getName());
+    log.info("Script content:\n----------\n" + scriptContent + "\n----------\n");
+    networkServiceRecordManagement.executeScript(idNsr, idVnfr, projectId, script);
   }
 
   /**
