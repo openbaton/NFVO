@@ -1717,6 +1717,8 @@ public class NetworkServiceRecordManagement
             + " - Setting new VNFPackage reference: "
             + upgradeVnfPackageId);
     vnfr.setPackageId(upgradeVnfPackageId);
+    log.debug("Upgrading VNFR: " + vnfrId + " - Setting new VNFD version: " + upgradeVnfd.getVersion());
+    vnfr.setVersion(upgradeVnfd.getVersion());
 
     vnfr = vnfrRepository.save(vnfr);
 
