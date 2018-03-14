@@ -18,6 +18,7 @@
 dependencies {
     compile project(':catalogue')
     compile project(':exception')
+    compile project(':common')
 
     compile 'org.springframework.boot:spring-boot-starter-amqp:' + springBootVersion
 

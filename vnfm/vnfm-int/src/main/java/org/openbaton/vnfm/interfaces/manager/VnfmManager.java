@@ -34,6 +34,8 @@ import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.NotFoundException;
+import org.openbaton.nfvo.common.internal.model.EventFinishNFVO;
+import org.openbaton.nfvo.common.internal.model.EventNFVO;
 import org.springframework.scheduling.annotation.Async;
 
 /** Created by lto on 26/05/15. */
@@ -50,6 +52,10 @@ public interface VnfmManager {
 
   Future<Void> release(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
+
+  void handleEventFinishNFVO(EventFinishNFVO eventFinishNFVO);
+
+  void handleEventNFVO(EventNFVO eventNFVO);
 
   @Async
   Future<NFVMessage> requestLog(VirtualNetworkFunctionRecord vnfr, String hostname)

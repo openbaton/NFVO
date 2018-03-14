@@ -64,11 +64,10 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -81,9 +80,7 @@ import org.springframework.stereotype.Service;
 @Order(value = (Ordered.LOWEST_PRECEDENCE - 10)) // in order to be the second to last
 @ConfigurationProperties
 public class VnfmManager
-    implements org.openbaton.vnfm.interfaces.manager.VnfmManager,
-        ApplicationEventPublisherAware,
-        ApplicationListener<ApplicationEvent> {
+    implements org.openbaton.vnfm.interfaces.manager.VnfmManager, ApplicationEventPublisherAware {
 
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -336,8 +333,8 @@ public class VnfmManager
               networkServiceRecord = nsrRepository.save(networkServiceRecord);
               publishEvent(
                   Action.INSTANTIATE_FINISH,
-                  //networkServiceRecord,
-                  virtualNetworkFunctionRecord,
+                  networkServiceRecord,
+                  //virtualNetworkFunctionRecord,
                   networkServiceRecord.getProjectId());
             }
           } catch (OptimisticLockingFailureException e) {
@@ -593,117 +590,230 @@ public class VnfmManager
     }
   }*/
 
-  @Override
-  public synchronized void onApplicationEvent(ApplicationEvent event) {
-    if (event instanceof EventFinishNFVO) {
-      EventFinishNFVO eventFinishNFVO = (EventFinishNFVO) event;
-      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord =
-          eventFinishNFVO.getEventNFVO().getVirtualNetworkFunctionRecord();
-      publishEvent(
-          eventFinishNFVO.getEventNFVO().getAction(),
-          virtualNetworkFunctionRecord,
-          virtualNetworkFunctionRecord.getProjectId());
-      if ((eventFinishNFVO.getEventNFVO().getAction().ordinal()
-              != Action.ALLOCATE_RESOURCES.ordinal())
-          && (eventFinishNFVO.getEventNFVO().getAction().ordinal()
-              != Action.GRANT_OPERATION.ordinal())) {
-        findAndSetNSRStatus(virtualNetworkFunctionRecord);
-      }
-    } else if (event instanceof EventNFVO) {
-      EventNFVO eventNFVO = (EventNFVO) event;
-      ApplicationEventNFVO applicationEventNFVO = eventNFVO.getEventNFVO();
+  @EventListener
+  public void handleEventFinishNFVO(EventFinishNFVO eventFinishNFVO) {
+    VirtualNetworkFunctionRecord virtualNetworkFunctionRecord =
+        eventFinishNFVO.getEventNFVO().getVirtualNetworkFunctionRecord();
+    publishEvent(
+        eventFinishNFVO.getEventNFVO().getAction(),
+        virtualNetworkFunctionRecord,
+        virtualNetworkFunctionRecord.getProjectId());
+    if ((eventFinishNFVO.getEventNFVO().getAction().ordinal()
+            != Action.ALLOCATE_RESOURCES.ordinal())
+        && (eventFinishNFVO.getEventNFVO().getAction().ordinal()
+            != Action.GRANT_OPERATION.ordinal())) {
+      findAndSetNSRStatus(virtualNetworkFunctionRecord);
+    }
+  }
 
-      VirtualNetworkFunctionRecord vnfr =
-          (VirtualNetworkFunctionRecord) applicationEventNFVO.getPayload();
-      String projectId = vnfr.getProjectId();
-      String nsrId = vnfr.getParent_ns_id();
+  @EventListener
+  public void handleEventNFVO(EventNFVO eventNFVO) {
+    ApplicationEventNFVO applicationEventNFVO = eventNFVO.getEventNFVO();
 
-      if (isNsrRestartRequired(projectId, nsrId)) {
-        NetworkServiceRecord nsr = nsrRepository.findFirstByIdAndProjectId(nsrId, projectId);
+    if (!(applicationEventNFVO.getPayload() instanceof VirtualNetworkFunctionRecord)) return;
 
-        // If a VNF upgrade is in progress then the NSR will be in ACTIVE only after the START of the upgraded VNF
-        if (nsr.getStatus().ordinal() == Status.ACTIVE.ordinal()) {
-          // To avoid sending multiple STOP messages to the same NSR in restart
-          if (isNsrRestartStopRequired(projectId, nsrId)) {
-            try {
-              for (VirtualNetworkFunctionRecord vnfrInNsr : nsr.getVnfr()) {
-                log.debug(
-                    "Upgrading VNFR: "
-                        + vnfr.getId()
-                        + " - Restarting NSR: "
-                        + nsrId
-                        + " - Sending STOP to VNFR: "
-                        + vnfrInNsr.getName()
-                        + " (ID: "
-                        + vnfrInNsr.getId()
-                        + ")");
-                OrVnfmStartStopMessage orVnfmStopMessage =
-                    new OrVnfmStartStopMessage(vnfrInNsr, null, Action.STOP);
-                //orVnfmStopMessage.setRestart(true);
-                vnfStateHandler.sendMessageToVNFR(vnfrInNsr, orVnfmStopMessage);
-              }
-              unsetNsrRestartStopRequired(projectId, nsrId);
-            } catch (NullPointerException
-                | NotFoundException
-                | BadFormatException
-                | ExecutionException
-                | InterruptedException e) {
-              log.error(
-                  "Impossible to restart the NSR: "
+    VirtualNetworkFunctionRecord vnfr =
+        (VirtualNetworkFunctionRecord) applicationEventNFVO.getPayload();
+    String projectId = vnfr.getProjectId();
+    String nsrId = vnfr.getParent_ns_id();
+
+    if (isNsrRestartRequired(projectId, nsrId)) {
+      NetworkServiceRecord nsr = nsrRepository.findFirstByIdAndProjectId(nsrId, projectId);
+
+      // If a VNF upgrade is in progress then the NSR will be in ACTIVE only after the START of the upgraded VNF
+      if (nsr.getStatus().ordinal() == Status.ACTIVE.ordinal()) {
+        // To avoid sending multiple STOP messages to the same NSR in restart
+        if (isNsrRestartStopRequired(projectId, nsrId)) {
+          try {
+            for (VirtualNetworkFunctionRecord vnfrInNsr : nsr.getVnfr()) {
+              log.debug(
+                  "Upgrading VNFR: "
+                      + vnfr.getId()
+                      + " - Restarting NSR: "
                       + nsrId
-                      + " after the upgrade of one of its VNF.");
-              e.printStackTrace();
+                      + " - Sending STOP to VNFR: "
+                      + vnfrInNsr.getName()
+                      + " (ID: "
+                      + vnfrInNsr.getId()
+                      + ")");
+              OrVnfmStartStopMessage orVnfmStopMessage =
+                  new OrVnfmStartStopMessage(vnfrInNsr, null, Action.STOP);
+              //orVnfmStopMessage.setRestart(true);
+              vnfStateHandler.sendMessageToVNFR(vnfrInNsr, orVnfmStopMessage);
             }
+            unsetNsrRestartStopRequired(projectId, nsrId);
+          } catch (NullPointerException
+              | NotFoundException
+              | BadFormatException
+              | ExecutionException
+              | InterruptedException e) {
+            log.error(
+                "Impossible to restart the NSR: "
+                    + nsrId
+                    + " after the upgrade of one of its VNF.");
+            e.printStackTrace();
           }
-        } else if (applicationEventNFVO.getAction().ordinal() == Action.STOP.ordinal()) {
-          boolean allNsrIsStopped = true;
-          for (VirtualNetworkFunctionRecord vnfrInNsr : nsr.getVnfr()) {
-            // If a VNFR is stopped its status is set to INACTIVE
-            if (vnfrInNsr.getStatus().ordinal() != Status.INACTIVE.ordinal()) {
-              allNsrIsStopped = false;
-            }
+        }
+      } else if (applicationEventNFVO.getAction().ordinal() == Action.STOP.ordinal()) {
+        boolean allNsrIsStopped = true;
+        for (VirtualNetworkFunctionRecord vnfrInNsr : nsr.getVnfr()) {
+          // If a VNFR is stopped its status is set to INACTIVE
+          if (vnfrInNsr.getStatus().ordinal() != Status.INACTIVE.ordinal()) {
+            allNsrIsStopped = false;
           }
-          // When the full NSR has been stopped then a START has to be sent to all VNFR of the NSR
-          if (allNsrIsStopped) {
-            try {
-              for (String vnfrName : vnfrNames.get(nsrId).keySet()) {
-                for (VirtualNetworkFunctionRecord vnfrInNsr : nsr.getVnfr()) {
-                  if (vnfrInNsr.getName().equals(vnfrName)) {
-                    log.debug(
-                        "Upgrading VNFR: "
-                            + vnfr.getId()
-                            + " - Restarting NSR: "
-                            + nsrId
-                            + " - Sending START to VNFR: "
-                            + vnfrInNsr.getName()
-                            + " (ID: "
-                            + vnfrInNsr.getId()
-                            + ")");
-                    OrVnfmStartStopMessage orVnfmStartMessage =
-                        new OrVnfmStartStopMessage(vnfrInNsr, null, Action.START);
-                    //orVnfmStartMessage.setRestart(true);
-                    vnfStateHandler.sendMessageToVNFR(vnfrInNsr, orVnfmStartMessage);
-                  }
+        }
+        // When the full NSR has been stopped then a START has to be sent to all VNFR of the NSR
+        if (allNsrIsStopped) {
+          try {
+            for (String vnfrName : vnfrNames.get(nsrId).keySet()) {
+              for (VirtualNetworkFunctionRecord vnfrInNsr : nsr.getVnfr()) {
+                if (vnfrInNsr.getName().equals(vnfrName)) {
+                  log.debug(
+                      "Upgrading VNFR: "
+                          + vnfr.getId()
+                          + " - Restarting NSR: "
+                          + nsrId
+                          + " - Sending START to VNFR: "
+                          + vnfrInNsr.getName()
+                          + " (ID: "
+                          + vnfrInNsr.getId()
+                          + ")");
+                  OrVnfmStartStopMessage orVnfmStartMessage =
+                      new OrVnfmStartStopMessage(vnfrInNsr, null, Action.START);
+                  //orVnfmStartMessage.setRestart(true);
+                  vnfStateHandler.sendMessageToVNFR(vnfrInNsr, orVnfmStartMessage);
                 }
               }
-            } catch (NullPointerException
-                | NotFoundException
-                | BadFormatException
-                | ExecutionException
-                | InterruptedException e) {
-              log.error(
-                  "Impossible to restart the NSR: "
-                      + nsrId
-                      + " after the upgrade of one of its VNF.");
-              e.printStackTrace();
             }
-
-            unsetNsrRestartRequired(projectId, nsrId);
+          } catch (NullPointerException
+              | NotFoundException
+              | BadFormatException
+              | ExecutionException
+              | InterruptedException e) {
+            log.error(
+                "Impossible to restart the NSR: "
+                    + nsrId
+                    + " after the upgrade of one of its VNF.");
+            e.printStackTrace();
           }
+
+          unsetNsrRestartRequired(projectId, nsrId);
         }
       }
     }
   }
+
+  //@Override
+  //  public synchronized void onApplicationEvent(ApplicationEvent event) {
+  //    if (event instanceof EventFinishNFVO) {
+  //      EventFinishNFVO eventFinishNFVO = (EventFinishNFVO) event;
+  //      VirtualNetworkFunctionRecord virtualNetworkFunctionRecord =
+  //          eventFinishNFVO.getEventNFVO().getVirtualNetworkFunctionRecord();
+  //      publishEvent(
+  //          eventFinishNFVO.getEventNFVO().getAction(),
+  //          virtualNetworkFunctionRecord,
+  //          virtualNetworkFunctionRecord.getProjectId());
+  //      if ((eventFinishNFVO.getEventNFVO().getAction().ordinal()
+  //              != Action.ALLOCATE_RESOURCES.ordinal())
+  //          && (eventFinishNFVO.getEventNFVO().getAction().ordinal()
+  //              != Action.GRANT_OPERATION.ordinal())) {
+  //        findAndSetNSRStatus(virtualNetworkFunctionRecord);
+  //      }
+  //    } else if (event instanceof EventNFVO) {
+  //      EventNFVO eventNFVO = (EventNFVO) event;
+  //      ApplicationEventNFVO applicationEventNFVO = eventNFVO.getEventNFVO();
+  //
+  //      VirtualNetworkFunctionRecord vnfr =
+  //          (VirtualNetworkFunctionRecord) applicationEventNFVO.getPayload();
+  //      String projectId = vnfr.getProjectId();
+  //      String nsrId = vnfr.getParent_ns_id();
+  //
+  //      if (isNsrRestartRequired(projectId, nsrId)) {
+  //        NetworkServiceRecord nsr = nsrRepository.findFirstByIdAndProjectId(nsrId, projectId);
+  //
+  //        // If a VNF upgrade is in progress then the NSR will be in ACTIVE only after the START of the upgraded VNF
+  //        if (nsr.getStatus().ordinal() == Status.ACTIVE.ordinal()) {
+  //          // To avoid sending multiple STOP messages to the same NSR in restart
+  //          if (isNsrRestartStopRequired(projectId, nsrId)) {
+  //            try {
+  //              for (VirtualNetworkFunctionRecord vnfrInNsr : nsr.getVnfr()) {
+  //                log.debug(
+  //                    "Upgrading VNFR: "
+  //                        + vnfr.getId()
+  //                        + " - Restarting NSR: "
+  //                        + nsrId
+  //                        + " - Sending STOP to VNFR: "
+  //                        + vnfrInNsr.getName()
+  //                        + " (ID: "
+  //                        + vnfrInNsr.getId()
+  //                        + ")");
+  //                OrVnfmStartStopMessage orVnfmStopMessage =
+  //                    new OrVnfmStartStopMessage(vnfrInNsr, null, Action.STOP);
+  //                //orVnfmStopMessage.setRestart(true);
+  //                vnfStateHandler.sendMessageToVNFR(vnfrInNsr, orVnfmStopMessage);
+  //              }
+  //              unsetNsrRestartStopRequired(projectId, nsrId);
+  //            } catch (NullPointerException
+  //                | NotFoundException
+  //                | BadFormatException
+  //                | ExecutionException
+  //                | InterruptedException e) {
+  //              log.error(
+  //                  "Impossible to restart the NSR: "
+  //                      + nsrId
+  //                      + " after the upgrade of one of its VNF.");
+  //              e.printStackTrace();
+  //            }
+  //          }
+  //        } else if (applicationEventNFVO.getAction().ordinal() == Action.STOP.ordinal()) {
+  //          boolean allNsrIsStopped = true;
+  //          for (VirtualNetworkFunctionRecord vnfrInNsr : nsr.getVnfr()) {
+  //            // If a VNFR is stopped its status is set to INACTIVE
+  //            if (vnfrInNsr.getStatus().ordinal() != Status.INACTIVE.ordinal()) {
+  //              allNsrIsStopped = false;
+  //            }
+  //          }
+  //          // When the full NSR has been stopped then a START has to be sent to all VNFR of the NSR
+  //          if (allNsrIsStopped) {
+  //            try {
+  //              for (String vnfrName : vnfrNames.get(nsrId).keySet()) {
+  //                for (VirtualNetworkFunctionRecord vnfrInNsr : nsr.getVnfr()) {
+  //                  if (vnfrInNsr.getName().equals(vnfrName)) {
+  //                    log.debug(
+  //                        "Upgrading VNFR: "
+  //                            + vnfr.getId()
+  //                            + " - Restarting NSR: "
+  //                            + nsrId
+  //                            + " - Sending START to VNFR: "
+  //                            + vnfrInNsr.getName()
+  //                            + " (ID: "
+  //                            + vnfrInNsr.getId()
+  //                            + ")");
+  //                    OrVnfmStartStopMessage orVnfmStartMessage =
+  //                        new OrVnfmStartStopMessage(vnfrInNsr, null, Action.START);
+  //                    //orVnfmStartMessage.setRestart(true);
+  //                    vnfStateHandler.sendMessageToVNFR(vnfrInNsr, orVnfmStartMessage);
+  //                  }
+  //                }
+  //              }
+  //            } catch (NullPointerException
+  //                | NotFoundException
+  //                | BadFormatException
+  //                | ExecutionException
+  //                | InterruptedException e) {
+  //              log.error(
+  //                  "Impossible to restart the NSR: "
+  //                      + nsrId
+  //                      + " after the upgrade of one of its VNF.");
+  //              e.printStackTrace();
+  //            }
+  //
+  //            unsetNsrRestartRequired(projectId, nsrId);
+  //          }
+  //        }
+  //      }
+  //    }
+  //  }
 
   @Override
   public Map<String, Map<String, Integer>> getVnfrNames() {
