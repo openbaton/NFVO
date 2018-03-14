@@ -1732,8 +1732,6 @@ public class NetworkServiceRecordManagement
         "Upgrading VNFR: " + vnfrId + " - Setting new VNFD version: " + upgradeVnfd.getVersion());
     vnfr.setVersion(upgradeVnfd.getVersion());
 
-    vnfr = vnfrRepository.save(vnfr);
-
     // Use the first image found in the VDUs TODO: improve image choice for upgrade/rebuild
     String rebuildImageName = null;
     for (VirtualDeploymentUnit vdu : upgradeVnfd.getVdu()) {
@@ -1753,7 +1751,8 @@ public class NetworkServiceRecordManagement
     // restart of the NSR will be automatically triggered
     restartVnfr(nsr, vnfrId, rebuildImageName, projectId);
 
-    return vnfr;
+    // save at the end in case there are no exceptions
+    return vnfrRepository.save(vnfr);
   }
 
   @Override
