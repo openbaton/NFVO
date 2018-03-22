@@ -1907,6 +1907,11 @@ public class NetworkServiceRecordManagement
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException {
     NetworkServiceRecord networkServiceRecord = getNetworkServiceRecordInAnyState(id, projectId);
 
+    if (!nsrRepository.existsByIdAndProjectIdAndStatus(id, projectId, Status.ERROR)) {
+      log.warn("NSR is in not in ERROR status");
+      throw new NotFoundException("NSR is not in ERROR status");
+    }
+
     log.info("Resuming NSR with id: " + id);
 
     networkServiceRecord.setStatus(Status.RESUMING);
