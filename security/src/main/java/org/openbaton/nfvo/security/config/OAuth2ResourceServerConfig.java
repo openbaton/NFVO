@@ -33,10 +33,6 @@ public class OAuth2ResourceServerConfig extends ResourceServerConfigurerAdapter 
     http.authorizeRequests()
         .antMatchers("/api/v1/components/services/register", "/api/v1/security")
         .permitAll()
-        //        .antMatchers(HttpMethod.POST, "/api/v1/users/**")
-        //        .hasRole("ADMIN")
-        //        .antMatchers(HttpMethod.PUT, "/api/v1/users/**")
-        //        .hasRole("ADMIN")
         .antMatchers("/api/**")
         .authenticated();
   }
