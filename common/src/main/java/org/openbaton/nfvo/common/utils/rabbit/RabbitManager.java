@@ -175,20 +175,19 @@ public class RabbitManager {
     put.setEntity(new StringEntity(stringEntity, ContentType.APPLICATION_JSON));
 
     // TODO switch to SSL if possible
-    CloseableHttpClient httpclient = HttpClients.createDefault();
-    log.trace("Executing request: " + put.getMethod() + " on " + uri);
-    httpclient.execute(put);
-    CloseableHttpResponse response = httpclient.execute(put);
-    log.trace(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
-    if (response.getStatusLine().getStatusCode() != 204) {
-      httpclient.close();
-      throw new WrongStatusException(
-          "Error setting permissions of RabbitMQ user"
-              + username
-              + ": "
-              + response.getStatusLine());
+    try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+      log.trace("Executing request: " + put.getMethod() + " on " + uri);
+      httpClient.execute(put);
+      CloseableHttpResponse response = httpClient.execute(put);
+      log.trace(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
+      if (response.getStatusLine().getStatusCode() != 204) {
+        throw new WrongStatusException(
+            "Error setting permissions of RabbitMQ user"
+                + username
+                + ": "
+                + response.getStatusLine());
+      }
     }
-    httpclient.close();
   }
 
   /**
