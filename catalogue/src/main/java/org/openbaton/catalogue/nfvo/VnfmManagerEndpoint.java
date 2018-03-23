@@ -19,7 +19,6 @@ package org.openbaton.catalogue.nfvo;
 
 import javax.persistence.Entity;
 
-/** Created by lto on 27/05/15. */
 @Entity
 public class VnfmManagerEndpoint extends Endpoint {
 
