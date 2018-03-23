@@ -18,7 +18,6 @@
 package org.openbaton.nfvo.security.config;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
@@ -34,10 +33,10 @@ public class OAuth2ResourceServerConfig extends ResourceServerConfigurerAdapter 
     http.authorizeRequests()
         .antMatchers("/api/v1/components/services/register", "/api/v1/security")
         .permitAll()
-        .antMatchers(HttpMethod.POST, "/api/v1/users/**")
-        .hasRole("ADMIN")
-        .antMatchers(HttpMethod.PUT, "/api/v1/users/**")
-        .hasRole("ADMIN")
+        //        .antMatchers(HttpMethod.POST, "/api/v1/users/**")
+        //        .hasRole("ADMIN")
+        //        .antMatchers(HttpMethod.PUT, "/api/v1/users/**")
+        //        .hasRole("ADMIN")
         .antMatchers("/api/**")
         .authenticated();
   }

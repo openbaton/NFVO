@@ -357,7 +357,9 @@ public class ComponentManager implements org.openbaton.nfvo.core.interfaces.Comp
             managerCredentials.setRabbitPassword(password);
             managerCredentials = managerCredentialsRepository.save(managerCredentials);
             if (endpoint != null) vnfmManagerEndpointRepository.save(endpoint);
-            log.info("Registered a new manager.");
+            log.info(
+                String.format(
+                    "Registered a new manager: %s.", managerCredentials.getRabbitUsername()));
             if (!isManager) {
               this.refreshVims(username);
             }
