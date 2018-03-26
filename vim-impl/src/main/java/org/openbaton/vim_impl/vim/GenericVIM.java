@@ -1523,7 +1523,7 @@ public class GenericVIM extends Vim {
       List<Server> serversFromVim = client.listServer(vimInstance);
       log.debug("Listed potential VMs to recover -> " + serversFromVim);
       for (Server serverFromVim : serversFromVim) {
-        if (serverFromVim.getHostName().equals(hostname)) {
+        if (serverFromVim.getHostName() != null && serverFromVim.getHostName().equals(hostname)) {
           server = serverFromVim;
           log.debug("Found VM -> " + server);
           break;

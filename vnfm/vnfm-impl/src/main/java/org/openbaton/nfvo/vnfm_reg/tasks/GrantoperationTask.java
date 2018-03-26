@@ -238,8 +238,10 @@ public class GrantoperationTask extends AbstractTask {
                         "Checking VLR %s for VNFR [%s]",
                         virtualLinkRecord, virtualNetworkFunctionRecord.getName()));
                 for (BaseNetwork net : finalVimInstance1.getNetworks()) {
-                  if (VimInstanceUtils.isVLRExisting(virtualLinkRecord, net, dedicatedNetworks))
+                  if (VimInstanceUtils.isVLRExisting(virtualLinkRecord, net, dedicatedNetworks)) {
+                    virtualLinkRecord.setExtId(net.getExtId());
                     return false;
+                  }
                 }
                 return true;
               })
