@@ -15,8 +15,6 @@
  *
  */
 
-import java.text.SimpleDateFormat
-
 rootProject.ext.getRevision = {
 	String commit = execAndGetOutput("git rev-parse --short HEAD")
 	return (commit != null) ? commit : "UNKNOWN"
