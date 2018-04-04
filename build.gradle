@@ -36,7 +36,7 @@ apply plugin: 'idea'
 apply plugin: 'eclipse'
 
 apply from: 'gradle/gradle/git.helpers.gradle'
-apply from: 'gradle/gradle/command.line.helper.gradle'
+apply from: 'gradle/gradle/helpers.gradle'
 
 /**
  * Project settings
@@ -75,7 +75,6 @@ apply from: 'gradle/gradle/git.release.gradle'
 
 apply from: 'gradle/gradle/packaging.nfvo.debian.gradle'
 apply from: 'gradle/gradle/packaging.nfvo.docker.gradle'
-apply from: 'gradle/gradle/packaging.innosetup.gradle'
 
 apply from: 'gradle/gradle/distribution.gradle'
 
