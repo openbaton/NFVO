@@ -3,6 +3,7 @@ package org.openbaton.nfvo.common.utils.viminstance;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.apache.commons.net.util.SubnetUtils;
+import org.openbaton.catalogue.mano.common.AbstractVirtualLink;
 import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
 import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
@@ -126,6 +127,7 @@ public class VimInstanceUtils {
             subnetNfvo.setNetworkId(subnetNew.getNetworkId());
             subnetNfvo.setGatewayIp(subnetNew.getGatewayIp());
             subnetNfvo.setCidr(subnetNew.getCidr());
+            subnetNfvo.setExternalNetworkName(subnetNew.getExternalNetworkName());
             found_subnet = true;
             break;
           }
@@ -217,11 +219,13 @@ public class VimInstanceUtils {
       HashSet<Subnet> subnets = new HashSet<>();
       Subnet subnet = new Subnet();
       subnet.setName(String.format("%s_subnet", vnfdConnectionPoint.getVirtual_link_reference()));
-      subnet.setCidr(
-          getCidrFromVLName(
+      AbstractVirtualLink avl =
+          getVLFromVLName(
               vnfdConnectionPoint.getVirtual_link_reference(),
               networkServiceDescriptor,
-              virtualNetworkFunctionDescriptor));
+              virtualNetworkFunctionDescriptor);
+      subnet.setCidr(avl.getCidr());
+      subnet.setExternalNetworkName(avl.getPoolName());
       subnets.add(subnet);
       network.setSubnets(subnets);
       network.setName(vnfdConnectionPoint.getVirtual_link_reference());
@@ -229,11 +233,12 @@ public class VimInstanceUtils {
     } else if (vimInstance instanceof DockerVimInstance) {
       DockerNetwork networkdc = new DockerNetwork();
       networkdc.setName(vnfdConnectionPoint.getVirtual_link_reference());
-      networkdc.setSubnet(
-          getCidrFromVLName(
+      AbstractVirtualLink avl =
+          getVLFromVLName(
               vnfdConnectionPoint.getVirtual_link_reference(),
               networkServiceDescriptor,
-              virtualNetworkFunctionDescriptor));
+              virtualNetworkFunctionDescriptor);
+      networkdc.setSubnet(avl.getCidr());
       return networkdc;
     } else {
       BaseNetwork networkb = new BaseNetwork();
@@ -254,9 +259,11 @@ public class VimInstanceUtils {
       Subnet subnet = new Subnet();
       subnet.setName(String.format("%s_subnet", vlr.getName()));
       subnet.setDns(vlr.getDns());
-      subnet.setCidr(
-          getCidrFromVLName(
-              vlr.getName(), networkServiceDescriptor, virtualNetworkFunctionDescriptor));
+      AbstractVirtualLink avl =
+          getVLFromVLName(
+              vlr.getName(), networkServiceDescriptor, virtualNetworkFunctionDescriptor);
+      subnet.setCidr(avl.getCidr());
+      subnet.setExternalNetworkName(avl.getPoolName());
       subnets.add(subnet);
       network.setSubnets(subnets);
       network.setName(vlr.getName());
@@ -264,9 +271,10 @@ public class VimInstanceUtils {
     } else if (vimInstance instanceof DockerVimInstance) {
       DockerNetwork networkdc = new DockerNetwork();
       networkdc.setName(vlr.getName());
-      networkdc.setSubnet(
-          getCidrFromVLName(
-              vlr.getName(), networkServiceDescriptor, virtualNetworkFunctionDescriptor));
+      AbstractVirtualLink avl =
+          getVLFromVLName(
+              vlr.getName(), networkServiceDescriptor, virtualNetworkFunctionDescriptor);
+      networkdc.setSubnet(avl.getCidr());
       return networkdc;
     } else {
       BaseNetwork networkb = new BaseNetwork();
@@ -275,19 +283,20 @@ public class VimInstanceUtils {
     }
   }
 
-  private static String getCidrFromVLName(
+  private static AbstractVirtualLink getVLFromVLName(
       String virtual_link_reference,
       NetworkServiceDescriptor networkServiceDescriptor,
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor)
       throws BadRequestException {
+
     for (VirtualLinkDescriptor vld : networkServiceDescriptor.getVld()) {
       if (vld.getName().equals(virtual_link_reference)) {
-        return vld.getCidr();
+        return vld;
       }
     }
     for (InternalVirtualLink ivl : virtualNetworkFunctionDescriptor.getVirtual_link()) {
       if (ivl.getName().equals(virtual_link_reference)) {
-        return ivl.getCidr();
+        return ivl;
       }
     }
     throw new BadRequestException(
