@@ -20,7 +20,7 @@ buildscript {
 }
 
 plugins {
-    id 'net.researchgate.release' version '2.5.0'
+    id 'net.researchgate.release' version '2.6.0'
     id "nebula.ospackage" version "4.5.1"
     id 'com.github.sherter.google-java-format' version '0.5'
     // For the managing of the Licences
