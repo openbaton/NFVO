@@ -21,15 +21,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -47,7 +43,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-/** Created by lto on 25/11/15. */
 @Service
 @Scope
 public class RabbitManager {
@@ -199,75 +194,50 @@ public class RabbitManager {
     httpclient.close();
   }
 
-  public static void removeRabbitMqUser(
+  /**
+   * Removes a user from RabbitMQ. This function does <em>not</em> throw exceptions even if the
+   * removal of the user fails.
+   *
+   * @param rabbitUsername the user who shall execute the remove operation
+   * @param rabbitPassword the password of the RabbitMQ instance
+   * @param brokerIp the IP where RabbitMQ is running
+   * @param managementPort the port used by RabbitMQ
+   * @param userToRemove the user to remove
+   */
+  public static void removeRabbitMqUserQuietly(
       String rabbitUsername,
       String rabbitPassword,
       String brokerIp,
       String managementPort,
-      String userToRemove)
-      throws IOException, WrongStatusException {
-    String uri = "http://" + brokerIp + ":" + managementPort + "/api/users/" + userToRemove;
+      String userToRemove) {
+    try {
+      String uri = "http://" + brokerIp + ":" + managementPort + "/api/users/" + userToRemove;
 
-    // TODO switch to SSL if possible
-    CloseableHttpClient httpclient = HttpClients.createDefault();
+      // TODO switch to SSL if possible
+      CloseableHttpClient httpclient = HttpClients.createDefault();
 
-    HttpDelete delete = new HttpDelete(uri);
-    String authStr = rabbitUsername + ":" + rabbitPassword;
-    String encoding = Base64.encodeBase64String(authStr.getBytes());
-    delete.setHeader("Authorization", "Basic " + encoding);
-    delete.setHeader(new BasicHeader("Accept", "application/json"));
-    //        delete.setHeader(new BasicHeader("Content-type", "application/json"));
+      HttpDelete delete = new HttpDelete(uri);
+      String authStr = rabbitUsername + ":" + rabbitPassword;
+      String encoding = Base64.encodeBase64String(authStr.getBytes());
+      delete.setHeader("Authorization", "Basic " + encoding);
+      delete.setHeader(new BasicHeader("Accept", "application/json"));
+      //        delete.setHeader(new BasicHeader("Content-type", "application/json"));
 
-    log.trace("Executing request: " + delete.getMethod() + " on " + uri);
+      log.trace("Executing request: " + delete.getMethod() + " on " + uri);
 
-    CloseableHttpResponse response = httpclient.execute(delete);
-    log.trace(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
-    if (response.getStatusLine().getStatusCode() != 204) {
-      throw new WrongStatusException(
-          "Error removing RabbitMQ user " + userToRemove + ": " + response.getStatusLine());
-    }
-
-    if (response.getStatusLine().getStatusCode() == 404) {
-      log.warn("User not found... the database is not consistent...");
-      return;
+      CloseableHttpResponse response = httpclient.execute(delete);
+      log.trace(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
+      if (response.getStatusLine().getStatusCode() == 404) {
+        log.warn("User not found in RabbitMQ. Assuming that it is removed.");
+      } else if (response.getStatusLine().getStatusCode() != 204) {
+        log.warn("Error removing RabbitMQ user " + userToRemove + ": " + response.getStatusLine());
+      }
+    } catch (Exception e) {
+      log.warn(
+          "Ignoring exception while removing RabbitMQ user "
+              + userToRemove
+              + ": "
+              + e.getMessage());
     }
   }
-
-  public static void createQueue(
-      String brokerIp,
-      int port,
-      String rabbitUsername,
-      String rabbitPassword,
-      String virtualHost,
-      String queue,
-      String exchange)
-      throws IOException, TimeoutException {
-    ConnectionFactory factory =
-        getConnectionFactory(brokerIp, port, rabbitUsername, rabbitPassword, virtualHost);
-    Connection connection = factory.newConnection();
-    Channel channel = connection.createChannel();
-    channel.exchangeDeclare(exchange, "topic", true);
-    channel.queueDeclare(queue, false, false, true, null);
-    channel.queueBind(queue, exchange, queue);
-    channel.basicQos(1);
-    channel.close();
-    connection.close();
-  }
-
-  private static ConnectionFactory getConnectionFactory(
-      String brokerIp, int port, String rabbitUsername, String rabbitPassword, String virtualHost) {
-    ConnectionFactory factory = new ConnectionFactory();
-    factory.setHost(brokerIp);
-    factory.setPort(port);
-    factory.setUsername(rabbitUsername);
-    factory.setPassword(rabbitPassword);
-    factory.setVirtualHost(virtualHost);
-    return factory;
-  }
-
-  /*
-    public static void main(String[] args) throws IOException {
-      System.out.println(getQueues("localhost", "admin", "openbaton", "/", 5672));
-    }
-  */
 }

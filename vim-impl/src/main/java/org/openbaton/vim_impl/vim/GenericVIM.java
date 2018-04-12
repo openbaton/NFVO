@@ -1441,7 +1441,8 @@ public class GenericVIM extends Vim {
         }
       }
       if (networks.isEmpty()) {
-        throw new NullPointerException("networks is empty");
+        throw new NullPointerException(
+            String.format("No Connection points in one VNFC of the VNFR: %s", vnfr.getName()));
       }
       if (vimInstance instanceof AmazonVimInstance) {
         if (((AmazonVimInstance) vimInstance).getSecurityGroups() == null) {
@@ -1594,7 +1595,7 @@ public class GenericVIM extends Vim {
       List<Server> serversFromVim = client.listServer(vimInstance);
       log.debug("Listed potential VMs to recover -> " + serversFromVim);
       for (Server serverFromVim : serversFromVim) {
-        if (serverFromVim.getHostName().equals(hostname)) {
+        if (serverFromVim.getHostName() != null && serverFromVim.getHostName().equals(hostname)) {
           server = serverFromVim;
           log.debug("Found VM -> " + server);
           break;

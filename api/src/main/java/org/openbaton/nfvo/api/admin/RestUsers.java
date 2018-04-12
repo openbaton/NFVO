@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -66,6 +67,7 @@ public class RestUsers {
     produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.CREATED)
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
   public User create(@RequestBody @Valid User user)
       throws PasswordWeakException, NotAllowedException, BadRequestException, NotFoundException {
     log.info("Adding user: " + user.getUsername());
@@ -89,6 +91,7 @@ public class RestUsers {
   )
   @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
   public void delete(@PathVariable("id") String id) throws NotAllowedException, NotFoundException {
     log.info("Removing user with id " + id);
     if (isAdmin()) {
@@ -178,6 +181,7 @@ public class RestUsers {
     produces = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.ACCEPTED)
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
   public User update(@RequestBody @Valid User new_user)
       throws NotAllowedException, BadRequestException, NotFoundException {
     return userManagement.update(new_user);
@@ -211,6 +215,7 @@ public class RestUsers {
     consumes = MediaType.APPLICATION_JSON_VALUE
   )
   @ResponseStatus(HttpStatus.ACCEPTED)
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
   public void changePasswordOf(
       @PathVariable("username") String username, @RequestBody /*@Valid*/ JsonObject newPwd)
       throws UnauthorizedUserException, PasswordWeakException, NotFoundException,
