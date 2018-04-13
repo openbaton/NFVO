@@ -20,14 +20,14 @@ buildscript {
 }
 
 plugins {
-    id 'net.researchgate.release' version '2.5.0'
+    id 'net.researchgate.release' version '2.6.0'
     id "nebula.ospackage" version "4.5.1"
     id 'com.github.sherter.google-java-format' version '0.5'
     // For the managing of the Licences
     id "com.github.hierynomus.license" version "0.14.0"
     // For managing the dependencies' versions
     id 'com.github.ben-manes.versions' version '0.13.0'
-    id 'org.springframework.boot' version '1.5.8.RELEASE'
+    id 'org.springframework.boot' version '1.5.11.RELEASE'
 }
 
 apply plugin: 'java'
@@ -36,7 +36,7 @@ apply plugin: 'idea'
 apply plugin: 'eclipse'
 
 apply from: 'gradle/gradle/git.helpers.gradle'
-apply from: 'gradle/gradle/command.line.helper.gradle'
+apply from: 'gradle/gradle/helpers.gradle'
 
 /**
  * Project settings
@@ -46,7 +46,7 @@ ext {
     /**
      * Spring Boot version (replace it also in the plugin section!)
      */
-    springBootVersion = '1.5.8.RELEASE'
+    springBootVersion = '1.5.11.RELEASE'
     //------------------------------------------------//
     //------------------------------------------------//
     /**
@@ -75,7 +75,6 @@ apply from: 'gradle/gradle/git.release.gradle'
 
 apply from: 'gradle/gradle/packaging.nfvo.debian.gradle'
 apply from: 'gradle/gradle/packaging.nfvo.docker.gradle'
-apply from: 'gradle/gradle/packaging.innosetup.gradle'
 
 apply from: 'gradle/gradle/distribution.gradle'
 
