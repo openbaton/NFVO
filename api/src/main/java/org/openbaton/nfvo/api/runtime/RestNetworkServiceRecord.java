@@ -279,8 +279,7 @@ public class RestNetworkServiceRecord {
       @PathVariable("idVnfr") String idVnfr,
       @RequestHeader(value = "project-id") String projectId,
       @RequestBody String scriptContent)
-      throws InterruptedException, ExecutionException, NotFoundException, BadFormatException,
-          WrongStatusException {
+      throws InterruptedException, ExecutionException, NotFoundException, BadFormatException {
 
     VirtualNetworkFunctionRecord vnfr =
         networkServiceRecordManagement.getVirtualNetworkFunctionRecord(idNsr, idVnfr, projectId);
