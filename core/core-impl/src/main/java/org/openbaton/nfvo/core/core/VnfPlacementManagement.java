@@ -31,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-/** Created by lto on 10/03/16. */
 @Service
 @Scope
 public class VnfPlacementManagement
@@ -53,7 +52,8 @@ public class VnfPlacementManagement
               .stream()
               .filter(v -> v.getName().equals(name))
               .findAny();
-      log.info("Chosen VimInstance: " + instanceOptional);
+      instanceOptional.ifPresent(
+          i -> log.info(String.format("Chosen VimInstance: %s on testbed %s", i.getName(), name)));
       if (instanceOptional.isPresent()) return instanceOptional.get();
       else throw new NotFoundException("No Vim instance found for name " + name);
     } else {
