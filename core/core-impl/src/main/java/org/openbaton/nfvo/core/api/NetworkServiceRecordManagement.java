@@ -1916,6 +1916,33 @@ public class NetworkServiceRecordManagement
 
     networkServiceRecord.setStatus(Status.RESUMING);
 
+    // Resuming
+    for (VirtualNetworkFunctionRecord failedVnfr : networkServiceRecord.getVnfr()) {
+
+      // Send resume to VNFR in error
+      if (failedVnfr.getStatus().ordinal() == (Status.ERROR.ordinal())) {
+        failedVnfr.setStatus(Status.RESUMING);
+        failedVnfr = vnfrRepository.save(failedVnfr);
+        OrVnfmGenericMessage orVnfmGenericMessage = new OrVnfmGenericMessage();
+        orVnfmGenericMessage.setVnfr(failedVnfr);
+        log.debug("Setting VNFR Dependency for RESUMED VNFR");
+        // Setting VNFR Dependency for RESUMED VNFR
+        for (VNFRecordDependency vnfRecordDependency : networkServiceRecord.getVnf_dependency()) {
+          if (vnfRecordDependency.getTarget().equals(failedVnfr.getName())) {
+            log.debug(
+                "Setting dependency to RESUMED VNFR: "
+                    + vnfRecordDependency.getTarget()
+                    + " == "
+                    + failedVnfr.getName());
+            orVnfmGenericMessage.setVnfrd(vnfRecordDependency);
+          }
+        }
+        orVnfmGenericMessage.setAction(Action.RESUME);
+        log.info("Sending resume message for VNFR: " + failedVnfr.getId());
+        vnfStateHandler.sendMessageToVNFR(failedVnfr, orVnfmGenericMessage);
+      }
+    }
+
     for (VNFRecordDependency vnfrDependency : networkServiceRecord.getVnf_dependency()) {
       // Check for sources and target ready to have their dependencies resolved
       VirtualNetworkFunctionRecord vnfrTarget =
@@ -1973,32 +2000,7 @@ public class NetworkServiceRecordManagement
       }
     }
 
-    // Resuming
-    for (VirtualNetworkFunctionRecord failedVnfr : networkServiceRecord.getVnfr()) {
 
-      // Send resume to VNFR in error
-      if (failedVnfr.getStatus().ordinal() == (Status.ERROR.ordinal())) {
-        failedVnfr.setStatus(Status.RESUMING);
-        failedVnfr = vnfrRepository.save(failedVnfr);
-        OrVnfmGenericMessage orVnfmGenericMessage = new OrVnfmGenericMessage();
-        orVnfmGenericMessage.setVnfr(failedVnfr);
-        log.debug("Setting VNFR Dependency for RESUMED VNFR");
-        // Setting VNFR Dependency for RESUMED VNFR
-        for (VNFRecordDependency vnfRecordDependency : networkServiceRecord.getVnf_dependency()) {
-          if (vnfRecordDependency.getTarget().equals(failedVnfr.getName())) {
-            log.debug(
-                "Setting dependency to RESUMED VNFR: "
-                    + vnfRecordDependency.getTarget()
-                    + " == "
-                    + failedVnfr.getName());
-            orVnfmGenericMessage.setVnfrd(vnfRecordDependency);
-          }
-        }
-        orVnfmGenericMessage.setAction(Action.RESUME);
-        log.info("Sending resume message for VNFR: " + failedVnfr.getId());
-        vnfStateHandler.sendMessageToVNFR(failedVnfr, orVnfmGenericMessage);
-      }
-    }
   }
 
   /**

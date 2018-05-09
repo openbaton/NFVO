@@ -78,7 +78,7 @@ public class RestNetworkServiceRecord {
   @ApiOperation(
     value = "Deploying a Network Service Record from a JSON NSD",
     notes =
-        "The NSD is passed in the Request Body as a json and the other needed parameters are passed as json in the bodyJson object"
+        "The NSD to be deployed is passed in the Request Body as a json, along with any other needed parameters."
   )
   @RequestMapping(
     method = RequestMethod.POST,
@@ -250,7 +250,7 @@ public class RestNetworkServiceRecord {
    */
   @ApiOperation(
     value = "Resume a failed Network Service Record",
-    notes = "The id in the URL specifies the Network Service Record that will be resumed"
+    notes = "Resumes a NSR that failed while executing a script in a VNFR. The id in the URL specifies the Network Service Record that will be resumed."
   )
   @RequestMapping(value = "{id}/resume", method = RequestMethod.POST)
   @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -270,7 +270,7 @@ public class RestNetworkServiceRecord {
    */
   @ApiOperation(
     value = "Execute a script (or a command) on a specific VNF record of a specific NS record",
-    notes = "The id of NSR and the id of the VNFR are specified in the URL"
+    notes = "Executes a script inside the given VNFR. The id of NSR and the id of the VNFR are specified in the URL"
   )
   @RequestMapping(value = "{idNsr}/vnfrecords/{idVnfr}/execute-script", method = RequestMethod.POST)
   @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -366,7 +366,7 @@ public class RestNetworkServiceRecord {
   @ApiOperation(
     value = "Updating a Network Service Record",
     notes =
-        "PUT request with the updated Network Service Record as JSON content in the request body and the id in the URL belongs to the NSR that shall be updated"
+        "The id in the URL belongs to the NSR that should be updated. The updated Network Service Record is passed as JSON content in the request body."
   )
   @RequestMapping(
     value = "{id}",
@@ -907,7 +907,8 @@ public class RestNetworkServiceRecord {
    * @param id : the ID of NSR
    * @return the list of VNFDependency objects of the NSR
    */
-  @ApiOperation(value = "Retrieve the VNF Dependencies of a NSR", notes = "")
+  @ApiOperation(value = "Retrieve the VNF Dependencies of a NSR",
+      notes = "Retrieves the VNF Dependencies of the NSR, the id of which is specified in the URL")
   @RequestMapping(
     value = "{id}/vnfdependencies",
     method = RequestMethod.GET,
@@ -1022,7 +1023,7 @@ public class RestNetworkServiceRecord {
 
   @ApiOperation(
     value = "Updates a VNF Dependency in an NSR",
-    notes = "Updates a VNF Dependency based on the if of the VNF it concerns"
+    notes = "Updates a VNF Dependency based on the id of the VNF it concerns"
   )
   @RequestMapping(
     value = "{id}/vnfdependencies/{id_vnfd}",
