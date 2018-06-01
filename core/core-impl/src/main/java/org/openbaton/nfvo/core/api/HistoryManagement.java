@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -84,11 +85,23 @@ public class HistoryManagement implements org.openbaton.nfvo.core.interfaces.His
 
       synchronized (lock) {
         if (historyEntityRepository.count() >= maxHistoryEntities) {
-          HistoryEntity entity =
-              historyEntityRepository.findAll(
-                      new Sort(new Sort.Order(Sort.Direction.ASC, "timestamp")))[
-                  0];
-          historyEntityRepository.delete(entity.getId());
+          log.debug("History is full");
+          while (true) {
+            HistoryEntity entity =
+                historyEntityRepository.findAll(
+                        new Sort(new Sort.Order(Sort.Direction.ASC, "timestamp")))[
+                    0];
+            log.debug("Trying to delete entry from history");
+            try {
+              historyEntityRepository.delete(entity.getId());
+              break;
+            } catch (OptimisticLockingFailureException oe) {
+              log.debug(
+                  "OptimisticLockingFailure while deleting the HistoryEntity with ID "
+                      + entity.getId()
+                      + ". Starting next attempt.");
+            }
+          }
         }
         historyEntityRepository.save(historyEntity);
       }
