@@ -275,7 +275,6 @@ public class VnfmManager
     log.debug("Now the status is: " + networkServiceRecord.getStatus());
     if (status.ordinal() == Status.ACTIVE.ordinal()) {
 
-      boolean savedNsr;
       while (true) {
         networkServiceRecord = nsrRepository.findFirstById(networkServiceRecord.getId());
         //Check if all vnfr have been received from the vnfm
@@ -332,10 +331,6 @@ public class VnfmManager
             .getVnfr()
             .stream()
             .allMatch(vnfr -> vnfr.getStatus().ordinal() == Status.TERMINATED.ordinal())) {
-      publishEvent(
-          Action.RELEASE_RESOURCES_FINISH,
-          networkServiceRecord,
-          networkServiceRecord.getProjectId());
       nsrRepository.delete(networkServiceRecord);
       if (dedicatedNetworks) {
         networkServiceRecord
@@ -358,6 +353,10 @@ public class VnfmManager
                   }
                 });
       }
+      publishEvent(
+                Action.RELEASE_RESOURCES_FINISH,
+                networkServiceRecord,
+                networkServiceRecord.getProjectId());
     }
   }
 
