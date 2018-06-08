@@ -354,9 +354,9 @@ public class VnfmManager
                 });
       }
       publishEvent(
-                Action.RELEASE_RESOURCES_FINISH,
-                networkServiceRecord,
-                networkServiceRecord.getProjectId());
+          Action.RELEASE_RESOURCES_FINISH,
+          networkServiceRecord,
+          networkServiceRecord.getProjectId());
     }
   }
 
