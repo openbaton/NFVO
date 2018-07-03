@@ -3,11 +3,7 @@ package org.openbaton.catalogue.nfvo.viminstances;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.CascadeType;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.openbaton.catalogue.keys.PopKeypair;
@@ -44,6 +40,10 @@ public class OpenstackVimInstance extends BaseVimInstance {
 
   @ElementCollection(fetch = FetchType.EAGER)
   private Set<String> securityGroups;
+
+  // can store a self signed certificate used by the OpenStack instance related to this VIM
+  @Column(length = 3700)
+  private String openstackSslCertificate;
 
   @OneToMany(
     fetch = FetchType.EAGER,
@@ -206,5 +206,13 @@ public class OpenstackVimInstance extends BaseVimInstance {
 
   public void setKeys(Set<PopKeypair> keys) {
     this.keys = keys;
+  }
+
+  public String getOpenstackSslCertificate() {
+    return openstackSslCertificate;
+  }
+
+  public void setOpenstackSslCertificate(String openstackSslCertificate) {
+    this.openstackSslCertificate = openstackSslCertificate;
   }
 }
