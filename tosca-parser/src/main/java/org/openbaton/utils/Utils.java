@@ -102,7 +102,7 @@ public final class Utils {
             return Boolean.parseBoolean(scalarNode.getValue());
           else return scalarNode.getValue();
         } else if (node instanceof MappingNode) {
-          Map nodeMap = new HashMap();
+          Map<String, Object> nodeMap = new HashMap<String, Object>();
           MappingNode mappingNode = (MappingNode) node;
           for (NodeTuple nodeTuple : mappingNode.getValue()) {
             if (nodeTuple.getKeyNode() instanceof ScalarNode) {
@@ -112,7 +112,7 @@ public final class Utils {
           }
           return nodeMap;
         } else if (node instanceof SequenceNode) {
-          List nodeList = new ArrayList();
+          List<Object> nodeList = new ArrayList<Object>();
           SequenceNode sequenceNode = (SequenceNode) node;
           for (Node n : sequenceNode.getValue()) nodeList.add(yamlNodeToMap(n));
           return nodeList;
