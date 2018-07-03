@@ -216,7 +216,8 @@ public class TOSCAParser {
       }
     }
     vnfd.setVirtual_link(vls);
-    vnfd.setLifecycle_event(vnf.getInterfaces().getOpLifecycle());
+    if (vnf.getInterfaces() != null && vnf.getInterfaces().getLifecycle() != null)
+      vnfd.setLifecycle_event(vnf.getInterfaces().getOpLifecycle());
 
     //ADD CONFIGURATIONS
     if (vnf.getProperties().getConfigurations() != null) {
@@ -295,7 +296,9 @@ public class TOSCAParser {
     }
 
     vnfd.setVirtual_link(vls);
-    vnfd.setLifecycle_event(VNFDTemplate.getInputs().getInterfaces().getOpLifecycle());
+    if (VNFDTemplate.getInputs().getInterfaces() != null
+        && VNFDTemplate.getInputs().getInterfaces().getLifecycle() != null)
+      vnfd.setLifecycle_event(VNFDTemplate.getInputs().getInterfaces().getOpLifecycle());
 
     //ADD CONFIGURATIONS
     if (VNFDTemplate.getInputs().getConfigurations() != null) {
