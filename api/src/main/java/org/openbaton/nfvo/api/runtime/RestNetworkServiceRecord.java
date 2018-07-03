@@ -250,7 +250,8 @@ public class RestNetworkServiceRecord {
    */
   @ApiOperation(
     value = "Resume a failed Network Service Record",
-    notes = "Resumes a NSR that failed while executing a script in a VNFR. The id in the URL specifies the Network Service Record that will be resumed."
+    notes =
+        "Resumes a NSR that failed while executing a script in a VNFR. The id in the URL specifies the Network Service Record that will be resumed."
   )
   @RequestMapping(value = "{id}/resume", method = RequestMethod.POST)
   @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -270,7 +271,8 @@ public class RestNetworkServiceRecord {
    */
   @ApiOperation(
     value = "Execute a script (or a command) on a specific VNF record of a specific NS record",
-    notes = "Executes a script inside the given VNFR. The id of NSR and the id of the VNFR are specified in the URL"
+    notes =
+        "Executes a script inside the given VNFR. The id of NSR and the id of the VNFR are specified in the URL"
   )
   @RequestMapping(value = "{idNsr}/vnfrecords/{idVnfr}/execute-script", method = RequestMethod.POST)
   @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -907,8 +909,10 @@ public class RestNetworkServiceRecord {
    * @param id : the ID of NSR
    * @return the list of VNFDependency objects of the NSR
    */
-  @ApiOperation(value = "Retrieve the VNF Dependencies of a NSR",
-      notes = "Retrieves the VNF Dependencies of the NSR, the id of which is specified in the URL")
+  @ApiOperation(
+    value = "Retrieve the VNF Dependencies of a NSR",
+    notes = "Retrieves the VNF Dependencies of the NSR, the id of which is specified in the URL"
+  )
   @RequestMapping(
     value = "{id}/vnfdependencies",
     method = RequestMethod.GET,
