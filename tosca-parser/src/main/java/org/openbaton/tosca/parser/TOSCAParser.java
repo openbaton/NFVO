@@ -275,6 +275,10 @@ public class TOSCAParser {
       throw new NotFoundException("No type specified in inputs!");
     vnfd.setType(VNFDTemplate.getInputs().getType());
 
+    if (VNFDTemplate.getInputs().getAuto_scale_policy() != null) {
+      vnfd.setAuto_scale_policy(
+          VNFDTemplate.getInputs().getAuto_scale_policy().getAutoScalePolicySet());
+    }
     // ADD VDUs
     Set<VirtualDeploymentUnit> vdus = new HashSet<>();
     for (VDUNodeTemplate vdu : VNFDTemplate.getTopology_template().getVDUNodes()) {
