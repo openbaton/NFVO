@@ -30,29 +30,4 @@ public class RabbitConfiguration {
   public static final String EXCHANGE_TYPE_OPENBATON = "topic";
   public static final String EXCHANGE_DURABLE_OPENBATON = "true";
 
-  //  /**
-  //   * Extension of Spring-AMQP's {@link ConditionalRejectingErrorHandler.DefaultExceptionStrategy}.
-  //   * It regards a {@link JsonSyntaxException}, which may appear while demarshalling a message from a
-  //   * queue, as fatal and drops it. Otherwise the message would be sent back to the queue resulting
-  //   * in an infinite loop.
-  //   */
-  //  private class HandleJsonSyntaxExceptionStrategy implements FatalExceptionStrategy {
-  //
-  //    private Logger log = LoggerFactory.getLogger(this.getClass());
-  //
-  //    @Override
-  //    public boolean isFatal(Throwable t) {
-  //      if (t instanceof ListenerExecutionFailedException
-  //          && (t.getCause() instanceof MessageConversionException
-  //              || t.getCause() instanceof JsonSyntaxException)) {
-  //        log.error(
-  //            "Fatal message conversion error; message rejected; "
-  //                + "it will be dropped or routed to a dead letter exchange, if so configured: "
-  //                + ((ListenerExecutionFailedException) t).getFailedMessage(),
-  //            t);
-  //        return true;
-  //      }
-  //      return false;
-  //    }
-  //  }
 }
