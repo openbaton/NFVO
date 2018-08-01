@@ -29,5 +29,4 @@ public class RabbitConfiguration {
   public static final String EXCHANGE_NAME_OPENBATON = "openbaton-exchange";
   public static final String EXCHANGE_TYPE_OPENBATON = "topic";
   public static final String EXCHANGE_DURABLE_OPENBATON = "true";
-
 }
