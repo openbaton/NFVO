@@ -18,6 +18,7 @@
 package org.openbaton.catalogue.nfvo;
 
 /** Created by lto on 18/05/15. */
+import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -44,6 +45,13 @@ public class Configuration extends BaseEntity {
         + '\''
         + "} "
         + super.toString();
+  }
+
+  public Configuration() {}
+
+  public Configuration(String name) {
+    this.name = name;
+    this.configurationParameters = new HashSet<>();
   }
 
   public Set<ConfigurationParameter> getConfigurationParameters() {

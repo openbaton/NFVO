@@ -20,17 +20,12 @@ package org.openbaton.nfvo.system;
 import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.createRabbitMqUser;
 import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.setRabbitMqUserPermissions;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashSet;
+import java.net.SocketException;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Properties;
 import org.openbaton.catalogue.nfvo.Configuration;
 import org.openbaton.catalogue.nfvo.ConfigurationParameter;
 import org.openbaton.nfvo.repositories.ConfigurationRepository;
@@ -101,46 +96,17 @@ class SystemStartup implements CommandLineRunner {
     log.debug(Arrays.asList(args).toString());
 
     propFileLocation = propFileLocation.replace("file:", "");
-    log.debug("Property file: " + propFileLocation);
 
-    Properties properties = new Properties();
-    try (InputStream is = new FileInputStream(propFileLocation)) {
-      properties.load(is);
-    }
-    log.trace("Config Values are: " + properties.values());
+    Set<ConfigurationParameter> configurationParametersFromProperties =
+        createConfigurationParametersFromProperties(propFileLocation);
+    Set<ConfigurationParameter> configurationParametersFromNetworks =
+        createConfigurationParametersFromNetworks();
 
-    Configuration c = new Configuration();
+    Configuration configuration = new Configuration("system");
+    configuration.getConfigurationParameters().addAll(configurationParametersFromProperties);
+    configuration.getConfigurationParameters().addAll(configurationParametersFromNetworks);
 
-    c.setName("system");
-    c.setConfigurationParameters(new HashSet<>());
-
-    /* Adding properties from file */
-    for (Entry<Object, Object> entry : properties.entrySet()) {
-      ConfigurationParameter cp = new ConfigurationParameter();
-      cp.setConfKey((String) entry.getKey());
-      cp.setValue((String) entry.getValue());
-      c.getConfigurationParameters().add(cp);
-    }
-
-    /* Adding system properties */
-    Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
-    for (NetworkInterface netint : Collections.list(nets)) {
-      ConfigurationParameter cp = new ConfigurationParameter();
-      log.trace("Display name: " + netint.getDisplayName());
-      log.trace("Name: " + netint.getName());
-      cp.setConfKey("ip-" + netint.getName().replaceAll("\\s", ""));
-      Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
-      for (InetAddress inetAddress : Collections.list(inetAddresses)) {
-        if (inetAddress.getHostAddress().contains(".")) {
-          log.trace("InetAddress: " + inetAddress.getHostAddress());
-          cp.setValue(inetAddress.getHostAddress());
-        }
-      }
-      log.trace("");
-      c.getConfigurationParameters().add(cp);
-    }
-
-    configurationRepository.save(c);
+    configurationRepository.save(configuration);
 
     createRabbitMqUser(
         username,
@@ -165,6 +131,49 @@ class SystemStartup implements CommandLineRunner {
     if (installPlugin) {
       startPlugins(pluginDir);
     }
+  }
+
+  private Set<ConfigurationParameter> createConfigurationParametersFromNetworks()
+      throws SocketException {
+    Set<ConfigurationParameter> configurationParameters = new HashSet<>();
+    Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
+    for (NetworkInterface netint : Collections.list(nets)) {
+      ConfigurationParameter cp = new ConfigurationParameter();
+      log.trace("Display name: " + netint.getDisplayName());
+      log.trace("Name: " + netint.getName());
+      cp.setConfKey("ip-" + netint.getName().replaceAll("\\s", ""));
+      Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
+      for (InetAddress inetAddress : Collections.list(inetAddresses)) {
+        if (inetAddress.getHostAddress().contains(".")) {
+          log.trace("InetAddress: " + inetAddress.getHostAddress());
+          cp.setValue(inetAddress.getHostAddress());
+        }
+      }
+      log.trace("");
+      configurationParameters.add(cp);
+    }
+    return configurationParameters;
+  }
+
+  private Set<ConfigurationParameter> createConfigurationParametersFromProperties(
+      String propFileLocation) throws IOException {
+    Set<ConfigurationParameter> configurationParameters = new HashSet<>();
+    File propertiesFile = new File(propFileLocation);
+    if (propertiesFile.isFile()) {
+      Properties properties = new Properties();
+      try (InputStream is = new FileInputStream(propertiesFile)) {
+        properties.load(is);
+      }
+      log.trace("Config Values are: " + properties.values());
+      /* Adding properties from file */
+      for (Entry<Object, Object> entry : properties.entrySet()) {
+        ConfigurationParameter cp = new ConfigurationParameter();
+        cp.setConfKey((String) entry.getKey());
+        cp.setValue((String) entry.getValue());
+        configurationParameters.add(cp);
+      }
+    }
+    return configurationParameters;
   }
 
   private void startPlugins(String folderPath) throws IOException {
