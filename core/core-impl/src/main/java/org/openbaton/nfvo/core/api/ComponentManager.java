@@ -402,8 +402,7 @@ public class ComponentManager implements org.openbaton.nfvo.core.interfaces.Comp
           return null;
       }
     } catch (Exception e) {
-      log.error("Exception while enabling manager or plugin.");
-      e.printStackTrace();
+      log.error("Exception while enabling manager or plugin.", e);
       return null;
     }
   }

@@ -97,9 +97,6 @@ public class RabbitManager {
     String uri = "http://" + brokerIp + ":" + managementPort + "/api/users/" + newUserName;
     Gson gson = new Gson();
 
-    // TODO switch to SSL if possible
-    CloseableHttpClient httpclient = HttpClients.createDefault();
-
     //curl -u admin:openbaton -X PUT http://10.147.66.131:15672/api/users/name -d '{"password":"password", "tags":"administrator", "vhost":"openbaton"}' -H "Content-Type: application/json" -H "Accept:application/json"
 
     HashMap<String, String> map = new HashMap<>();
@@ -119,17 +116,17 @@ public class RabbitManager {
     put.setEntity(requestEntity);
 
     log.trace("Executing request: " + put.getMethod() + " on " + uri);
-
-    CloseableHttpResponse response = httpclient.execute(put);
-    log.trace(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
-    log.trace("Received status: " + response.getStatusLine().getStatusCode());
-    if (response.getStatusLine().getStatusCode() != 204 // already exists
-        && response.getStatusLine().getStatusCode() != 201) { // create new one
-      httpclient.close();
-      throw new WrongStatusException(
-          "Error creating RabbitMQ user " + newUserName + ": " + response.getStatusLine());
+    // TODO switch to SSL if possible
+    try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+      CloseableHttpResponse response = httpClient.execute(put);
+      log.trace(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
+      log.trace("Received status: " + response.getStatusLine().getStatusCode());
+      if (response.getStatusLine().getStatusCode() != 204 // already exists
+          && response.getStatusLine().getStatusCode() != 201) { // create new one
+        throw new WrongStatusException(
+            "Error creating RabbitMQ user " + newUserName + ": " + response.getStatusLine());
+      }
     }
-    httpclient.close();
     //curl -u admin:openbaton -X PUT http://10.147.66.131:15672/api/permissions/openbaton/name -d '{"configure":"
     // (^name)", "write":"(^openbaton)|(^name)", "read":"(^name)"}' -H "Content-Type: application/json" -H
     // "Accept:application/json"
@@ -178,20 +175,19 @@ public class RabbitManager {
     put.setEntity(new StringEntity(stringEntity, ContentType.APPLICATION_JSON));
 
     // TODO switch to SSL if possible
-    CloseableHttpClient httpclient = HttpClients.createDefault();
-    log.trace("Executing request: " + put.getMethod() + " on " + uri);
-    httpclient.execute(put);
-    CloseableHttpResponse response = httpclient.execute(put);
-    log.trace(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
-    if (response.getStatusLine().getStatusCode() != 204) {
-      httpclient.close();
-      throw new WrongStatusException(
-          "Error setting permissions of RabbitMQ user"
-              + username
-              + ": "
-              + response.getStatusLine());
+    try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+      log.trace("Executing request: " + put.getMethod() + " on " + uri);
+      httpClient.execute(put);
+      CloseableHttpResponse response = httpClient.execute(put);
+      log.trace(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
+      if (response.getStatusLine().getStatusCode() != 204) {
+        throw new WrongStatusException(
+            "Error setting permissions of RabbitMQ user"
+                + username
+                + ": "
+                + response.getStatusLine());
+      }
     }
-    httpclient.close();
   }
 
   /**
@@ -213,9 +209,6 @@ public class RabbitManager {
     try {
       String uri = "http://" + brokerIp + ":" + managementPort + "/api/users/" + userToRemove;
 
-      // TODO switch to SSL if possible
-      CloseableHttpClient httpclient = HttpClients.createDefault();
-
       HttpDelete delete = new HttpDelete(uri);
       String authStr = rabbitUsername + ":" + rabbitPassword;
       String encoding = Base64.encodeBase64String(authStr.getBytes());
@@ -224,13 +217,16 @@ public class RabbitManager {
       //        delete.setHeader(new BasicHeader("Content-type", "application/json"));
 
       log.trace("Executing request: " + delete.getMethod() + " on " + uri);
-
-      CloseableHttpResponse response = httpclient.execute(delete);
-      log.trace(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
-      if (response.getStatusLine().getStatusCode() == 404) {
-        log.warn("User not found in RabbitMQ. Assuming that it is removed.");
-      } else if (response.getStatusLine().getStatusCode() != 204) {
-        log.warn("Error removing RabbitMQ user " + userToRemove + ": " + response.getStatusLine());
+      // TODO switch to SSL if possible
+      try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+        CloseableHttpResponse response = httpClient.execute(delete);
+        log.trace(String.valueOf("Status: " + response.getStatusLine().getStatusCode()));
+        if (response.getStatusLine().getStatusCode() == 404) {
+          log.warn("User not found in RabbitMQ. Assuming that it is removed.");
+        } else if (response.getStatusLine().getStatusCode() != 204) {
+          log.warn(
+              "Error removing RabbitMQ user " + userToRemove + ": " + response.getStatusLine());
+        }
       }
     } catch (Exception e) {
       log.warn(
