@@ -32,6 +32,8 @@ public class VNFAutoscaling {
 
   private Set<AutoScalePolicy> autoScalePolicySet;
 
+  public VNFAutoscaling() {}
+
   @SuppressWarnings({"unsafe", "unchecked"})
   public VNFAutoscaling(Object o) {
 
