@@ -72,6 +72,15 @@ public class VNFProperties {
     if (propertiesMap.containsKey("type")) {
       type = (String) propertiesMap.get("type");
     }
+    if (propertiesMap.containsKey("interfaces")) {
+      interfaces = new VNFInterfaces();
+      if (propertiesMap.get("interfaces") != null
+          && propertiesMap.get("interfaces") instanceof Map
+          && ((Map) propertiesMap.get("interfaces")).containsKey("lifecycle")
+          && ((Map) propertiesMap.get("interfaces")).get("lifecycle") instanceof Map) {
+        interfaces.setLifecycle(((Map) propertiesMap.get("interfaces")).get("lifecycle"));
+      }
+    }
     if (propertiesMap.containsKey("auto_scale_policy")) {
       auto_scale_policy = new VNFAutoscaling(propertiesMap.get("auto_scale_policy"));
     }

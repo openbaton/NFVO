@@ -216,7 +216,8 @@ public class TOSCAParser {
       }
     }
     vnfd.setVirtual_link(vls);
-    vnfd.setLifecycle_event(vnf.getInterfaces().getOpLifecycle());
+    if (vnf.getInterfaces() != null && vnf.getInterfaces().getLifecycle() != null)
+      vnfd.setLifecycle_event(vnf.getInterfaces().getOpLifecycle());
 
     //ADD CONFIGURATIONS
     if (vnf.getProperties().getConfigurations() != null) {
@@ -275,6 +276,10 @@ public class TOSCAParser {
       throw new NotFoundException("No type specified in inputs!");
     vnfd.setType(VNFDTemplate.getInputs().getType());
 
+    if (VNFDTemplate.getInputs().getAuto_scale_policy() != null) {
+      vnfd.setAuto_scale_policy(
+          VNFDTemplate.getInputs().getAuto_scale_policy().getAutoScalePolicySet());
+    }
     // ADD VDUs
     Set<VirtualDeploymentUnit> vdus = new HashSet<>();
     for (VDUNodeTemplate vdu : VNFDTemplate.getTopology_template().getVDUNodes()) {
@@ -291,7 +296,9 @@ public class TOSCAParser {
     }
 
     vnfd.setVirtual_link(vls);
-    vnfd.setLifecycle_event(VNFDTemplate.getInputs().getInterfaces().getOpLifecycle());
+    if (VNFDTemplate.getInputs().getInterfaces() != null
+        && VNFDTemplate.getInputs().getInterfaces().getLifecycle() != null)
+      vnfd.setLifecycle_event(VNFDTemplate.getInputs().getInterfaces().getOpLifecycle());
 
     //ADD CONFIGURATIONS
     if (VNFDTemplate.getInputs().getConfigurations() != null) {

@@ -45,7 +45,7 @@ public class VNFNodeTemplate {
 
     interfaces = new VNFInterfaces();
     Map<String, Object> interfaceMap = (Map<String, Object>) nodeTemplate.getInterfaces();
-    if (interfaceMap.containsKey("lifecycle")) {
+    if (interfaceMap != null && interfaceMap.containsKey("lifecycle")) {
       interfaces.setLifecycle(interfaceMap.get("lifecycle"));
     }
   }
