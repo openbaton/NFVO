@@ -92,10 +92,10 @@ public class NSRUtils {
   }
 
   public static void setDependencies(
-      NetworkServiceDescriptor networkServiceDescriptor,
+      Set<VirtualNetworkFunctionDescriptor> vnfds,
+      Set<VNFDependency> vnfDependencies,
       NetworkServiceRecord networkServiceRecord) {
-
-    for (VNFDependency vnfDependency : networkServiceDescriptor.getVnf_dependency()) {
+    for (VNFDependency vnfDependency : vnfDependencies) {
       boolean found = false;
       for (VNFRecordDependency vnfRecordDependency : networkServiceRecord.getVnf_dependency()) {
         if (vnfRecordDependency
@@ -104,8 +104,7 @@ public class NSRUtils {
                 vnfDependency
                     .getTarget())) { // if there is a vnfRecordDepenendency with the same target
           // I find the source
-          for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
-              networkServiceDescriptor.getVnfd()) {
+          for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : vnfds) {
             log.debug(
                 "Source is: "
                     + vnfDependency.getSource()
@@ -144,8 +143,7 @@ public class NSRUtils {
         VNFRecordDependency vnfRecordDependency = new VNFRecordDependency();
         vnfRecordDependency.setIdType(new HashMap<>());
         vnfRecordDependency.setParameters(new HashMap<>());
-        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
-            networkServiceDescriptor.getVnfd()) {
+        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : vnfds) {
 
           if (vnfDependency.getSource().equals(virtualNetworkFunctionDescriptor.getName())) {
             vnfRecordDependency
@@ -179,6 +177,15 @@ public class NSRUtils {
         networkServiceRecord.getVnf_dependency().add(vnfRecordDependency);
       }
     }
+  }
+
+  public static void setDependencies(
+      NetworkServiceDescriptor networkServiceDescriptor,
+      NetworkServiceRecord networkServiceRecord) {
+    setDependencies(
+        networkServiceDescriptor.getVnfd(),
+        networkServiceDescriptor.getVnf_dependency(),
+        networkServiceRecord);
   }
 
   private static VirtualLinkRecord createVirtualLinkRecord(

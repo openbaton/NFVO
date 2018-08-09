@@ -8,16 +8,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
 import org.openbaton.catalogue.nfvo.Action;
+import org.openbaton.catalogue.nfvo.messages.*;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmGenericMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmGrantLifecycleOperationMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmHealVNFRequestMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmInstantiateMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmLogMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmScalingMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmStartStopMessage;
-import org.openbaton.catalogue.nfvo.messages.OrVnfmUpdateMessage;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,6 +65,9 @@ public class VnfmGsonDeserializerNFVMessage implements JsonDeserializer<NFVMessa
         break;
       case "LOG_REQUEST":
         result = gson.fromJson(json, OrVnfmLogMessage.class);
+        break;
+      case "EXECUTE":
+        result = gson.fromJson(json, OrVnfmExecuteScriptMessage.class);
         break;
       default:
         result = gson.fromJson(json, OrVnfmGenericMessage.class);

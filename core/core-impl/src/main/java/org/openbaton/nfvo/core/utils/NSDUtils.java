@@ -130,6 +130,28 @@ public class NSDUtils {
     }
   }
 
+  public void checkEndpoint(String endpointName, Iterable<VnfmManagerEndpoint> endpoints)
+      throws NotFoundException {
+    boolean found = false;
+
+    for (VnfmManagerEndpoint endpoint : endpoints) {
+      log.debug("Check if VNFM is registered: " + endpoint.getType() + " == " + endpointName);
+      if (endpoint.getType().equals(endpointName) && endpoint.isActive() && endpoint.isEnabled()) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      throw new NotFoundException(
+          "VNFManager with endpoint: "
+              + endpointName
+              + " is not registered, not enabled or not active.");
+    }
+    if (!found) {
+      throw new NotFoundException("No VNFManagers were found");
+    }
+  }
+
   /** Fetching vnfd already existing in thr DB based on the id */
   public List<String> fetchExistingVnfd(
       NetworkServiceDescriptor networkServiceDescriptor, String projectId)
@@ -330,39 +352,45 @@ public class NSDUtils {
   private void createDependenciesFromRequires(NetworkServiceDescriptor networkServiceDescriptor)
       throws NotFoundException {
     for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
-      if (vnfd.getRequires() == null) {
+      Set<VNFDependency> vnfDependencySet =
+          getVNFDependenciesFromRequires(vnfd, networkServiceDescriptor);
+      networkServiceDescriptor.getVnf_dependency().addAll(vnfDependencySet);
+    }
+  }
+
+  public Set<VNFDependency> getVNFDependenciesFromRequires(
+      VirtualNetworkFunctionDescriptor vnfd, NetworkServiceDescriptor nsd)
+      throws NotFoundException {
+    Set<VNFDependency> result = new HashSet<>();
+    if (vnfd.getRequires() == null) return result;
+    for (String vnfdName : vnfd.getRequires().keySet()) {
+      VNFDependency dependency = new VNFDependency();
+      for (VirtualNetworkFunctionDescriptor vnfd2 : nsd.getVnfd()) {
+        if (vnfd2.getName().equals(vnfdName)) {
+          dependency.setSource(vnfd2.getName());
+          dependency.setSource_id(vnfd2.getId());
+        }
+      }
+      if (dependency.getSource() == null) {
+        throw new NotFoundException(
+            "VNFD source name "
+                + vnfdName
+                + " from the requires field in the VNFD "
+                + vnfd.getName()
+                + " was not found in the NSD.");
+      }
+
+      dependency.setTarget(vnfd.getName());
+      dependency.setTarget_id(vnfd.getId());
+
+      if (vnfd.getRequires().get(vnfdName).getParameters() == null
+          || vnfd.getRequires().get(vnfdName).getParameters().isEmpty()) {
         continue;
       }
-
-      for (String vnfdName : vnfd.getRequires().keySet()) {
-        VNFDependency dependency = new VNFDependency();
-        for (VirtualNetworkFunctionDescriptor vnfd2 : networkServiceDescriptor.getVnfd()) {
-          if (vnfd2.getName().equals(vnfdName)) {
-            dependency.setSource(vnfd2.getName());
-            dependency.setSource_id(vnfd2.getId());
-          }
-        }
-        if (dependency.getSource() == null) {
-          throw new NotFoundException(
-              "VNFD source name "
-                  + vnfdName
-                  + " from the requires field in the VNFD "
-                  + vnfd.getName()
-                  + " was not found in the NSD.");
-        }
-
-        dependency.setTarget(vnfd.getName());
-        dependency.setTarget_id(vnfd.getId());
-
-        if (vnfd.getRequires().get(vnfdName).getParameters() == null
-            || vnfd.getRequires().get(vnfdName).getParameters().isEmpty()) {
-          continue;
-        }
-
-        dependency.setParameters(vnfd.getRequires().get(vnfdName).getParameters());
-        networkServiceDescriptor.getVnf_dependency().add(dependency);
-      }
+      dependency.setParameters(vnfd.getRequires().get(vnfdName).getParameters());
+      result.add(dependency);
     }
+    return result;
   }
 
   private VirtualNetworkFunctionDescriptor getVnfdFromNSD(
