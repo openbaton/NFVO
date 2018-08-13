@@ -29,6 +29,8 @@ import java.util.Set;
 import java.util.concurrent.Future;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.Ip;
+import org.openbaton.catalogue.mano.common.NetworkIps;
+import org.openbaton.catalogue.mano.common.SubnetIp;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -1549,7 +1551,7 @@ public class GenericVIM extends Vim {
             vnfcInstance.setVnfComponent(vnfComponent);
             vnfcInstance.setVc_id("unknown");
             vnfcInstance.setState("ERROR");
-            vnfcInstance.setIps(new HashSet<>());
+            vnfcInstance.setFixedIps(new HashSet<>());
             vnfcInstance.setFloatingIps(new HashSet<>());
           }
           throw new VimException(
@@ -1632,7 +1634,7 @@ public class GenericVIM extends Vim {
 
     vnfcInstance.setVnfComponent(vnfComponent);
 
-    vnfcInstance.setIps(new HashSet<>());
+    vnfcInstance.setFixedIps(new HashSet<>());
     vnfcInstance.setFloatingIps(new HashSet<>());
 
     if (!floatingIps.isEmpty()) {
@@ -1644,13 +1646,17 @@ public class GenericVIM extends Vim {
       }
     }
 
-    for (Entry<String, List<String>> network : server.getIps().entrySet()) {
-      Ip ip = new Ip();
-      ip.setNetName(network.getKey());
-      ip.setIp(network.getValue().iterator().next());
-      vnfcInstance.getIps().add(ip);
-      for (String ip1 : server.getIps().get(network.getKey())) {
-        vnfr.getVnf_address().add(ip1);
+    for (Entry<String, Set<SubnetIp>> network : server.getIps().entrySet()) {
+      NetworkIps networkIps = new NetworkIps();
+      networkIps.setNetName(network.getKey());
+      networkIps.setSubnetIps(new HashSet<>());
+      for (SubnetIp subnetIp : network.getValue()) {
+        networkIps.getSubnetIps().add(subnetIp);
+      }
+
+      vnfcInstance.getFixedIps().add(networkIps);
+      for (SubnetIp ip : server.getIps().get(network.getKey())) {
+        vnfr.getVnf_address().add(ip.getIp());
       }
     }
     return vnfcInstance;
@@ -1664,13 +1670,8 @@ public class GenericVIM extends Vim {
       Server server)
       throws VimException {
     try {
-      if (vnfComponent.getConnection_point().size() != vnfcInstance.getIps().size()) {
-        throw new VimException(
-            "Not all (or too many) internal IPs were associated. Expected: "
-                + vnfComponent.getConnection_point().size()
-                + " Allocated: "
-                + vnfcInstance.getIps().size());
-      }
+      // Since you can have multiple connections to the same network do NOT check the number of networks against
+      // the number of connection points
       int expectedFloatingIpCount = 0;
       for (VNFDConnectionPoint cp : vnfComponent.getConnection_point()) {
         if (cp.getFloatingIp() != null && !cp.getFloatingIp().isEmpty()) {

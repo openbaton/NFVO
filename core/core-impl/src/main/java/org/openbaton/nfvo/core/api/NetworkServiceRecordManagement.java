@@ -33,7 +33,8 @@ import java.util.regex.Pattern;
 import javax.persistence.EntityManager;
 import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
-import org.openbaton.catalogue.mano.common.Ip;
+import org.openbaton.catalogue.mano.common.NetworkIps;
+import org.openbaton.catalogue.mano.common.SubnetIp;
 import org.openbaton.catalogue.mano.descriptor.*;
 import org.openbaton.catalogue.mano.descriptor.InternalVirtualLink;
 import org.openbaton.catalogue.mano.descriptor.NetworkServiceDescriptor;
@@ -1061,8 +1062,10 @@ public class NetworkServiceRecordManagement
     }
 
     resourceManagement.release(virtualDeploymentUnit, vnfcInstance);
-    for (Ip ip : vnfcInstance.getIps()) {
-      virtualNetworkFunctionRecord.getVnf_address().remove(ip.getIp());
+    for (NetworkIps networkIps : vnfcInstance.getFixedIps()) {
+      for (SubnetIp subnetIp : networkIps.getSubnetIps()) {
+        virtualNetworkFunctionRecord.getVnf_address().remove(subnetIp.getIp());
+      }
     }
     virtualDeploymentUnit.getVnfc().remove(vnfcInstance.getVnfComponent());
     virtualDeploymentUnit.getVnfc_instance().remove(vnfcInstance);
