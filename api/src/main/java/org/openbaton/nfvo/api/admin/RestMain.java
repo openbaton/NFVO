@@ -55,15 +55,21 @@ public class RestMain {
   @Value("${server.port:8080}")
   private String nfvoPort;
 
+  @Value("${nfvo.version:}")
+  private String nfvoVersion;
+
   @Autowired private UserManagement userManagement;
 
+  //Tries to get the version from the package (jar)
+  //If empty (NFVO is running in an IDE) it tries from the config properties (nfvo.version)
   @RequestMapping(
     value = "version",
     method = RequestMethod.GET,
     produces = MediaType.TEXT_PLAIN_VALUE
   )
   public String getVersion() {
-    return RestMain.class.getPackage().getImplementationVersion();
+    String nfvoVersionFromPackage = RestMain.class.getPackage().getImplementationVersion();
+    return nfvoVersionFromPackage!=null ? nfvoVersionFromPackage : this.nfvoVersion;
   }
 
   @RequestMapping(
