@@ -244,7 +244,9 @@ public class NSDUtils {
       throws NotFoundException {
     Iterable<BaseVimInstance> vimInstances = vimRepository.findByProjectId(projectId);
     if (!vimInstances.iterator().hasNext()) {
-      throw new NotFoundException("No VimInstances in the Database");
+      //throw new NotFoundException("No VimInstances in the Database");
+      log.warn(
+          "No VimInstances in the Database. VimInstanceName list in VDU hast to be empty in this case.");
     }
     for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
       if (vdu.getVimInstanceName() != null) {
@@ -266,7 +268,11 @@ public class NSDUtils {
           }
           if (!fetched) {
             throw new NotFoundException(
-                "Not found VimInstance with name " + vimName + " in the catalogue");
+                "Not found defined VimInstance "
+                    + vimName
+                    + " in VDU "
+                    + vdu.getName()
+                    + " in the catalogue");
           }
         }
       } else {
