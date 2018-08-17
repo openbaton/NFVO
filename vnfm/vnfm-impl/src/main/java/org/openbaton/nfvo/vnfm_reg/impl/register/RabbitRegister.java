@@ -45,7 +45,7 @@ public class RabbitRegister extends VnfmRegister {
   @Value("${spring.rabbitmq.username:admin}")
   private String username;
 
-  @Value("${nfvo.rabbit.brokerIp:localhost}")
+  @Value("${spring.rabbitmq.host:localhost}")
   private String brokerIp;
 
   @Value("${spring.rabbitmq.virtual-host:/}")
