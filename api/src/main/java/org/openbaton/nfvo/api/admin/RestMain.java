@@ -69,7 +69,7 @@ public class RestMain {
   )
   public String getVersion() {
     String nfvoVersionFromPackage = RestMain.class.getPackage().getImplementationVersion();
-    return nfvoVersionFromPackage!=null ? nfvoVersionFromPackage : this.nfvoVersion;
+    return nfvoVersionFromPackage != null ? nfvoVersionFromPackage : this.nfvoVersion;
   }
 
   @RequestMapping(
