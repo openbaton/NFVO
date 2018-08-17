@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.util.concurrent.Future;
 import org.apache.http.HttpResponse;
+import org.apache.http.NoHttpResponseException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -62,18 +63,41 @@ public class RestEventSender implements EventSender {
       request.addHeader("accept", "application/json");
       StringEntity params = new StringEntity(json);
       request.setEntity(params);
-      HttpResponse response = httpClient.execute(request);
-      log.trace(
-          String.format(
-              "Response status is [%d]: %s",
-              response.getStatusLine().getStatusCode(),
-              response.getStatusLine().getReasonPhrase()));
+      int attempts = 5;
+      for (int i = 0; i < attempts; i++) {
+        try {
+          HttpResponse response = httpClient.execute(request);
+          log.trace(
+              String.format(
+                  "Response status is [%d]: %s",
+                  response.getStatusLine().getStatusCode(),
+                  response.getStatusLine().getReasonPhrase()));
+          break;
+        } catch (NoHttpResponseException e) {
+          if (i == attempts - 1) {
+            log.warn(
+                "After "
+                    + attempts
+                    + " attempts there is still no response from the listening event server");
+            throw e;
+          } else {
+            log.warn("No response from listening event server. Next sending attempt in one second");
+            try {
+              Thread.sleep(1000);
+            } catch (InterruptedException ie) {
+
+            }
+          }
+        }
+      }
     } catch (Exception ignored) {
       log.warn(
           "Impossible to reach the endpoint with name: "
               + endpoint.getName()
-              + " via rest POST at url:"
-              + endpoint.getEndpoint());
+              + " via rest POST at url "
+              + endpoint.getEndpoint()
+              + " because: "
+              + ignored.getMessage());
     }
     return new AsyncResult<>(null);
   }

@@ -649,9 +649,17 @@ public class NetworkServiceDescriptorManagement
           throw new WrongStatusException(
               "The NetworkServiceRecord "
                   + nsr.getName()
+                  + " ("
+                  + nsr.getId()
+                  + ")"
                   + " created from the NetworkServiceDescriptor "
                   + networkServiceDescriptor.getName()
-                  + " is not yet in ACTIVE");
+                  + " ("
+                  + networkServiceDescriptor.getId()
+                  + ")"
+                  + " is not yet in ACTIVE state but in "
+                  + nsr.getStatus()
+                  + ".");
         }
       }
     }

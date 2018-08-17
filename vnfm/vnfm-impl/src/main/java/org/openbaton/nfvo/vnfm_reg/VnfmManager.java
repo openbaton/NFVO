@@ -292,9 +292,7 @@ public class VnfmManager
     log.debug("Now the status is: " + networkServiceRecord.getStatus());
     if (status.ordinal() == Status.ACTIVE.ordinal()) {
 
-      boolean savedNsr;
-      do {
-        savedNsr = true;
+      while (true) {
         networkServiceRecord = nsrRepository.findFirstById(networkServiceRecord.getId());
         //Check if all vnfr have been received from the vnfm
         boolean nsrFilledWithAllVnfr =
@@ -338,23 +336,19 @@ public class VnfmManager
                   networkServiceRecord.getProjectId());
             }
           } catch (OptimisticLockingFailureException e) {
-            log.error(
-                "Got OptimisticLockingFailureException while setting the task of the NSR. Don't worry I'll try again.");
-            savedNsr = false;
+            log.debug(
+                "OptimisticLockingFailureException while setting the task of the NSR. Starting next attempt.");
           }
         } else {
           log.debug("Nsr is ACTIVE but not all vnfr have been received");
         }
-      } while (!savedNsr);
+        break;
+      }
     } else if (status.ordinal() == Status.TERMINATED.ordinal()
         && networkServiceRecord
             .getVnfr()
             .stream()
             .allMatch(vnfr -> vnfr.getStatus().ordinal() == Status.TERMINATED.ordinal())) {
-      publishEvent(
-          Action.RELEASE_RESOURCES_FINISH,
-          networkServiceRecord,
-          networkServiceRecord.getProjectId());
       nsrRepository.delete(networkServiceRecord);
       if (dedicatedNetworks) {
         networkServiceRecord
@@ -377,6 +371,10 @@ public class VnfmManager
                   }
                 });
       }
+      publishEvent(
+          Action.RELEASE_RESOURCES_FINISH,
+          networkServiceRecord,
+          networkServiceRecord.getProjectId());
     }
   }
 
