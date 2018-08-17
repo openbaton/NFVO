@@ -44,7 +44,7 @@ import org.springframework.stereotype.Service;
 @ConfigurationProperties
 public class EventManagement implements org.openbaton.nfvo.core.interfaces.EventManagement {
 
-  @Value("${nfvo.rabbit.brokerIp:localhost}")
+  @Value("${spring.rabbitmq.host:localhost}")
   private String brokerIp;
 
   @Autowired private EventEndpointRepository eventEndpointRepository;

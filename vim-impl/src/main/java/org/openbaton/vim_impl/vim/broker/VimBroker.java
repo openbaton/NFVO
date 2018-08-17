@@ -47,7 +47,7 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
   @Value("${nfvo.rabbit.management.port:15672}")
   private String managementPort;
 
-  @Value("${nfvo.rabbit.brokerIp:localhost}")
+  @Value("${spring.rabbitmq.host:localhost}")
   private String brokerIp;
 
   public String getBrokerIp() {
