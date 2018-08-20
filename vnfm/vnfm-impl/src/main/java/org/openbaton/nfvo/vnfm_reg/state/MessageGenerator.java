@@ -69,7 +69,7 @@ public class MessageGenerator implements org.openbaton.vnfm.interfaces.manager.M
   @Qualifier("vnfmRegister")
   private VnfmRegister vnfmRegister;
 
-  @Value("${spring.rabbitmq.host:127.0.0.1}")
+  @Value("${nfvo.rabbit.brokerIp:127.0.0.1}")
   private String brokerIp;
 
   @Value("${nfvo.monitoring.ip:}")
