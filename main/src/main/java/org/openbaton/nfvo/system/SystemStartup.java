@@ -20,18 +20,10 @@ import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.createRabbitM
 import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.setRabbitMqUserPermissions;
 
 import java.io.*;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.util.*;
-import java.util.Map.Entry;
-import org.openbaton.catalogue.nfvo.Configuration;
-import org.openbaton.catalogue.nfvo.ConfigurationParameter;
-import org.openbaton.nfvo.repositories.ConfigurationRepository;
 import org.openbaton.plugin.mgmt.PluginStartup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -46,8 +38,6 @@ import org.springframework.stereotype.Service;
 class SystemStartup implements CommandLineRunner {
 
   private Logger log = LoggerFactory.getLogger(this.getClass());
-
-  @Autowired private ConfigurationRepository configurationRepository;
 
   @Value("${nfvo.plugin.active.consumers:10}")
   private String numConsumers;
@@ -94,19 +84,6 @@ class SystemStartup implements CommandLineRunner {
 
     log.debug(Arrays.asList(args).toString());
 
-    propFileLocation = propFileLocation.replace("file:", "");
-
-    Set<ConfigurationParameter> configurationParametersFromProperties =
-        createConfigurationParametersFromProperties(propFileLocation);
-    Set<ConfigurationParameter> configurationParametersFromNetworks =
-        createConfigurationParametersFromNetworks();
-
-    Configuration configuration = new Configuration("system");
-    configuration.getConfigurationParameters().addAll(configurationParametersFromProperties);
-    configuration.getConfigurationParameters().addAll(configurationParametersFromNetworks);
-
-    configurationRepository.save(configuration);
-
     createRabbitMqUser(
         username,
         password,
@@ -130,49 +107,6 @@ class SystemStartup implements CommandLineRunner {
     if (installPlugin) {
       startPlugins(pluginDir);
     }
-  }
-
-  private Set<ConfigurationParameter> createConfigurationParametersFromNetworks()
-      throws SocketException {
-    Set<ConfigurationParameter> configurationParameters = new HashSet<>();
-    Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
-    for (NetworkInterface netint : Collections.list(nets)) {
-      ConfigurationParameter cp = new ConfigurationParameter();
-      log.trace("Display name: " + netint.getDisplayName());
-      log.trace("Name: " + netint.getName());
-      cp.setConfKey("ip-" + netint.getName().replaceAll("\\s", ""));
-      Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
-      for (InetAddress inetAddress : Collections.list(inetAddresses)) {
-        if (inetAddress.getHostAddress().contains(".")) {
-          log.trace("InetAddress: " + inetAddress.getHostAddress());
-          cp.setValue(inetAddress.getHostAddress());
-        }
-      }
-      log.trace("");
-      configurationParameters.add(cp);
-    }
-    return configurationParameters;
-  }
-
-  private Set<ConfigurationParameter> createConfigurationParametersFromProperties(
-      String propFileLocation) throws IOException {
-    Set<ConfigurationParameter> configurationParameters = new HashSet<>();
-    File propertiesFile = new File(propFileLocation);
-    if (propertiesFile.isFile()) {
-      Properties properties = new Properties();
-      try (InputStream is = new FileInputStream(propertiesFile)) {
-        properties.load(is);
-      }
-      log.trace("Config Values are: " + properties.values());
-      /* Adding properties from file */
-      for (Entry<Object, Object> entry : properties.entrySet()) {
-        ConfigurationParameter cp = new ConfigurationParameter();
-        cp.setConfKey((String) entry.getKey());
-        cp.setValue((String) entry.getValue());
-        configurationParameters.add(cp);
-      }
-    }
-    return configurationParameters;
   }
 
   private void startPlugins(String folderPath) throws IOException {
