@@ -44,7 +44,7 @@ public class MonitoringBroker
   public void addAgent(
       VirtualisedResourcesPerformanceManagement virtualisedResourcesPerformanceManagement,
       String type) {
-    log.info("Registered monitoring pluging of type: " + type);
+    log.info("Registered monitoring plugin of type: " + type);
     this.VirtualisedResourcesPerformanceManagements.put(
         type, virtualisedResourcesPerformanceManagement);
   }
