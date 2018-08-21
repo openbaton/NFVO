@@ -28,15 +28,11 @@ apply plugin: 'com.bmuschko.nexus'
 apply from: '../gradle/gradle/nexus.upload.plugin.gradle'
 
 dependencies {
-    //compile 'org.springframework.boot:spring-boot-starter-data-jpa:'+ springBootVersion
     compile 'org.springframework.boot:spring-boot-starter-security:'+ springBootVersion
     compile group: 'org.hibernate.javax.persistence', name: 'hibernate-jpa-2.1-api', version: '1.0.2.Final'
 
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.8.6'
-    //compile 'org.springframework.boot:spring-boot-starter-thymeleaf:'+ springBootVersion
-    //compile group: 'javax.validation', name: 'validation-api', version: '1.1.0.Final'
     compile 'org.hibernate:hibernate-validator:5.3.5.Final'
-    //runtime group: 'org.hibernate.validator', name: 'hibernate-validator', version: '6.0.1.Final'
     runtime group: 'org.glassfish.web', name: 'javax.el', version: '2.2.6'
     runtime group: 'javax.el', name: 'javax.el-api', version: '3.0.0'
 }

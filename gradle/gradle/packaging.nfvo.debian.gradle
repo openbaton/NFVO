@@ -41,7 +41,6 @@ task logDebianPackageJavaDependency() {
 task makeDeb(type: Deb, dependsOn: [jar, build, logDebianPackageJavaDependency]) {
     packageName = (applicationRelease) ? "${fullName}" : "${fullName}-nightly"
     version = debianApplicationVersionFull
-    //release = 1
     priority = 'optional'
     arch = 'all'
     maintainer = 'Open Baton Team <dev@openbaton.org>'

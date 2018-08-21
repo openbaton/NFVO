@@ -41,16 +41,9 @@ apply from: 'gradle/gradle/helpers.gradle'
  * Project settings
  */
 ext {
-    //------------------------------------------------//
-    /**
-     * Spring Boot version (replace it also in the plugin section!)
-     */
+    //Spring Boot version (it also in the plugin section above!)
     springBootVersion = '1.5.11.RELEASE'
-    //------------------------------------------------//
-    //------------------------------------------------//
-    /**
-     * Application Related Version
-     */
+
     applicationVersion = version
 
     applicationRelease = isApplicationRelease()
@@ -59,11 +52,6 @@ ext {
 
     applicationVersionSnapshot = (!applicationRelease) ? ".${asUTC(applicationDate, 'yyyyMMdd')}.git${applicationRevision}" : ""
     applicationVersionFull = "${applicationVersion}${applicationVersionSnapshot}"
-    //------------------------------------------------//
-    //------------------------------------------------//
-    /**
-     * Junit Version
-     */
     junitVersion = '4.12'
 }
 
