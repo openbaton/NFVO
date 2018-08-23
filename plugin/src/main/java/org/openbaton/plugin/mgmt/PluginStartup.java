@@ -156,7 +156,7 @@ public class PluginStartup {
               pluginLogPath);
         } else log.warn(jar.getAbsolutePath() + " is not a jar file");
       }
-    } else log.error(folderPath + " must be a folder");
+    }
   }
 
   public static void destroy() {
