@@ -40,13 +40,3 @@ dependencies {
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.7'
 
 }
-
-
-sourceSets {
-    main {
-        java {
-            if (!project.hasProperty("swagger"))
-                exclude '**/swagger/**';
-        }
-    }
-}
