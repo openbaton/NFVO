@@ -119,7 +119,7 @@ public class RestComponents {
     return response;
   }
 
-  /** Enable a new Service. */
+  /** Delete a new Service. */
   @ApiOperation(value = "Delete Service", notes = "Remove a specific service")
   @RequestMapping(
     value = "/services/{id}",
