@@ -477,7 +477,7 @@ public class VNFPackageManagement
       throws BadFormatException {
 
     //Get configuration for NFVImage
-    String[] requiredPackageKeys = new String[] {"name", "image", "vim_types"};
+    String[] requiredPackageKeys = new String[] {"name", "vim_types"};
     for (String requiredKey : requiredPackageKeys) {
       if (!metadata.containsKey(requiredKey)) {
         throw new BadFormatException(
