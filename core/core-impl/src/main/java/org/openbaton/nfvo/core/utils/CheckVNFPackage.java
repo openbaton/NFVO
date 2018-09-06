@@ -40,10 +40,10 @@ public class CheckVNFPackage {
   private static final String[] REQUIRED_VNF_PACKAGE_AND_VNFD_COMMON_KEYS =
       new String[] {"name", "vendor"};
   // Required keys for Open Baton
-  private static final String[] REQUIRED_VNF_PACKAGE_KEYS_FOR_OPENBATON = new String[] {"image"};
+  private static final String[] REQUIRED_VNF_PACKAGE_KEYS_FOR_OPENBATON = new String[] {};
 
   // Required keys for image
-  private static final String[] REQUIRED_IMAGE_DETAILS = new String[] {"upload"};
+  private static final String[] REQUIRED_IMAGE_DETAILS = new String[] {};
   // Required keys for image-config
   private static final String[] REQUIRED_IMAGE_CONFIG =
       new String[] {
