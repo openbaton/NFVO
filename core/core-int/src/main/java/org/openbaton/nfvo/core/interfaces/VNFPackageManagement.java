@@ -24,7 +24,6 @@ import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.VNFPackageMetadata;
 import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
-import org.openbaton.catalogue.nfvo.images.NFVImage;
 import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.BadFormatException;
 import org.openbaton.exceptions.BadRequestException;
@@ -47,7 +46,7 @@ public interface VNFPackageManagement {
    * @param vnfPackage
    * @param image
    */
-  VNFPackage handleMetadata(Map<String, Object> metadata, VNFPackage vnfPackage, NFVImage image)
+  VNFPackage handleMetadata(Map<String, Object> metadata, VNFPackage vnfPackage)
       throws IncompatibleVNFPackage, BadFormatException;
 
   VirtualNetworkFunctionDescriptor add(
@@ -63,7 +62,6 @@ public interface VNFPackageManagement {
    * @param vnfPackage
    * @param imageFile
    * @param virtualNetworkFunctionDescriptor
-   * @param image
    * @param metadata
    * @param projectId
    */
@@ -71,7 +69,6 @@ public interface VNFPackageManagement {
       VNFPackage vnfPackage,
       byte[] imageFile,
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
-      NFVImage image,
       Map<String, Object> metadata,
       String projectId)
       throws NotFoundException, PluginException, VimException, BadRequestException, IOException,

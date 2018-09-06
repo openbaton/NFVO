@@ -181,7 +181,6 @@ public class VNFPackageManagement
 
     VNFPackage vnfPackage = new VNFPackage();
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = null;
-    NFVImage image = new NFVImage();
 
     Map<String, Object> metadata = null;
     byte[] imageFile = new byte[0];
@@ -200,7 +199,7 @@ public class VNFPackageManagement
             Yaml yaml = new Yaml();
             String yamlString = new String(content);
             metadata = (Map<String, Object>) yaml.load(yamlString);
-            vnfPackage = handleMetadata(metadata, vnfPackage, image);
+            vnfPackage = handleMetadata(metadata, vnfPackage);
           } else if (!entry.getName().startsWith("scripts/") && entry.getName().endsWith(".json")) {
             //this must be the vnfd
             virtualNetworkFunctionDescriptor = handleVirtualNetworkFunctionDescriptor(content);
@@ -224,7 +223,7 @@ public class VNFPackageManagement
           "Error reading the VNF package, ensure the archive is not corrupted", e);
     }
     if (virtualNetworkFunctionDescriptor == null)
-      throw new BadFormatException("Missing VNFD in pacakge");
+      throw new BadFormatException("Missing VNFD in package");
     if (metadata == null) throw new BadFormatException("Missing Metadata.yaml in pacakge");
 
     if (virtualNetworkFunctionDescriptor.getVnfPackageLocation() != null) {
@@ -237,12 +236,13 @@ public class VNFPackageManagement
       vnfPackage.setScripts(new HashSet<>());
     }
 
-    lock.lock();
-    try {
-      handleImage(
-          vnfPackage, imageFile, virtualNetworkFunctionDescriptor, image, metadata, projectId);
-    } finally {
-      lock.unlock();
+    if (vnfPackage.getImage() != null) {
+      lock.lock();
+      try {
+        handleImage(vnfPackage, imageFile, virtualNetworkFunctionDescriptor, metadata, projectId);
+      } finally {
+        lock.unlock();
+      }
     }
     VNFPackageMetadata vnfPackageMetadata =
         handleVnfPackageMetadata(
@@ -263,8 +263,6 @@ public class VNFPackageManagement
     vnfdParameters.put("name", virtualNetworkFunctionDescriptor.getName());
     vnfdParameters.put("vendor", virtualNetworkFunctionDescriptor.getVendor());
     CheckVNFPackage.checkCommonParametersWithVNFD(vnfPackageMetadataParameters, vnfdParameters);
-
-    vnfPackage.setImage(image);
 
     vnfPackage.setProjectId(projectId);
     // check if package already exists
@@ -472,8 +470,7 @@ public class VNFPackageManagement
     return vnfPackageMetadata;
   }
 
-  public VNFPackage handleMetadata(
-      Map<String, Object> metadata, VNFPackage vnfPackage, NFVImage image)
+  public VNFPackage handleMetadata(Map<String, Object> metadata, VNFPackage vnfPackage)
       throws BadFormatException {
 
     //Get configuration for NFVImage
@@ -533,6 +530,7 @@ public class VNFPackageManagement
                   "Not defined value of key: " + requiredKey + " of image-config in Metadata.yaml");
             }
           }
+          NFVImage image = new NFVImage();
           image.setName((String) imageConfig.get("name"));
           image.setDiskFormat(((String) imageConfig.get("diskFormat")).toUpperCase());
           image.setContainerFormat(((String) imageConfig.get("containerFormat")).toUpperCase());
@@ -546,10 +544,9 @@ public class VNFPackageManagement
           throw new BadFormatException(
               "The image-config is not defined. Please define it to upload a new image");
         }
+      } else {
+        vnfPackage.setImage(new NFVImage());
       }
-    } else {
-      throw new BadFormatException(
-          "The image details are not defined. Please define it to use the right image");
     }
 
     return vnfPackage;
@@ -560,12 +557,12 @@ public class VNFPackageManagement
       VNFPackage vnfPackage,
       byte[] imageFile,
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
-      NFVImage image,
       Map<String, Object> metadata,
       String projectId)
       throws NotFoundException, PluginException, VimException, BadRequestException, IOException,
           AlreadyExistingException, InterruptedException, ExecutionException, BadFormatException {
 
+    NFVImage image = (NFVImage) vnfPackage.getImage();
     if (vnfPackage.getScriptsLink() != null) {
       if (vnfPackage.getScripts() != null && !vnfPackage.getScripts().isEmpty()) {
         log.debug(

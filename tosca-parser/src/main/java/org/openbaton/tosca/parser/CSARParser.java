@@ -29,7 +29,6 @@ import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
-import org.openbaton.catalogue.nfvo.images.NFVImage;
 import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.core.interfaces.VNFPackageManagement;
 import org.openbaton.nfvo.repositories.VNFDRepository;
@@ -169,15 +168,14 @@ public class CSARParser {
           InterruptedException, EntityUnreachableException, ExecutionException {
 
     Map<String, Object> metadata;
-    NFVImage image = new NFVImage();
 
     Yaml yaml = new Yaml();
     metadata = yaml.loadAs(new String(this.vnfMetadata.toByteArray()), Map.class);
     //Get configuration for NFVImage
-    vnfPackage = vnfPackageManagement.handleMetadata(metadata, vnfPackage, image);
+    vnfPackage = vnfPackageManagement.handleMetadata(metadata, vnfPackage);
 
     return vnfPackageManagement.handleImage(
-        vnfPackage, null, virtualNetworkFunctionDescriptor, image, metadata, projectId);
+        vnfPackage, null, virtualNetworkFunctionDescriptor, metadata, projectId);
   }
 
   private String saveVNFD(

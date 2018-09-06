@@ -143,39 +143,48 @@ public class CheckVNFPackage {
 
             checkRequiredImageDetailsKeys(imageDetails);
 
-            if (imageDetails.get("upload").equals("true")
-                || imageDetails.get("upload").equals("check")) {
-              if (!metadata.containsKey("image-config"))
-                throw new VNFPackageFormatException(
-                    "The image-config is not defined. Please define it to upload a new image");
-              log.debug("image-config: " + metadata.get("image-config"));
-              Map<String, Object> imageConfig = (Map<String, Object>) metadata.get("image-config");
-              checkRequiredImageConfigKeys(imageConfig);
+            if (imageDetails != null) {
+              if (imageDetails.get("upload").equals("true")
+                  || imageDetails.get("upload").equals("check")) {
+                if (!metadata.containsKey("image-config"))
+                  throw new VNFPackageFormatException(
+                      "The image-config is not defined. Please define it to upload a new image");
+                log.debug("image-config: " + metadata.get("image-config"));
+                Map<String, Object> imageConfig =
+                    (Map<String, Object>) metadata.get("image-config");
+                checkRequiredImageConfigKeys(imageConfig);
 
-              try {
-                Integer.toString((Integer) imageConfig.get("minCPU"));
-              } catch (ClassCastException e) {
-                throw new VNFPackageFormatException("minCPU is not an integer");
-              }
+                try {
+                  Integer.toString((Integer) imageConfig.get("minCPU"));
+                } catch (ClassCastException e) {
+                  throw new VNFPackageFormatException("minCPU is not an integer");
+                }
 
-              try {
-                Long.parseLong(imageConfig.get("minDisk").toString());
-              } catch (NumberFormatException e) {
-                throw new VNFPackageFormatException("minDisk is not a number");
-              }
-              try {
-                Long.parseLong(imageConfig.get("minRam").toString());
-              } catch (NumberFormatException e) {
-                throw new VNFPackageFormatException("minRam is not a number");
-              }
+                try {
+                  Long.parseLong(imageConfig.get("minDisk").toString());
+                } catch (NumberFormatException e) {
+                  throw new VNFPackageFormatException("minDisk is not a number");
+                }
+                try {
+                  Long.parseLong(imageConfig.get("minRam").toString());
+                } catch (NumberFormatException e) {
+                  throw new VNFPackageFormatException("minRam is not a number");
+                }
 
-              String imageLink =
-                  imageDetails.get("link") == null ? "" : (String) imageDetails.get("link");
-              if (!imageIncluded && imageLink.isEmpty()) {
-                throw new NotFoundException(
-                    "VNFPackageManagement: For option upload=check you must define an image. Neither the image link is "
-                        + "defined nor the image file is available. Please define at least one if you want to upload a new image");
+                String imageLink =
+                    imageDetails.get("link") == null ? "" : (String) imageDetails.get("link");
+                if (!imageIncluded && imageLink.isEmpty()) {
+                  throw new NotFoundException(
+                      "VNFPackageManagement: For option upload=check you must define an image. Neither the image link is "
+                          + "defined nor the image file is available. Please define at least one if you want to upload a new image");
+                }
               }
+              if (!imageDetails.get("upload").equals("true"))
+                if (!imageDetails.containsKey("ids") && !imageDetails.containsKey("names")) {
+                  throw new NotFoundException(
+                      "VNFPackageManagement: Upload option 'false' or 'check' requires at least a list of ids or names to find "
+                          + "the right image.");
+                }
             }
 
             if (metadata.containsKey("additional-repos")) {
@@ -203,13 +212,6 @@ public class CheckVNFPackage {
                 }
               }
             }
-
-            if (!imageDetails.get("upload").equals("true"))
-              if (!imageDetails.containsKey("ids") && !imageDetails.containsKey("names")) {
-                throw new NotFoundException(
-                    "VNFPackageManagement: Upload option 'false' or 'check' requires at least a list of ids or names to find "
-                        + "the right image.");
-              }
           } else if (!entry.getName().startsWith("scripts/") && entry.getName().endsWith(".json")) {
             //this must be the vnfd
             vnfdFound = true;
