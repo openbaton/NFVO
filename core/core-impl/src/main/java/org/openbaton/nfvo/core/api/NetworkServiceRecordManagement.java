@@ -1640,7 +1640,8 @@ public class NetworkServiceRecordManagement
         List<BaseVimInstance> vimInstances =
             vimInstanceRepository.findByProjectId(vdu.getProjectId());
         if (vimInstances.size() == 0)
-          throw new NotFoundException("No VimInstance in the catalogue");
+          throw new NotFoundException(
+              "No PoP of the corresponding type in the catalogue. Must be registered first...");
         else
           for (BaseVimInstance vimInstance : vimInstances) {
             instanceNames = new HashSet<>();

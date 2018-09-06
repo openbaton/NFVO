@@ -130,7 +130,7 @@ public class NetworkServiceDescriptorManagement
 
     Iterable<VnfmManagerEndpoint> endpoints = vnfmManagerEndpointRepository.findAll();
 
-    nsdUtils.checkEndpoint(networkServiceDescriptor, endpoints);
+    //nsdUtils.checkEndpoint(networkServiceDescriptor, endpoints);
 
     log.trace("Creating " + networkServiceDescriptor);
 
