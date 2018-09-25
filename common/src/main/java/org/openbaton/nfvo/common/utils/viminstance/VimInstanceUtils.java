@@ -209,7 +209,7 @@ public class VimInstanceUtils {
                       && ((DockerImage) i).getTags().contains(imageName))
           .collect(Collectors.toList());
     } else if (vimInstance instanceof AmazonVimInstance) {
-      //in case of Amazon Instance the image check is delegated to amazon plugin
+      // in case of Amazon Instance the image check is delegated to amazon plugin
       AWSImage skipImage = new AWSImage();
       skipImage.setExtId(imageName);
       return Collections.singletonList(skipImage);

@@ -35,9 +35,8 @@ public class VNFCInstance extends VNFComponent {
   protected String state;
 
   @ManyToOne(
-    cascade = {CascadeType.REFRESH, CascadeType.DETACH},
-    fetch = FetchType.EAGER
-  )
+      cascade = {CascadeType.REFRESH, CascadeType.DETACH},
+      fetch = FetchType.EAGER)
   private VNFComponent vnfComponent;
 
   @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)

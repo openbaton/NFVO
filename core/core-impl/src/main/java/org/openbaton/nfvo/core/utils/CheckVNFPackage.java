@@ -127,7 +127,8 @@ public class CheckVNFPackage {
                 metadata, REQUIRED_VNF_PACKAGE_IDENTIFIER_KEYS);
             CheckVNFPackage.checkRequiredFirstLevelMetadataKeys(
                 metadata, REQUIRED_VNF_PACKAGE_KEYS_FOR_OPENBATON);
-            // throw an exception if either vim-types and vim_types are not provided, or both are provided together.
+            // throw an exception if either vim-types and vim_types are not provided, or both are
+            // provided together.
             if (metadata.containsKey("vim-types") == metadata.containsKey("vim_types"))
               throw new VNFPackageFormatException("vim-types is not provided");
 
@@ -213,7 +214,7 @@ public class CheckVNFPackage {
               }
             }
           } else if (!entry.getName().startsWith("scripts/") && entry.getName().endsWith(".json")) {
-            //this must be the vnfd
+            // this must be the vnfd
             vnfdFound = true;
             String json = new String(content);
             log.trace("Content of vnfd is: " + json);
@@ -248,7 +249,8 @@ public class CheckVNFPackage {
     if (vnfPackageNFVOVersion.isEmpty())
       throw new NullPointerException("The nfvo version in the Metadata is empty");
 
-    //    // If the user does not specify the nfvo_version field, we suppose it is compatible (best effort)
+    //    // If the user does not specify the nfvo_version field, we suppose it is compatible (best
+    // effort)
     //    if (vnfPackageNFVOVersion == null || vnfPackageNFVOVersion.isEmpty()) return true;
     //
     //    int compatible = vnfPackageNFVOVersion.compareTo(nfvoVersion);

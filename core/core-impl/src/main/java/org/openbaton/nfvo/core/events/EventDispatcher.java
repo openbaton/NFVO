@@ -61,24 +61,20 @@ class EventDispatcher
 
   @Override
   @RabbitListener(
-    bindings =
-        @QueueBinding(
-          value =
-              @Queue(
-                value = RabbitConfiguration.QUEUE_NAME_EVENT_REGISTER,
-                durable = RabbitConfiguration.QUEUE_DURABLE,
-                autoDelete = RabbitConfiguration.QUEUE_AUTODELETE
-              ),
-          exchange =
-              @Exchange(
-                value = RabbitConfiguration.EXCHANGE_NAME_OPENBATON,
-                ignoreDeclarationExceptions = "true",
-                type = RabbitConfiguration.EXCHANGE_TYPE_OPENBATON,
-                durable = RabbitConfiguration.EXCHANGE_DURABLE_OPENBATON
-              ),
-          key = RabbitConfiguration.QUEUE_NAME_EVENT_REGISTER
-        )
-  )
+      bindings =
+          @QueueBinding(
+              value =
+                  @Queue(
+                      value = RabbitConfiguration.QUEUE_NAME_EVENT_REGISTER,
+                      durable = RabbitConfiguration.QUEUE_DURABLE,
+                      autoDelete = RabbitConfiguration.QUEUE_AUTODELETE),
+              exchange =
+                  @Exchange(
+                      value = RabbitConfiguration.EXCHANGE_NAME_OPENBATON,
+                      ignoreDeclarationExceptions = "true",
+                      type = RabbitConfiguration.EXCHANGE_TYPE_OPENBATON,
+                      durable = RabbitConfiguration.EXCHANGE_DURABLE_OPENBATON),
+              key = RabbitConfiguration.QUEUE_NAME_EVENT_REGISTER))
   public EventEndpoint register(String endpoint_json) throws MissingParameterException {
 
     EventEndpoint endpoint = gson.fromJson(endpoint_json, EventEndpoint.class);
@@ -181,24 +177,20 @@ class EventDispatcher
 
   @Override
   @RabbitListener(
-    bindings =
-        @QueueBinding(
-          value =
-              @Queue(
-                value = RabbitConfiguration.QUEUE_NAME_EVENT_UNREGISTER,
-                durable = RabbitConfiguration.QUEUE_DURABLE,
-                autoDelete = RabbitConfiguration.QUEUE_AUTODELETE
-              ),
-          exchange =
-              @Exchange(
-                value = RabbitConfiguration.EXCHANGE_NAME_OPENBATON,
-                ignoreDeclarationExceptions = "true",
-                type = RabbitConfiguration.EXCHANGE_TYPE_OPENBATON,
-                durable = RabbitConfiguration.EXCHANGE_DURABLE_OPENBATON
-              ),
-          key = RabbitConfiguration.QUEUE_NAME_EVENT_UNREGISTER
-        )
-  )
+      bindings =
+          @QueueBinding(
+              value =
+                  @Queue(
+                      value = RabbitConfiguration.QUEUE_NAME_EVENT_UNREGISTER,
+                      durable = RabbitConfiguration.QUEUE_DURABLE,
+                      autoDelete = RabbitConfiguration.QUEUE_AUTODELETE),
+              exchange =
+                  @Exchange(
+                      value = RabbitConfiguration.EXCHANGE_NAME_OPENBATON,
+                      ignoreDeclarationExceptions = "true",
+                      type = RabbitConfiguration.EXCHANGE_TYPE_OPENBATON,
+                      durable = RabbitConfiguration.EXCHANGE_DURABLE_OPENBATON),
+              key = RabbitConfiguration.QUEUE_NAME_EVENT_UNREGISTER))
   public void unregister(String id) throws NotFoundException {
     eventManagement.removeUnreachableEndpoints();
     EventEndpoint endpoint = eventEndpointRepository.findFirstById(id);

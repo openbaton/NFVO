@@ -73,7 +73,7 @@ public class OpenbatonCLI implements CommandLineRunner {
   private static final Map<String, String> helpCommandList =
       new HashMap<String, String>() {
         {
-          //mgmt
+          // mgmt
           put("help", "Print the usage");
           put("exit", "Exit the application");
           put("installPlugin", "install a plugin");
@@ -84,7 +84,7 @@ public class OpenbatonCLI implements CommandLineRunner {
           put("listUsers", "list all Users");
           put("changeLog", "Change log level");
 
-          //admin
+          // admin
           put("listDescriptors", "show all Network Service Descriptors");
           put("listRecords", "show all Network Service Records");
           put("deleteRecord", "delete the Network Service Record with given id");

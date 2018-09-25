@@ -130,7 +130,7 @@ public class NetworkServiceDescriptorManagement
 
     Iterable<VnfmManagerEndpoint> endpoints = vnfmManagerEndpointRepository.findAll();
 
-    //nsdUtils.checkEndpoint(networkServiceDescriptor, endpoints);
+    // nsdUtils.checkEndpoint(networkServiceDescriptor, endpoints);
 
     log.trace("Creating " + networkServiceDescriptor);
 
@@ -324,7 +324,7 @@ public class NetworkServiceDescriptorManagement
   @Override
   public void deleteVnfDescriptor(String idNsd, String idVnfd, String projectId)
       throws EntityInUseException, NotFoundException, NotAllowedException {
-    //Get all NSD referencing the VNFD identified by idVnfd
+    // Get all NSD referencing the VNFD identified by idVnfd
     List<NetworkServiceDescriptor> nsds =
         nsdRepository.findByVnfd_idAndProjectId(idVnfd, projectId);
 
@@ -333,7 +333,8 @@ public class NetworkServiceDescriptorManagement
       if (!nsd.getId().equals(idNsd))
         throw new EntityInUseException(
             "NSD with id: " + nsd.getId() + " is still onboarded and referencing this VNFD");
-      // If this NSD contains only 1 VNFD, this operation cannot be performed (check integrity constraints in NSD)
+      // If this NSD contains only 1 VNFD, this operation cannot be performed (check integrity
+      // constraints in NSD)
       else if (nsd.getId().equals(idNsd) && nsd.getVnfd().size() == 1) {
         throw new NotAllowedException("NSD with id: " + idNsd + " cannot contain less than 1 vnfd");
       }

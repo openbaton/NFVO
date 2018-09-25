@@ -61,15 +61,13 @@ public class RestNetworkServiceDescriptor {
    *     core
    */
   @RequestMapping(
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
   @ApiOperation(
-    value = "Adding a Network Service Descriptor",
-    notes = "POST request with Network Service Descriptor as JSON content of the request body"
-  )
+      value = "Adding a Network Service Descriptor",
+      notes = "POST request with Network Service Descriptor as JSON content of the request body")
   public NetworkServiceDescriptor create(
       @RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor,
       @RequestHeader(value = "project-id") String projectId)
@@ -91,14 +89,13 @@ public class RestNetworkServiceDescriptor {
    *     core
    */
   @ApiOperation(
-    value = " Adding a NSD from the marketplace",
-    notes = "POST request with the a JSON object in the request body containing a field named link"
-  )
+      value = " Adding a NSD from the marketplace",
+      notes =
+          "POST request with the a JSON object in the request body containing a field named link")
   @RequestMapping(
-    value = "/marketdownload",
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "/marketdownload",
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
   public NetworkServiceDescriptor marketDownload(
       @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
@@ -129,14 +126,13 @@ public class RestNetworkServiceDescriptor {
    *     core
    */
   @ApiOperation(
-    value = " Adding a NSD from the marketplace",
-    notes = "POST request with the a JSON object in the request body containing a field named link"
-  )
+      value = " Adding a NSD from the marketplace",
+      notes =
+          "POST request with the a JSON object in the request body containing a field named link")
   @RequestMapping(
-    value = "/package-repository-download",
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "/package-repository-download",
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
   public NetworkServiceDescriptor packageRepositoryDownload(
       @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
@@ -165,9 +161,8 @@ public class RestNetworkServiceDescriptor {
    * @param id of Network Service Descriptor
    */
   @ApiOperation(
-    value = "Removing a Network Service Descriptor",
-    notes = "DELETE request where the id in the url belongs to the NSD to delete"
-  )
+      value = "Removing a Network Service Descriptor",
+      notes = "DELETE request where the id in the url belongs to the NSD to delete")
   @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(
@@ -187,14 +182,12 @@ public class RestNetworkServiceDescriptor {
    * @throws VimException
    */
   @RequestMapping(
-    value = "/multipledelete",
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "/multipledelete",
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   @ApiOperation(
-    value = "Removing multiple Network Service Descriptors",
-    notes = "Delete Request takes a list of Network Service Descriptor ids"
-  )
+      value = "Removing multiple Network Service Descriptors",
+      notes = "Delete Request takes a list of Network Service Descriptor ids")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void multipleDelete(
       @RequestBody @Valid List<String> ids, @RequestHeader(value = "project-id") String projectId)
@@ -208,9 +201,9 @@ public class RestNetworkServiceDescriptor {
    * @return List<NetworkServiceDescriptor>: the list of Network Service Descriptor stored
    */
   @ApiOperation(
-    value = "Get all NSDs from a project",
-    notes = "Returns all Network Service Descriptors onboarded in the project with the specified id"
-  )
+      value = "Get all NSDs from a project",
+      notes =
+          "Returns all Network Service Descriptors onboarded in the project with the specified id")
   @RequestMapping(method = RequestMethod.GET)
   public List<NetworkServiceDescriptor> findAll(
       @RequestHeader(value = "project-id") String projectId) {
@@ -225,9 +218,8 @@ public class RestNetworkServiceDescriptor {
    * @return NetworkServiceDescriptor: the Network Service Descriptor selected @
    */
   @ApiOperation(
-    value = "Get Network Service Descriptor by id",
-    notes = "Returns the Network Service Descriptor with the id in the URL"
-  )
+      value = "Get Network Service Descriptor by id",
+      notes = "Returns the Network Service Descriptor with the id in the URL")
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
   public NetworkServiceDescriptor findById(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
@@ -246,16 +238,14 @@ public class RestNetworkServiceDescriptor {
    * @return networkServiceDescriptor: the Network Service Descriptor updated
    */
   @ApiOperation(
-    value = "Update a Network Service Descriptor",
-    notes =
-        "Takes a Network Service Descriptor and updates the Descriptor with the id provided in the URL with the Descriptor from the request body"
-  )
+      value = "Update a Network Service Descriptor",
+      notes =
+          "Takes a Network Service Descriptor and updates the Descriptor with the id provided in the URL with the Descriptor from the request body")
   @RequestMapping(
-    value = "{id}",
-    method = RequestMethod.PUT,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "{id}",
+      method = RequestMethod.PUT,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.ACCEPTED)
   public NetworkServiceDescriptor update(
       @RequestBody @Valid NetworkServiceDescriptor networkServiceDescriptor,
@@ -273,14 +263,12 @@ public class RestNetworkServiceDescriptor {
    *     into NSD @
    */
   @ApiOperation(
-    value = "Gets the list of Virtual Network Functions part of the NSD",
-    notes = "Returns the VNFDs from the NSD with the id specified in the URL"
-  )
+      value = "Gets the list of Virtual Network Functions part of the NSD",
+      notes = "Returns the VNFDs from the NSD with the id specified in the URL")
   @RequestMapping(
-    value = "{id}/vnfdescriptors",
-    method = RequestMethod.GET,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "{id}/vnfdescriptors",
+      method = RequestMethod.GET,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.OK)
   public Set<VirtualNetworkFunctionDescriptor> getVirtualNetworkFunctionDescriptors(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
@@ -292,15 +280,13 @@ public class RestNetworkServiceDescriptor {
   }
 
   @ApiOperation(
-    value = "Gets a single VNF from the NSD",
-    notes =
-        "Returns the VNFD with the id specified in the URL and that is part of the specified NSD"
-  )
+      value = "Gets a single VNF from the NSD",
+      notes =
+          "Returns the VNFD with the id specified in the URL and that is part of the specified NSD")
   @RequestMapping(
-    value = "{idNsd}/vnfdescriptors/{idVfnd}",
-    method = RequestMethod.GET,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "{idNsd}/vnfdescriptors/{idVfnd}",
+      method = RequestMethod.GET,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.OK)
   public VirtualNetworkFunctionDescriptor getVirtualNetworkFunctionDescriptor(
       @PathVariable("idNsd") String idNsd,
@@ -312,9 +298,8 @@ public class RestNetworkServiceDescriptor {
   }
 
   @ApiOperation(
-    value = "Delete VNFD from the NSD",
-    notes = "Takes the ids of the NSD and VNFD and updates the NSD"
-  )
+      value = "Delete VNFD from the NSD",
+      notes = "Takes the ids of the NSD and VNFD and updates the NSD")
   @RequestMapping(value = "{idNsd}/vnfdescriptors/{idVfn}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteVirtualNetworkFunctionDescriptor(
@@ -326,16 +311,14 @@ public class RestNetworkServiceDescriptor {
   }
 
   @ApiOperation(
-    value = "Add a VNFD to the NSD",
-    notes =
-        "Takes a Virtual Network Function Descriptor in the Request Body and adds it to the vnfd list of the Network Service Descriptor with id specified in the URL"
-  )
+      value = "Add a VNFD to the NSD",
+      notes =
+          "Takes a Virtual Network Function Descriptor in the Request Body and adds it to the vnfd list of the Network Service Descriptor with id specified in the URL")
   @RequestMapping(
-    value = "{id}/vnfdescriptors/",
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "{id}/vnfdescriptors/",
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
   public VirtualNetworkFunctionDescriptor postVNFD(
       @RequestBody @Valid VirtualNetworkFunctionDescriptor vnfDescriptor,
@@ -346,16 +329,14 @@ public class RestNetworkServiceDescriptor {
   }
 
   @ApiOperation(
-    value = "Update a VNFD in the NSD",
-    notes =
-        "Takes a Virtual Network Function Descriptor in the Request Body and updates the specified vnfd that is part of the Network Service Descriptor with id specified in the URL"
-  )
+      value = "Update a VNFD in the NSD",
+      notes =
+          "Takes a Virtual Network Function Descriptor in the Request Body and updates the specified vnfd that is part of the Network Service Descriptor with id specified in the URL")
   @RequestMapping(
-    value = "{idNsd}/vnfdescriptors/{idVfn}",
-    method = RequestMethod.PUT,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "{idNsd}/vnfdescriptors/{idVfn}",
+      method = RequestMethod.PUT,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.ACCEPTED)
   public VirtualNetworkFunctionDescriptor updateVNF(
       @RequestBody @Valid VirtualNetworkFunctionDescriptor vnfDescriptor,
@@ -373,14 +354,12 @@ public class RestNetworkServiceDescriptor {
    * @return List<VNFDependency>: The List of VNFDependency into NSD @
    */
   @ApiOperation(
-    value = "Returns the list of VNFDependency from NSD",
-    notes = "Returns all the VNF Dependencies specified in the NSD"
-  )
+      value = "Returns the list of VNFDependency from NSD",
+      notes = "Returns all the VNF Dependencies specified in the NSD")
   @RequestMapping(
-    value = "{id}/vnfdependencies",
-    method = RequestMethod.GET,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "{id}/vnfdependencies",
+      method = RequestMethod.GET,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.OK)
   public Set<VNFDependency> getVNFDependencies(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
@@ -392,14 +371,12 @@ public class RestNetworkServiceDescriptor {
   }
 
   @ApiOperation(
-    value = "Returns the list of VNF Dependency for a VNF from the NSD",
-    notes = "Returns all the VNF Dependencies only for a specific VNF specified in the NSD"
-  )
+      value = "Returns the list of VNF Dependency for a VNF from the NSD",
+      notes = "Returns all the VNF Dependencies only for a specific VNF specified in the NSD")
   @RequestMapping(
-    value = "{idNsd}/vnfdependencies/{idVnfd}",
-    method = RequestMethod.GET,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "{idNsd}/vnfdependencies/{idVnfd}",
+      method = RequestMethod.GET,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.OK)
   public VNFDependency getVNFDependency(
       @PathVariable("idNsd") String idNsd,
@@ -410,9 +387,8 @@ public class RestNetworkServiceDescriptor {
   }
 
   @ApiOperation(
-    value = "Delete VNF Dependency from a VNF part of the NSD",
-    notes = "Delete the VNF Dependency only for a specific VNF specified in the NSD"
-  )
+      value = "Delete VNF Dependency from a VNF part of the NSD",
+      notes = "Delete the VNF Dependency only for a specific VNF specified in the NSD")
   @RequestMapping(value = "{idNsd}/vnfdependencies/{idVnfd}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteVNFDependency(
@@ -424,15 +400,13 @@ public class RestNetworkServiceDescriptor {
   }
 
   @ApiOperation(
-    value = "Add a VNF Dependency",
-    notes = "Adds a new VNF dependency to the Network Service Descriptor"
-  )
+      value = "Add a VNF Dependency",
+      notes = "Adds a new VNF dependency to the Network Service Descriptor")
   @RequestMapping(
-    value = "{idNsd}/vnfdependencies/",
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "{idNsd}/vnfdependencies/",
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
   public VNFDependency postVNFDependency(
       @RequestBody @Valid VNFDependency vnfDependency,
@@ -444,15 +418,13 @@ public class RestNetworkServiceDescriptor {
   }
 
   @ApiOperation(
-    value = "Update a VNF Dependency",
-    notes = "Updates a VNF dependency to the Network Service Descriptor"
-  )
+      value = "Update a VNF Dependency",
+      notes = "Updates a VNF dependency to the Network Service Descriptor")
   @RequestMapping(
-    value = "{idNsd}/vnfdependencies/{idVnf}",
-    method = RequestMethod.PUT,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "{idNsd}/vnfdependencies/{idVnf}",
+      method = RequestMethod.PUT,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.ACCEPTED)
   public VNFDependency updateVNFDependency(
       @RequestBody @Valid VNFDependency vnfDependency,
@@ -473,10 +445,9 @@ public class RestNetworkServiceDescriptor {
    */
   @ApiOperation(value = "", notes = "", hidden = true)
   @RequestMapping(
-    value = "{id}/pnfdescriptors",
-    method = RequestMethod.GET,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "{id}/pnfdescriptors",
+      method = RequestMethod.GET,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.OK)
   public Set<PhysicalNetworkFunctionDescriptor> getPhysicalNetworkFunctionDescriptors(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
@@ -496,10 +467,9 @@ public class RestNetworkServiceDescriptor {
    */
   @ApiOperation(value = "", notes = "", hidden = true)
   @RequestMapping(
-    value = "{idNds}/pnfdescriptors/{idPnf}",
-    method = RequestMethod.GET,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "{idNds}/pnfdescriptors/{idPnf}",
+      method = RequestMethod.GET,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.OK)
   public PhysicalNetworkFunctionDescriptor getPhysicalNetworkFunctionDescriptor(
       @PathVariable("idNds") String idNsd,
@@ -537,11 +507,10 @@ public class RestNetworkServiceDescriptor {
    */
   @ApiOperation(value = "", notes = "", hidden = true)
   @RequestMapping(
-    value = "{id}/pnfdescriptors/",
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "{id}/pnfdescriptors/",
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
   public PhysicalNetworkFunctionDescriptor postPhysicalNetworkFunctionDescriptor(
       @RequestBody @Valid PhysicalNetworkFunctionDescriptor pDescriptor,
@@ -560,11 +529,10 @@ public class RestNetworkServiceDescriptor {
    */
   @ApiOperation(value = "", notes = "", hidden = true)
   @RequestMapping(
-    value = "{id}/pnfdescriptors/{idPnf}",
-    method = RequestMethod.PUT,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "{id}/pnfdescriptors/{idPnf}",
+      method = RequestMethod.PUT,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.ACCEPTED)
   public PhysicalNetworkFunctionDescriptor updatePNFD(
       @RequestBody @Valid PhysicalNetworkFunctionDescriptor pDescriptor,
@@ -582,10 +550,9 @@ public class RestNetworkServiceDescriptor {
    */
   @ApiOperation(value = "", notes = "", hidden = true)
   @RequestMapping(
-    value = "{id}/security",
-    method = RequestMethod.GET,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "{id}/security",
+      method = RequestMethod.GET,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.OK)
   public Security getSecurity(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
@@ -622,11 +589,10 @@ public class RestNetworkServiceDescriptor {
    */
   @ApiOperation(value = "", notes = "", hidden = true)
   @RequestMapping(
-    value = "{id}/security/",
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "{id}/security/",
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
   public Security postSecurity(
       @RequestBody @Valid Security security,
@@ -638,11 +604,10 @@ public class RestNetworkServiceDescriptor {
 
   @ApiOperation(value = "", notes = "", hidden = true)
   @RequestMapping(
-    value = "{id}/security/{id_s}",
-    method = RequestMethod.PUT,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "{id}/security/{id_s}",
+      method = RequestMethod.PUT,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.ACCEPTED)
   public Security updateSecurity(
       @RequestBody @Valid Security security,

@@ -160,7 +160,7 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
     return sendError(request, response);
   }
 
-  //TODO realize this configurable
+  // TODO realize this configurable
   private boolean alwaysAllowedPath(HttpServletRequest request) {
     return (request.getMethod().equalsIgnoreCase("post")
             && request.getRequestURI().equals("/admin/v1/vnfm-register"))
@@ -172,7 +172,7 @@ public class AuthorizeInterceptor extends HandlerInterceptorAdapter {
             && request.getRequestURI().equals("/api/v1/components/services/register"));
   }
 
-  //TODO realize this configurable
+  // TODO realize this configurable
   private boolean projectIsNecessary(HttpServletRequest request) {
     return !((request.getRequestURI().equals("/api/v1/projects"))
         || (request.getRequestURI().equals("/api/v1/projects/"))

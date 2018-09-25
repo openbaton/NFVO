@@ -23,7 +23,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 /** Created by lto on 25/05/16. */
 @Configuration
-//@EnableWebMvc
+// @EnableWebMvc
 public class InterceptorConfiguration extends WebMvcConfigurerAdapter {
 
   @Autowired private AuthorizeInterceptor authorizeInterceptor;

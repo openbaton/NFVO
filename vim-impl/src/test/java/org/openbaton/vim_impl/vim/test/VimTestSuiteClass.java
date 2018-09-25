@@ -72,7 +72,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-//import org.openbaton.nfvo.common.exceptions.VimException;
+// import org.openbaton.nfvo.common.exceptions.VimException;
 
 /** Created by lto on 21/05/15. */
 @RunWith(SpringRunner.class)
@@ -148,7 +148,7 @@ public class VimTestSuiteClass {
     server.setExtId(environment.getProperty("mocked_id"));
     server.setIps(new HashMap<>());
     server.setFloatingIps(new HashMap<>());
-    //TODO use the method launchInstanceAndWait properly
+    // TODO use the method launchInstanceAndWait properly
     when(vimDriverCaller.launchInstanceAndWait(
             any(BaseVimInstance.class),
             anyString(),

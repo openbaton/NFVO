@@ -37,7 +37,7 @@ import org.openbaton.catalogue.util.IdGenerator;
 @Entity
 public class VNFPackageMetadata extends BaseEntity {
 
-  //Name of the Package
+  // Name of the Package
   private String name;
 
   @Column(length = 1000)
@@ -58,7 +58,7 @@ public class VNFPackageMetadata extends BaseEntity {
   @ElementCollection(fetch = FetchType.EAGER)
   private Map<String, String> requirements;
 
-  //URL to the scripts' location
+  // URL to the scripts' location
   @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   private VirtualNetworkFunctionDescriptor vnfd;
 

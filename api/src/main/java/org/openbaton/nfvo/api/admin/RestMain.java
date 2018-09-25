@@ -60,23 +60,21 @@ public class RestMain {
 
   @Autowired private UserManagement userManagement;
 
-  //Tries to get the version from the package (jar)
-  //If empty (NFVO is running in an IDE) it tries from the config properties (nfvo.version)
+  // Tries to get the version from the package (jar)
+  // If empty (NFVO is running in an IDE) it tries from the config properties (nfvo.version)
   @RequestMapping(
-    value = "version",
-    method = RequestMethod.GET,
-    produces = MediaType.TEXT_PLAIN_VALUE
-  )
+      value = "version",
+      method = RequestMethod.GET,
+      produces = MediaType.TEXT_PLAIN_VALUE)
   public String getVersion() {
     String nfvoVersionFromPackage = RestMain.class.getPackage().getImplementationVersion();
     return nfvoVersionFromPackage != null ? nfvoVersionFromPackage : this.nfvoVersion;
   }
 
   @RequestMapping(
-    value = "openbaton-rc",
-    method = RequestMethod.GET,
-    produces = MediaType.APPLICATION_OCTET_STREAM_VALUE
-  )
+      value = "openbaton-rc",
+      method = RequestMethod.GET,
+      produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
   public String getOpenRCFile(@RequestHeader("project-id") String projectId)
       throws NotFoundException {
     return getOpenRcFile(projectId);

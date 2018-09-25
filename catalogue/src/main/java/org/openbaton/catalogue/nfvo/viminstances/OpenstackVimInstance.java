@@ -62,15 +62,13 @@ public class OpenstackVimInstance extends BaseVimInstance {
   private String openstackSslCertificate;
 
   @OneToMany(
-    fetch = FetchType.EAGER,
-    cascade = {CascadeType.ALL}
-  )
+      fetch = FetchType.EAGER,
+      cascade = {CascadeType.ALL})
   private Set<PopKeypair> keys;
 
   @OneToMany(
-    fetch = FetchType.EAGER,
-    cascade = {CascadeType.ALL}
-  )
+      fetch = FetchType.EAGER,
+      cascade = {CascadeType.ALL})
   private Set<DeploymentFlavour> flavours;
 
   public String getTenant() {
@@ -198,13 +196,13 @@ public class OpenstackVimInstance extends BaseVimInstance {
 
   @Override
   public void addImage(BaseNfvImage image) {
-    //TODO check cast
+    // TODO check cast
     this.images.add((NFVImage) image);
   }
 
   @Override
   public void addNetwork(BaseNetwork network) {
-    //TODO check cast
+    // TODO check cast
     this.networks.add((Network) network);
   }
 

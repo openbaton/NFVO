@@ -30,7 +30,7 @@ import org.openbaton.catalogue.mano.common.faultmanagement.FaultManagementPolicy
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.util.BaseEntity;
 
-//import javax.persistence.CascadeType;
+// import javax.persistence.CascadeType;
 
 /** Based on ETSI GS NFV-MAN 001 V1.1.1 (2014-12) */
 @Entity
@@ -66,9 +66,8 @@ public class VirtualDeploymentUnit extends BaseEntity {
    * initialization, termination, graceful shutdown, scaling out/in).
    */
   @OneToMany(
-    cascade = {CascadeType.MERGE, CascadeType.PERSIST},
-    fetch = FetchType.EAGER
-  )
+      cascade = {CascadeType.MERGE, CascadeType.PERSIST},
+      fetch = FetchType.EAGER)
   private Set<LifecycleEvent> lifecycle_event;
   /** Placeholder for other constraints. */
   private String vdu_constraint;
@@ -82,9 +81,8 @@ public class VirtualDeploymentUnit extends BaseEntity {
   private HighAvailability high_availability;
 
   @OneToMany(
-    cascade = {CascadeType.ALL},
-    fetch = FetchType.EAGER
-  )
+      cascade = {CascadeType.ALL},
+      fetch = FetchType.EAGER)
   private Set<FaultManagementPolicy> fault_management_policy;
   /**
    * Defines minimum and maximum number of instances which can be created to support scale out/in.

@@ -115,7 +115,8 @@ public class PluginStartup {
     if (folder.isDirectory()) {
       for (File jar : folder.listFiles()) {
         if (jar.getAbsolutePath().endsWith(".jar")) {
-          // quick workaround for avoiding a null pointer exception when plugin names is not like the expected one (pluginname-version)..
+          // quick workaround for avoiding a null pointer exception when plugin names is not like
+          // the expected one (pluginname-version)..
           String absolutePath = jar.getAbsolutePath();
           String pluginName =
               absolutePath.substring(absolutePath.lastIndexOf("/") + 1, absolutePath.length());

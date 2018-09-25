@@ -177,10 +177,12 @@ public class VimManagementClassSuiteTest {
     //      Future<Set<DeploymentFlavour>> futureFlavours = mock(AsyncResult.class);
     //      Future<Set<BaseNetwork>> futureNetworks = mock(AsyncResult.class);
     //      Future<Set<BaseNfvImage>> futureImages = mock(AsyncResult.class);
-    //      when(asyncVimManagement.updateFlavors(any(BaseVimInstance.class))).thenReturn(futureFlavours);
+    //
+    // when(asyncVimManagement.updateFlavors(any(BaseVimInstance.class))).thenReturn(futureFlavours);
     //      when(asyncVimManagement.updateFlavors(any(BaseVimInstance.class)).get())
     //          .thenReturn(new HashSet<>());
-    //      when(asyncVimManagement.updateImages(any(BaseVimInstance.class))).thenReturn(futureImages);
+    //
+    // when(asyncVimManagement.updateImages(any(BaseVimInstance.class))).thenReturn(futureImages);
     //      when(asyncVimManagement.updateImages(any(BaseVimInstance.class)).get())
     //          .thenReturn(new HashSet<>());
     //      when(asyncVimManagement.updateNetworks(any(BaseVimInstance.class)))

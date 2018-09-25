@@ -34,9 +34,8 @@ public class FaultManagementPolicy extends BaseEntity {
   private PerceivedSeverity severity;
 
   @OneToMany(
-    cascade = {CascadeType.ALL},
-    fetch = FetchType.EAGER
-  )
+      cascade = {CascadeType.ALL},
+      fetch = FetchType.EAGER)
   private Set<Criteria> criteria;
 
   public void setName(String name) {

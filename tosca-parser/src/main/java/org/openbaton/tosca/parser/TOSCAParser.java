@@ -205,7 +205,7 @@ public class TOSCAParser {
     virtualLinkReferences.addAll(vnf.getRequirements().getVirtualLinks());
 
     // ADD VLs
-    //ArrayList<String> vl_list = vnf.getRequirements().getVirtualLinks();
+    // ArrayList<String> vl_list = vnf.getRequirements().getVirtualLinks();
     Set<InternalVirtualLink> vls = new HashSet<>();
 
     for (VLNodeTemplate vl : topologyTemplate.getVLNodes()) {
@@ -218,7 +218,7 @@ public class TOSCAParser {
     if (vnf.getInterfaces() != null && vnf.getInterfaces().getLifecycle() != null)
       vnfd.setLifecycle_event(vnf.getInterfaces().getOpLifecycle());
 
-    //ADD CONFIGURATIONS
+    // ADD CONFIGURATIONS
     if (vnf.getProperties().getConfigurations() != null) {
       Configuration configuration = new Configuration();
       configuration.setName(vnf.getProperties().getConfigurations().getName());
@@ -299,7 +299,7 @@ public class TOSCAParser {
         && VNFDTemplate.getInputs().getInterfaces().getLifecycle() != null)
       vnfd.setLifecycle_event(VNFDTemplate.getInputs().getInterfaces().getOpLifecycle());
 
-    //ADD CONFIGURATIONS
+    // ADD CONFIGURATIONS
     if (VNFDTemplate.getInputs().getConfigurations() != null) {
 
       VNFConfigurations configurations = VNFDTemplate.getInputs().getConfigurations();

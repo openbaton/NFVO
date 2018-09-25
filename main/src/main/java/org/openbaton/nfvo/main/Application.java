@@ -33,7 +33,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /** Created by lto on 16/04/15. */
-//@SpringBootApplication
+// @SpringBootApplication
 @SpringBootApplication(exclude = DispatcherServletAutoConfiguration.class)
 @EntityScan(basePackages = "org.openbaton")
 @ComponentScan(basePackages = "org.openbaton")

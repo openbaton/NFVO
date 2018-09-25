@@ -47,24 +47,23 @@ public class VNFPackage extends BaseEntity {
   @ElementCollection(fetch = FetchType.EAGER)
   private Set<String> vimTypes;
 
-  //URL to the image's location
+  // URL to the image's location
   private String imageLink;
 
-  //URL to the scripts' location
+  // URL to the scripts' location
   private String scriptsLink;
 
-  //NFVImage used by this VNFPackage
+  // NFVImage used by this VNFPackage
   @OneToOne(
-    fetch = FetchType.EAGER,
-    cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST},
-    orphanRemoval = true
-  )
+      fetch = FetchType.EAGER,
+      cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST},
+      orphanRemoval = true)
   private BaseNfvImage image;
 
   @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   private VNFPackageMetadata vnfPackageMetadata;
 
-  //Set of scripts to execute
+  // Set of scripts to execute
   @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   private Set<Script> scripts;
 

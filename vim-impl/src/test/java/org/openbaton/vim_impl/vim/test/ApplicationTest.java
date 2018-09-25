@@ -26,9 +26,8 @@ import org.springframework.context.annotation.Configuration;
 /** Created by lto on 30/04/15. */
 @Configuration
 @ComponentScan(
-  basePackages = {"org.openbaton.vim_impl"},
-  basePackageClasses = VimBroker.class
-)
+    basePackages = {"org.openbaton.vim_impl"},
+    basePackageClasses = VimBroker.class)
 public class ApplicationTest {
 
   @Bean

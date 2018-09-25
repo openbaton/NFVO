@@ -151,7 +151,7 @@ public class NetworkManagementClassSuiteTest {
   public void networkManagementQueryTest() {
     when(networkRepository.findAll()).thenReturn(new ArrayList<>());
 
-    //Assert.assertEquals(0, networkManagement.query().size());
+    // Assert.assertEquals(0, networkManagement.query().size());
 
     Network network_exp = createNetwork();
     when(networkRepository.findOne(network_exp.getId())).thenReturn(network_exp);

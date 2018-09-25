@@ -27,8 +27,8 @@ import org.openbaton.catalogue.nfvo.ImageStatus;
 public class NFVImage extends BaseNfvImage {
 
   private String name;
-  private Long minRam = 0L;; //in MB
-  private Long minDiskSpace = 0L; //in GB
+  private Long minRam = 0L;; // in MB
+  private Long minDiskSpace = 0L; // in GB
   private String minCPU;
   private Boolean isPublic = false;
   private String diskFormat;

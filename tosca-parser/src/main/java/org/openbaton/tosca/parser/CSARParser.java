@@ -137,7 +137,7 @@ public class CSARParser {
     }
   }
 
-  //TODO what is the need of such method? Only for testing purposes?
+  // TODO what is the need of such method? Only for testing purposes?
   public void parseVNFCSAR(String vnfd_csar) throws Exception {
 
     try (InputStream csar = new FileInputStream(vnfd_csar)) {
@@ -171,7 +171,7 @@ public class CSARParser {
 
     Yaml yaml = new Yaml();
     metadata = yaml.loadAs(new String(this.vnfMetadata.toByteArray()), Map.class);
-    //Get configuration for NFVImage
+    // Get configuration for NFVImage
     vnfPackage = vnfPackageManagement.handleMetadata(metadata, vnfPackage);
 
     return vnfPackageManagement.handleImage(

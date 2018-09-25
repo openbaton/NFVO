@@ -121,7 +121,7 @@ public class NSRUtils {
                   vnfRecordDependency
                       .getParameters()
                       .get(virtualNetworkFunctionDescriptor.getType());
-              //If there are no dependencyParameter of that type
+              // If there are no dependencyParameter of that type
               if (dependencyParameters == null) {
                 dependencyParameters = new DependencyParameters();
                 dependencyParameters.setParameters(new HashMap<>());
@@ -212,8 +212,8 @@ public class NSRUtils {
     virtualLinkRecord.setVnffgr_reference(new HashSet<>());
     virtualLinkRecord.setConnection(new HashSet<>());
 
-    //TODO think about test_access -> different types on VLD and VLR
-    //virtualLinkRecord.setTest_access("");
+    // TODO think about test_access -> different types on VLD and VLR
+    // virtualLinkRecord.setTest_access("");
 
     virtualLinkRecord.setQos(new HashSet<>());
     for (String qos : virtualLinkDescriptor.getQos()) {

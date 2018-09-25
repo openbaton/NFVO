@@ -133,7 +133,7 @@ public class VirtualNetworkFunctionManagement
       String id,
       String projectId)
       throws NotFoundException {
-    //TODO Update inner fields
+    // TODO Update inner fields
     VirtualNetworkFunctionDescriptor originalVnfd =
         vnfdRepository.findFirstByIdAndProjectId(id, projectId);
     if (originalVnfd == null) throw new NotFoundException("No VNFD found with ID " + id);

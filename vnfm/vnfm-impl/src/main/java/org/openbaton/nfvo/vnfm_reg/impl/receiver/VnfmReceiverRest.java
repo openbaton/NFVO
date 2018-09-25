@@ -58,11 +58,10 @@ public class VnfmReceiverRest implements VnfmReceiver {
   }
 
   @RequestMapping(
-    value = "vnfm-core-actions-reply",
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "vnfm-core-actions-reply",
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.OK)
   public void actionFinishedRest(@RequestBody JsonObject nfvMessage)
       throws InterruptedException, ExecutionException {
@@ -71,11 +70,10 @@ public class VnfmReceiverRest implements VnfmReceiver {
   }
 
   @RequestMapping(
-    value = "vnfm-core-actions",
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "vnfm-core-actions",
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.OK)
   public void actionFinishedVoidRest(@RequestBody JsonObject nfvMessage)
       throws InterruptedException, ExecutionException {
@@ -91,11 +89,10 @@ public class VnfmReceiverRest implements VnfmReceiver {
   }
 
   @RequestMapping(
-    value = "vnfm-core-grant",
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "vnfm-core-grant",
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.ACCEPTED)
   public NFVMessage grantLifecycleOperation(@RequestBody VnfmOrGenericMessage message)
       throws ExecutionException, InterruptedException {
@@ -106,11 +103,10 @@ public class VnfmReceiverRest implements VnfmReceiver {
   }
 
   @RequestMapping(
-    value = "vnfm-core-allocate",
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "vnfm-core-allocate",
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.ACCEPTED)
   public NFVMessage allocate(@RequestBody VnfmOrAllocateResourcesMessage message)
       throws ExecutionException, InterruptedException {
@@ -119,11 +115,10 @@ public class VnfmReceiverRest implements VnfmReceiver {
   }
 
   @RequestMapping(
-    value = "vnfm-core-scale",
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "vnfm-core-scale",
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.ACCEPTED)
   public NFVMessage scale(@RequestBody VnfmOrScalingMessage message)
       throws InterruptedException, ExecutionException {

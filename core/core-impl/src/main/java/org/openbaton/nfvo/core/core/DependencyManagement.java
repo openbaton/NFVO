@@ -92,7 +92,7 @@ public class DependencyManagement
       log.trace(vnfRecordDependency.getTarget() + " == " + virtualNetworkFunctionRecord.getName());
       if (vnfRecordDependency.getTarget().equals(virtualNetworkFunctionRecord.getName())) {
         dep++;
-        //waiting for them to finish
+        // waiting for them to finish
         Set<String> notInitIds =
             getNotInitializedVnfrSource(vnfRecordDependency.getIdType().keySet(), nsr);
         if (!notInitIds.isEmpty()) {
@@ -111,7 +111,7 @@ public class DependencyManagement
                   + virtualNetworkFunctionRecord.getName()
                   + " with dependency "
                   + vnfRecordDependency);
-          //send sendMessageToVNFR to VNFR
+          // send sendMessageToVNFR to VNFR
           if (nsr.getStatus().ordinal() != Status.ERROR.ordinal()) {
             OrVnfmGenericMessage orVnfmGenericMessage =
                 new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.MODIFY);
@@ -201,7 +201,7 @@ public class DependencyManagement
     for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu())
       for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
 
-        //log.debug("VNFComponent id: " + vnfcInstance.getVnfComponent().getId());
+        // log.debug("VNFComponent id: " + vnfcInstance.getVnfComponent().getId());
         log.debug("VNFRecordDependency is " + vnfRecordDependency);
         log.debug("VNFCDependencyParameters is " + vnfcDependencyParameters);
 

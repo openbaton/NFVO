@@ -42,11 +42,10 @@ public class RestLogs {
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @RequestMapping(
-    value = "{nsrId}/vnfrecord/{vnfrName}/hostname/{hostname}",
-    method = RequestMethod.POST,
-    produces = MediaType.APPLICATION_JSON_VALUE,
-    consumes = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "{nsrId}/vnfrecord/{vnfrName}/hostname/{hostname}",
+      method = RequestMethod.POST,
+      produces = MediaType.APPLICATION_JSON_VALUE,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   public List<String> getLog(
       @PathVariable("nsrId") String nsrId,
       @PathVariable("vnfrName") String vnfrName,

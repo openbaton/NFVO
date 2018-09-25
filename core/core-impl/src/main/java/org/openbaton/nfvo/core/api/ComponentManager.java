@@ -246,7 +246,7 @@ public class ComponentManager implements org.openbaton.nfvo.core.interfaces.Comp
 
   @Override
   public void removeService(String id) {
-    //TODO remove also associated toker
+    // TODO remove also associated toker
     ServiceMetadata serviceMetadataToRemove = serviceRepository.findById(id);
     log.debug("Found service: " + serviceMetadataToRemove);
     serviceRepository.delete(id);
@@ -266,24 +266,20 @@ public class ComponentManager implements org.openbaton.nfvo.core.interfaces.Comp
    */
   @Override
   @RabbitListener(
-    bindings =
-        @QueueBinding(
-          value =
-              @Queue(
-                value = RabbitConfiguration.QUEUE_NAME_MANAGER_REGISTER,
-                durable = "true",
-                autoDelete = "true"
-              ),
-          exchange =
-              @Exchange(
-                value = RabbitConfiguration.EXCHANGE_NAME_OPENBATON,
-                ignoreDeclarationExceptions = "true",
-                type = RabbitConfiguration.EXCHANGE_TYPE_OPENBATON,
-                durable = RabbitConfiguration.EXCHANGE_DURABLE_OPENBATON
-              ),
-          key = RabbitConfiguration.QUEUE_NAME_MANAGER_REGISTER
-        )
-  )
+      bindings =
+          @QueueBinding(
+              value =
+                  @Queue(
+                      value = RabbitConfiguration.QUEUE_NAME_MANAGER_REGISTER,
+                      durable = "true",
+                      autoDelete = "true"),
+              exchange =
+                  @Exchange(
+                      value = RabbitConfiguration.EXCHANGE_NAME_OPENBATON,
+                      ignoreDeclarationExceptions = "true",
+                      type = RabbitConfiguration.EXCHANGE_TYPE_OPENBATON,
+                      durable = RabbitConfiguration.EXCHANGE_DURABLE_OPENBATON),
+              key = RabbitConfiguration.QUEUE_NAME_MANAGER_REGISTER))
   public String enableManager(String message) {
     try {
       // deserialize message

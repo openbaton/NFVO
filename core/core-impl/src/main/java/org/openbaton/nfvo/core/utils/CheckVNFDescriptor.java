@@ -71,7 +71,7 @@ public class CheckVNFDescriptor {
       throw new NetworkServiceIntegrityException("Not found endpoint in VNFD " + vnfd.getName());
     }
 
-    //Ensure each VDU has at least one VNFC
+    // Ensure each VDU has at least one VNFC
     for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
       if (vdu.getVnfc() == null || vdu.getVnfc().size() == 0)
         throw new NetworkServiceIntegrityException(

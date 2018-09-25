@@ -141,7 +141,7 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
 
   @Override
   public void notifyFault(AlarmEndpoint endpoint, AbstractVirtualizedResourceAlarm event) {
-    //It must not be called from a consumer
+    // It must not be called from a consumer
   }
 
   @Override
@@ -228,12 +228,12 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
 
   @Override
   public void subscribe() {
-    //not yet implemented
+    // not yet implemented
   }
 
   @Override
   public void notifyInfo() {
-    //not yet implemented
+    // not yet implemented
   }
 
   @Override
@@ -279,6 +279,6 @@ public class MonitoringPluginCaller extends MonitoringPlugin {
 
   @Override
   public void queryThreshold(String queryFilter) {
-    //not yet implemented
+    // not yet implemented
   }
 }

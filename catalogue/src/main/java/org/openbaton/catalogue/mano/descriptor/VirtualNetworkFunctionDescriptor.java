@@ -45,7 +45,7 @@ import org.openbaton.catalogue.nfvo.RequiresParameters;
 @Entity
 public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
   /** Version of the VNF Descriptor. */
-  //private String descriptor_version;
+  // private String descriptor_version;
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<LifecycleEvent> lifecycle_event;
 
@@ -74,12 +74,11 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
    * VNF being described, see clause 6.3.1.5.
    */
   @OneToMany(
-    cascade = {
-      /*CascadeType.PERSIST, CascadeType.MERGE*/
-      CascadeType.ALL
-    },
-    fetch = FetchType.EAGER
-  )
+      cascade = {
+        /*CascadeType.PERSIST, CascadeType.MERGE*/
+        CascadeType.ALL
+      },
+      fetch = FetchType.EAGER)
   private Set<VNFDeploymentFlavour> deployment_flavour;
   /**
    * The VNF package may contain a file that lists all files in the package. This can be useful for
@@ -119,7 +118,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
 
   private String updatedAt;
 
-  //NFVO Version
+  // NFVO Version
   private String nfvo_version;
 
   public String getCreatedAt() {

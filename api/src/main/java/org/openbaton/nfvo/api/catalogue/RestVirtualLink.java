@@ -41,10 +41,9 @@ public class RestVirtualLink {
    * @return virtualLinkDescriptor
    */
   @RequestMapping(
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
   public VirtualLinkDescriptor create(
       @RequestBody @Valid VirtualLinkDescriptor virtualLinkDescriptor) {
@@ -98,11 +97,10 @@ public class RestVirtualLink {
    * @return Configuration The Configuration updated
    */
   @RequestMapping(
-    value = "{id}",
-    method = RequestMethod.PUT,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "{id}",
+      method = RequestMethod.PUT,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.ACCEPTED)
   public VirtualLinkDescriptor update(
       @RequestBody @Valid VirtualLinkDescriptor virtualLinkDescriptor_new,

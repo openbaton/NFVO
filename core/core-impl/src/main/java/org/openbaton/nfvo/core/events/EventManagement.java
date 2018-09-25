@@ -78,7 +78,7 @@ public class EventManagement implements org.openbaton.nfvo.core.interfaces.Event
     Iterable<EventEndpoint> eventEndpoints = eventEndpointRepository.findAll();
     for (EventEndpoint eventEndpoint : eventEndpoints) {
       if (eventEndpoint.getType().ordinal() == EndpointType.REST.ordinal()) {
-        //TODO check if endpoint is reachable
+        // TODO check if endpoint is reachable
         try {
           URL url = new URL(eventEndpoint.getEndpoint());
           if (!pingHost(url.getHost(), url.getPort(), 3000)) {

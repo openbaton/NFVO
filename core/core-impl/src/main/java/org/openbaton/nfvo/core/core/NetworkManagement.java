@@ -53,17 +53,17 @@ public class NetworkManagement implements org.openbaton.nfvo.core.interfaces.Net
     log.info("Creating network " + network.getName() + " on vim " + vimInstance.getName());
     org.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement vim;
     vim = vimBroker.getVim(vimInstance.getType());
-    //Define Network if values are null or empty
+    // Define Network if values are null or empty
     if (network.getName() == null || network.getName().isEmpty())
       network.setName(IdGenerator.createUUID());
     if (network instanceof Network) {
       Network osNetwork = (Network) network;
       if (osNetwork.getSubnets().isEmpty()) {
-        //Define Subnet
+        // Define Subnet
         Subnet subnet = new Subnet();
         subnet.setName(network.getName() + "_subnet");
         subnet.setCidr("192.168." + (int) (Math.random() * 255) + ".0/24");
-        //Define list of Subnets for Network
+        // Define list of Subnets for Network
         Set<Subnet> subnets = new HashSet<>();
         subnets.add(subnet);
         osNetwork.setSubnets(subnets);
@@ -83,11 +83,11 @@ public class NetworkManagement implements org.openbaton.nfvo.core.interfaces.Net
         }
       }
     }
-    //Create Network on cloud environment
+    // Create Network on cloud environment
     network = vim.add(vimInstance, network);
-    //Create Network in NetworkRepository
+    // Create Network in NetworkRepository
     network = networkRepository.save(network);
-    //Add network to VimInstance
+    // Add network to VimInstance
     vimInstance.addNetwork(network);
     log.info("Created Network " + network.getName());
     log.debug("Network details: " + network);
@@ -97,22 +97,22 @@ public class NetworkManagement implements org.openbaton.nfvo.core.interfaces.Net
   @Override
   public void delete(BaseVimInstance vimInstance, BaseNetwork network)
       throws VimException, PluginException {
-    //Fetch Vim
+    // Fetch Vim
     org.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement vim;
     vim = vimBroker.getVim(vimInstance.getType());
-    //Delete network from cloud environment
+    // Delete network from cloud environment
     vim.delete(vimInstance, network);
-    //Delete network from NetworkRepository
+    // Delete network from NetworkRepository
     networkRepository.delete(network);
   }
 
   @Override
   public BaseNetwork update(BaseVimInstance vimInstance, Network updatingNetwork)
       throws VimException, PluginException {
-    //Fetch Vim
+    // Fetch Vim
     org.openbaton.nfvo.vim_interfaces.network_management.NetworkManagement vim;
     vim = vimBroker.getVim(vimInstance.getType());
-    //Update network on cloud environment
+    // Update network on cloud environment
     return vim.update(vimInstance, updatingNetwork);
   }
 

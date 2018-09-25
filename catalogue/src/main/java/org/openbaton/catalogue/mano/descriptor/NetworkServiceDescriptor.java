@@ -43,14 +43,13 @@ public class NetworkServiceDescriptor extends NFVEntityDescriptor {
    * well.
    */
   @ManyToMany(
-    cascade = {
-      CascadeType.MERGE,
-      CascadeType.REFRESH,
-      CascadeType.PERSIST,
-      CascadeType.DETACH /*CascadeType.REMOVE*/
-    },
-    fetch = FetchType.EAGER
-  )
+      cascade = {
+        CascadeType.MERGE,
+        CascadeType.REFRESH,
+        CascadeType.PERSIST,
+        CascadeType.DETACH /*CascadeType.REMOVE*/
+      },
+      fetch = FetchType.EAGER)
   @NotNull
   @Size(min = 1)
   private Set<VirtualNetworkFunctionDescriptor> vnfd;
@@ -62,9 +61,8 @@ public class NetworkServiceDescriptor extends NFVEntityDescriptor {
    * FG should be instantiated by the NFV Orchestrator.
    */
   @OneToMany(
-    cascade = {CascadeType.ALL /*CascadeType.REFRESH*/},
-    fetch = FetchType.EAGER
-  )
+      cascade = {CascadeType.ALL /*CascadeType.REFRESH*/},
+      fetch = FetchType.EAGER)
   private Set<VNFDependency> vnf_dependency;
   /* See PhysicalNetworkFunctionDescriptor class for description */
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -81,7 +79,7 @@ public class NetworkServiceDescriptor extends NFVEntityDescriptor {
 
   private Boolean enabled;
 
-  //NFVO Version
+  // NFVO Version
   private String nfvo_version;
 
   private String createdAt;

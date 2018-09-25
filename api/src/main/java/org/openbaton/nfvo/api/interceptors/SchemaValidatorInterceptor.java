@@ -58,7 +58,7 @@ public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
     if (request.getRequestURI().equalsIgnoreCase("/error")) {
       return true;
     }
-    //TODO fix the date of the image
+    // TODO fix the date of the image
     if (request.getRequestURI().contains("/datacenters") && requestMethod.equalsIgnoreCase("put")) {
       return true;
     }
@@ -99,7 +99,7 @@ public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
               gson.fromJson(requestBody, NetworkServiceDescriptor.class);
           if (networkServiceDescriptor.getVnfd().stream().anyMatch(vnfd -> vnfd.getId() != null)) {
             Set<ValidationMessage> errors = new HashSet<>();
-            //Validating VLDs
+            // Validating VLDs
             networkServiceDescriptor
                 .getVld()
                 .forEach(
@@ -112,7 +112,7 @@ public class SchemaValidatorInterceptor extends HandlerInterceptorAdapter {
                         e.printStackTrace();
                       }
                     });
-            //Validating VNFDeps
+            // Validating VNFDeps
             networkServiceDescriptor
                 .getVnf_dependency()
                 .forEach(

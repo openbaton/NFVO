@@ -188,7 +188,7 @@ public class NetworkServiceRecordManagement
       throw new BadRequestException("NSR is not in ACTIVE status");
     NetworkServiceRecord nsr = nsrRepository.findFirstByIdAndProjectId(nsrId, projectId);
 
-    //Check if the VNFD exists
+    // Check if the VNFD exists
     VirtualNetworkFunctionDescriptor vnfd =
         vnfdRepository.findFirstByIdAndProjectId(vnfdId, projectId);
     if (vnfd == null) {
@@ -285,7 +285,8 @@ public class NetworkServiceRecordManagement
 
     boolean savedNsrSuccessfully = false;
     int attempt = 0;
-    // this while loop is necessary, because while creating the NSR also a VIM might be changed (newly created networks).
+    // this while loop is necessary, because while creating the NSR also a VIM might be changed
+    // (newly created networks).
     // then saving the NSR might produce OptimisticLockingFailureExceptions.
     while (!savedNsrSuccessfully) {
       // Save the keys in the NSR
@@ -322,17 +323,17 @@ public class NetworkServiceRecordManagement
       }
 
       // TODO it better: Check if the chosen VIM has ENOUGH Resources for deployment
-      //checkQuotaForNS();
+      // checkQuotaForNS();
 
-      //get the set of all vnfDependencies
+      // get the set of all vnfDependencies
       Set<VNFDependency> vnfDependencySet = nsdUtils.getVNFDependenciesFromRequires(vnfd, nsd);
       vnfDependencySet.addAll(new HashSet<>(nsd.getVnf_dependency()));
 
-      //get the set of all VNFD
+      // get the set of all VNFD
       Set<VirtualNetworkFunctionDescriptor> vnfdSet = new HashSet<>(nsd.getVnfd());
       vnfdSet.add(vnfd);
 
-      //set the dependencies
+      // set the dependencies
       NSRUtils.setDependencies(vnfdSet, vnfDependencySet, networkServiceRecord);
 
       vnfd.setProjectId(projectId);
@@ -417,7 +418,8 @@ public class NetworkServiceRecordManagement
 
   public void deleteVNFRecord(String idNsr, String idVnf, String projectId)
       throws NotFoundException {
-    //TODO the logic of this request for the moment deletes only the VNFR from the DB, need to be removed from the
+    // TODO the logic of this request for the moment deletes only the VNFR from the DB, need to be
+    // removed from the
     // running NetworkServiceRecord
     VirtualNetworkFunctionRecord vnfr = vnfrRepository.findOne(idVnf);
     if (vnfr == null) {
@@ -985,7 +987,7 @@ public class NetworkServiceRecordManagement
               + "possibile");
     }
 
-    //save the new state of the failedVnfcInstance
+    // save the new state of the failedVnfcInstance
     nsrRepository.saveCascade(networkServiceRecord);
 
     OrVnfmHealVNFRequestMessage healMessage = new OrVnfmHealVNFRequestMessage();
@@ -1196,7 +1198,8 @@ public class NetworkServiceRecordManagement
     NetworkServiceRecord networkServiceRecord = null;
     boolean savedNsrSuccessfully = false;
     int attempt = 0;
-    // this while loop is necessary, because while creating the NSR also a VIM might be changed (newly created
+    // this while loop is necessary, because while creating the NSR also a VIM might be changed
+    // (newly created
     // networks).
     // then saving the NSR might produce OptimisticLockingFailureExceptions.
     while (!savedNsrSuccessfully) {
@@ -1297,7 +1300,8 @@ public class NetworkServiceRecordManagement
       // - username without password is not allowed
       // - password without username is not allowed
       // - username and password is allowed
-      // - no username and no password is allowed because this configuration can be done in the configuration file of
+      // - no username and no password is allowed because this configuration can be done in the
+      // configuration file of
       //    the Fixed-host VNFM.
       if (isSshPasswordProvided != isSshUsernameProvided) {
         throw new NotFoundException(
@@ -1747,7 +1751,8 @@ public class NetworkServiceRecordManagement
     // Initialise the context for the automatic trigger of the NSR restart
     vnfmManager.upgradeVnfr(nsrId, vnfr.getId(), projectId);
 
-    // Rebuild the VNF using the upgraded VNF Descriptor and VNF Package and after the rebuild will be finished the
+    // Rebuild the VNF using the upgraded VNF Descriptor and VNF Package and after the rebuild will
+    // be finished the
     // restart of the NSR will be automatically triggered
     restartVnfr(nsr, vnfrId, rebuildImageName, projectId);
 
@@ -1809,7 +1814,8 @@ public class NetworkServiceRecordManagement
     VNFCInstance vnfcInstance = getVNFCInstance(virtualDeploymentUnit, idVNFCI);
     switch (nfvMessage.getAction()) {
       case HEAL:
-        // Note: when we get a HEAL message from the API, it contains only the cause (no vnfr or vnfcInstance).
+        // Note: when we get a HEAL message from the API, it contains only the cause (no vnfr or
+        // vnfcInstance).
         // Here the vnfr and the vnfcInstance are set into the message, since they are updated.
         VnfmOrHealedMessage VnfmOrHealVNFRequestMessage = (VnfmOrHealedMessage) nfvMessage;
         log.debug("Received Heal message: " + VnfmOrHealVNFRequestMessage);
@@ -1988,7 +1994,8 @@ public class NetworkServiceRecordManagement
           OrVnfmGenericMessage orVnfmGenericMessage =
               new OrVnfmGenericMessage(vnfrTarget, Action.MODIFY);
 
-          // Retrieve from VNFR Dependency Repository the dependency record for VNFR target with ready dependencies
+          // Retrieve from VNFR Dependency Repository the dependency record for VNFR target with
+          // ready dependencies
           VNFRecordDependency resolvableVnfrDependency =
               vnfRecordDependencyRepository.findFirstById(vnfrDependency.getId());
           log.debug("Resolvable VNFR Dependency is: " + resolvableVnfrDependency);

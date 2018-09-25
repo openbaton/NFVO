@@ -80,7 +80,7 @@ public class GrantoperationTask extends AbstractTask {
     log.info("Executing task: GrantOperation on VNFR: " + virtualNetworkFunctionRecord.getName());
     printOldAndNewHibernateVersion();
 
-    //Save the vnfr since in the grantLifecycleOperation method we use vdu.getId()
+    // Save the vnfr since in the grantLifecycleOperation method we use vdu.getId()
     saveVirtualNetworkFunctionRecord();
 
     Map<String, BaseVimInstance> vimInstancesChosen = new HashMap<>();
@@ -194,7 +194,7 @@ public class GrantoperationTask extends AbstractTask {
                   virtualDeploymentUnit.getVm_image(), vimInstance.getName()));
       }
 
-      //check networks
+      // check networks
       if (!networkServiceRecordRepository.exists(virtualNetworkFunctionRecord.getParent_ns_id()))
         throw new NsrNotFoundException(
             String.format(

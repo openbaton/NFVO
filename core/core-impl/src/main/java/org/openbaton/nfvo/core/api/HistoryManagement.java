@@ -87,9 +87,8 @@ public class HistoryManagement implements org.openbaton.nfvo.core.interfaces.His
           log.debug("History is full");
           while (true) {
             HistoryEntity entity =
-                historyEntityRepository.findAll(
-                        new Sort(new Sort.Order(Sort.Direction.ASC, "timestamp")))[
-                    0];
+                historyEntityRepository
+                    .findAll(new Sort(new Sort.Order(Sort.Direction.ASC, "timestamp")))[0];
             log.debug("Trying to delete entry from history");
             try {
               historyEntityRepository.delete(entity.getId());

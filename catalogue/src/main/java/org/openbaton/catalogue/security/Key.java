@@ -22,7 +22,6 @@ import javax.persistence.UniqueConstraint;
 
 @Entity
 @Table(
-  name = "PublicKeys",
-  uniqueConstraints = @UniqueConstraint(columnNames = {"name", "projectId"})
-)
+    name = "PublicKeys",
+    uniqueConstraints = @UniqueConstraint(columnNames = {"name", "projectId"}))
 public class Key extends BaseKey {}

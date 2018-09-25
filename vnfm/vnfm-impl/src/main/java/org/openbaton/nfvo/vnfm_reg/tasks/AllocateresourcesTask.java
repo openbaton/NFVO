@@ -94,7 +94,7 @@ public class AllocateresourcesTask extends AbstractTask {
     try {
       saveVirtualNetworkFunctionRecord();
     } catch (NsrNotFoundException e) {
-      //TODO considering deleting VMs if the NSR was deleted while deploying them
+      // TODO considering deleting VMs if the NSR was deleted while deploying them
       log.error(e.getMessage());
       throw e;
     }

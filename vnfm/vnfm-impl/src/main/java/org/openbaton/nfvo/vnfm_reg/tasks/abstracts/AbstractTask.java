@@ -372,12 +372,14 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
 
               log.debug("VNFCInstance: " + instanceInVNFR.getHostname());
 
-              // if vnfciStarted is not null then the START message received refers to the VNFCInstance
+              // if vnfciStarted is not null then the START message received refers to the
+              // VNFCInstance
               if (vnfciStarted != null) {
                 if (instanceInVNFR.getId().equals(vnfciStarted.getId())) {
                   instanceInVNFR.setState("ACTIVE");
                 }
-              } else { // START refers to the VNFR then the status of all the VNFCInstance is set to "ACTIVE"
+              } else { // START refers to the VNFR then the status of all the VNFCInstance is set to
+                       // "ACTIVE"
                 instanceInVNFR.setState("ACTIVE");
               }
             }
@@ -405,7 +407,8 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
               if (instanceInVNFR.getState().equals("ACTIVE")) {
                 stopVNFR = false;
               }
-            } else { // STOP refers to the VNFR then the status of all the VNFCInstance is set to "INACTIVE"
+            } else { // STOP refers to the VNFR then the status of all the VNFCInstance is set to
+                     // "INACTIVE"
               instanceInVNFR.setState("INACTIVE");
             }
           }

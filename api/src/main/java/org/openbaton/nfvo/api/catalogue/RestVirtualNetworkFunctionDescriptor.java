@@ -53,15 +53,13 @@ public class RestVirtualNetworkFunctionDescriptor {
    *     values from the core
    */
   @ApiOperation(
-    value = "Adding a Virtual Network Function Descriptor",
-    notes =
-        "POST request with Virtual Network Function Descriptor as JSON content of the request body"
-  )
+      value = "Adding a Virtual Network Function Descriptor",
+      notes =
+          "POST request with Virtual Network Function Descriptor as JSON content of the request body")
   @RequestMapping(
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
   public VirtualNetworkFunctionDescriptor create(
       @RequestBody @Valid VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
@@ -77,10 +75,9 @@ public class RestVirtualNetworkFunctionDescriptor {
    * @param id : The virtualNetworkFunctionDescriptor's id to be deleted
    */
   @ApiOperation(
-    value = "Removing a Virtual Network Function Descriptor",
-    notes =
-        "The id in the URL belongs to the Virtual Network Function Descriptor that will be deleted"
-  )
+      value = "Removing a Virtual Network Function Descriptor",
+      notes =
+          "The id in the URL belongs to the Virtual Network Function Descriptor that will be deleted")
   @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(
@@ -97,15 +94,13 @@ public class RestVirtualNetworkFunctionDescriptor {
    * @param ids
    */
   @ApiOperation(
-    value = "Removing multiple Virtual Network Function Descriptors",
-    notes =
-        "The request takes a list of ids of Virtual Network Function Descriptor that will be deleted"
-  )
+      value = "Removing multiple Virtual Network Function Descriptors",
+      notes =
+          "The request takes a list of ids of Virtual Network Function Descriptor that will be deleted")
   @RequestMapping(
-    value = "/multipledelete",
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "/multipledelete",
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void multipleDelete(
       @RequestBody @Valid List<String> ids, @RequestHeader(value = "project-id") String projectId)
@@ -134,9 +129,8 @@ public class RestVirtualNetworkFunctionDescriptor {
    *     selected
    */
   @ApiOperation(
-    value = "Retrieving a Virtual Network Function Descriptor",
-    notes = "The id in the URL belongs to the requested Virtual Network Function Descriptor"
-  )
+      value = "Retrieving a Virtual Network Function Descriptor",
+      notes = "The id in the URL belongs to the requested Virtual Network Function Descriptor")
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
   public VirtualNetworkFunctionDescriptor findById(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
@@ -156,16 +150,14 @@ public class RestVirtualNetworkFunctionDescriptor {
    * @return networkServiceDescriptor: the VNF software virtualNetworkFunctionDescriptor updated
    */
   @ApiOperation(
-    value = "Updating a Virtual Network Function Descriptor",
-    notes =
-        "The updated VNFD is passed as JSON content in the Request Body and the id in the URL belongs to the VNFD that will be updated"
-  )
+      value = "Updating a Virtual Network Function Descriptor",
+      notes =
+          "The updated VNFD is passed as JSON content in the Request Body and the id in the URL belongs to the VNFD that will be updated")
   @RequestMapping(
-    value = "{id}",
-    method = RequestMethod.PUT,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "{id}",
+      method = RequestMethod.PUT,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.ACCEPTED)
   public VirtualNetworkFunctionDescriptor update(
       @RequestBody @Valid VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
@@ -176,10 +168,9 @@ public class RestVirtualNetworkFunctionDescriptor {
   }
 
   @ApiOperation(
-    value = "Retrieving a Virtual Deployment Unit",
-    notes =
-        "The vnfdId in the URL belongs to the requested Virtual Network Function Descriptor and the vduId to the Virtual Deployment Unit inside the VNFD"
-  )
+      value = "Retrieving a Virtual Deployment Unit",
+      notes =
+          "The vnfdId in the URL belongs to the requested Virtual Network Function Descriptor and the vduId to the Virtual Deployment Unit inside the VNFD")
   @RequestMapping(value = "{vnfdId}/vdus/{vduId}", method = RequestMethod.GET)
   public VirtualDeploymentUnit getVDU(
       @PathVariable("vnfdId") String vnfdId,

@@ -115,7 +115,8 @@ public class VnfmManager
 
   private static Map<String, Map<String, Integer>> vnfrNames;
 
-  // Keep track of the NSR (for each project) which need to be restarted after the upgrade of one of their VNF
+  // Keep track of the NSR (for each project) which need to be restarted after the upgrade of one of
+  // their VNF
   private static Map<String, Set<String>> nsrRestartInProgress;
   private static Map<String, Set<String>> nsrRestartStopInProgress;
 
@@ -222,7 +223,8 @@ public class VnfmManager
     Status status = Status.TERMINATED;
     NetworkServiceRecord networkServiceRecord = null;
 
-    // this while loop is necessary because the NSR and it's components might have changed before the save call
+    // this while loop is necessary because the NSR and it's components might have changed before
+    // the save call
     // resulting in an OptimisticLockingFailureException
     boolean foundAndSet = false;
     while (!foundAndSet) {
@@ -293,7 +295,7 @@ public class VnfmManager
 
       while (true) {
         networkServiceRecord = nsrRepository.findFirstById(networkServiceRecord.getId());
-        //Check if all vnfr have been received from the vnfm
+        // Check if all vnfr have been received from the vnfm
         boolean nsrFilledWithAllVnfr =
             nsdRepository
                     .findFirstById(networkServiceRecord.getDescriptor_reference())
@@ -331,7 +333,7 @@ public class VnfmManager
               publishEvent(
                   Action.INSTANTIATE_FINISH,
                   networkServiceRecord,
-                  //virtualNetworkFunctionRecord,
+                  // virtualNetworkFunctionRecord,
                   networkServiceRecord.getProjectId());
             }
           } catch (OptimisticLockingFailureException e) {
@@ -617,7 +619,8 @@ public class VnfmManager
     if (isNsrRestartRequired(projectId, nsrId)) {
       NetworkServiceRecord nsr = nsrRepository.findFirstByIdAndProjectId(nsrId, projectId);
 
-      // If a VNF upgrade is in progress then the NSR will be in ACTIVE only after the START of the upgraded VNF
+      // If a VNF upgrade is in progress then the NSR will be in ACTIVE only after the START of the
+      // upgraded VNF
       if (nsr.getStatus().ordinal() == Status.ACTIVE.ordinal()) {
         // To avoid sending multiple STOP messages to the same NSR in restart
         if (isNsrRestartStopRequired(projectId, nsrId)) {
@@ -635,7 +638,7 @@ public class VnfmManager
                       + ")");
               OrVnfmStartStopMessage orVnfmStopMessage =
                   new OrVnfmStartStopMessage(vnfrInNsr, null, Action.STOP);
-              //orVnfmStopMessage.setRestart(true);
+              // orVnfmStopMessage.setRestart(true);
               vnfStateHandler.sendMessageToVNFR(vnfrInNsr, orVnfmStopMessage);
             }
             unsetNsrRestartStopRequired(projectId, nsrId);
@@ -677,7 +680,7 @@ public class VnfmManager
                           + ")");
                   OrVnfmStartStopMessage orVnfmStartMessage =
                       new OrVnfmStartStopMessage(vnfrInNsr, null, Action.START);
-                  //orVnfmStartMessage.setRestart(true);
+                  // orVnfmStartMessage.setRestart(true);
                   vnfStateHandler.sendMessageToVNFR(vnfrInNsr, orVnfmStartMessage);
                 }
               }
@@ -700,7 +703,7 @@ public class VnfmManager
     }
   }
 
-  //@Override
+  // @Override
   //  public synchronized void onApplicationEvent(ApplicationEvent event) {
   //    if (event instanceof EventFinishNFVO) {
   //      EventFinishNFVO eventFinishNFVO = (EventFinishNFVO) event;
@@ -728,7 +731,8 @@ public class VnfmManager
   //      if (isNsrRestartRequired(projectId, nsrId)) {
   //        NetworkServiceRecord nsr = nsrRepository.findFirstByIdAndProjectId(nsrId, projectId);
   //
-  //        // If a VNF upgrade is in progress then the NSR will be in ACTIVE only after the START of the upgraded VNF
+  //        // If a VNF upgrade is in progress then the NSR will be in ACTIVE only after the START
+  // of the upgraded VNF
   //        if (nsr.getStatus().ordinal() == Status.ACTIVE.ordinal()) {
   //          // To avoid sending multiple STOP messages to the same NSR in restart
   //          if (isNsrRestartStopRequired(projectId, nsrId)) {
@@ -770,7 +774,8 @@ public class VnfmManager
   //              allNsrIsStopped = false;
   //            }
   //          }
-  //          // When the full NSR has been stopped then a START has to be sent to all VNFR of the NSR
+  //          // When the full NSR has been stopped then a START has to be sent to all VNFR of the
+  // NSR
   //          if (allNsrIsStopped) {
   //            try {
   //              for (String vnfrName : vnfrNames.get(nsrId).keySet()) {

@@ -122,7 +122,7 @@ public class PluginManager implements org.openbaton.nfvo.core.interfaces.PluginM
       while ((bytesread = fileInputStream.read(buf)) > -1) {
         out.write(buf, 0, bytesread);
         bytesBuffered += bytesread;
-        if (bytesBuffered > 1024 * 1024) { //flush after 1MB
+        if (bytesBuffered > 1024 * 1024) { // flush after 1MB
           bytesBuffered = 0;
           out.flush();
         }

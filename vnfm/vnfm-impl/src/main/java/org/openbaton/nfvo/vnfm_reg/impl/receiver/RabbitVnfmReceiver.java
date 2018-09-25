@@ -42,24 +42,20 @@ public class RabbitVnfmReceiver implements VnfmReceiver {
 
   @Override
   @RabbitListener(
-    bindings =
-        @QueueBinding(
-          value =
-              @Queue(
-                value = RabbitConfiguration.QUEUE_NAME_VNFM_CORE_ACTIONS_REPLY,
-                durable = RabbitConfiguration.QUEUE_DURABLE,
-                autoDelete = RabbitConfiguration.QUEUE_AUTODELETE
-              ),
-          exchange =
-              @Exchange(
-                value = RabbitConfiguration.EXCHANGE_NAME_OPENBATON,
-                ignoreDeclarationExceptions = "true",
-                type = RabbitConfiguration.EXCHANGE_TYPE_OPENBATON,
-                durable = RabbitConfiguration.EXCHANGE_DURABLE_OPENBATON
-              ),
-          key = RabbitConfiguration.QUEUE_NAME_VNFM_CORE_ACTIONS_REPLY
-        )
-  )
+      bindings =
+          @QueueBinding(
+              value =
+                  @Queue(
+                      value = RabbitConfiguration.QUEUE_NAME_VNFM_CORE_ACTIONS_REPLY,
+                      durable = RabbitConfiguration.QUEUE_DURABLE,
+                      autoDelete = RabbitConfiguration.QUEUE_AUTODELETE),
+              exchange =
+                  @Exchange(
+                      value = RabbitConfiguration.EXCHANGE_NAME_OPENBATON,
+                      ignoreDeclarationExceptions = "true",
+                      type = RabbitConfiguration.EXCHANGE_TYPE_OPENBATON,
+                      durable = RabbitConfiguration.EXCHANGE_DURABLE_OPENBATON),
+              key = RabbitConfiguration.QUEUE_NAME_VNFM_CORE_ACTIONS_REPLY))
   public String actionFinished(String nfvMessage) throws ExecutionException, InterruptedException {
     NFVMessage message = gson.fromJson(nfvMessage, NFVMessage.class);
     log.debug("NFVO - core module received (via MB): " + message.getAction());
@@ -74,24 +70,20 @@ public class RabbitVnfmReceiver implements VnfmReceiver {
 
   @Override
   @RabbitListener(
-    bindings =
-        @QueueBinding(
-          value =
-              @Queue(
-                value = RabbitConfiguration.QUEUE_NAME_VNFM_CORE_ACTIONS,
-                durable = RabbitConfiguration.QUEUE_DURABLE,
-                autoDelete = RabbitConfiguration.QUEUE_AUTODELETE
-              ),
-          exchange =
-              @Exchange(
-                value = RabbitConfiguration.EXCHANGE_NAME_OPENBATON,
-                ignoreDeclarationExceptions = "true",
-                type = RabbitConfiguration.EXCHANGE_TYPE_OPENBATON,
-                durable = RabbitConfiguration.EXCHANGE_DURABLE_OPENBATON
-              ),
-          key = RabbitConfiguration.QUEUE_NAME_VNFM_CORE_ACTIONS
-        )
-  )
+      bindings =
+          @QueueBinding(
+              value =
+                  @Queue(
+                      value = RabbitConfiguration.QUEUE_NAME_VNFM_CORE_ACTIONS,
+                      durable = RabbitConfiguration.QUEUE_DURABLE,
+                      autoDelete = RabbitConfiguration.QUEUE_AUTODELETE),
+              exchange =
+                  @Exchange(
+                      value = RabbitConfiguration.EXCHANGE_NAME_OPENBATON,
+                      ignoreDeclarationExceptions = "true",
+                      type = RabbitConfiguration.EXCHANGE_TYPE_OPENBATON,
+                      durable = RabbitConfiguration.EXCHANGE_DURABLE_OPENBATON),
+              key = RabbitConfiguration.QUEUE_NAME_VNFM_CORE_ACTIONS))
   public void actionFinishedVoid(String nfvMessage)
       throws ExecutionException, InterruptedException {
     NFVMessage message = gson.fromJson(nfvMessage, NFVMessage.class);

@@ -433,7 +433,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     nsd.getMonitoring_parameter().add("monitor2");
     nsd.getMonitoring_parameter().add("monitor3");
     nsd.setProjectId(projectId);
-    //nsd.setLifecycle_event(new HashSet<LifecycleEvent>());
+    // nsd.setLifecycle_event(new HashSet<LifecycleEvent>());
     nsd.setPnfd(new HashSet<>());
     nsd.setVnffgd(new HashSet<>());
     nsd.setVld(new HashSet<>());

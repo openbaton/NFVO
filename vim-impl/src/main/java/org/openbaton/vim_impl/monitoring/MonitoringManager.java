@@ -36,7 +36,7 @@ public class MonitoringManager {
 
   @PostConstruct
   private void init() {
-    //TODO using types
+    // TODO using types
     this.virtualisedResourcesPerformanceManagement = monitoringBroker.getAvailableMonitoringAgent();
   }
 

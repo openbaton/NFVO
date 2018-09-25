@@ -262,8 +262,10 @@ public class ApiRestNSDescriptorTest {
     PhysicalNetworkFunctionDescriptor pnfd = new PhysicalNetworkFunctionDescriptor();
 
     //        networkServiceDescriptor.getPnfd().add(pnfd);
-    //        when(nsdManagement.update(networkServiceDescriptor)).thenReturn(networkServiceDescriptor);
-    //        when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(networkServiceDescriptor);
+    //
+    // when(nsdManagement.update(networkServiceDescriptor)).thenReturn(networkServiceDescriptor);
+    //
+    // when(nsdManagement.query(networkServiceDescriptor.getId())).thenReturn(networkServiceDescriptor);
     when(nsdManagement.addPnfDescriptor(any(pnfd.getClass()), anyString(), anyString()))
         .thenReturn(pnfd);
     //        NetworkServiceDescriptor nsdUpdate = nsdManagement.update(networkServiceDescriptor);

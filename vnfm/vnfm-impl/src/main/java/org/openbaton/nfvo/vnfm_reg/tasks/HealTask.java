@@ -87,7 +87,7 @@ public class HealTask extends AbstractTask {
       return null;
     }
 
-    //Find all the dependency (VNFC) sources where I am the target
+    // Find all the dependency (VNFC) sources where I am the target
     List<VNFRecordDependency> dependenciesSource =
         dependencyManagement.getDependencyForAVNFRecordSource(virtualNetworkFunctionRecord);
     log.debug(
@@ -100,17 +100,17 @@ public class HealTask extends AbstractTask {
       VirtualNetworkFunctionRecord vnfrToNotify =
           getVnfrTarget(networkServiceRecord, dependency.getTarget());
 
-      //new Dependency containing only the new VNFC
+      // new Dependency containing only the new VNFC
       VNFRecordDependency dependency_new = new VNFRecordDependency();
-      //This remains the same because the target still depends on the same VNFs
+      // This remains the same because the target still depends on the same VNFs
       dependency_new.setIdType(new HashMap<String, String>());
       for (Entry<String, String> entry : dependency.getIdType().entrySet()) {
         dependency_new.getIdType().put(entry.getKey(), entry.getValue());
       }
-      //----
+      // ----
 
       dependency_new.setParameters(new HashMap<String, DependencyParameters>());
-      //Here there could be new parameters coming from the vnfr already scaled out
+      // Here there could be new parameters coming from the vnfr already scaled out
       DependencyParameters dependencyParameters = new DependencyParameters();
       dependencyParameters.setParameters(new HashMap<String, String>());
       HashMap<String, String> parametersNew = new HashMap<>();
@@ -126,9 +126,9 @@ public class HealTask extends AbstractTask {
       dependency_new
           .getParameters()
           .put(virtualNetworkFunctionRecord.getType(), dependencyParameters);
-      //----
+      // ----
 
-      //Now add only the dependency with the VNFC already activated
+      // Now add only the dependency with the VNFC already activated
       dependency_new.setVnfcParameters(new HashMap<String, VNFCDependencyParameters>());
       VNFCDependencyParameters vnfcDependencyParameters = new VNFCDependencyParameters();
       vnfcDependencyParameters.setParameters(new HashMap<String, DependencyParameters>());
@@ -150,8 +150,8 @@ public class HealTask extends AbstractTask {
       dependency_new
           .getVnfcParameters()
           .put(virtualNetworkFunctionRecord.getType(), vnfcDependencyParameters);
-      //----
-      //Update the current dependency
+      // ----
+      // Update the current dependency
       if (dependency.getVnfcParameters().get(virtualNetworkFunctionRecord.getType()) == null) {
         VNFCDependencyParameters vnfcDependencyParameters1 = new VNFCDependencyParameters();
         vnfcDependencyParameters1.setParameters(new HashMap<String, DependencyParameters>());
@@ -165,7 +165,7 @@ public class HealTask extends AbstractTask {
             .getVnfcParameters()
             .get(virtualNetworkFunctionRecord.getType())
             .setParameters(new HashMap<String, DependencyParameters>());
-      //Add new VNFC dependency to the current dependency!
+      // Add new VNFC dependency to the current dependency!
       dependency
           .getVnfcParameters()
           .get(virtualNetworkFunctionRecord.getType())
@@ -177,7 +177,7 @@ public class HealTask extends AbstractTask {
                   .getVnfcParameters()
                   .get(virtualNetworkFunctionRecord.getType())
                   .getParameters());
-      //Delete the failed VNFCInstance from the current dependency
+      // Delete the failed VNFCInstance from the current dependency
       VNFCInstance failedVnfc = getVnfcInSuchState("failed");
       log.debug("Failed vnfc: " + failedVnfc);
       if (failedVnfc != null)
@@ -192,16 +192,16 @@ public class HealTask extends AbstractTask {
                   .getVnfcParameters()
                   .get(virtualNetworkFunctionRecord.getType())
                   .getParameters());
-      //----
+      // ----
 
-      //Set the target
+      // Set the target
       dependency_new.setTarget(dependency.getTarget());
-      //----
+      // ----
 
-      //need to update dependency in the repo
+      // need to update dependency in the repo
       vnfRecordDependencyRepository.save(dependency);
       log.debug("Dependency updated: " + dependency);
-      //----
+      // ----
 
       /* Setting the status of the VNF to INITIaLIZED so to send only one INSTANTIATE_FINISH */
       vnfrToNotify.setStatus(Status.INITIALIZED);
@@ -209,7 +209,7 @@ public class HealTask extends AbstractTask {
       VnfmManagerEndpoint vnfmManagerEndpoint = vnfmRegister.getVnfm(vnfrToNotify.getEndpoint());
       VnfmSender vnfmSender = this.getVnfmSender(vnfmManagerEndpoint.getEndpointType());
 
-      //Preparing modify message (with only the new dependency)
+      // Preparing modify message (with only the new dependency)
       OrVnfmGenericMessage modifyMessage = new OrVnfmGenericMessage(vnfrToNotify, Action.MODIFY);
 
       modifyMessage.setVnfrd(dependency_new);

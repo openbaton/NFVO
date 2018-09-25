@@ -37,10 +37,9 @@ public class RestHistory {
   }
 
   @RequestMapping(
-    value = "/{actions}",
-    method = RequestMethod.GET,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "/{actions}",
+      method = RequestMethod.GET,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   public HistoryEntity[] getHistory(@PathVariable("actions") int actions) {
     return historyManagement.getAll(actions);
   }

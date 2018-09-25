@@ -37,7 +37,7 @@ public class GsonSerializerOAuth2AccessToken implements JsonSerializer<OAuth2Acc
       OAuth2AccessToken src, Type typeOfSrc, JsonSerializationContext context) {
     JsonObject jsonObject = new JsonObject();
     jsonObject.addProperty(OAuth2AccessToken.ACCESS_TOKEN, src.getValue());
-    //back compatibility for dashboard
+    // back compatibility for dashboard
     jsonObject.addProperty("value", src.getValue());
 
     jsonObject.addProperty(OAuth2AccessToken.TOKEN_TYPE, src.getTokenType());

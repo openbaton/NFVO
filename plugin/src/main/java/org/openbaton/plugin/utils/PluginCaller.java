@@ -184,7 +184,7 @@ public class PluginCaller {
             }
           });
 
-      //Check if plugin is still up
+      // Check if plugin is still up
       if (!RabbitManager.getQueues(brokerIp, username, password, virtualHost, managementPort)
           .contains(pluginId)) {
         throw new PluginException("Plugin with id: " + pluginId + " not existing anymore...");

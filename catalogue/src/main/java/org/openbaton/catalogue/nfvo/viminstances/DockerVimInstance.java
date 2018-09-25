@@ -102,13 +102,13 @@ public class DockerVimInstance extends BaseVimInstance {
 
   @Override
   public void addImage(BaseNfvImage image) {
-    //TODO check cast
+    // TODO check cast
     this.images.add((DockerImage) image);
   }
 
   @Override
   public void addNetwork(BaseNetwork network) {
-    //TODO check cast
+    // TODO check cast
     this.networks.add((DockerNetwork) network);
   }
 

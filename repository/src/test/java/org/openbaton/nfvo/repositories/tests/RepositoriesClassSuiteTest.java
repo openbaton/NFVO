@@ -45,7 +45,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
-//import GenericRepository;
+// import GenericRepository;
 
 /** Created by lto on 30/04/15. */
 @RunWith(SpringRunner.class)
@@ -175,70 +175,60 @@ public class RepositoriesClassSuiteTest {
         Assert.assertEquals(
             ((VirtualDeploymentUnit)
                     ((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i])
-                            .getVdu()
-                            .toArray()[
-                        j])
+                        .getVdu()
+                        .toArray()[j])
                 .getId(),
             ((VirtualDeploymentUnit)
                     ((VirtualNetworkFunctionDescriptor) nsd_new.getVnfd().toArray()[i])
-                            .getVdu()
-                            .toArray()[
-                        j])
+                        .getVdu()
+                        .toArray()[j])
                 .getId());
         Assert.assertEquals(
             ((VirtualDeploymentUnit)
                     ((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i])
-                            .getVdu()
-                            .toArray()[
-                        j])
+                        .getVdu()
+                        .toArray()[j])
                 .getHbVersion(),
             ((VirtualDeploymentUnit)
                     ((VirtualNetworkFunctionDescriptor) nsd_new.getVnfd().toArray()[i])
-                            .getVdu()
-                            .toArray()[
-                        j])
+                        .getVdu()
+                        .toArray()[j])
                 .getHbVersion());
         Assert.assertEquals(
             ((VirtualDeploymentUnit)
                     ((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i])
-                            .getVdu()
-                            .toArray()[
-                        j])
+                        .getVdu()
+                        .toArray()[j])
                 .getComputation_requirement(),
             ((VirtualDeploymentUnit)
                     ((VirtualNetworkFunctionDescriptor) nsd_new.getVnfd().toArray()[i])
-                            .getVdu()
-                            .toArray()[
-                        j])
+                        .getVdu()
+                        .toArray()[j])
                 .getComputation_requirement());
         Assert.assertEquals(
             ((VirtualDeploymentUnit)
                     ((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i])
-                            .getVdu()
-                            .toArray()[
-                        j])
+                        .getVdu()
+                        .toArray()[j])
                 .getHigh_availability()
                 .getRedundancyScheme(),
             ((VirtualDeploymentUnit)
                     ((VirtualNetworkFunctionDescriptor) nsd_new.getVnfd().toArray()[i])
-                            .getVdu()
-                            .toArray()[
-                        j])
+                        .getVdu()
+                        .toArray()[j])
                 .getHigh_availability()
                 .getRedundancyScheme());
         Assert.assertEquals(
             ((VirtualDeploymentUnit)
                     ((VirtualNetworkFunctionDescriptor) nsd.getVnfd().toArray()[i])
-                            .getVdu()
-                            .toArray()[
-                        j])
+                        .getVdu()
+                        .toArray()[j])
                 .getHigh_availability()
                 .getResiliencyLevel(),
             ((VirtualDeploymentUnit)
                     ((VirtualNetworkFunctionDescriptor) nsd_new.getVnfd().toArray()[i])
-                            .getVdu()
-                            .toArray()[
-                        j])
+                        .getVdu()
+                        .toArray()[j])
                 .getHigh_availability()
                 .getResiliencyLevel());
       }

@@ -15,7 +15,7 @@
  */
 
 package org.openbaton.catalogue.nfvo.networks;
-//The network is still mapped to amazon subnet due to the topology structure
+// The network is still mapped to amazon subnet due to the topology structure
 
 import javax.persistence.Entity;
 

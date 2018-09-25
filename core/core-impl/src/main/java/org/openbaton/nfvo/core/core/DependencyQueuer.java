@@ -95,7 +95,7 @@ public class DependencyQueuer implements org.openbaton.nfvo.core.interfaces.Depe
 
           log.debug("Found VNFRecordDependency: " + vnfRecordDependency);
 
-          //get the vnfr target by its name
+          // get the vnfr target by its name
           VirtualNetworkFunctionRecord target =
               vnfrRepository.findFirstById(
                   nsrFather

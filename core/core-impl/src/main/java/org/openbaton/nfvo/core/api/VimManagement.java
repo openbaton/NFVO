@@ -85,7 +85,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   @Value("${nfvo.vim.delete.check.vnfr:true}")
   private boolean checkForVimInVnfr;
 
-  //TODO change Scope to prototype
+  // TODO change Scope to prototype
   @Value("${nfvo.vim.refresh.timout:120}")
   private int refreshTimeout;
 

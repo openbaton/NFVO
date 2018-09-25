@@ -50,9 +50,8 @@ public class AmazonVimInstance extends BaseVimInstance {
   private Set<String> securityGroups;
 
   @OneToMany(
-    fetch = FetchType.EAGER,
-    cascade = {CascadeType.ALL}
-  )
+      fetch = FetchType.EAGER,
+      cascade = {CascadeType.ALL})
   private Set<DeploymentFlavour> flavours;
 
   @Override

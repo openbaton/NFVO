@@ -43,8 +43,8 @@ public class VnfPlacementManagement
       throws NotFoundException {
     if (!vimInstanceName.isEmpty()) {
       String name =
-          vimInstanceName.toArray(new String[0])[
-              (int) (Math.random() * 1000) % vimInstanceName.size()];
+          vimInstanceName
+              .toArray(new String[0])[(int) (Math.random() * 1000) % vimInstanceName.size()];
       Optional<BaseVimInstance> instanceOptional =
           vimInstanceRepository
               .findByProjectId(projectId)

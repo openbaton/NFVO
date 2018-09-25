@@ -81,7 +81,8 @@ public class ScaledTask extends AbstractTask {
     setHistoryLifecycleEvent();
     saveVirtualNetworkFunctionRecord();
 
-    //If the VNFCInstace is in standby the NFVO doesn't have to configure the VNF source dependencies
+    // If the VNFCInstace is in standby the NFVO doesn't have to configure the VNF source
+    // dependencies
     if (vnfcInstance != null) {
       log.debug(
           "The current VNFC for VNFR ("
@@ -133,7 +134,7 @@ public class ScaledTask extends AbstractTask {
         if (vnfr.getName().equals(dependency.getTarget())) {
           OrVnfmGenericMessage message = new OrVnfmGenericMessage(vnfr, Action.MODIFY);
 
-          //new Dependency containing only the new VNFC
+          // new Dependency containing only the new VNFC
           VNFRecordDependency dependencyNew = new VNFRecordDependency();
           dependencyNew.setIdType(new HashMap<>());
           for (Entry<String, String> entry : dependency.getIdType().entrySet()) {
@@ -144,7 +145,7 @@ public class ScaledTask extends AbstractTask {
           DependencyParameters dependencyParameters = new DependencyParameters();
           dependencyParameters.setParameters(new HashMap<>());
 
-          //set values of VNFCI new
+          // set values of VNFCI new
           HashMap<String, String> parametersNew = new HashMap<>();
           for (Entry<String, String> entry :
               dependency
@@ -226,11 +227,11 @@ public class ScaledTask extends AbstractTask {
 
           dependencyNew.setTarget(dependency.getTarget());
 
-          //TODO Delete the failed dependency of the VNFCInstance in failed state
+          // TODO Delete the failed dependency of the VNFCInstance in failed state
 
           message.setVnfrd(dependencyNew);
 
-          //need to update dependency
+          // need to update dependency
           vnfRecordDependencyRepository.save(dependency);
           log.debug(
               "VNFR "

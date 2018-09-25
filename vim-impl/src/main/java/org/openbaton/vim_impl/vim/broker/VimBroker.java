@@ -223,11 +223,11 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
 
     List<Server> servers = vim.queryResources(vimInstance);
     log.debug("MaximalQuota is: " + maximalQuota);
-    //Calculate used resource by servers (cpus, ram)
+    // Calculate used resource by servers (cpus, ram)
     for (Server server : servers) {
-      //Subtract instances
+      // Subtract instances
       maximalQuota.setInstances(maximalQuota.getInstances() - 1);
-      //Subtract used ram and cpus
+      // Subtract used ram and cpus
       DeploymentFlavour flavor = server.getFlavor();
       maximalQuota.setRam(
           maximalQuota.getRam()

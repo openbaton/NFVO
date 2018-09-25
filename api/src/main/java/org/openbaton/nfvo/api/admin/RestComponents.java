@@ -69,16 +69,14 @@ public class RestComponents {
    * @throws InvalidKeySpecException
    */
   @ApiOperation(
-    value = "Create Service",
-    notes =
-        "Enable a new Service. This generates a new AES Key that must be used in the Service SDK"
-  )
+      value = "Create Service",
+      notes =
+          "Enable a new Service. This generates a new AES Key that must be used in the Service SDK")
   @RequestMapping(
-    value = "/services/create",
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_OCTET_STREAM_VALUE
-  )
+      value = "/services/create",
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
   @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
   public String createService(
@@ -104,11 +102,10 @@ public class RestComponents {
    */
   @ApiOperation(value = "Register Service", notes = "Register an already created Service.")
   @RequestMapping(
-    value = "/services/register",
-    method = RequestMethod.POST,
-    consumes = MediaType.TEXT_PLAIN_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "/services/register",
+      method = RequestMethod.POST,
+      consumes = MediaType.TEXT_PLAIN_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
   public JsonObject registerService(@RequestBody String serviceRegisterBody)
       throws NoSuchAlgorithmException, NotFoundException, InvalidKeyException, BadPaddingException,
@@ -122,10 +119,9 @@ public class RestComponents {
   /** Delete a new Service. */
   @ApiOperation(value = "Delete Service", notes = "Remove a specific service")
   @RequestMapping(
-    value = "/services/{id}",
-    method = RequestMethod.DELETE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "/services/{id}",
+      method = RequestMethod.DELETE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.OK)
   @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
   public void deleteService(
@@ -136,14 +132,12 @@ public class RestComponents {
 
   /** Delete multiple Services. */
   @ApiOperation(
-    value = "Delete multiple Services",
-    notes = "In the Request Body pass a list of service ids that have to be deleted"
-  )
+      value = "Delete multiple Services",
+      notes = "In the Request Body pass a list of service ids that have to be deleted")
   @RequestMapping(
-    value = "/services/multipledelete",
-    method = RequestMethod.POST,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "/services/multipledelete",
+      method = RequestMethod.POST,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
   public void multipleDelete(@RequestBody @Valid List<String> ids) {
@@ -158,10 +152,9 @@ public class RestComponents {
   /** List all Services. */
   @ApiOperation(value = "List Services", notes = "List all services")
   @RequestMapping(
-    value = "/services",
-    method = RequestMethod.GET,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "/services",
+      method = RequestMethod.GET,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.OK)
   @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
   public List<ServiceMetadata> listServices(@RequestHeader(value = "project-id") String projectId) {

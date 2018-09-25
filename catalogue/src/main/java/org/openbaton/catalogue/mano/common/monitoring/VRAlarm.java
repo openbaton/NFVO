@@ -22,7 +22,7 @@ import javax.persistence.Entity;
 @Entity
 public class VRAlarm extends Alarm {
 
-  //Actually is the hostname
+  // Actually is the hostname
   private String managedObject;
 
   public VRAlarm() {

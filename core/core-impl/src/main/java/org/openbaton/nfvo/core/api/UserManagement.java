@@ -89,7 +89,7 @@ public class UserManagement implements org.openbaton.nfvo.core.interfaces.UserMa
 
   @Override
   public User update(User newUser) // TODO the update process seems to be wrong
-       throws NotAllowedException, BadRequestException, NotFoundException {
+      throws NotAllowedException, BadRequestException, NotFoundException {
 
     User userToUpdate = query(newUser.getId());
     if (!userToUpdate.getUsername().equals(newUser.getUsername())) {

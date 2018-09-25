@@ -19,7 +19,7 @@ package org.openbaton.catalogue.mano.common.monitoring;
 /** Created by mob on 26.10.15. */
 public enum FaultType {
 
-  //Compute faults
+  // Compute faults
   COMPUTE,
   COMPUTE_HOGS,
   COMPUTE_HOGS_CPU,
@@ -28,7 +28,7 @@ public enum FaultType {
   COMPUTE_CODE_CORRUPTION,
   COMPUTE_DATA_CORRUPTION,
 
-  //IO faults
+  // IO faults
   IO,
 
   IO_NETWORK_FRAME_RECEIVE,
@@ -47,6 +47,6 @@ public enum FaultType {
   IO_STORAGE_BLOCK_WRITE_DROP,
   IO_STORAGE_BLOCK_WRITE_DELAY,
 
-  //SERVICE FAULT
+  // SERVICE FAULT
   VNF_NOT_AVAILABLE
 }

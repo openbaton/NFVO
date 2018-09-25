@@ -79,7 +79,7 @@ public class RabbitManager {
           }
       }
     }
-    //TODO check for errors
+    // TODO check for errors
     log.trace("found queues: " + result.toString());
     return result;
   }
@@ -96,7 +96,9 @@ public class RabbitManager {
     String uri = "http://" + brokerIp + ":" + managementPort + "/api/users/" + newUserName;
     Gson gson = new Gson();
 
-    //curl -u admin:openbaton -X PUT http://10.147.66.131:15672/api/users/name -d '{"password":"password", "tags":"administrator", "vhost":"openbaton"}' -H "Content-Type: application/json" -H "Accept:application/json"
+    // curl -u admin:openbaton -X PUT http://10.147.66.131:15672/api/users/name -d
+    // '{"password":"password", "tags":"administrator", "vhost":"openbaton"}' -H "Content-Type:
+    // application/json" -H "Accept:application/json"
 
     HashMap<String, String> map = new HashMap<>();
 
@@ -126,8 +128,10 @@ public class RabbitManager {
             "Error creating RabbitMQ user " + newUserName + ": " + response.getStatusLine());
       }
     }
-    //curl -u admin:openbaton -X PUT http://10.147.66.131:15672/api/permissions/openbaton/name -d '{"configure":"
-    // (^name)", "write":"(^openbaton)|(^name)", "read":"(^name)"}' -H "Content-Type: application/json" -H
+    // curl -u admin:openbaton -X PUT http://10.147.66.131:15672/api/permissions/openbaton/name -d
+    // '{"configure":"
+    // (^name)", "write":"(^openbaton)|(^name)", "read":"(^name)"}' -H "Content-Type:
+    // application/json" -H
     // "Accept:application/json"
 
   }

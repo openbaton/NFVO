@@ -64,21 +64,19 @@ public class NetworkServiceRecord extends BaseEntity {
   private Set<VirtualLinkRecord> vlr;
 
   @OneToMany(
-    cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.REFRESH
-      //      CascadeType.ALL
-    },
-    fetch = FetchType.EAGER,
-    orphanRemoval = true
-  )
+      cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.REFRESH
+        //      CascadeType.ALL
+      },
+      fetch = FetchType.EAGER,
+      orphanRemoval = true)
   private Set<VirtualNetworkFunctionRecord> vnfr;
 
   @OneToMany(
-    cascade = {
-      /*CascadeType.PERSIST, CascadeType.MERGE*/
-      CascadeType.ALL
-    },
-    fetch = FetchType.EAGER
-  )
+      cascade = {
+        /*CascadeType.PERSIST, CascadeType.MERGE*/
+        CascadeType.ALL
+      },
+      fetch = FetchType.EAGER)
   private Set<VNFRecordDependency> vnf_dependency;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

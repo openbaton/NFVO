@@ -29,7 +29,7 @@ public class ObjectSelection implements Serializable {
    * These resources shall be known by the Virtualised Resource Management interface.
    * One of the two alternatives (objectType+ objectFilter or objectInstanceId) shall be present.
    * */
-  //hostnames for the moment
+  // hostnames for the moment
   private List<String> objectInstanceIds;
   private List<String> objectTypes;
   private Object filter;

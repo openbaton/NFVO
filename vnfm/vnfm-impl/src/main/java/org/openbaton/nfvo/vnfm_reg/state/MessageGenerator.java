@@ -180,7 +180,7 @@ public class MessageGenerator implements org.openbaton.vnfm.interfaces.manager.M
       }
     }
 
-    //Creating the extension
+    // Creating the extension
     Map<String, String> extension = getExtension(monitoringIp);
     extension = fillAccessibilityConfigurationParameters(extension, vnfd, body);
 
@@ -237,7 +237,7 @@ public class MessageGenerator implements org.openbaton.vnfm.interfaces.manager.M
     return extension;
   }
 
-  //As a default operation of the NFVO, it get always the first DeploymentFlavour!
+  // As a default operation of the NFVO, it get always the first DeploymentFlavour!
   private VNFDeploymentFlavour getDeploymentFlavour(VirtualNetworkFunctionDescriptor vnfd)
       throws NotFoundException {
     VNFDeploymentFlavour flavor = null;

@@ -27,8 +27,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Entity
 @Table(name = "USERS")
 @JsonIgnoreProperties(
-  value = {"accountNonExpired", "accountNonLocked", "credentialsNonExpired"}
-) // otherwise there are problems with the Json SchemaValidator
+    value = {
+      "accountNonExpired",
+      "accountNonLocked",
+      "credentialsNonExpired"
+    }) // otherwise there are problems with the Json SchemaValidator
 public class User extends BaseUser implements UserDetails {
 
   @Column(unique = true)

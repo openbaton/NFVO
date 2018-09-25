@@ -905,7 +905,7 @@ public class GenericVIM extends Vim {
     log.debug("Requested: " + vmImages);
 
     if (vmImages != null && !vmImages.isEmpty()) {
-      //TODO implement choose, actually this should return the first one, so good
+      // TODO implement choose, actually this should return the first one, so good
       for (String imageName : vmImages) {
         Optional<BaseNfvImage> extId =
             VimInstanceUtils.findActiveImagesByName(vimInstance, imageName).stream().findFirst();
@@ -1537,7 +1537,7 @@ public class GenericVIM extends Vim {
                   + "' from VIM directly");
           vnfcInstance =
               getVnfcInstance(vimInstance, vnfComponent, hostname, null, vdu, floatingIps, vnfr);
-          //checkIntegrity(vnfr, vdu, vnfComponent, vnfcInstance, null);
+          // checkIntegrity(vnfr, vdu, vnfComponent, vnfcInstance, null);
         } catch (VimDriverException | VimException e1) {
           if ((e1 instanceof VimException) && ((VimException) e1).getVnfcInstance() != null)
             vnfcInstance = ((VimException) e1).getVnfcInstance();
@@ -1569,7 +1569,7 @@ public class GenericVIM extends Vim {
         log.debug("Creating VNFCInstance based on the VM launched previously -> VM: " + server);
         vnfcInstance =
             getVnfcInstance(vimInstance, vnfComponent, hostname, server, vdu, floatingIps, vnfr);
-        //checkIntegrity(vnfr, vdu, vnfComponent, vnfcInstance, server);
+        // checkIntegrity(vnfr, vdu, vnfComponent, vnfcInstance, server);
       } catch (VimDriverException | VimException e) {
         throw new VimException(e);
       }

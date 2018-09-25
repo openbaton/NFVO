@@ -35,9 +35,8 @@ public class RestVNFManager {
   @Autowired private VNFManagerManagement vnfManagerManagement;
 
   @ApiOperation(
-    value = "Retrieve all registered VNFM endpoints",
-    notes = "Returns all Virtual Network Function Managers running and attached to the NFVO"
-  )
+      value = "Retrieve all registered VNFM endpoints",
+      notes = "Returns all Virtual Network Function Managers running and attached to the NFVO")
   @RequestMapping(method = RequestMethod.GET)
   @ResponseStatus(HttpStatus.OK)
   public List<VnfmManagerEndpoint> findAll() {
@@ -45,9 +44,8 @@ public class RestVNFManager {
   }
 
   @ApiOperation(
-    value = "Retrieving a registered VNFM's endpoint",
-    notes = "Specify the id of the Virtual Network Function Manager in the URL"
-  )
+      value = "Retrieving a registered VNFM's endpoint",
+      notes = "Specify the id of the Virtual Network Function Manager in the URL")
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
   @ResponseStatus(HttpStatus.OK)
   public VnfmManagerEndpoint findById(@PathVariable("id") String id) {
@@ -55,9 +53,8 @@ public class RestVNFManager {
   }
 
   @ApiOperation(
-    value = "Remove a registered VNFM from the NFVO",
-    notes = "Specify the id of the Virtual Network Function Manager in the URL"
-  )
+      value = "Remove a registered VNFM from the NFVO",
+      notes = "Specify the id of the Virtual Network Function Manager in the URL")
   @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteVnfm(@PathVariable("id") String id) {

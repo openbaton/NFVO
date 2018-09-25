@@ -38,9 +38,8 @@ public class VNFDeploymentFlavour extends DeploymentFlavour {
    * specify 2 VMs each with 8 GB vRAM, 4 vCPU, 64 GB virtual storage, etc.
    */
   @OneToMany(
-    cascade = {CascadeType.MERGE, CascadeType.PERSIST},
-    fetch = FetchType.EAGER
-  )
+      cascade = {CascadeType.MERGE, CascadeType.PERSIST},
+      fetch = FetchType.EAGER)
   private Set<CostituentVDU> costituent_vdu;
 
   public VNFDeploymentFlavour() {}

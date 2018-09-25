@@ -102,7 +102,8 @@ public class NSDUtils {
   public void checkEndpoint(
       NetworkServiceDescriptor networkServiceDescriptor, Iterable<VnfmManagerEndpoint> endpoints)
       throws NotFoundException {
-    // since the check for existence of VNFDs is done prior to this method call, we can assume that at least one VNFD
+    // since the check for existence of VNFDs is done prior to this method call, we can assume that
+    // at least one VNFD
     // exists
     if (networkServiceDescriptor.getVnfd().size() == 0) {
       throw new RuntimeException(
@@ -243,7 +244,7 @@ public class NSDUtils {
       throws NotFoundException {
     Iterable<BaseVimInstance> vimInstances = vimRepository.findByProjectId(projectId);
     if (!vimInstances.iterator().hasNext()) {
-      //throw new NotFoundException("No VimInstances in the Database");
+      // throw new NotFoundException("No VimInstances in the Database");
       log.warn(
           "No VimInstances in the Database. VimInstanceName list in VDU hast to be empty in this case.");
     }
@@ -288,12 +289,13 @@ public class NSDUtils {
     /* Fetching dependencies */
     DirectedPseudograph<String, DefaultEdge> g = new DirectedPseudograph<>(DefaultEdge.class);
 
-    //Add a vertex to the graph for each vnfd
+    // Add a vertex to the graph for each vnfd
     for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
       g.addVertex(vnfd.getName());
     }
 
-    // transform the requires attribute to VNFDependencies and add them to the networkServiceDescriptor
+    // transform the requires attribute to VNFDependencies and add them to the
+    // networkServiceDescriptor
     createDependenciesFromRequires(networkServiceDescriptor);
 
     mergeMultipleDependency(networkServiceDescriptor);
@@ -719,7 +721,8 @@ public class NSDUtils {
   }
 
   //                for (VNFComponent vnfComponent : virtualDeploymentUnit.getVnfc()) {
-  //                  for (VNFDConnectionPoint connectionPoint : vnfComponent.getConnection_point()) {
+  //                  for (VNFDConnectionPoint connectionPoint : vnfComponent.getConnection_point())
+  // {
   //                    if (!internalVirtualLink.contains(
   //                        connectionPoint.getVirtual_link_reference())) {
   //                      throw new NetworkServiceIntegrityException(
@@ -883,7 +886,7 @@ public class NSDUtils {
           ((OpenstackVimInstance) vimInstance).getFlavours()) {
         flavors.add(deploymentFlavour.getFlavour_key());
       }
-      //All "names" must be contained in the "flavors"
+      // All "names" must be contained in the "flavors"
       if (!flavors.containsAll(flavourNames)) {
         throw new NetworkServiceIntegrityException(
             "Regarding the VirtualNetworkFunctionDescriptor "

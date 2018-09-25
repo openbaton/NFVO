@@ -45,10 +45,9 @@ public class RestVNFFG {
    *     the core
    */
   @RequestMapping(
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
   public VNFForwardingGraphDescriptor create(
       @RequestBody @Valid VNFForwardingGraphDescriptor vnfForwardingGraphDescriptor) {
@@ -97,11 +96,10 @@ public class RestVNFFG {
    * @return networkServiceDescriptor: the VNF software vnfForwardingGraphDescriptor updated
    */
   @RequestMapping(
-    value = "{id}",
-    method = RequestMethod.PUT,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "{id}",
+      method = RequestMethod.PUT,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.ACCEPTED)
   public VNFForwardingGraphDescriptor update(
       @RequestBody @Valid VNFForwardingGraphDescriptor vnfForwardingGraphDescriptor,

@@ -39,12 +39,11 @@ public class VNFDConnectionPoint extends ConnectionPoint {
   private String virtual_link_reference;
 
   @Pattern(
-    regexp =
-        "(^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
-            + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
-            + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
-            + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$)|(random)|^$"
-  )
+      regexp =
+          "(^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
+              + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
+              + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
+              + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$)|(random)|^$")
   private String floatingIp;
 
   private String virtual_link_reference_id;

@@ -49,11 +49,10 @@ public class RestRegister extends VnfmRegister {
   }
 
   @RequestMapping(
-    value = "/vnfm-register",
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "/vnfm-register",
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
   public void receiveRegister(@RequestBody VnfmManagerEndpoint endpoint) {
     addManagerEndpoint(gson.toJson(endpoint));
@@ -69,11 +68,10 @@ public class RestRegister extends VnfmRegister {
   }
 
   @RequestMapping(
-    value = "/vnfm-unregister",
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "/vnfm-unregister",
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.OK)
   public void receiveUnregister(@RequestBody VnfmManagerEndpoint endpoint) {
     removeManagerEndpoint(gson.toJson(endpoint));
