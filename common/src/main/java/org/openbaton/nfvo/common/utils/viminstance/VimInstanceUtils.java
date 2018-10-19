@@ -279,6 +279,7 @@ public class VimInstanceUtils {
       return network;
     } else if (vimInstance instanceof DockerVimInstance) {
       DockerNetwork networkdc = new DockerNetwork();
+      networkdc.setMetadata(getMetadataFromVLName(vlr.getName(), networkServiceDescriptor));
       networkdc.setName(vlr.getName());
       networkdc.setSubnet(
           getCidrFromVLName(
@@ -289,6 +290,17 @@ public class VimInstanceUtils {
       networkb.setName(vlr.getName());
       return networkb;
     }
+  }
+
+  private static Map<String, String> getMetadataFromVLName(
+      String virtual_link_reference,
+      NetworkServiceDescriptor networkServiceDescriptor) {
+    for (VirtualLinkDescriptor vld : networkServiceDescriptor.getVld()) {
+      if (vld.getName().equals(virtual_link_reference)) {
+        return vld.getMetadata();
+      }
+    }
+    return new HashMap<>();
   }
 
   private static String getCidrFromVLName(
