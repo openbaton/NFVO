@@ -75,7 +75,7 @@ public class InstantiateTask extends AbstractTask {
       }
     }
 
-    dependencyManagement.fillDependecyParameters(virtualNetworkFunctionRecord);
+    dependencyManagement.fillDependencyParameters(virtualNetworkFunctionRecord);
     log.debug("Filled dependency parameters of " + virtualNetworkFunctionRecord.getName());
     saveVirtualNetworkFunctionRecord();
     log.debug("Saved VNFR " + virtualNetworkFunctionRecord.getName());

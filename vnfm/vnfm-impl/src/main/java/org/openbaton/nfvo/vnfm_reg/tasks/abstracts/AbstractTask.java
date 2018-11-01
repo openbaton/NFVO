@@ -379,7 +379,7 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
                   instanceInVNFR.setState("ACTIVE");
                 }
               } else { // START refers to the VNFR then the status of all the VNFCInstance is set to
-                       // "ACTIVE"
+                // "ACTIVE"
                 instanceInVNFR.setState("ACTIVE");
               }
             }
@@ -408,7 +408,7 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
                 stopVNFR = false;
               }
             } else { // STOP refers to the VNFR then the status of all the VNFCInstance is set to
-                     // "INACTIVE"
+              // "INACTIVE"
               instanceInVNFR.setState("INACTIVE");
             }
           }

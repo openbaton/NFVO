@@ -133,7 +133,7 @@ public class DependencyManagement
   }
 
   @Override
-  public synchronized void fillDependecyParameters(
+  public synchronized void fillDependencyParameters(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
 
     log.info(
@@ -156,7 +156,7 @@ public class DependencyManagement
         vnfRecordDependency = vnfrDependencyRepository.findFirstById(vnfRecordDependency.getId());
 
         Set<String> keyParameters =
-            fillDependecyParameters(virtualNetworkFunctionRecord, vnfRecordDependency);
+            fillDependencyParameters(virtualNetworkFunctionRecord, vnfRecordDependency);
 
         if (!vnfRecordDependency.getTarget().equals(virtualNetworkFunctionRecord.getName())) {
           fillVnfcParameters(virtualNetworkFunctionRecord, vnfRecordDependency, keyParameters);
@@ -180,7 +180,7 @@ public class DependencyManagement
         }
       }
       log.info(
-          "Filled parameter for depedendency target = "
+          "Filled parameter for dependendency target = "
               + vnfRecordDependency.getTarget()
               + " with parameters: "
               + vnfRecordDependency.getParameters()
@@ -271,7 +271,7 @@ public class DependencyManagement
   }
 
   @Override
-  public Set<String> fillDependecyParameters(
+  public Set<String> fillDependencyParameters(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
       VNFRecordDependency vnfRecordDependency) {
     DependencyParameters dp =

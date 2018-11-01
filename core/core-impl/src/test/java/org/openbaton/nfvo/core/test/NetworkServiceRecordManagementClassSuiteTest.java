@@ -249,6 +249,13 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 
     when(vimRepository.findByProjectIdAndName(anyString(), anyString()))
         .thenReturn(createVimInstance());
+    when(vimRepository.findByProjectId(anyString()))
+        .thenReturn(
+            new ArrayList<BaseVimInstance>() {
+              {
+                add(createVimInstance());
+              }
+            });
 
     when(vimRepository.findAll())
         .thenReturn(

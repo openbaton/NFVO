@@ -362,7 +362,7 @@ public class NetworkServiceRecordManagement
       if (vnfrd.getTarget().equals(vnfd.getName())) {
         for (String vnfrSourceName : vnfrd.getIdType().keySet()) {
           VirtualNetworkFunctionRecord vnfrSource = getVNFR(networkServiceRecord, vnfrSourceName);
-          dependencyManagement.fillDependecyParameters(vnfrSource);
+          dependencyManagement.fillDependencyParameters(vnfrSource);
         }
       }
     }
@@ -1574,6 +1574,7 @@ public class NetworkServiceRecordManagement
 
   private Set<String> checkIfVimAreSupportedByPackage(
       VirtualNetworkFunctionDescriptor vnfd, Set<String> instanceNames) throws BadRequestException {
+    Set<String> checkedVimInstanceNames = new HashSet<>();
     VNFPackage vnfPackage = vnfPackageRepository.findFirstById(vnfd.getVnfPackageLocation());
     if (vnfPackage == null
         || vnfPackage.getVimTypes() == null
@@ -1591,9 +1592,15 @@ public class NetworkServiceRecordManagement
                     + vimInstance.getType()
                     + " is contained in "
                     + vnfPackage.getVimTypes());
-            if (!vnfPackage.getVimTypes().contains(vimInstance.getType())) {
-              throw new org.openbaton.exceptions.BadRequestException(
-                  "The Vim Instance chosen does not support the VNFD " + vnfd.getName());
+            if (vnfPackage.getVimTypes().contains(vimInstance.getType())) {
+              checkedVimInstanceNames.add(vimInstance.getName());
+            } else {
+              // throw new org.openbaton.exceptions.BadRequestException(
+              log.warn(
+                  "The Vim Instance "
+                      + vimInstance.getName()
+                      + " chosen does not support the VNFD "
+                      + vnfd.getName());
             }
           }
         }
@@ -1605,20 +1612,20 @@ public class NetworkServiceRecordManagement
         if (vnfPackage == null
             || vnfPackage.getVimTypes() == null
             || vnfPackage.getVimTypes().isEmpty()) {
-          instanceNames.add(vimInstance.getName());
+          checkedVimInstanceNames.add(vimInstance.getName());
         } else {
           String type = vimInstance.getType();
           if (type.contains(".")) {
             type = type.split("\\.")[0];
           }
           if (vnfPackage.getVimTypes().contains(type)) {
-            instanceNames.add(vimInstance.getName());
+            checkedVimInstanceNames.add(vimInstance.getName());
           }
         }
       }
     }
 
-    if (instanceNames.size() == 0) {
+    if (checkedVimInstanceNames.size() == 0) {
       throw new org.openbaton.exceptions.BadRequestException(
           "No Vim Instance found for supporting the VNFD "
               + vnfd.getName()
@@ -1626,8 +1633,8 @@ public class NetworkServiceRecordManagement
               + (vnfPackage != null ? vnfPackage.getVimTypes() : null)
               + ")");
     }
-    log.debug("Vim Instances chosen are: " + instanceNames);
-    return instanceNames;
+    log.debug("Vim Instances chosen are: " + checkedVimInstanceNames);
+    return checkedVimInstanceNames;
   }
 
   // get vim instance names from the VNFD or the DeployNSRbody otherwise
@@ -1646,11 +1653,10 @@ public class NetworkServiceRecordManagement
         if (vimInstances.size() == 0)
           throw new NotFoundException(
               "No PoP of the corresponding type in the catalogue. Must be registered first...");
-        else
-          for (BaseVimInstance vimInstance : vimInstances) {
-            instanceNames = new HashSet<>();
-            instanceNames.add(vimInstance.getName());
-          }
+        else instanceNames = new HashSet<>();
+        for (BaseVimInstance vimInstance : vimInstances) {
+          instanceNames.add(vimInstance.getName());
+        }
       } else {
         instanceNames = vdu.getVimInstanceName();
       }
@@ -1985,7 +1991,7 @@ public class NetworkServiceRecordManagement
 
         // Filling parameter for resolvable VNFR sources
         for (VirtualNetworkFunctionRecord resolvableVnfrSource : resolvableVnfrSources) {
-          dependencyManagement.fillDependecyParameters(resolvableVnfrSource);
+          dependencyManagement.fillDependencyParameters(resolvableVnfrSource);
         }
 
         if (readyToResolve) {

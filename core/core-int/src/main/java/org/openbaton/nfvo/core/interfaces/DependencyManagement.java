@@ -30,7 +30,7 @@ public interface DependencyManagement {
   int provisionDependencies(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 
-  void fillDependecyParameters(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+  void fillDependencyParameters(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
   VNFRecordDependency getDependencyForAVNFRecordTarget(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
@@ -43,7 +43,7 @@ public interface DependencyManagement {
       VNFRecordDependency vnfRecordDependency,
       Set<String> parameterKeys);
 
-  Set<String> fillDependecyParameters(
+  Set<String> fillDependencyParameters(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
       VNFRecordDependency vnfRecordDependency);
 
