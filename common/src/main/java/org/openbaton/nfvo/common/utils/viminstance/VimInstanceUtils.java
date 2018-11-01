@@ -293,8 +293,7 @@ public class VimInstanceUtils {
   }
 
   private static Map<String, String> getMetadataFromVLName(
-      String virtual_link_reference,
-      NetworkServiceDescriptor networkServiceDescriptor) {
+      String virtual_link_reference, NetworkServiceDescriptor networkServiceDescriptor) {
     for (VirtualLinkDescriptor vld : networkServiceDescriptor.getVld()) {
       if (vld.getName().equals(virtual_link_reference)) {
         return vld.getMetadata();
