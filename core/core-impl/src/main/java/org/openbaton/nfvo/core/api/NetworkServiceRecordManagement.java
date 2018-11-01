@@ -1574,52 +1574,50 @@ public class NetworkServiceRecordManagement
 
   private Set<String> checkIfVimAreSupportedByPackage(
       VirtualNetworkFunctionDescriptor vnfd, Set<String> instanceNames) throws BadRequestException {
-    Set<String> checkedVimInstanceNames = new HashSet<>();
+
+    if (instanceNames.size() == 0) {
+      log.debug(
+          "No VIM instances selected for the deployment of VNF "
+              + vnfd.getName()
+              + ". Adding all available VIM Instances...");
+      for (BaseVimInstance vimInstance :
+          vimInstanceRepository.findByProjectId(vnfd.getProjectId())) {
+        instanceNames.add(vimInstance.getName());
+      }
+    }
+
     VNFPackage vnfPackage = vnfPackageRepository.findFirstById(vnfd.getVnfPackageLocation());
     if (vnfPackage == null
         || vnfPackage.getVimTypes() == null
         || vnfPackage.getVimTypes().size() == 0) {
-      log.warn("VNFPackage does not provide supported VIM. I will skip the check!");
-    } else {
-      for (String vimInstanceName : instanceNames) {
-        BaseVimInstance vimInstance;
-        for (BaseVimInstance vi : vimInstanceRepository.findByProjectId(vnfd.getProjectId())) {
-          if (vimInstanceName.equals(vi.getName())) {
-            vimInstance = vi;
-            log.debug("Found vim instance " + vimInstance.getName());
-            log.debug(
-                "Checking if "
-                    + vimInstance.getType()
-                    + " is contained in "
-                    + vnfPackage.getVimTypes());
-            if (vnfPackage.getVimTypes().contains(vimInstance.getType())) {
-              checkedVimInstanceNames.add(vimInstance.getName());
-            } else {
-              // throw new org.openbaton.exceptions.BadRequestException(
-              log.warn(
-                  "The Vim Instance "
-                      + vimInstance.getName()
-                      + " chosen does not support the VNFD "
-                      + vnfd.getName());
-            }
-          }
-        }
-      }
+      log.warn("VNFPackage does not provide supported VIM types. I will skip the check!");
+      return instanceNames;
     }
-    if (instanceNames.size() == 0) {
+
+    log.debug("Performing VIM type check for VIM instances...");
+    Set<String> checkedVimInstanceNames = new HashSet<>();
+    for (String vimInstanceName : instanceNames) {
       for (BaseVimInstance vimInstance :
           vimInstanceRepository.findByProjectId(vnfd.getProjectId())) {
-        if (vnfPackage == null
-            || vnfPackage.getVimTypes() == null
-            || vnfPackage.getVimTypes().isEmpty()) {
-          checkedVimInstanceNames.add(vimInstance.getName());
-        } else {
+        if (vimInstanceName.equals(vimInstance.getName())) {
+          log.debug("Found vim instance " + vimInstance.getName());
+          log.debug(
+              "Checking if "
+                  + vimInstance.getType()
+                  + " is contained in "
+                  + vnfPackage.getVimTypes());
           String type = vimInstance.getType();
           if (type.contains(".")) {
             type = type.split("\\.")[0];
           }
           if (vnfPackage.getVimTypes().contains(type)) {
             checkedVimInstanceNames.add(vimInstance.getName());
+          } else {
+            log.warn(
+                "The Vim Instance "
+                    + vimInstance.getName()
+                    + " chosen does not support the VNFD "
+                    + vnfd.getName());
           }
         }
       }
