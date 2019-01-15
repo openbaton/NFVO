@@ -44,7 +44,6 @@ public interface VNFPackageManagement {
    *
    * @param metadata
    * @param vnfPackage
-   * @param image
    */
   VNFPackage handleMetadata(Map<String, Object> metadata, VNFPackage vnfPackage)
       throws IncompatibleVNFPackage, BadFormatException;

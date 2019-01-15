@@ -26,27 +26,54 @@ import org.openbaton.exceptions.VimException;
 /** Created by mpa on 30/04/15. */
 public interface NetworkManagement {
 
-  /** This operation allows adding new VNF software images to the image repository. */
+  /**
+   * Add a network to a VIM instance.
+   *
+   * @param vimInstance
+   * @param network
+   * @return
+   * @throws VimException
+   * @throws PluginException
+   * @throws BadRequestException
+   */
   BaseNetwork add(BaseVimInstance vimInstance, BaseNetwork network)
       throws VimException, PluginException, BadRequestException;
 
-  /** This operation allows deleting in the VNF software images from the image repository. */
+  /**
+   * Delete a network from a VIM instance.
+   *
+   * @param vimInstance
+   * @param network
+   * @throws VimException
+   * @throws PluginException
+   */
   void delete(BaseVimInstance vimInstance, BaseNetwork network)
       throws VimException, PluginException;
 
-  /** This operation allows updating the VNF software images in the image repository. */
+  /**
+   * Update an existing network on a VIM instance.
+   *
+   * @param vimInstance
+   * @param new_network
+   * @return
+   * @throws VimException
+   * @throws PluginException
+   */
   BaseNetwork update(BaseVimInstance vimInstance, Network new_network)
       throws VimException, PluginException;
 
   /**
-   * This operation allows querying the information of the VNF software images in the image
-   * repository.
+   * Return all networks.
+   *
+   * @return
    */
   Iterable<BaseNetwork> query();
 
   /**
-   * This operation allows querying the information of the VNF software image in the image
-   * repository.
+   * Return a network specified by its ID.
+   *
+   * @param id
+   * @return
    */
   BaseNetwork query(String id);
 }

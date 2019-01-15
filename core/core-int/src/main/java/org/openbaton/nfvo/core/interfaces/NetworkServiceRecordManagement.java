@@ -140,7 +140,7 @@ public interface NetworkServiceRecordManagement {
   void deleteVNFDependency(String idNsr, String idVnfd, String projectId) throws NotFoundException;
 
   /**
-   * This method will add a {@Link VNFCInstance} into a NetworkServiceRecord to a specific
+   * This method will add a {@link VNFCInstance} into a NetworkServiceRecord to a specific
    * VirtualDeploymentUnit of a specific VirtualNetworkFunctionRecord
    *
    * @param id of the NetworkServiceRecord
@@ -160,7 +160,7 @@ public interface NetworkServiceRecordManagement {
       throws NotFoundException, BadFormatException, WrongStatusException;
 
   /**
-   * This method will add a {@Link VNFCInstance} into a NetworkServiceRecord to a specific
+   * This method will add a {@link VNFCInstance} into a NetworkServiceRecord to a specific
    * VirtualNetworkFunctionRecord. The VirtualDeploymentUnit is randomly chosen
    */
   void addVNFCInstance(
@@ -172,7 +172,7 @@ public interface NetworkServiceRecordManagement {
       throws NotFoundException, BadFormatException, WrongStatusException;
 
   /**
-   * This method will remove a {@Link VNFCInstance} of a NetworkServiceRecord from a specific
+   * This method will remove a {@link VNFCInstance} of a NetworkServiceRecord from a specific
    * VirtualNetworkFunctionRecord. VirtualDeploymentUnit will be randomly chosen.
    */
   void deleteVNFCInstance(String id, String idVnf, String projectId)
@@ -180,7 +180,7 @@ public interface NetworkServiceRecordManagement {
           VimException, PluginException, BadFormatException;
 
   /**
-   * This method will remove a {@Link VNFCInstance} of a NetworkServiceRecord from a specific
+   * This method will remove a {@link VNFCInstance} of a NetworkServiceRecord from a specific
    * VirtualDeploymentUnit of a specific VirtualNetworkFunctionRecord.
    */
   void deleteVNFCInstance(String id, String idVnf, String idVdu, String idVNFCI, String projectId)
@@ -188,14 +188,14 @@ public interface NetworkServiceRecordManagement {
           VimException, PluginException, BadFormatException;
 
   /**
-   * This method will start a {@Link VNFCInstance} of a NetworkServiceRecord from a specific
+   * This method will start a {@link VNFCInstance} of a NetworkServiceRecord from a specific
    * VirtualDeploymentUnit of a specific VirtualNetworkFunctionRecord.
    */
   void startVNFCInstance(String id, String idVnf, String idVdu, String idVNFCI, String projectId)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 
   /**
-   * This method will stop a {@Link VNFCInstance} of a NetworkServiceRecord from a specific
+   * This method will stop a {@link VNFCInstance} of a NetworkServiceRecord from a specific
    * VirtualDeploymentUnit of a specific VirtualNetworkFunctionRecord.
    */
   void stopVNFCInstance(String id, String idVnf, String idVdu, String idVNFCI, String projectId)

@@ -34,9 +34,23 @@ import org.openbaton.exceptions.VimException;
 
 /** Created by mpa on 30/04/15. */
 public interface ResourceManagement {
+
   /**
    * This operation allows requesting the instantiation and assignment of a virtualised resource to
    * the VNF, as indicated by the consumer functional block.
+   *
+   * @param virtualDeploymentUnit
+   * @param virtualNetworkFunctionRecord
+   * @param vimInstance
+   * @param userdata
+   * @param keys
+   * @return
+   * @throws ExecutionException
+   * @throws InterruptedException
+   * @throws VimException
+   * @throws PluginException
+   * @throws IOException
+   * @throws VimDriverException
    */
   Future<List<String>> allocate(
       VirtualDeploymentUnit virtualDeploymentUnit,
@@ -50,18 +64,27 @@ public interface ResourceManagement {
   /**
    * This operation allows querying a virtualised resource, i.e. retrieve information about an
    * instantiated virtualised resource.
+   *
+   * @param vimInstance
+   * @return
+   * @throws VimException
+   * @throws PluginException
    */
   List<Server> query(BaseVimInstance vimInstance) throws VimException, PluginException;
 
   /**
    * This operation allows updating the configuration and/or parameterization of an instantiated
    * virtualised resource.
+   *
+   * @param vdu
    */
   void update(VirtualDeploymentUnit vdu);
 
   /**
    * This operation allows scaling a virtualised resource by adding or removing capacity, e.g.
    * adding vCPUs to a virtual machine.
+   *
+   * @param vdu
    */
   void scale(VirtualDeploymentUnit vdu);
 
@@ -69,6 +92,8 @@ public interface ResourceManagement {
    * This operation allows moving virtualised resources between locations. For instance, the
    * operation performs the migration of a computing resource from one host to another host; while
    * for a storage resource, it migrates the resource from one storage location to another.
+   *
+   * @param vdu
    */
   void migrate(VirtualDeploymentUnit vdu);
 
@@ -76,6 +101,16 @@ public interface ResourceManagement {
    * This operation allows executing specific commands on certain allocated virtualised resources.
    * Examples on compute resources can include (but not limited to): start, stop, pause, suspend,
    * capture snapshot, etc.
+   *
+   * @param vdu
+   * @param operation
+   * @return
+   * @throws PluginException
+   * @throws ExecutionException
+   * @throws InterruptedException
+   * @throws VimException
+   * @throws IOException
+   * @throws VimDriverException
    */
   Future<Void> operate(VirtualDeploymentUnit vdu, String operation)
       throws PluginException, ExecutionException, InterruptedException, VimException, IOException,
@@ -84,6 +119,14 @@ public interface ResourceManagement {
   /**
    * This operation allows de-allocating and terminating an instantiated virtualised resource. This
    * operation frees resources and returns them to the NFVI resource pool.
+   *
+   * @param vdu
+   * @param vnfcInstance
+   * @return
+   * @throws VimException
+   * @throws ExecutionException
+   * @throws InterruptedException
+   * @throws PluginException
    */
   Future<Void> release(VirtualDeploymentUnit vdu, VNFCInstance vnfcInstance)
       throws VimException, ExecutionException, InterruptedException, PluginException;
@@ -91,6 +134,8 @@ public interface ResourceManagement {
   /**
    * This operation allows requesting the reservation of a set of virtualised resources to a
    * consumer functional block without performing the steps of "Allocate Resource".
+   *
+   * @param vdu
    */
   void createReservation(VirtualDeploymentUnit vdu);
 
@@ -104,15 +149,35 @@ public interface ResourceManagement {
   /**
    * This operation allows updating an issued resources reservation to increase or decrease the
    * amount of virtualised resources in the reserved resources pool.
+   *
+   * @param vdu
    */
   void updateReservation(VirtualDeploymentUnit vdu);
 
   /**
    * This operation allows releasing an issued resources reservation, hence freeing the reserved
    * virtualised resources.
+   *
+   * @param vdu
    */
   void releaseReservation(VirtualDeploymentUnit vdu);
 
+  /**
+   * Allocate resources on a VIM for a VNFC instance.
+   *
+   * @param vdu
+   * @param virtualNetworkFunctionRecord
+   * @param componentToAdd
+   * @param vimInstance
+   * @param userdata
+   * @return
+   * @throws InterruptedException
+   * @throws ExecutionException
+   * @throws PluginException
+   * @throws VimException
+   * @throws IOException
+   * @throws VimDriverException
+   */
   Future<VNFCInstance> allocate(
       VirtualDeploymentUnit vdu,
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
