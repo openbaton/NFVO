@@ -16,7 +16,6 @@
 
 package org.openbaton.nfvo.core.core;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -77,8 +76,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
       BaseVimInstance vimInstance,
       String userdata,
       Set<Key> keys)
-      throws VimException, ExecutionException, InterruptedException, PluginException, IOException,
-          VimDriverException {
+      throws VimException, ExecutionException, InterruptedException, PluginException {
     List<Future<VNFCInstance>> instances = new ArrayList<>();
     org.openbaton.nfvo.vim_interfaces.vim.Vim vim = vimBroker.getVim(vimInstance.getType());
     log.debug("Executing allocate with Vim: " + vim.getClass().getSimpleName());
@@ -140,8 +138,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
       VNFComponent component,
       String userdata,
       Set<Key> keys)
-      throws InterruptedException, ExecutionException, VimException, PluginException, IOException,
-          VimDriverException {
+      throws InterruptedException, ExecutionException, VimException {
 
     log.trace("UserData is: " + userdata);
     Map<String, String> floatinIps = new HashMap<>();
@@ -183,8 +180,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
   @Override
   @Async
   public Future<Void> operate(VirtualDeploymentUnit vdu, String operation)
-      throws PluginException, ExecutionException, InterruptedException, VimException, IOException,
-          VimDriverException {
+      throws PluginException, ExecutionException, InterruptedException, VimException {
     for (VNFCInstance vnfcInstance : vdu.getVnfc_instance()) {
       BaseVimInstance vimInstance = vimInstanceRepository.findFirstById(vnfcInstance.getVim_id());
       org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim =
@@ -199,7 +195,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
   @Async
   public Future<Void> release(
       VirtualDeploymentUnit virtualDeploymentUnit, VNFCInstance vnfcInstance)
-      throws VimException, ExecutionException, InterruptedException, PluginException {
+      throws ExecutionException, InterruptedException, PluginException, VimException {
     BaseVimInstance vimInstance = vimInstanceRepository.findFirstById(vnfcInstance.getVim_id());
     org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim =
         vimBroker.getVim(vimInstance.getType());
@@ -229,8 +225,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
       VNFComponent componentToAdd,
       BaseVimInstance vimInstance,
       String userdata)
-      throws InterruptedException, ExecutionException, PluginException, VimException, IOException,
-          VimDriverException {
+      throws InterruptedException, ExecutionException, PluginException, VimException {
     org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim;
     vim = vimBroker.getVim(vimInstance.getType());
     log.debug("Executing allocate with Vim: " + vim.getClass().getSimpleName());

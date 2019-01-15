@@ -16,7 +16,6 @@
 
 package org.openbaton.nfvo.core.interfaces;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -29,7 +28,6 @@ import org.openbaton.catalogue.nfvo.Server;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 
 /** Created by mpa on 30/04/15. */
@@ -49,8 +47,6 @@ public interface ResourceManagement {
    * @throws InterruptedException
    * @throws VimException
    * @throws PluginException
-   * @throws IOException
-   * @throws VimDriverException
    */
   Future<List<String>> allocate(
       VirtualDeploymentUnit virtualDeploymentUnit,
@@ -58,8 +54,7 @@ public interface ResourceManagement {
       BaseVimInstance vimInstance,
       String userdata,
       Set<Key> keys)
-      throws ExecutionException, InterruptedException, VimException, PluginException, IOException,
-          VimDriverException;
+      throws ExecutionException, InterruptedException, VimException, PluginException;
 
   /**
    * This operation allows querying a virtualised resource, i.e. retrieve information about an
@@ -109,12 +104,9 @@ public interface ResourceManagement {
    * @throws ExecutionException
    * @throws InterruptedException
    * @throws VimException
-   * @throws IOException
-   * @throws VimDriverException
    */
   Future<Void> operate(VirtualDeploymentUnit vdu, String operation)
-      throws PluginException, ExecutionException, InterruptedException, VimException, IOException,
-          VimDriverException;
+      throws PluginException, ExecutionException, InterruptedException, VimException;
 
   /**
    * This operation allows de-allocating and terminating an instantiated virtualised resource. This
@@ -123,13 +115,12 @@ public interface ResourceManagement {
    * @param vdu
    * @param vnfcInstance
    * @return
-   * @throws VimException
    * @throws ExecutionException
    * @throws InterruptedException
    * @throws PluginException
    */
   Future<Void> release(VirtualDeploymentUnit vdu, VNFCInstance vnfcInstance)
-      throws VimException, ExecutionException, InterruptedException, PluginException;
+      throws ExecutionException, InterruptedException, PluginException, VimException;
 
   /**
    * This operation allows requesting the reservation of a set of virtualised resources to a
@@ -175,8 +166,6 @@ public interface ResourceManagement {
    * @throws ExecutionException
    * @throws PluginException
    * @throws VimException
-   * @throws IOException
-   * @throws VimDriverException
    */
   Future<VNFCInstance> allocate(
       VirtualDeploymentUnit vdu,
@@ -184,6 +173,5 @@ public interface ResourceManagement {
       VNFComponent componentToAdd,
       BaseVimInstance vimInstance,
       String userdata)
-      throws InterruptedException, ExecutionException, PluginException, VimException, IOException,
-          VimDriverException;
+      throws InterruptedException, ExecutionException, PluginException, VimException;
 }

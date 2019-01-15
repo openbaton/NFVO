@@ -919,8 +919,7 @@ public class GenericVIM extends Vim {
    * @return the external ID of the found image
    */
   private String chooseImage(Collection<String> vmImages, BaseVimInstance vimInstance)
-      throws VimException, PluginException, IOException, ExecutionException, InterruptedException,
-          VimDriverException {
+      throws VimException {
     log.debug("Choosing Image...");
     log.debug("Requested: " + vmImages);
 
@@ -967,7 +966,11 @@ public class GenericVIM extends Vim {
             lock = uploadImageLockMap.computeIfAbsent(key, k -> new Object());
           }
           synchronized (lock) {
-            vimInstance = vimManagement.refresh(vimInstance, true).get();
+            try {
+              vimInstance = vimManagement.refresh(vimInstance, true).get();
+            } catch (InterruptedException | ExecutionException | PluginException | IOException e) {
+              throw new VimException("Unable to refresh VIM with ID " + vimInstance.getId(), e);
+            }
             Optional<BaseNfvImage> extId =
                 VimInstanceUtils.findActiveImagesByName(vimInstance, imageName)
                     .stream()
@@ -1002,7 +1005,17 @@ public class GenericVIM extends Vim {
                   + vimInstance.getId()
                   + "): "
                   + e.getMessage());
-          throw e;
+          throw new VimException(
+              "Exception while uploading image "
+                  + imageName
+                  + " ("
+                  + imageToUpload.getId()
+                  + ") to VIM "
+                  + vimInstance.getName()
+                  + " ("
+                  + vimInstance.getId()
+                  + ")",
+              e);
         }
       }
       throw new VimException(
@@ -1066,8 +1079,7 @@ public class GenericVIM extends Vim {
       VirtualDeploymentUnit vdu,
       VNFCInstance vnfcInstance,
       String operation)
-      throws VimException, InterruptedException, IOException, VimDriverException,
-          ExecutionException, PluginException {
+      throws VimException {
     switch (operation) {
       case "rebuild":
         String imageId = this.chooseImage(vdu.getVm_image(), vimInstance);
@@ -1486,8 +1498,7 @@ public class GenericVIM extends Vim {
       String userdata,
       Map<String, String> floatingIps,
       Set<Key> keys)
-      throws VimException, InterruptedException, IOException, VimDriverException,
-          ExecutionException, PluginException {
+      throws VimException {
     log.debug("Launching new VM on VimInstance: " + vimInstance.getName());
     log.debug("VDU is : " + vdu.getName());
     log.debug("VNFR is : " + vnfr.getName());

@@ -16,11 +16,9 @@
 
 package org.openbaton.nfvo.vim_interfaces.resource_management;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
@@ -30,8 +28,6 @@ import org.openbaton.catalogue.nfvo.Quota;
 import org.openbaton.catalogue.nfvo.Server;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.security.Key;
-import org.openbaton.exceptions.PluginException;
-import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 
 public interface ResourceManagement {
@@ -59,8 +55,7 @@ public interface ResourceManagement {
       String userdata,
       Map<String, String> floatingIps,
       Set<Key> keys)
-      throws VimException, InterruptedException, IOException, VimDriverException,
-          ExecutionException, PluginException;
+      throws VimException;
 
   /**
    * This operation allows querying a virtualised resource, i.e. retrieve information about an
@@ -114,8 +109,7 @@ public interface ResourceManagement {
       VirtualDeploymentUnit vdu,
       VNFCInstance vnfcInstance,
       String operation)
-      throws VimException, InterruptedException, IOException, VimDriverException,
-          ExecutionException, PluginException;
+      throws VimException;
 
   /**
    * This operation allows de-allocating and terminating an instantiated virtualised resource. This

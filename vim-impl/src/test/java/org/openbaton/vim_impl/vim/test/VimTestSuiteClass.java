@@ -180,11 +180,7 @@ public class VimTestSuiteClass {
       String expectedId = id.get().getVc_id();
       log.debug(expectedId + " == " + environment.getProperty("mocked_id"));
       Assert.assertEquals(expectedId, environment.getProperty("mocked_id"));
-    } catch (VimException
-        | ExecutionException
-        | InterruptedException
-        | PluginException
-        | IOException e) {
+    } catch (VimException | ExecutionException | InterruptedException e) {
       e.printStackTrace();
       Assert.fail();
     }

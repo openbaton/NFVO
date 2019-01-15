@@ -28,14 +28,14 @@ public interface LogManagement {
    * Return a VnfmOrLogMessage containing output and error logs related to a host specified by its
    * NSR ID, VNFR name and hostname.
    *
-   * @param nsrId
-   * @param vnfrName
-   * @param hostname
-   * @return
-   * @throws NotFoundException
-   * @throws InterruptedException
-   * @throws BadFormatException
-   * @throws ExecutionException
+   * @param nsrId NSR ID
+   * @param vnfrName VNFR name
+   * @param hostname hostname
+   * @return log message
+   * @throws NotFoundException if not found
+   * @throws InterruptedException exception
+   * @throws BadFormatException exception
+   * @throws ExecutionException exception
    */
   VnfmOrLogMessage getLog(String nsrId, String vnfrName, String hostname)
       throws NotFoundException, InterruptedException, BadFormatException, ExecutionException;

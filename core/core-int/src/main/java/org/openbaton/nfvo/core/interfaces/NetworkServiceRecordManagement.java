@@ -51,6 +51,23 @@ public interface NetworkServiceRecordManagement {
   /**
    * This operation allows submitting and validating a Network Service Descriptor (NSD), including
    * any related VNFFGD and VLD.
+   *
+   * @param networkServiceDescriptor NSD
+   * @param projectId project ID
+   * @param keys Keys to use
+   * @param vduVimInstances mapping VDUs to VIMs
+   * @param configurations configuration map
+   * @param monitoringIp the monitoring IP
+   * @return the created NSR
+   * @throws VimException exception
+   * @throws PluginException exception
+   * @throws NotFoundException exception
+   * @throws BadRequestException exception
+   * @throws IOException exception
+   * @throws AlreadyExistingException exception
+   * @throws BadFormatException exception
+   * @throws ExecutionException exception
+   * @throws InterruptedException exception
    */
   NetworkServiceRecord onboard(
       NetworkServiceDescriptor networkServiceDescriptor,
@@ -65,6 +82,12 @@ public interface NetworkServiceRecordManagement {
   /**
    * This operation allows updating a Network Service Record (NSR). This update might include
    * creating/deleting new VNFFGDs and/or new VLDs.
+   *
+   * @param new_nsd the new NSD
+   * @param old_id ID of the NSD to update
+   * @param projectId project ID
+   * @return the updated NSD
+   * @throws NotFoundException if NSD with given ID does not exist
    */
   NetworkServiceRecord update(NetworkServiceRecord new_nsd, String old_id, String projectId)
       throws NotFoundException;
@@ -72,6 +95,15 @@ public interface NetworkServiceRecordManagement {
   /**
    * This operation allows updating a Virtual Network Function Record (VNFR) (The UPDATE is intended
    * as the execution of the scripts associated to the lifecycle UPDATE by the VNF provider)
+   *
+   * @param nsrId NSR ID
+   * @param vnfrId VNFR ID
+   * @param projectId project ID
+   * @return the updated VNFR
+   * @throws NotFoundException exception
+   * @throws BadFormatException exception
+   * @throws ExecutionException exception
+   * @throws InterruptedException exception
    */
   VirtualNetworkFunctionRecord updateVnfr(String nsrId, String vnfrId, String projectId)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
@@ -80,6 +112,16 @@ public interface NetworkServiceRecordManagement {
    * This operation allows upgrading a Virtual Network Function Record (VNFR) (The UPGRADE is
    * intended as one of the following the rebuild of the VNFR (all the VNFC Instances, if many)
    * using a new OS image and/or new VNF scripts
+   *
+   * @throws NotFoundException exception
+   * @throws BadFormatException exception
+   * @throws ExecutionException exception
+   * @throws InterruptedException exception
+   * @throws IOException exception
+   * @throws BadRequestException exception
+   * @throws VimException exception
+   * @throws PluginException exception
+   * @throws VimDriverException exception
    */
   VirtualNetworkFunctionRecord upgradeVnfr(
       String nsrId, String vnfrId, String projectId, String vnfdId)
@@ -103,18 +145,46 @@ public interface NetworkServiceRecordManagement {
 
   NetworkServiceRecord query(String id, String projectId) throws NotFoundException;
 
-  /** This operation is used to remove a Network Service Record. */
+  /**
+   * This operation is used to remove a Network Service Record.
+   *
+   * @param id NSR ID
+   * @param projectId project ID
+   * @throws NotFoundException exception
+   * @throws WrongStatusException exception
+   * @throws BadFormatException exception
+   * @throws ExecutionException exception
+   * @throws InterruptedException exception
+   */
   void delete(String id, String projectId)
       throws NotFoundException, WrongStatusException, BadFormatException, ExecutionException,
           InterruptedException;
 
-  /** This operation is used to resume a failed Network Service Record. */
+  /**
+   * This operation is used to resume a failed Network Service Record.
+   *
+   * @param id NSR ID
+   * @param projectId project ID
+   * @throws NotFoundException exception
+   * @throws BadFormatException exception
+   * @throws ExecutionException exception
+   * @throws InterruptedException exception
+   */
   void resume(String id, String projectId)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 
   /**
    * This operation is used to execute a script on a specific Virtual Network Function Record during
    * runtime.
+   *
+   * @param idNsr
+   * @param idVnf
+   * @param projectId
+   * @param script
+   * @throws NotFoundException exception
+   * @throws InterruptedException exception
+   * @throws BadFormatException exception
+   * @throws ExecutionException exception
    */
   void executeScript(String idNsr, String idVnf, String projectId, Script script)
       throws NotFoundException, InterruptedException, BadFormatException, ExecutionException;
@@ -126,7 +196,7 @@ public interface NetworkServiceRecordManagement {
    *
    * @param idNsr of Nsr
    * @param idVnf of VirtualNetworkFunctionRecord
-   * @return VirtualNetworkFunctionRecord selected
+   * @return the VirtualNetworkFunctionRecord selected
    */
   VirtualNetworkFunctionRecord getVirtualNetworkFunctionRecord(
       String idNsr, String idVnf, String projectId) throws NotFoundException;
@@ -146,8 +216,7 @@ public interface NetworkServiceRecordManagement {
    * @param id of the NetworkServiceRecord
    * @param idVnf of the VirtualNetworkFunctionRecord
    * @param idVdu of the VirtualDeploymentUnit chosen
-   * @param vimInstanceNames
-   * @return the new VNFCInstance
+   * @param vimInstanceNames list of vim names
    */
   void addVNFCInstance(
       String id,
