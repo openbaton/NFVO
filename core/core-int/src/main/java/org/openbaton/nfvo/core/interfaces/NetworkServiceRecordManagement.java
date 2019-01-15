@@ -84,7 +84,7 @@ public interface NetworkServiceRecordManagement {
   VirtualNetworkFunctionRecord upgradeVnfr(
       String nsrId, String vnfrId, String projectId, String vnfdId)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException,
-          IOException, BadRequestException, VimException, PluginException;
+          IOException, BadRequestException, VimException, PluginException, VimDriverException;
 
   /**
    * This operation is used to query the information of the Network Service Descriptor (NSD),
@@ -233,5 +233,5 @@ public interface NetworkServiceRecordManagement {
   VirtualNetworkFunctionRecord restartVnfr(
       NetworkServiceRecord nsr, String vnfrId, String imageName, String projectId)
       throws NotFoundException, IOException, BadRequestException, VimException, PluginException,
-          ExecutionException, InterruptedException, BadFormatException;
+          ExecutionException, InterruptedException, BadFormatException, VimDriverException;
 }

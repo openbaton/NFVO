@@ -37,6 +37,8 @@ dependencies {
     compile project(':monitoring')
     compile project(':vim-drivers')
     compile project(':plugin')
+    compile project(':repository')
+    compile project(':core-int')
 
     compile 'org.slf4j:slf4j-api:1.7.22'
 

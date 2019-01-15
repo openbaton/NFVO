@@ -34,16 +34,14 @@ import org.openbaton.catalogue.nfvo.messages.OrVnfmErrorMessage;
 import org.openbaton.catalogue.nfvo.messages.OrVnfmGrantLifecycleOperationMessage;
 import org.openbaton.catalogue.nfvo.networks.BaseNetwork;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
+import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
 import org.openbaton.exceptions.BadRequestException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.NsrNotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.common.utils.viminstance.VimInstanceUtils;
-import org.openbaton.nfvo.core.interfaces.NetworkManagement;
-import org.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
-import org.openbaton.nfvo.core.interfaces.VimManagement;
-import org.openbaton.nfvo.core.interfaces.VnfPlacementManagement;
+import org.openbaton.nfvo.core.interfaces.*;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.VNFDRepository;
 import org.openbaton.nfvo.repositories.VirtualLinkRecordRepository;
@@ -66,6 +64,7 @@ public class GrantoperationTask extends AbstractTask {
   @Autowired private VimManagement vimManagement;
   @Autowired private VirtualLinkRecordRepository vlrRepository;
   @Autowired private VNFDRepository vnfdRepository;
+  @Autowired private NfvImageRepoManagement nfvImageRepoManagement;
 
   @Value("${nfvo.quota.check:false}")
   private boolean checkQuota;
@@ -183,15 +182,25 @@ public class GrantoperationTask extends AbstractTask {
                 "One of the images %s must be available in the VimInstance %s",
                 virtualDeploymentUnit.getVm_image(), vimInstance.getName()));
         BaseVimInstance finalVimInstance = vimInstance;
+        // checks if the image name can be found among the active images of the VIM or if the VIM
+        // type is openstack
+        // if the image is present in the NFV image repository and can be uploaded to the VIM
         if (virtualDeploymentUnit
             .getVm_image()
             .stream()
             .noneMatch(
-                name -> VimInstanceUtils.findActiveImagesByName(finalVimInstance, name).size() > 0))
+                name ->
+                    VimInstanceUtils.findActiveImagesByName(finalVimInstance, name).size() > 0
+                        || (finalVimInstance instanceof OpenstackVimInstance
+                            && nfvImageRepoManagement.queryByNameAndProjectId(
+                                    name, virtualDeploymentUnit.getProjectId())
+                                != null))) {
+
           throw new VimException(
               String.format(
-                  "None of the images %s where found on the chosen vim instance %s",
-                  virtualDeploymentUnit.getVm_image(), vimInstance.getName()));
+                  "None of the images %s was found on the chosen VIM instance '%s' (%s)",
+                  virtualDeploymentUnit.getVm_image(), vimInstance.getName(), vimInstance.getId()));
+        }
       }
 
       // check networks

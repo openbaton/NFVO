@@ -16,6 +16,7 @@
 
 package org.openbaton.nfvo.core.interfaces;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -28,6 +29,7 @@ import org.openbaton.catalogue.nfvo.Server;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.PluginException;
+import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 
 /** Created by mpa on 30/04/15. */
@@ -42,7 +44,8 @@ public interface ResourceManagement {
       BaseVimInstance vimInstance,
       String userdata,
       Set<Key> keys)
-      throws ExecutionException, InterruptedException, VimException, PluginException;
+      throws ExecutionException, InterruptedException, VimException, PluginException, IOException,
+          VimDriverException;
 
   /**
    * This operation allows querying a virtualised resource, i.e. retrieve information about an
@@ -75,7 +78,8 @@ public interface ResourceManagement {
    * capture snapshot, etc.
    */
   Future<Void> operate(VirtualDeploymentUnit vdu, String operation)
-      throws PluginException, ExecutionException, InterruptedException, VimException;
+      throws PluginException, ExecutionException, InterruptedException, VimException, IOException,
+          VimDriverException;
 
   /**
    * This operation allows de-allocating and terminating an instantiated virtualised resource. This
@@ -115,5 +119,6 @@ public interface ResourceManagement {
       VNFComponent componentToAdd,
       BaseVimInstance vimInstance,
       String userdata)
-      throws InterruptedException, ExecutionException, PluginException, VimException;
+      throws InterruptedException, ExecutionException, PluginException, VimException, IOException,
+          VimDriverException;
 }

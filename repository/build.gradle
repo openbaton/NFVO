@@ -19,6 +19,7 @@ dependencies {
     compile project(':exception')
 
     compile 'org.springframework.boot:spring-boot-starter-data-jpa:' + springBootVersion
+    compile 'commons-io:commons-io:2.6'
 
     testCompile 'org.springframework.boot:spring-boot-starter-data-jpa:' + springBootVersion
     testCompile 'org.springframework.boot:spring-boot-starter-test:' + springBootVersion

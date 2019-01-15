@@ -22,7 +22,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import org.openbaton.catalogue.nfvo.ImageStatus;
 
-/** Created by lto on 11/05/15. */
+/** This class represents NFV images. This type of image is currently only used with OpenStack. */
 @Entity
 public class NFVImage extends BaseNfvImage {
 
@@ -33,6 +33,17 @@ public class NFVImage extends BaseNfvImage {
   private Boolean isPublic = false;
   private String diskFormat;
   private String containerFormat;
+
+  // null if the image file is stored locally on the file system. Otherwise it points to the
+  // location from where the image can be downloaded
+  private String url;
+  // md5 hash of the image file (currently only set if storedLocally == true)
+  private String hash;
+  // true if the NFVImage belongs to the image repository. It is false if the NFVImage is associated
+  // with a VIM
+  private boolean isInImageRepo;
+  // true if the image file is stored on the local file system. Only set if isInImageRepo == true
+  private boolean storedLocally;
 
   @Temporal(TemporalType.TIMESTAMP)
   private Date updated;
@@ -115,6 +126,30 @@ public class NFVImage extends BaseNfvImage {
     return status;
   }
 
+  public String getUrl() {
+    return url;
+  }
+
+  public void setUrl(String url) {
+    this.url = url;
+  }
+
+  public boolean isInImageRepo() {
+    return isInImageRepo;
+  }
+
+  public void setInImageRepo(boolean inImageRepo) {
+    isInImageRepo = inImageRepo;
+  }
+
+  public String getHash() {
+    return hash;
+  }
+
+  public void setHash(String hash) {
+    this.hash = hash;
+  }
+
   public void setStatus(String status) {
     if (status == null) this.status = ImageStatus.UNRECOGNIZED;
     else {
@@ -124,6 +159,14 @@ public class NFVImage extends BaseNfvImage {
         this.status = ImageStatus.UNRECOGNIZED;
       }
     }
+  }
+
+  public boolean isStoredLocally() {
+    return storedLocally;
+  }
+
+  public void setStoredLocally(boolean storedLocally) {
+    this.storedLocally = storedLocally;
   }
 
   @Override
@@ -156,6 +199,14 @@ public class NFVImage extends BaseNfvImage {
         + updated
         + ", status="
         + status
+        + ", url="
+        + url
+        + ", hash="
+        + hash
+        + ", isInImageRepo="
+        + isInImageRepo
+        + ", storedLocally="
+        + storedLocally
         + "} "
         + super.toString();
   }

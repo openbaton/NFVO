@@ -55,6 +55,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -198,8 +199,25 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
       lock = lockMap.computeIfAbsent(key, k -> new Object());
     }
     synchronized (lock) {
-      vimInstance = vimBroker.getVim(vimInstance.getType()).refresh(vimInstance);
-      vimInstance = vimRepository.save(vimInstance);
+      int attempt = 0;
+      while (true) {
+        attempt++;
+        vimInstance = vimBroker.getVim(vimInstance.getType()).refresh(vimInstance);
+        try {
+          vimInstance = vimRepository.save(vimInstance);
+        } catch (OptimisticLockingFailureException e) {
+          vimInstance = vimRepository.findFirstById(vimInstance.getId());
+          if (attempt >= 10)
+            throw new VimException(
+                "After "
+                    + attempt
+                    + " attempts it is still not possible to store the VIM instance "
+                    + vimInstance.getName(),
+                e);
+          continue;
+        }
+        break;
+      }
     }
 
     lastUpdateVim.put(vimInstance.getId(), (new Date()).getTime());

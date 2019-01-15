@@ -30,7 +30,8 @@ public class OAuth2ResourceServerConfig extends ResourceServerConfigurerAdapter 
   public void configure(HttpSecurity http) throws Exception {
     // API calls
     http.authorizeRequests()
-        .antMatchers("/api/v1/components/services/register", "/api/v1/security")
+        .antMatchers(
+            "/api/v1/components/services/register", "/api/v1/security", "/api/v1/nfvimage/file/**")
         .permitAll()
         .antMatchers("/api/**")
         .authenticated();
