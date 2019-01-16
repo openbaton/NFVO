@@ -277,6 +277,8 @@ public class NetworkServiceRecordManagementClassSuiteTest {
                 add(vnfmManagerEndpoint);
               }
             });
+    when(nsdUtils.getVimNameWithoutAvailabilityZone(anyString()))
+        .thenReturn(createVimInstance().getName());
     nsrManagement.onboard(nsd_exp, projectId, null, null, null, null);
   }
 
@@ -341,6 +343,8 @@ public class NetworkServiceRecordManagementClassSuiteTest {
                 add(createVimInstance());
               }
             });
+    when(nsdUtils.getVimNameWithoutAvailabilityZone(anyString()))
+        .thenReturn(createVimInstance().getName());
     /** Real Method */
     nsrManagement.onboard(networkServiceDescriptor.getId(), projectId, null, null, null, null);
   }
@@ -405,7 +409,8 @@ public class NetworkServiceRecordManagementClassSuiteTest {
                 add(vnfmManagerEndpoint);
               }
             });
-
+    when(nsdUtils.getVimNameWithoutAvailabilityZone(anyString()))
+        .thenReturn(createVimInstance().getName());
     nsrManagement.onboard(networkServiceDescriptor.getId(), projectId, null, null, null, null);
   }
 

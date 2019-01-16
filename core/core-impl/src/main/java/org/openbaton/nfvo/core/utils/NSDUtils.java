@@ -251,12 +251,7 @@ public class NSDUtils {
     for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
       if (vdu.getVimInstanceName() != null) {
         for (String name : vdu.getVimInstanceName()) {
-          String vimName;
-          if (name.contains(":")) {
-            vimName = name.split(":")[0];
-          } else {
-            vimName = name;
-          }
+          String vimName = getVimNameWithoutAvailabilityZone(name);
           log.debug("vim instance name=" + vimName);
           boolean fetched = false;
           for (BaseVimInstance vimInstance : vimInstances) {
@@ -562,8 +557,8 @@ public class NSDUtils {
     BaseVimInstance vimInstance = null;
     for (BaseVimInstance vi :
         vimRepository.findByProjectId(virtualNetworkFunctionDescriptor.getProjectId())) {
-      if ((vimName.contains(":") && vimName.split(":")[0].equals(vi.getName()))
-          || (!vimName.contains(":") && vimName.equals(vi.getName()))) {
+
+      if (getVimNameWithoutAvailabilityZone(vimName).equals(vi.getName())) {
         vimInstance = vi;
         log.debug("Got vim with auth: " + vimInstance.getAuthUrl());
         break;
@@ -580,6 +575,11 @@ public class NSDUtils {
               + virtualDeploymentUnit.getName());
     }
     return vimInstance;
+  }
+
+  public String getVimNameWithoutAvailabilityZone(String vimName) {
+    if (vimName.contains(":")) return vimName.split(":")[0];
+    return vimName;
   }
 
   private void checkIntegrityVDU(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor)
