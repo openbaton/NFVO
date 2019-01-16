@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import java.util.regex.Pattern;
 import javax.persistence.EntityManager;
 import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
@@ -311,8 +310,7 @@ public class NetworkServiceRecordManagement
         // vduVimInstances now contains all possible vim instance names for a specific vdu
         for (String vimInstanceName : instanceNames) {
 
-          String name =
-              vimInstanceName.contains(":") ? vimInstanceName.split(":")[0] : vimInstanceName;
+          String name = nsdUtils.getVimNameWithoutAvailabilityZone(vimInstanceName);
           BaseVimInstance vimInstance =
               vimInstanceRepository.findByProjectIdAndName(vdu.getProjectId(), name);
 
@@ -543,11 +541,7 @@ public class NetworkServiceRecordManagement
       List<String> finalVimInstanceNames = new ArrayList<>();
       vimInstanceNames.forEach(
           n -> {
-            if (n.contains(":")) {
-              finalVimInstanceNames.add(n.split(Pattern.quote(":"))[0]);
-            } else {
-              finalVimInstanceNames.add(n);
-            }
+            finalVimInstanceNames.add(nsdUtils.getVimNameWithoutAvailabilityZone(n));
           });
       if (vimInstanceRepository
           .findByProjectId(projectId)
@@ -1226,8 +1220,7 @@ public class NetworkServiceRecordManagement
           // vduVimInstances now contains all possible vim instance names for a specific vdu
           for (String vimInstanceName : instanceNames) {
 
-            String name =
-                vimInstanceName.contains(":") ? vimInstanceName.split(":")[0] : vimInstanceName;
+            String name = nsdUtils.getVimNameWithoutAvailabilityZone(vimInstanceName);
             BaseVimInstance vimInstance =
                 vimInstanceRepository.findByProjectIdAndName(vdu.getProjectId(), name);
 
@@ -1599,7 +1592,10 @@ public class NetworkServiceRecordManagement
     for (String vimInstanceName : instanceNames) {
       for (BaseVimInstance vimInstance :
           vimInstanceRepository.findByProjectId(vnfd.getProjectId())) {
-        if (vimInstanceName.equals(vimInstance.getName())) {
+
+        if (nsdUtils
+            .getVimNameWithoutAvailabilityZone(vimInstanceName)
+            .equals(vimInstance.getName())) {
           log.debug("Found vim instance " + vimInstance.getName());
           log.debug(
               "Checking if "
@@ -1611,7 +1607,7 @@ public class NetworkServiceRecordManagement
             type = type.split("\\.")[0];
           }
           if (vnfPackage.getVimTypes().contains(type)) {
-            checkedVimInstanceNames.add(vimInstance.getName());
+            checkedVimInstanceNames.add(vimInstanceName);
           } else {
             log.warn(
                 "The Vim Instance "
