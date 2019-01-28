@@ -39,6 +39,7 @@ dependencies {
     compile project(':plugin')
     compile project(':repository')
     compile project(':core-int')
+    compile project(':security')
 
     compile 'org.slf4j:slf4j-api:1.7.22'
 

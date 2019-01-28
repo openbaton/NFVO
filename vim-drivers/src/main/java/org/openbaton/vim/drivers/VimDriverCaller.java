@@ -361,6 +361,24 @@ public class VimDriverCaller extends VimDriver {
   }
 
   @Override
+  public NFVImage addImage(
+      BaseVimInstance vimInstance, BaseNfvImage image, String image_url, String imageRepoToken)
+      throws VimDriverException {
+    List<Serializable> params = new LinkedList<>();
+    params.add(vimInstance);
+    params.add(image);
+    params.add(image_url);
+    params.add(imageRepoToken);
+    Serializable res;
+    try {
+      res = pluginCaller.executeRPC("addImage", params, NFVImage.class);
+    } catch (IOException | PluginException | InterruptedException e) {
+      throw new VimDriverException(e.getMessage());
+    }
+    return (NFVImage) res;
+  }
+
+  @Override
   public BaseNfvImage updateImage(BaseVimInstance vimInstance, BaseNfvImage image)
       throws VimDriverException {
     List<Serializable> params = new LinkedList<>();

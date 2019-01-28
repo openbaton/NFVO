@@ -47,6 +47,7 @@ import org.openbaton.nfvo.common.utils.viminstance.VimInstanceUtils;
 import org.openbaton.nfvo.core.interfaces.NfvImageRepoManagement;
 import org.openbaton.nfvo.core.interfaces.VimManagement;
 import org.openbaton.nfvo.repositories.NFVImageRepository;
+import org.openbaton.nfvo.security.config.OAuth2AuthorizationServerConfig;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
@@ -62,6 +63,7 @@ public class GenericVIM extends Vim {
   private NFVImageRepository nfvImageRepository;
   private NfvImageRepoManagement nfvImageRepoManagement;
   private VimManagement vimManagement;
+  private OAuth2AuthorizationServerConfig securityServerConfig;
 
   // used to prevent the simultaneous upload of the same image to one VIM
   private static final Map<String, Object> uploadImageLockMap = new HashMap<>();
@@ -93,6 +95,8 @@ public class GenericVIM extends Vim {
         context.getBean("nfvImageRepoManagement", NfvImageRepoManagement.class);
     nfvImageRepository = context.getBean("NFVImageRepository", NFVImageRepository.class);
     vimManagement = context.getBean("vimManagement", VimManagement.class);
+    securityServerConfig =
+        context.getBean("OAuth2AuthorizationServerConfig", OAuth2AuthorizationServerConfig.class);
   }
 
   public GenericVIM() {}
@@ -989,9 +993,15 @@ public class GenericVIM extends Vim {
                     + vimInstance.getId()
                     + ")");
 
-            if (vimInstance instanceof OpenstackVimInstance) {}
-
-            return client.addImage(vimInstance, imageToUpload, url).getExtId();
+            if (vimInstance instanceof OpenstackVimInstance) {
+              String imageRepoToken = "";
+              try {
+                imageRepoToken = securityServerConfig.getNewImageToken(imageToUpload.getId());
+                return client.addImage(vimInstance, imageToUpload, url, imageRepoToken).getExtId();
+              } finally {
+                securityServerConfig.removeImageToken(imageRepoToken);
+              }
+            }
           }
         } catch (VimDriverException e) {
           log.error(

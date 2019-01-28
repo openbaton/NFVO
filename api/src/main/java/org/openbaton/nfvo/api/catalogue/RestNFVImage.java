@@ -6,12 +6,14 @@ import java.util.List;
 import org.openbaton.catalogue.nfvo.images.NFVImage;
 import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.core.interfaces.NfvImageRepoManagement;
+import org.openbaton.nfvo.security.config.OAuth2AuthorizationServerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +24,8 @@ public class RestNFVImage {
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private NfvImageRepoManagement nfvImageRepoManagement;
+
+  @Autowired private OAuth2AuthorizationServerConfig securityServerConfig;
 
   @Value("${nfvo.nfvimagedir.path:/etc/openbaton/nfvImages/}")
   private String nfvImageDirPath;
@@ -48,7 +52,7 @@ public class RestNFVImage {
   @ResponseStatus(HttpStatus.CREATED)
   @ApiOperation(
       value = "Adding an NFVImage to the NFVO's NFV image repository",
-      notes = "POST request with NFVImage as JSON content of the request body")
+      notes = "POST request with NFVImage properties as request parameters")
   public NFVImage create(
       @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
       @RequestParam(value = "name") String name,
@@ -113,31 +117,35 @@ public class RestNFVImage {
   @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(
-      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
-      throws WrongStatusException, EntityInUseException, BadRequestException {
+      @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId) {
     nfvImageRepoManagement.delete(id, projectId);
   }
 
   /**
    * This operation returns the image file associated with an NFVImage from the image repository.
    *
-   * @param id of NFVImage
+   * @param imageId of NFVImage
    * @return byte[]: the image file
    */
   @ApiOperation(value = "Get file associated to NFVImage", notes = "Returns the image file")
   @RequestMapping(
-      value = "/file/{id}",
+      value = "/file/{imageId}",
       method = RequestMethod.GET,
       produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-  public byte[] findById(@PathVariable("id") String id) throws NotFoundException, IOException {
-    return nfvImageRepoManagement.getImageFileOfNfvImage(id);
+  public byte[] getImageFile(
+      @PathVariable("imageId") String imageId, @RequestParam("token") String token)
+      throws NotFoundException, IOException {
+
+    if (!securityServerConfig.validateImageToken(token, imageId))
+      throw new AccessDeniedException("Invalid token for retrieving the image file");
+    return nfvImageRepoManagement.getImageFileOfNfvImage(imageId);
   }
 
   /**
-   * This operation returns the image file associated with an NFVImage from the image repository.
+   * This operation returns the NFVImage from the image repository specified by its ID.
    *
    * @param id of NFVImage
-   * @return byte[]: the image file
+   * @return the NFVImage from the image repository
    */
   @ApiOperation(value = "Get an NFVImage from the image repository", notes = "Returns the NFVImage")
   @RequestMapping(
@@ -150,7 +158,7 @@ public class RestNFVImage {
     NFVImage image = nfvImageRepoManagement.queryByIdAndProjectId(id, projectId);
     if (image == null)
       throw new NotFoundException(
-          "No NFVImage wid ID " + id + " found in image repository (" + projectId + ")");
+          "No NFVImage with ID " + id + " found in image repository (project: " + projectId + ")");
     return image;
   }
 }
