@@ -57,6 +57,11 @@ public class VimInstanceUtils {
     }
   }
 
+  public static String getVimNameWithoutAvailabilityZone(String vimName) {
+    if (vimName.contains(":")) return vimName.split(":")[0];
+    return vimName;
+  }
+
   public static void updatePrivateInfo(BaseVimInstance vimNew, BaseVimInstance vimOld) {
     if (vimNew
         .getClass()

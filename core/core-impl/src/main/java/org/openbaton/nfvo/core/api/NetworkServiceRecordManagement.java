@@ -16,6 +16,8 @@
 
 package org.openbaton.nfvo.core.api;
 
+import static org.openbaton.nfvo.common.utils.viminstance.VimInstanceUtils.getVimNameWithoutAvailabilityZone;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -310,7 +312,7 @@ public class NetworkServiceRecordManagement
         // vduVimInstances now contains all possible vim instance names for a specific vdu
         for (String vimInstanceName : instanceNames) {
 
-          String name = nsdUtils.getVimNameWithoutAvailabilityZone(vimInstanceName);
+          String name = getVimNameWithoutAvailabilityZone(vimInstanceName);
           BaseVimInstance vimInstance =
               vimInstanceRepository.findByProjectIdAndName(vdu.getProjectId(), name);
 
@@ -541,7 +543,7 @@ public class NetworkServiceRecordManagement
       List<String> finalVimInstanceNames = new ArrayList<>();
       vimInstanceNames.forEach(
           n -> {
-            finalVimInstanceNames.add(nsdUtils.getVimNameWithoutAvailabilityZone(n));
+            finalVimInstanceNames.add(getVimNameWithoutAvailabilityZone(n));
           });
       if (vimInstanceRepository
           .findByProjectId(projectId)
@@ -1220,7 +1222,7 @@ public class NetworkServiceRecordManagement
           // vduVimInstances now contains all possible vim instance names for a specific vdu
           for (String vimInstanceName : instanceNames) {
 
-            String name = nsdUtils.getVimNameWithoutAvailabilityZone(vimInstanceName);
+            String name = getVimNameWithoutAvailabilityZone(vimInstanceName);
             BaseVimInstance vimInstance =
                 vimInstanceRepository.findByProjectIdAndName(vdu.getProjectId(), name);
 
@@ -1593,9 +1595,7 @@ public class NetworkServiceRecordManagement
       for (BaseVimInstance vimInstance :
           vimInstanceRepository.findByProjectId(vnfd.getProjectId())) {
 
-        if (nsdUtils
-            .getVimNameWithoutAvailabilityZone(vimInstanceName)
-            .equals(vimInstance.getName())) {
+        if (getVimNameWithoutAvailabilityZone(vimInstanceName).equals(vimInstance.getName())) {
           log.debug("Found vim instance " + vimInstance.getName());
           log.debug(
               "Checking if "
