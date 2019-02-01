@@ -994,12 +994,18 @@ public class GenericVIM extends Vim {
                     + ")");
 
             if (vimInstance instanceof OpenstackVimInstance) {
-              String imageRepoToken = "";
-              try {
-                imageRepoToken = securityServerConfig.getNewImageToken(imageToUpload.getId());
-                return client.addImage(vimInstance, imageToUpload, url, imageRepoToken).getExtId();
-              } finally {
-                securityServerConfig.removeImageToken(imageRepoToken);
+              if (((NFVImage) imageToUpload).isStoredLocally()) {
+                String imageRepoToken = "";
+                try {
+                  imageRepoToken = securityServerConfig.getNewImageToken(imageToUpload.getId());
+                  return client
+                      .addImage(vimInstance, imageToUpload, url, imageRepoToken)
+                      .getExtId();
+                } finally {
+                  securityServerConfig.removeImageToken(imageRepoToken);
+                }
+              } else {
+                return client.addImage(vimInstance, imageToUpload, url).getExtId();
               }
             }
           }
