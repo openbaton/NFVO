@@ -71,9 +71,6 @@ public class NSDUtils {
   @Autowired private VnfPackageRepository vnfPackageRepository;
   @Autowired private VNFDRepository vnfdRepository;
 
-  @Value("${nfvo.integrity.nsd.checks:in-all-vims}")
-  private String inAllVims;
-
   @Value("${nfvo.marketplace.ip:marketplace.openbaton.org}")
   private String marketIp;
 
@@ -518,61 +515,9 @@ public class NSDUtils {
 
     checkIntegrityVNFPackage(virtualNetworkFunctionDescriptor);
 
-    if (virtualNetworkFunctionDescriptor.getVdu() != null) {
-      for (VirtualDeploymentUnit virtualDeploymentUnit :
-          virtualNetworkFunctionDescriptor.getVdu()) {
-        if (inAllVims.equals("in-all-vims")) {
-          if (virtualDeploymentUnit.getVimInstanceName() != null
-              && !virtualDeploymentUnit.getVimInstanceName().isEmpty()) {
-            for (String vimName : virtualDeploymentUnit.getVimInstanceName()) {
-              BaseVimInstance vimInstance =
-                  checkIntegrityVimInstance(
-                      virtualNetworkFunctionDescriptor, virtualDeploymentUnit, vimName);
-
-              checkIntegrityScaleInOut(virtualNetworkFunctionDescriptor, virtualDeploymentUnit);
-
-              checkFlavourIntegrity(virtualNetworkFunctionDescriptor, vimInstance);
-            }
-          } else {
-            log.warn(
-                "Impossible to complete Integrity check because of missing VimInstances definition");
-          }
-        } else {
-          log.error("" + inAllVims + " not yet implemented!");
-          throw new UnsupportedOperationException("" + inAllVims + " not yet implemented!");
-        }
-      }
-    } else {
+    if (virtualNetworkFunctionDescriptor.getVdu() == null) {
       virtualNetworkFunctionDescriptor.setVdu(new HashSet<>());
     }
-  }
-
-  private BaseVimInstance checkIntegrityVimInstance(
-      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
-      VirtualDeploymentUnit virtualDeploymentUnit,
-      String vimName)
-      throws NetworkServiceIntegrityException {
-    BaseVimInstance vimInstance = null;
-    for (BaseVimInstance vi :
-        vimRepository.findByProjectId(virtualNetworkFunctionDescriptor.getProjectId())) {
-      if ((vimName.contains(":") && vimName.split(":")[0].equals(vi.getName()))
-          || (!vimName.contains(":") && vimName.equals(vi.getName()))) {
-        vimInstance = vi;
-        log.debug("Got vim with auth: " + vimInstance.getAuthUrl());
-        break;
-      }
-    }
-
-    if (vimInstance == null) {
-      throw new NetworkServiceIntegrityException(
-          "Not found VIM with name "
-              + vimName
-              + " referenced by VNFD "
-              + virtualNetworkFunctionDescriptor.getName()
-              + " and VDU "
-              + virtualDeploymentUnit.getName());
-    }
-    return vimInstance;
   }
 
   private void checkIntegrityVDU(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor)

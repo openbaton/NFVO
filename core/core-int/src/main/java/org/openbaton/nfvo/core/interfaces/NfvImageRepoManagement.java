@@ -18,6 +18,7 @@ package org.openbaton.nfvo.core.interfaces;
 
 import java.io.IOException;
 import org.openbaton.catalogue.nfvo.images.NFVImage;
+import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.NotFoundException;
 
 /**
@@ -32,16 +33,18 @@ public interface NfvImageRepoManagement {
    * @param nfvImage the new image
    * @return the added NFVImage
    */
-  NFVImage add(NFVImage nfvImage);
+  NFVImage add(NFVImage nfvImage, String projectId) throws AlreadyExistingException;
 
   /**
    * This method adds an NFVImage to the image repository and stores the actual image file.
    *
    * @param nfvImage
    * @param bytes the image file in bytes
+   * @param projectId ID of the project to which the image shall be added
    * @return the added NFVImage
    */
-  NFVImage add(NFVImage nfvImage, byte[] bytes) throws IOException;
+  NFVImage add(NFVImage nfvImage, byte[] bytes, String projectId)
+      throws IOException, AlreadyExistingException;
 
   /**
    * This method removes an NFVImage from the image repository and checks if the image has the given

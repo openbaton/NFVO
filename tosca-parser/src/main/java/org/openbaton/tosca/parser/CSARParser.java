@@ -172,10 +172,10 @@ public class CSARParser {
     Yaml yaml = new Yaml();
     metadata = yaml.loadAs(new String(this.vnfMetadata.toByteArray()), Map.class);
     // Get configuration for NFVImage
-    vnfPackage = vnfPackageManagement.handleMetadata(metadata, vnfPackage);
+    vnfPackage = vnfPackageManagement.handleMetadata(metadata, vnfPackage, new HashMap<>());
 
     return vnfPackageManagement.handleImage(
-        vnfPackage, null, virtualNetworkFunctionDescriptor, metadata, projectId);
+        vnfPackage, virtualNetworkFunctionDescriptor, metadata, projectId);
   }
 
   private String saveVNFD(

@@ -64,7 +64,7 @@ public class RestNFVImage {
       @RequestParam(value = "containerFormat") String containerFormat,
       @RequestParam(value = "url", required = false) String url,
       @RequestHeader(value = "project-id") String projectId)
-      throws BadRequestException, IOException {
+      throws BadRequestException, IOException, AlreadyExistingException {
 
     if (imageFile == null && url == null)
       throw new BadRequestException(
@@ -97,10 +97,10 @@ public class RestNFVImage {
       } catch (IOException e) {
         throw new IOException("Unable to read from the provided image file: " + e.getMessage(), e);
       }
-      return nfvImageRepoManagement.add(nfvImage, bytes);
+      return nfvImageRepoManagement.add(nfvImage, bytes, projectId);
     }
 
-    return nfvImageRepoManagement.add(nfvImage);
+    return nfvImageRepoManagement.add(nfvImage, projectId);
   }
 
   @ApiOperation(

@@ -25,6 +25,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.openbaton.catalogue.nfvo.images.NFVImage;
+import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.nfvo.repositories.NFVImageRepository;
 import org.slf4j.Logger;
@@ -71,7 +72,14 @@ public class NfvImageRepoManagement
   }
 
   @Override
-  public NFVImage add(NFVImage nfvImage) {
+  public NFVImage add(NFVImage nfvImage, String projectId) throws AlreadyExistingException {
+    if (queryByNameAndProjectId(nfvImage.getName(), projectId) != null)
+      throw new AlreadyExistingException(
+          "An image with name "
+              + nfvImage.getName()
+              + " exists already in the "
+              + "image repository for project "
+              + projectId);
     if (!nfvImage.isInImageRepo())
       throw new IllegalArgumentException(
           "The 'isInImageRepo' field of the NFVImage to add is set to false but must be true");
@@ -92,7 +100,15 @@ public class NfvImageRepoManagement
   }
 
   @Override
-  public NFVImage add(NFVImage nfvImage, byte[] bytes) throws IOException {
+  public NFVImage add(NFVImage nfvImage, byte[] bytes, String projectId)
+      throws IOException, AlreadyExistingException {
+    if (queryByNameAndProjectId(nfvImage.getName(), projectId) != null)
+      throw new AlreadyExistingException(
+          "An image with name "
+              + nfvImage.getName()
+              + " exists already in the "
+              + "image repository for project "
+              + projectId);
     if (!nfvImage.isInImageRepo())
       throw new IllegalArgumentException(
           "The 'isInImageRepo' field of the NFVImage to add is set to false but must be true");

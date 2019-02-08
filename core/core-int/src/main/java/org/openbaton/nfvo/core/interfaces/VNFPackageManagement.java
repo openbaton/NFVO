@@ -42,11 +42,13 @@ public interface VNFPackageManagement {
   /**
    * This operation handles reading the Metadata of the VNF Package
    *
-   * @param metadata
-   * @param vnfPackage
+   * @param metadata the metadata
+   * @param vnfPackage the corresponding VNF package
+   * @param imageFiles a Map of image files extracted from the package (name -> byte[])
    */
-  VNFPackage handleMetadata(Map<String, Object> metadata, VNFPackage vnfPackage)
-      throws IncompatibleVNFPackage, BadFormatException;
+  VNFPackage handleMetadata(
+      Map<String, Object> metadata, VNFPackage vnfPackage, Map<String, byte[]> imageFiles)
+      throws IncompatibleVNFPackage, BadFormatException, IOException;
 
   VirtualNetworkFunctionDescriptor add(
       byte[] pack, boolean isImageIncluded, String projectId, boolean fromMarketPlace)
@@ -59,14 +61,12 @@ public interface VNFPackageManagement {
    * This operation handles the data about the image of the vnf package
    *
    * @param vnfPackage
-   * @param imageFile
    * @param virtualNetworkFunctionDescriptor
    * @param metadata
    * @param projectId
    */
   BaseNfvImage handleImage(
       VNFPackage vnfPackage,
-      byte[] imageFile,
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
       Map<String, Object> metadata,
       String projectId)
