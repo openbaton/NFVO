@@ -30,6 +30,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openbaton.catalogue.nfvo.images.NFVImage;
+import org.openbaton.exceptions.AlreadyExistingException;
 import org.openbaton.nfvo.core.api.NfvImageRepoManagement;
 import org.openbaton.nfvo.repositories.NFVImageRepository;
 
@@ -58,11 +59,11 @@ public class NfvImageRepoManagementClassSuiteTest {
 
   /** Try adding an NFVImage with property isInImageRepo == false. */
   @Test(expected = IllegalArgumentException.class)
-  public void nfvImageManagementAddTest() throws IOException {
+  public void nfvImageManagementAddTest() throws IOException, AlreadyExistingException {
     NFVImage nfvImage = createNfvImage();
     nfvImage.setInImageRepo(false);
     when(nfvImageRepository.save(any(NFVImage.class))).thenReturn(nfvImage);
-    nfvImageRepoManagement.add(nfvImage, new byte[2]);
+    nfvImageRepoManagement.add(nfvImage, new byte[2], "projectId");
   }
 
   @Test

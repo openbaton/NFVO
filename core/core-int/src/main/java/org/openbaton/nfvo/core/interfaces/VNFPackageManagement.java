@@ -44,7 +44,7 @@ public interface VNFPackageManagement {
    *
    * @param metadata the metadata
    * @param vnfPackage the corresponding VNF package
-   * @param imageFiles a Map of image files extracted from the package (name -> byte[])
+   * @param imageFiles a Map of image files extracted from the package (maps image name to byte[])
    */
   VNFPackage handleMetadata(
       Map<String, Object> metadata, VNFPackage vnfPackage, Map<String, byte[]> imageFiles)
