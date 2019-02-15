@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
@@ -127,6 +128,16 @@ public class VNFPackageManagement
       if (vdu.getName() == null) {
         vdu.setName(virtualNetworkFunctionDescriptor.getName() + "-" + i);
         i++;
+      }
+      if (vdu.getVm_image() != null && !vdu.getVm_image().isEmpty()) {
+        // filter blank image names
+        vdu.setVm_image(
+            vdu.getVm_image()
+                .stream()
+                .filter(image -> !image.trim().equals(""))
+                .collect(Collectors.toSet()));
+      } else {
+        vdu.setVm_image(new HashSet<>());
       }
     }
     for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
@@ -230,6 +241,16 @@ public class VNFPackageManagement
       }
     }
 
+    if (metadata.containsKey("images")) {
+      // add images from Metadata.yaml to VDUs IF THEY DO NOT specify any image
+      Set<String> imageNames = extractImageNamesFromMetadata(metadata);
+      for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
+        if (vdu.getVm_image() == null || vdu.getVm_image().isEmpty()) {
+          vdu.setVm_image(imageNames);
+        }
+      }
+    }
+
     VNFPackageMetadata vnfPackageMetadata =
         handleVnfPackageMetadata(
             metadata, vnfPackage, virtualNetworkFunctionDescriptor.getEndpoint(), projectId, "tar");
@@ -270,7 +291,7 @@ public class VNFPackageManagement
     }
 
     vnfPackage = vnfPackageRepository.save(vnfPackage);
-    // TODO understand this
+
     vnfPackageMetadataRepository.setVNFPackageId(vnfPackage.getId());
 
     virtualNetworkFunctionDescriptor.setVnfPackageLocation(vnfPackage.getId());
@@ -284,6 +305,33 @@ public class VNFPackageManagement
             + virtualNetworkFunctionDescriptor.getVnfPackageLocation()
             + ") successfully");
     return virtualNetworkFunctionDescriptor;
+  }
+
+  /**
+   * Returns a Set of image names that are listed in the metadata under images.
+   *
+   * @param metadata the Metadata.yaml file as a Map
+   * @return the image names
+   * @throws BadFormatException if the metadata cannot be parsed
+   */
+  private Set<String> extractImageNamesFromMetadata(Map<String, Object> metadata)
+      throws BadFormatException {
+    Set<String> imageNames = new HashSet<>();
+    // extract images from metadata
+    if (metadata.containsKey("images")) {
+      try {
+        Map<String, Map<String, Object>> images =
+            (Map<String, Map<String, Object>>) metadata.get("images");
+
+        for (String imageName : images.keySet()) {
+          imageNames.add(imageName);
+        }
+      } catch (Exception e) {
+        throw new BadFormatException(
+            "Unable to parse 'images' section of VNF package metadata: " + e.getMessage());
+      }
+    }
+    return imageNames;
   }
 
   private VirtualNetworkFunctionDescriptor setIPConfigurations(
