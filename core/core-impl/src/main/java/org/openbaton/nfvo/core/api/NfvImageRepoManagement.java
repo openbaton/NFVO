@@ -21,6 +21,7 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Date;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -85,6 +86,7 @@ public class NfvImageRepoManagement
           "The 'isInImageRepo' field of the NFVImage to add is set to false but must be true");
     log.debug("Adding image with name " + nfvImage.getName());
     if (nfvImage.isStoredLocally()) nfvImage.setUrl(null);
+    nfvImage.setCreated(new Date());
     nfvImage = nfvImageRepository.save(nfvImage);
     return nfvImage;
   }
@@ -121,6 +123,7 @@ public class NfvImageRepoManagement
     }
     nfvImage.setUrl(null);
     nfvImage.setStoredLocally(true);
+    nfvImage.setCreated(new Date());
     nfvImage = nfvImageRepository.save(nfvImage);
     try {
       File imageFile = new File(ensureTrailingSlash(nfvImageDirPath) + nfvImage.getId());
