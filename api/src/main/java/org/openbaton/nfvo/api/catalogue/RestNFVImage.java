@@ -54,7 +54,7 @@ public class RestNFVImage {
       value = "Adding an NFVImage to the NFVO's NFV image repository",
       notes = "POST request with NFVImage properties as request parameters")
   public NFVImage create(
-      @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
+      @RequestParam(value = "file", required = false) MultipartFile imageFile,
       @RequestParam(value = "name") String name,
       @RequestParam(value = "minRam") Long minRam,
       @RequestParam(value = "minDiskSpace") Long minDiskSpace,
