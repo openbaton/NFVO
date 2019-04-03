@@ -224,7 +224,7 @@ public class GrantoperationTask extends AbstractTask {
       networkServiceRecord
           .getVlr()
           .stream()
-              // find all vlr which the networks hasn't been created yet
+          // find all vlr which the networks hasn't been created yet
           .filter(
               virtualLinkRecord -> {
                 log.debug(
@@ -239,7 +239,7 @@ public class GrantoperationTask extends AbstractTask {
                 }
                 return true;
               })
-              // Then add such vlr to the list networkToAdd
+          // Then add such vlr to the list networkToAdd
           .forEach(
               virtualLinkRecord -> {
                 try {
@@ -291,7 +291,6 @@ public class GrantoperationTask extends AbstractTask {
               .getVlr()
               .forEach(
                   vlr -> {
-
                     if (vlr.getName().equals(vnfdConnectionPoint.getVirtual_link_reference())) {
                       vnfdConnectionPoint.setVirtual_link_reference(vlr.getName());
                       vnfdConnectionPoint.setVirtual_link_reference_id(vlr.getExtId());

@@ -90,8 +90,8 @@ public class RestNetworkServiceRecord {
       @RequestHeader(value = "project-id") String projectId,
       @RequestBody(required = false) String bodyJson)
       throws InterruptedException, ExecutionException, VimException, NotFoundException,
-          BadFormatException, PluginException, MissingParameterException, BadRequestException,
-          IOException, AlreadyExistingException {
+          BadFormatException, PluginException, BadRequestException, IOException,
+          AlreadyExistingException {
 
     JsonObject jsonObject;
     try {
@@ -132,8 +132,6 @@ public class RestNetworkServiceRecord {
    * @throws VimException
    * @throws NotFoundException
    * @throws BadFormatException
-   * @throws VimDriverException
-   * @throws QuotaExceededException
    * @throws PluginException
    */
   @ApiOperation(
@@ -151,8 +149,8 @@ public class RestNetworkServiceRecord {
       @RequestHeader(value = "project-id") String projectId,
       @RequestBody(required = false) JsonObject body)
       throws InterruptedException, ExecutionException, VimException, NotFoundException,
-          BadFormatException, PluginException, MissingParameterException, BadRequestException,
-          IOException, AlreadyExistingException {
+          BadFormatException, PluginException, BadRequestException, IOException,
+          AlreadyExistingException {
 
     String monitoringIp = null;
     List keys = null;
@@ -444,10 +442,6 @@ public class RestNetworkServiceRecord {
    *
    * @param ids: the id list of Virtual Network Function Records
    * @throws NotFoundException
-   * @throws InterruptedException
-   * @throws ExecutionException
-   * @throws WrongStatusException
-   * @throws VimException
    */
   @ApiOperation(
       value = "Removing multiple Virtual Network Function Records",
@@ -616,8 +610,6 @@ public class RestNetworkServiceRecord {
    * @throws NotFoundException
    * @throws BadFormatException
    * @throws WrongStatusException
-   * @throws ExecutionException
-   * @throws InterruptedException
    */
   @ApiOperation(
       value = "Add a VNFC in standby",
@@ -845,8 +837,8 @@ public class RestNetworkServiceRecord {
       @PathVariable("idNsr") String nsrId,
       @PathVariable("idVnfr") String vnfrId,
       @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException, InterruptedException, BadRequestException, AlreadyExistingException,
-          VimException, ExecutionException, PluginException, IOException, BadFormatException {
+      throws NotFoundException, InterruptedException, BadRequestException, VimException,
+          ExecutionException, PluginException, IOException, BadFormatException {
     log.debug("Received request for restarting a VNFR");
     if (!body.has("imageName") || !body.getAsJsonPrimitive("imageName").isString())
       throw new BadRequestException(
@@ -1121,8 +1113,6 @@ public class RestNetworkServiceRecord {
             .getLifecycle_event_history();
   }
 
-  // TODO The Rest of the classes
-
   private PhysicalNetworkFunctionRecord findPNFD(
       Collection<PhysicalNetworkFunctionRecord> listPNFR, String id_pnf) throws NotFoundException {
     for (PhysicalNetworkFunctionRecord pRecord : listPNFR) {
@@ -1141,15 +1131,5 @@ public class RestNetworkServiceRecord {
       }
     }
     throw new NotFoundException("VNFD with id " + id_vnfd + " was not found");
-  }
-
-  private VirtualNetworkFunctionRecord findVNF(
-      Collection<VirtualNetworkFunctionRecord> listVNF, String id_vnf) throws NotFoundException {
-    for (VirtualNetworkFunctionRecord vnfRecord : listVNF) {
-      if (vnfRecord.getId().equals(id_vnf)) {
-        return vnfRecord;
-      }
-    }
-    throw new NotFoundException("VNFR with id " + id_vnf + " was not found");
   }
 }
