@@ -116,7 +116,7 @@ public class RestNetworkServiceRecord {
   }
 
   /**
-   * @param id of the NSR
+   * @param id of the NSD
    * @param projectId if of the project
    * @param body the body json is: { "vduVimInstances":{ "vduName1":[ "viminstancename" ],
    *     "vduName2":[ "viminstancename2" ] }, "keys":[ "keyname1", "keyname2" ], "configurations":{

@@ -217,12 +217,6 @@ public class GrantoperationTask extends AbstractTask {
                 + virtualNetworkFunctionRecord.getDescriptor_reference()
                 + " in project with id "
                 + virtualNetworkFunctionRecord.getProjectId());
-      // networkServiceDescriptor
-      //              .getVnfd()
-      //              .stream()
-      //              .filter(vnfd -> vnfd.getName().equals(virtualNetworkFunctionRecord.getName()))
-      //              .findFirst()
-      //              .orElseThrow(() -> new NotFoundException("That's impossible"));
 
       Exception[] ex = new Exception[1];
       Map<String, BaseNetwork> networkToAdd = new HashMap<>();
@@ -230,6 +224,7 @@ public class GrantoperationTask extends AbstractTask {
       networkServiceRecord
           .getVlr()
           .stream()
+              // find all vlr which the networks hasn't been created yet
           .filter(
               virtualLinkRecord -> {
                 log.debug(
@@ -244,6 +239,7 @@ public class GrantoperationTask extends AbstractTask {
                 }
                 return true;
               })
+              // Then add such vlr to the list networkToAdd
           .forEach(
               virtualLinkRecord -> {
                 try {
@@ -259,6 +255,7 @@ public class GrantoperationTask extends AbstractTask {
                   ex[0] = e;
                 }
               });
+
       if (ex[0] != null) {
         throw (BadRequestException) ex[0];
       }
@@ -294,6 +291,7 @@ public class GrantoperationTask extends AbstractTask {
               .getVlr()
               .forEach(
                   vlr -> {
+
                     if (vlr.getName().equals(vnfdConnectionPoint.getVirtual_link_reference())) {
                       vnfdConnectionPoint.setVirtual_link_reference(vlr.getName());
                       vnfdConnectionPoint.setVirtual_link_reference_id(vlr.getExtId());
