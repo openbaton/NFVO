@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.openbaton.nfvo.core.utils;
 
 import java.io.ByteArrayInputStream;
@@ -24,10 +40,10 @@ public class CheckVNFPackage {
   private static final String[] REQUIRED_VNF_PACKAGE_AND_VNFD_COMMON_KEYS =
       new String[] {"name", "vendor"};
   // Required keys for Open Baton
-  private static final String[] REQUIRED_VNF_PACKAGE_KEYS_FOR_OPENBATON = new String[] {"image"};
+  private static final String[] REQUIRED_VNF_PACKAGE_KEYS_FOR_OPENBATON = new String[] {};
 
   // Required keys for image
-  private static final String[] REQUIRED_IMAGE_DETAILS = new String[] {"upload"};
+  private static final String[] REQUIRED_IMAGE_DETAILS = new String[] {};
   // Required keys for image-config
   private static final String[] REQUIRED_IMAGE_CONFIG =
       new String[] {
@@ -111,7 +127,8 @@ public class CheckVNFPackage {
                 metadata, REQUIRED_VNF_PACKAGE_IDENTIFIER_KEYS);
             CheckVNFPackage.checkRequiredFirstLevelMetadataKeys(
                 metadata, REQUIRED_VNF_PACKAGE_KEYS_FOR_OPENBATON);
-            // throw an exception if either vim-types and vim_types are not provided, or both are provided together.
+            // throw an exception if either vim-types and vim_types are not provided, or both are
+            // provided together.
             if (metadata.containsKey("vim-types") == metadata.containsKey("vim_types"))
               throw new VNFPackageFormatException("vim-types is not provided");
 
@@ -127,39 +144,48 @@ public class CheckVNFPackage {
 
             checkRequiredImageDetailsKeys(imageDetails);
 
-            if (imageDetails.get("upload").equals("true")
-                || imageDetails.get("upload").equals("check")) {
-              if (!metadata.containsKey("image-config"))
-                throw new VNFPackageFormatException(
-                    "The image-config is not defined. Please define it to upload a new image");
-              log.debug("image-config: " + metadata.get("image-config"));
-              Map<String, Object> imageConfig = (Map<String, Object>) metadata.get("image-config");
-              checkRequiredImageConfigKeys(imageConfig);
+            if (imageDetails != null) {
+              if (imageDetails.get("upload").equals("true")
+                  || imageDetails.get("upload").equals("check")) {
+                if (!metadata.containsKey("image-config"))
+                  throw new VNFPackageFormatException(
+                      "The image-config is not defined. Please define it to upload a new image");
+                log.debug("image-config: " + metadata.get("image-config"));
+                Map<String, Object> imageConfig =
+                    (Map<String, Object>) metadata.get("image-config");
+                checkRequiredImageConfigKeys(imageConfig);
 
-              try {
-                Integer.toString((Integer) imageConfig.get("minCPU"));
-              } catch (ClassCastException e) {
-                throw new VNFPackageFormatException("minCPU is not an integer");
-              }
+                try {
+                  Integer.toString((Integer) imageConfig.get("minCPU"));
+                } catch (ClassCastException e) {
+                  throw new VNFPackageFormatException("minCPU is not an integer");
+                }
 
-              try {
-                Long.parseLong(imageConfig.get("minDisk").toString());
-              } catch (NumberFormatException e) {
-                throw new VNFPackageFormatException("minDisk is not a number");
-              }
-              try {
-                Long.parseLong(imageConfig.get("minRam").toString());
-              } catch (NumberFormatException e) {
-                throw new VNFPackageFormatException("minRam is not a number");
-              }
+                try {
+                  Long.parseLong(imageConfig.get("minDisk").toString());
+                } catch (NumberFormatException e) {
+                  throw new VNFPackageFormatException("minDisk is not a number");
+                }
+                try {
+                  Long.parseLong(imageConfig.get("minRam").toString());
+                } catch (NumberFormatException e) {
+                  throw new VNFPackageFormatException("minRam is not a number");
+                }
 
-              String imageLink =
-                  imageDetails.get("link") == null ? "" : (String) imageDetails.get("link");
-              if (!imageIncluded && imageLink.isEmpty()) {
-                throw new NotFoundException(
-                    "VNFPackageManagement: For option upload=check you must define an image. Neither the image link is "
-                        + "defined nor the image file is available. Please define at least one if you want to upload a new image");
+                String imageLink =
+                    imageDetails.get("link") == null ? "" : (String) imageDetails.get("link");
+                if (!imageIncluded && imageLink.isEmpty()) {
+                  throw new NotFoundException(
+                      "VNFPackageManagement: For option upload=check you must define an image. Neither the image link is "
+                          + "defined nor the image file is available. Please define at least one if you want to upload a new image");
+                }
               }
+              if (!imageDetails.get("upload").equals("true"))
+                if (!imageDetails.containsKey("ids") && !imageDetails.containsKey("names")) {
+                  throw new NotFoundException(
+                      "VNFPackageManagement: Upload option 'false' or 'check' requires at least a list of ids or names to find "
+                          + "the right image.");
+                }
             }
 
             if (metadata.containsKey("additional-repos")) {
@@ -187,15 +213,8 @@ public class CheckVNFPackage {
                 }
               }
             }
-
-            if (!imageDetails.get("upload").equals("true"))
-              if (!imageDetails.containsKey("ids") && !imageDetails.containsKey("names")) {
-                throw new NotFoundException(
-                    "VNFPackageManagement: Upload option 'false' or 'check' requires at least a list of ids or names to find "
-                        + "the right image.");
-              }
           } else if (!entry.getName().startsWith("scripts/") && entry.getName().endsWith(".json")) {
-            //this must be the vnfd
+            // this must be the vnfd
             vnfdFound = true;
             String json = new String(content);
             log.trace("Content of vnfd is: " + json);
@@ -230,7 +249,8 @@ public class CheckVNFPackage {
     if (vnfPackageNFVOVersion.isEmpty())
       throw new NullPointerException("The nfvo version in the Metadata is empty");
 
-    //    // If the user does not specify the nfvo_version field, we suppose it is compatible (best effort)
+    //    // If the user does not specify the nfvo_version field, we suppose it is compatible (best
+    // effort)
     //    if (vnfPackageNFVOVersion == null || vnfPackageNFVOVersion.isEmpty()) return true;
     //
     //    int compatible = vnfPackageNFVOVersion.compareTo(nfvoVersion);

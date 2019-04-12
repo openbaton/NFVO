@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Open Baton (http://openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 /** Created by lto on 25/05/16. */
 @Configuration
-//@EnableWebMvc
+// @EnableWebMvc
 public class InterceptorConfiguration extends WebMvcConfigurerAdapter {
 
   @Autowired private AuthorizeInterceptor authorizeInterceptor;

@@ -1,18 +1,17 @@
 /*
- * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package org.openbaton.nfvo.core.test;
@@ -74,14 +73,12 @@ import org.openbaton.exceptions.NotFoundException;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.exceptions.WrongStatusException;
-import org.openbaton.nfvo.core.api.ConfigurationManagement;
 import org.openbaton.nfvo.core.api.NetworkServiceRecordManagement;
 import org.openbaton.nfvo.core.api.VimManagement;
 import org.openbaton.nfvo.core.interfaces.EventDispatcher;
 import org.openbaton.nfvo.core.interfaces.ResourceManagement;
 import org.openbaton.nfvo.core.interfaces.VNFLifecycleOperationGranting;
 import org.openbaton.nfvo.core.utils.NSDUtils;
-import org.openbaton.nfvo.repositories.ConfigurationRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceDescriptorRepository;
 import org.openbaton.nfvo.repositories.NetworkServiceRecordRepository;
 import org.openbaton.nfvo.repositories.VNFRRepository;
@@ -111,7 +108,6 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 
   private final Logger log = LoggerFactory.getLogger(ApplicationTest.class);
 
-  @Mock private ConfigurationManagement configurationManagement;
   @Mock private VnfPackageRepository vnfPackageRepository;
   @Mock private VimManagement vimManagement;
   @Mock private VimBroker vimBroker;
@@ -123,7 +119,6 @@ public class NetworkServiceRecordManagementClassSuiteTest {
   @Mock private Vim vim;
   @Mock private VNFLifecycleOperationGranting vnfLifecycleOperationGranting;
   @Mock private NSDUtils nsdUtils;
-  @Mock private ConfigurationRepository configurationRepository;
   @Mock private VnfmManager vnfmManager;
   @Mock private EventDispatcher publisher;
   @Mock private VNFRRepository vnfrRepository;
@@ -227,7 +222,6 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     ConfigurationParameter configurationParameter = new ConfigurationParameter();
     configurationParameter.setConfKey("delete-on-all-status");
     configurationParameter.setValue("true");
-    when(configurationManagement.queryByName("system")).thenReturn(system);
     nsrManagement.delete(nsd_exp.getId(), projectId);
   }
 
@@ -255,6 +249,13 @@ public class NetworkServiceRecordManagementClassSuiteTest {
 
     when(vimRepository.findByProjectIdAndName(anyString(), anyString()))
         .thenReturn(createVimInstance());
+    when(vimRepository.findByProjectId(anyString()))
+        .thenReturn(
+            new ArrayList<BaseVimInstance>() {
+              {
+                add(createVimInstance());
+              }
+            });
 
     when(vimRepository.findAll())
         .thenReturn(
@@ -404,7 +405,6 @@ public class NetworkServiceRecordManagementClassSuiteTest {
                 add(vnfmManagerEndpoint);
               }
             });
-
     nsrManagement.onboard(networkServiceDescriptor.getId(), projectId, null, null, null, null);
   }
 
@@ -439,7 +439,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
     nsd.getMonitoring_parameter().add("monitor2");
     nsd.getMonitoring_parameter().add("monitor3");
     nsd.setProjectId(projectId);
-    //nsd.setLifecycle_event(new HashSet<LifecycleEvent>());
+    // nsd.setLifecycle_event(new HashSet<LifecycleEvent>());
     nsd.setPnfd(new HashSet<>());
     nsd.setVnffgd(new HashSet<>());
     nsd.setVld(new HashSet<>());

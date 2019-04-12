@@ -1,18 +1,17 @@
 /*
- * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 buildscript {
     repositories { mavenCentral() }
@@ -20,14 +19,14 @@ buildscript {
 }
 
 plugins {
-    id 'net.researchgate.release' version '2.5.0'
+    id 'net.researchgate.release' version '2.6.0'
     id "nebula.ospackage" version "4.5.1"
-    id 'com.github.sherter.google-java-format' version '0.5'
+    id 'com.github.sherter.google-java-format' version '0.7.1'
     // For the managing of the Licences
     id "com.github.hierynomus.license" version "0.14.0"
     // For managing the dependencies' versions
-    id 'com.github.ben-manes.versions' version '0.13.0'
-    id 'org.springframework.boot' version '1.5.8.RELEASE'
+    id 'com.github.ben-manes.versions' version '0.20.0'
+    id 'org.springframework.boot' version '1.5.11.RELEASE'
 }
 
 apply plugin: 'java'
@@ -36,22 +35,15 @@ apply plugin: 'idea'
 apply plugin: 'eclipse'
 
 apply from: 'gradle/gradle/git.helpers.gradle'
-apply from: 'gradle/gradle/command.line.helper.gradle'
+apply from: 'gradle/gradle/helpers.gradle'
 
 /**
  * Project settings
  */
 ext {
-    //------------------------------------------------//
-    /**
-     * Spring Boot version (replace it also in the plugin section!)
-     */
-    springBootVersion = '1.5.8.RELEASE'
-    //------------------------------------------------//
-    //------------------------------------------------//
-    /**
-     * Application Related Version
-     */
+    //Spring Boot version (it also in the plugin section above!)
+    springBootVersion = '1.5.11.RELEASE'
+
     applicationVersion = version
 
     applicationRelease = isApplicationRelease()
@@ -60,11 +52,6 @@ ext {
 
     applicationVersionSnapshot = (!applicationRelease) ? ".${asUTC(applicationDate, 'yyyyMMdd')}.git${applicationRevision}" : ""
     applicationVersionFull = "${applicationVersion}${applicationVersionSnapshot}"
-    //------------------------------------------------//
-    //------------------------------------------------//
-    /**
-     * Junit Version
-     */
     junitVersion = '4.12'
 }
 
@@ -75,7 +62,6 @@ apply from: 'gradle/gradle/git.release.gradle'
 
 apply from: 'gradle/gradle/packaging.nfvo.debian.gradle'
 apply from: 'gradle/gradle/packaging.nfvo.docker.gradle'
-apply from: 'gradle/gradle/packaging.innosetup.gradle'
 
 apply from: 'gradle/gradle/distribution.gradle'
 

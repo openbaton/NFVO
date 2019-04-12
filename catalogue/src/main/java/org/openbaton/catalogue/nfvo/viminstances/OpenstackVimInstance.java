@@ -1,13 +1,25 @@
+/*
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.openbaton.catalogue.nfvo.viminstances;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.CascadeType;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.openbaton.catalogue.keys.PopKeypair;
@@ -45,16 +57,18 @@ public class OpenstackVimInstance extends BaseVimInstance {
   @ElementCollection(fetch = FetchType.EAGER)
   private Set<String> securityGroups;
 
+  // can store a self signed certificate used by the OpenStack instance related to this VIM
+  @Column(length = 3700)
+  private String openstackSslCertificate;
+
   @OneToMany(
-    fetch = FetchType.EAGER,
-    cascade = {CascadeType.ALL}
-  )
+      fetch = FetchType.EAGER,
+      cascade = {CascadeType.ALL})
   private Set<PopKeypair> keys;
 
   @OneToMany(
-    fetch = FetchType.EAGER,
-    cascade = {CascadeType.ALL}
-  )
+      fetch = FetchType.EAGER,
+      cascade = {CascadeType.ALL})
   private Set<DeploymentFlavour> flavours;
 
   public String getTenant() {
@@ -182,13 +196,13 @@ public class OpenstackVimInstance extends BaseVimInstance {
 
   @Override
   public void addImage(BaseNfvImage image) {
-    //TODO check cast
+    // TODO check cast
     this.images.add((NFVImage) image);
   }
 
   @Override
   public void addNetwork(BaseNetwork network) {
-    //TODO check cast
+    // TODO check cast
     this.networks.add((Network) network);
   }
 
@@ -206,5 +220,13 @@ public class OpenstackVimInstance extends BaseVimInstance {
 
   public void setKeys(Set<PopKeypair> keys) {
     this.keys = keys;
+  }
+
+  public String getOpenstackSslCertificate() {
+    return openstackSslCertificate;
+  }
+
+  public void setOpenstackSslCertificate(String openstackSslCertificate) {
+    this.openstackSslCertificate = openstackSslCertificate;
   }
 }

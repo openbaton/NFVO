@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Open Baton (http://openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,10 +45,9 @@ public class RestVNFFG {
    *     the core
    */
   @RequestMapping(
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
   public VNFForwardingGraphDescriptor create(
       @RequestBody @Valid VNFForwardingGraphDescriptor vnfForwardingGraphDescriptor) {
@@ -97,11 +96,10 @@ public class RestVNFFG {
    * @return networkServiceDescriptor: the VNF software vnfForwardingGraphDescriptor updated
    */
   @RequestMapping(
-    value = "{id}",
-    method = RequestMethod.PUT,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "{id}",
+      method = RequestMethod.PUT,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.ACCEPTED)
   public VNFForwardingGraphDescriptor update(
       @RequestBody @Valid VNFForwardingGraphDescriptor vnfForwardingGraphDescriptor,

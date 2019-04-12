@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Open Baton (http://openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,10 +37,9 @@ public class RestHistory {
   }
 
   @RequestMapping(
-    value = "/{actions}",
-    method = RequestMethod.GET,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "/{actions}",
+      method = RequestMethod.GET,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   public HistoryEntity[] getHistory(@PathVariable("actions") int actions) {
     return historyManagement.getAll(actions);
   }

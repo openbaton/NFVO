@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Open Baton (http://openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,14 +59,13 @@ public class RestEvent {
   /**
    * Adds a new EventEndpoint to the EventEndpoint repository
    *
-   * @param endpoint : Image to add
-   * @return image: The image filled with values from the core
+   * @param endpoint : Event to add
+   * @return EventEndpoint: The Event filled with values from the core
    */
   @RequestMapping(
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
   public EventEndpoint register(
       @RequestBody @Valid EventEndpoint endpoint,
@@ -87,7 +86,18 @@ public class RestEvent {
             .getCurrentUser()
             .getRoles()
             .stream()
-            .noneMatch(r -> r.getProject().equals(endpoint.getProjectId())))
+            .noneMatch(
+                r -> {
+                  try {
+                    return r.getProject().equals(endpoint.getProjectId())
+                        || r.getProject()
+                            .equals(
+                                eventManagement.query(endpoint.getProjectId(), projectId).getId());
+                  } catch (NotFoundException e) {
+                    e.printStackTrace();
+                    return false;
+                  }
+                }))
       throw new BadRequestException("Only services and admin can register to all events");
     return eventDispatcher.register(gson.toJson(endpoint));
   }
@@ -110,10 +120,9 @@ public class RestEvent {
    * @throws NotFoundException if the requested event endpoint does not exist
    */
   @RequestMapping(
-    value = "/multipledelete",
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "/multipledelete",
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void multipleDelete(@RequestBody @Valid List<String> ids) throws NotFoundException {
     for (String id : ids) eventDispatcher.unregister(id);
@@ -129,10 +138,9 @@ public class RestEvent {
   }
 
   @RequestMapping(
-    value = "/{id}",
-    method = RequestMethod.GET,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "/{id}",
+      method = RequestMethod.GET,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   public EventEndpoint getEventEndpoint(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException {
@@ -140,10 +148,9 @@ public class RestEvent {
   }
 
   @RequestMapping(
-    value = "/actions",
-    method = RequestMethod.GET,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "/actions",
+      method = RequestMethod.GET,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   public Action[] getAvailableEvents() {
     return Action.values();
   }

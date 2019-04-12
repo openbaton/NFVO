@@ -1,18 +1,17 @@
 /*
- * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package org.openbaton.nfvo.core.api;
@@ -75,7 +74,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   @Autowired private VNFRRepository vnfrRepository;
 
   private static Map<String, Long> lastUpdateVim = new ConcurrentHashMap<>();
-  private static Map<String, Object> lockMap = new HashMap<>();
+  private static final Map<String, Object> lockMap = new HashMap<>();
 
   private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -86,7 +85,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
   @Value("${nfvo.vim.delete.check.vnfr:true}")
   private boolean checkForVimInVnfr;
 
-  //TODO change Scope to prototype
+  // TODO change Scope to prototype
   @Value("${nfvo.vim.refresh.timout:120}")
   private int refreshTimeout;
 
@@ -192,7 +191,7 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
       return new AsyncResult<>(vimInstance);
     }
 
-    log.info("Refreshing vim");
+    log.info(String.format("Refreshing vim %s", vimInstance.getName()));
     String key = String.format("%s%s", vimInstance.getName(), vimInstance.getProjectId());
     Object lock;
     synchronized (lockMap) {

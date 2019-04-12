@@ -1,18 +1,17 @@
 /*
- * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
@@ -59,7 +58,7 @@ public class InstantiateTask extends AbstractTask {
   }
 
   @Override
-  protected NFVMessage doWork() throws Exception, BadFormatException {
+  protected NFVMessage doWork() throws Exception {
     log.info(
         "Start INSTANTIATE task for vnfr: "
             + virtualNetworkFunctionRecord.getName()
@@ -67,42 +66,17 @@ public class InstantiateTask extends AbstractTask {
             + virtualNetworkFunctionRecord.getId()
             + " his nsr id father is:"
             + virtualNetworkFunctionRecord.getParent_ns_id());
-    VirtualNetworkFunctionRecord existing =
-        vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
 
-    virtualNetworkFunctionRecord
-        .getVdu()
-        .forEach(
-            vdu -> {
-              log.trace(
-                  "INSTANTIATE VDU ("
-                      + vdu.getId()
-                      + ") received with hibernate version = "
-                      + vdu.getHbVersion());
-            });
-
-    if (existing != null) {
-      existing
-          .getVdu()
-          .forEach(
-              vdu -> {
-                log.trace(
-                    "INSTANTIATE VDU ("
-                        + vdu.getId()
-                        + ") existing hibernate version is = "
-                        + vdu.getHbVersion());
-              });
-    }
-
+    printOldAndNewHibernateVersion();
+    setHistoryLifecycleEvent();
     for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
       for (VNFCInstance vnfcInstance : vdu.getVnfc_instance()) {
         vnfcInstance.getConnection_point().removeIf(Objects::isNull);
       }
     }
 
-    dependencyManagement.fillDependecyParameters(virtualNetworkFunctionRecord);
+    dependencyManagement.fillDependencyParameters(virtualNetworkFunctionRecord);
     log.debug("Filled dependency parameters of " + virtualNetworkFunctionRecord.getName());
-    setHistoryLifecycleEvent();
     saveVirtualNetworkFunctionRecord();
     log.debug("Saved VNFR " + virtualNetworkFunctionRecord.getName());
     NetworkServiceRecord nsr =
@@ -174,9 +148,6 @@ public class InstantiateTask extends AbstractTask {
             + virtualNetworkFunctionRecord.getId()
             + ") hibernate version is = "
             + virtualNetworkFunctionRecord.getHbVersion());
-    /*vnfmSender.sendCommand(
-    new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.START),
-    vnfmRegister.getVnfm(virtualNetworkFunctionRecord.getEndpoint()));*/
     vnfStateHandler.executeAction(
         vnfmSender.sendCommand(
             new OrVnfmStartStopMessage(virtualNetworkFunctionRecord, null, Action.START),

@@ -1,7 +1,23 @@
+/*
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.openbaton.nfvo.core.api;
 
 import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.createRabbitMqUser;
-import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.removeRabbitMqUser;
+import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.removeRabbitMqUserQuietly;
 import static org.openbaton.nfvo.common.utils.rabbit.RabbitManager.setRabbitMqUserPermissions;
 
 import com.google.gson.Gson;
@@ -230,7 +246,7 @@ public class ComponentManager implements org.openbaton.nfvo.core.interfaces.Comp
 
   @Override
   public void removeService(String id) {
-    //TODO remove also associated toker
+    // TODO remove also associated toker
     ServiceMetadata serviceMetadataToRemove = serviceRepository.findById(id);
     log.debug("Found service: " + serviceMetadataToRemove);
     serviceRepository.delete(id);
@@ -250,24 +266,20 @@ public class ComponentManager implements org.openbaton.nfvo.core.interfaces.Comp
    */
   @Override
   @RabbitListener(
-    bindings =
-        @QueueBinding(
-          value =
-              @Queue(
-                value = RabbitConfiguration.QUEUE_NAME_MANAGER_REGISTER,
-                durable = "true",
-                autoDelete = "true"
-              ),
-          exchange =
-              @Exchange(
-                value = RabbitConfiguration.EXCHANGE_NAME_OPENBATON,
-                ignoreDeclarationExceptions = "true",
-                type = RabbitConfiguration.EXCHANGE_TYPE_OPENBATON,
-                durable = RabbitConfiguration.EXCHANGE_DURABLE_OPENBATON
-              ),
-          key = RabbitConfiguration.QUEUE_NAME_MANAGER_REGISTER
-        )
-  )
+      bindings =
+          @QueueBinding(
+              value =
+                  @Queue(
+                      value = RabbitConfiguration.QUEUE_NAME_MANAGER_REGISTER,
+                      durable = "true",
+                      autoDelete = "true"),
+              exchange =
+                  @Exchange(
+                      value = RabbitConfiguration.EXCHANGE_NAME_OPENBATON,
+                      ignoreDeclarationExceptions = "true",
+                      type = RabbitConfiguration.EXCHANGE_TYPE_OPENBATON,
+                      durable = RabbitConfiguration.EXCHANGE_DURABLE_OPENBATON),
+              key = RabbitConfiguration.QUEUE_NAME_MANAGER_REGISTER))
   public String enableManager(String message) {
     try {
       // deserialize message
@@ -347,13 +359,9 @@ public class ComponentManager implements org.openbaton.nfvo.core.interfaces.Comp
                   writePermissions,
                   readPermissions);
             } catch (Exception e) {
-              try {
-                removeRabbitMqUser(
-                    rabbitUsername, rabbitPassword, brokerIp, managementPort, username);
-              } catch (Exception e2) {
-                log.error("Clean up failed. Could not remove RabbitMQ user " + username);
-                e2.printStackTrace();
-              }
+              // remove the created RabbitMQ user again since the whole registration process failed
+              removeRabbitMqUserQuietly(
+                  rabbitUsername, rabbitPassword, brokerIp, managementPort, username);
               throw e;
             }
 
@@ -361,7 +369,9 @@ public class ComponentManager implements org.openbaton.nfvo.core.interfaces.Comp
             managerCredentials.setRabbitPassword(password);
             managerCredentials = managerCredentialsRepository.save(managerCredentials);
             if (endpoint != null) vnfmManagerEndpointRepository.save(endpoint);
-            log.info("Registered a new manager.");
+            log.info(
+                String.format(
+                    "Registered a new manager: %s.", managerCredentials.getRabbitUsername()));
             if (!isManager) {
               this.refreshVims(username);
             }
@@ -392,7 +402,7 @@ public class ComponentManager implements org.openbaton.nfvo.core.interfaces.Comp
                 vnfmRegister.unregister(
                     gson.fromJson(vnfmManagerEndpoint, VnfmManagerEndpoint.class));
 
-              removeRabbitMqUser(
+              removeRabbitMqUserQuietly(
                   rabbitUsername, rabbitPassword, brokerIp, managementPort, username);
             } else {
               log.warn(
@@ -404,8 +414,7 @@ public class ComponentManager implements org.openbaton.nfvo.core.interfaces.Comp
           return null;
       }
     } catch (Exception e) {
-      log.error("Exception while enabling manager or plugin.");
-      e.printStackTrace();
+      log.error("Exception while enabling manager or plugin.", e);
       return null;
     }
   }

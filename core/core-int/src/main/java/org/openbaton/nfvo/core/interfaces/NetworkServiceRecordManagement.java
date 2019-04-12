@@ -1,18 +1,17 @@
 /*
- * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package org.openbaton.nfvo.core.interfaces;
@@ -28,6 +27,7 @@ import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Configuration;
+import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.NFVMessage;
 import org.openbaton.exceptions.*;
 
@@ -63,11 +63,28 @@ public interface NetworkServiceRecordManagement {
           AlreadyExistingException, BadFormatException, ExecutionException, InterruptedException;
 
   /**
-   * This operation allows updating a Network Service Descriptor (NSD), including any related VNFFGD
-   * and VLD.This update might include creating/deleting new VNFFGDs and/or new VLDs.
+   * This operation allows updating a Network Service Record (NSR). This update might include
+   * creating/deleting new VNFFGDs and/or new VLDs.
    */
   NetworkServiceRecord update(NetworkServiceRecord new_nsd, String old_id, String projectId)
       throws NotFoundException;
+
+  /**
+   * This operation allows updating a Virtual Network Function Record (VNFR) (The UPDATE is intended
+   * as the execution of the scripts associated to the lifecycle UPDATE by the VNF provider)
+   */
+  VirtualNetworkFunctionRecord updateVnfr(String nsrId, String vnfrId, String projectId)
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
+
+  /**
+   * This operation allows upgrading a Virtual Network Function Record (VNFR) (The UPGRADE is
+   * intended as one of the following the rebuild of the VNFR (all the VNFC Instances, if many)
+   * using a new OS image and/or new VNF scripts
+   */
+  VirtualNetworkFunctionRecord upgradeVnfr(
+      String nsrId, String vnfrId, String projectId, String vnfdId)
+      throws NotFoundException, BadFormatException, ExecutionException, InterruptedException,
+          IOException, BadRequestException, VimException, PluginException;
 
   /**
    * This operation is used to query the information of the Network Service Descriptor (NSD),
@@ -94,6 +111,13 @@ public interface NetworkServiceRecordManagement {
   /** This operation is used to resume a failed Network Service Record. */
   void resume(String id, String projectId)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
+
+  /**
+   * This operation is used to execute a script on a specific Virtual Network Function Record during
+   * runtime.
+   */
+  void executeScript(String idNsr, String idVnf, String projectId, Script script)
+      throws NotFoundException, InterruptedException, BadFormatException, ExecutionException;
 
   void deleteVNFRecord(String idNsr, String idVnf, String projectId) throws NotFoundException;
 
@@ -194,14 +218,17 @@ public interface NetworkServiceRecordManagement {
 
   List<NetworkServiceRecord> queryByProjectId(String projectId);
 
-  NetworkServiceRecord scaleOut(
+  NetworkServiceRecord scaleOutNsr(
       String nsrId,
       String vnfdId,
       String projectId,
       List keys,
       Map vduVimInstances,
-      Map configurations)
-      throws NotFoundException;
+      Map configurations,
+      String monitoringIp)
+      throws NotFoundException, BadRequestException, MissingParameterException,
+          InterruptedException, BadFormatException, ExecutionException, CyclicDependenciesException,
+          NetworkServiceIntegrityException;
 
   VirtualNetworkFunctionRecord restartVnfr(
       NetworkServiceRecord nsr, String vnfrId, String imageName, String projectId)

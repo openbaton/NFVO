@@ -1,21 +1,22 @@
 /*
- * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package org.openbaton.nfvo.core.utils;
+
+import static org.openbaton.nfvo.common.utils.viminstance.VimInstanceUtils.getVimNameWithoutAvailabilityZone;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -103,7 +104,8 @@ public class NSDUtils {
   public void checkEndpoint(
       NetworkServiceDescriptor networkServiceDescriptor, Iterable<VnfmManagerEndpoint> endpoints)
       throws NotFoundException {
-    // since the check for existence of VNFDs is done prior to this method call, we can assume that at least one VNFD
+    // since the check for existence of VNFDs is done prior to this method call, we can assume that
+    // at least one VNFD
     // exists
     if (networkServiceDescriptor.getVnfd().size() == 0) {
       throw new RuntimeException(
@@ -127,6 +129,28 @@ public class NSDUtils {
                 + virtualNetworkFunctionDescriptor.getEndpoint()
                 + " is not registered or not enabled or not active.");
       }
+    }
+  }
+
+  public void checkEndpoint(String endpointName, Iterable<VnfmManagerEndpoint> endpoints)
+      throws NotFoundException {
+    boolean found = false;
+
+    for (VnfmManagerEndpoint endpoint : endpoints) {
+      log.debug("Check if VNFM is registered: " + endpoint.getType() + " == " + endpointName);
+      if (endpoint.getType().equals(endpointName) && endpoint.isActive() && endpoint.isEnabled()) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      throw new NotFoundException(
+          "VNFManager with endpoint: "
+              + endpointName
+              + " is not registered, not enabled or not active.");
+    }
+    if (!found) {
+      throw new NotFoundException("No VNFManagers were found");
     }
   }
 
@@ -222,17 +246,14 @@ public class NSDUtils {
       throws NotFoundException {
     Iterable<BaseVimInstance> vimInstances = vimRepository.findByProjectId(projectId);
     if (!vimInstances.iterator().hasNext()) {
-      throw new NotFoundException("No VimInstances in the Database");
+      // throw new NotFoundException("No VimInstances in the Database");
+      log.warn(
+          "No VimInstances in the Database. VimInstanceName list in VDU hast to be empty in this case.");
     }
     for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
       if (vdu.getVimInstanceName() != null) {
         for (String name : vdu.getVimInstanceName()) {
-          String vimName;
-          if (name.contains(":")) {
-            vimName = name.split(":")[0];
-          } else {
-            vimName = name;
-          }
+          String vimName = getVimNameWithoutAvailabilityZone(name);
           log.debug("vim instance name=" + vimName);
           boolean fetched = false;
           for (BaseVimInstance vimInstance : vimInstances) {
@@ -244,7 +265,11 @@ public class NSDUtils {
           }
           if (!fetched) {
             throw new NotFoundException(
-                "Not found VimInstance with name " + vimName + " in the catalogue");
+                "Not found defined VimInstance "
+                    + vimName
+                    + " in VDU "
+                    + vdu.getName()
+                    + " in the catalogue");
           }
         }
       } else {
@@ -261,12 +286,13 @@ public class NSDUtils {
     /* Fetching dependencies */
     DirectedPseudograph<String, DefaultEdge> g = new DirectedPseudograph<>(DefaultEdge.class);
 
-    //Add a vertex to the graph for each vnfd
+    // Add a vertex to the graph for each vnfd
     for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
       g.addVertex(vnfd.getName());
     }
 
-    // transform the requires attribute to VNFDependencies and add them to the networkServiceDescriptor
+    // transform the requires attribute to VNFDependencies and add them to the
+    // networkServiceDescriptor
     createDependenciesFromRequires(networkServiceDescriptor);
 
     mergeMultipleDependency(networkServiceDescriptor);
@@ -330,39 +356,45 @@ public class NSDUtils {
   private void createDependenciesFromRequires(NetworkServiceDescriptor networkServiceDescriptor)
       throws NotFoundException {
     for (VirtualNetworkFunctionDescriptor vnfd : networkServiceDescriptor.getVnfd()) {
-      if (vnfd.getRequires() == null) {
+      Set<VNFDependency> vnfDependencySet =
+          getVNFDependenciesFromRequires(vnfd, networkServiceDescriptor);
+      networkServiceDescriptor.getVnf_dependency().addAll(vnfDependencySet);
+    }
+  }
+
+  public Set<VNFDependency> getVNFDependenciesFromRequires(
+      VirtualNetworkFunctionDescriptor vnfd, NetworkServiceDescriptor nsd)
+      throws NotFoundException {
+    Set<VNFDependency> result = new HashSet<>();
+    if (vnfd.getRequires() == null) return result;
+    for (String vnfdName : vnfd.getRequires().keySet()) {
+      VNFDependency dependency = new VNFDependency();
+      for (VirtualNetworkFunctionDescriptor vnfd2 : nsd.getVnfd()) {
+        if (vnfd2.getName().equals(vnfdName)) {
+          dependency.setSource(vnfd2.getName());
+          dependency.setSource_id(vnfd2.getId());
+        }
+      }
+      if (dependency.getSource() == null) {
+        throw new NotFoundException(
+            "VNFD source name "
+                + vnfdName
+                + " from the requires field in the VNFD "
+                + vnfd.getName()
+                + " was not found in the NSD.");
+      }
+
+      dependency.setTarget(vnfd.getName());
+      dependency.setTarget_id(vnfd.getId());
+
+      if (vnfd.getRequires().get(vnfdName).getParameters() == null
+          || vnfd.getRequires().get(vnfdName).getParameters().isEmpty()) {
         continue;
       }
-
-      for (String vnfdName : vnfd.getRequires().keySet()) {
-        VNFDependency dependency = new VNFDependency();
-        for (VirtualNetworkFunctionDescriptor vnfd2 : networkServiceDescriptor.getVnfd()) {
-          if (vnfd2.getName().equals(vnfdName)) {
-            dependency.setSource(vnfd2.getName());
-            dependency.setSource_id(vnfd2.getId());
-          }
-        }
-        if (dependency.getSource() == null) {
-          throw new NotFoundException(
-              "VNFD source name "
-                  + vnfdName
-                  + " from the requires field in the VNFD "
-                  + vnfd.getName()
-                  + " was not found in the NSD.");
-        }
-
-        dependency.setTarget(vnfd.getName());
-        dependency.setTarget_id(vnfd.getId());
-
-        if (vnfd.getRequires().get(vnfdName).getParameters() == null
-            || vnfd.getRequires().get(vnfdName).getParameters().isEmpty()) {
-          continue;
-        }
-
-        dependency.setParameters(vnfd.getRequires().get(vnfdName).getParameters());
-        networkServiceDescriptor.getVnf_dependency().add(dependency);
-      }
+      dependency.setParameters(vnfd.getRequires().get(vnfdName).getParameters());
+      result.add(dependency);
     }
+    return result;
   }
 
   private VirtualNetworkFunctionDescriptor getVnfdFromNSD(
@@ -527,8 +559,8 @@ public class NSDUtils {
     BaseVimInstance vimInstance = null;
     for (BaseVimInstance vi :
         vimRepository.findByProjectId(virtualNetworkFunctionDescriptor.getProjectId())) {
-      if ((vimName.contains(":") && vimName.split(":")[0].equals(vi.getName()))
-          || (!vimName.contains(":") && vimName.equals(vi.getName()))) {
+
+      if (getVimNameWithoutAvailabilityZone(vimName).equals(vi.getName())) {
         vimInstance = vi;
         log.debug("Got vim with auth: " + vimInstance.getAuthUrl());
         break;
@@ -685,32 +717,6 @@ public class NSDUtils {
     return false;
   }
 
-  //                for (VNFComponent vnfComponent : virtualDeploymentUnit.getVnfc()) {
-  //                  for (VNFDConnectionPoint connectionPoint : vnfComponent.getConnection_point()) {
-  //                    if (!internalVirtualLink.contains(
-  //                        connectionPoint.getVirtual_link_reference())) {
-  //                      throw new NetworkServiceIntegrityException(
-  //                          "Regarding the VirtualNetworkFunctionDescriptor "
-  //                              + virtualNetworkFunctionDescriptor.getName()
-  //                              + ": in one of the VirtualDeploymentUnit, the "
-  //                              + "virtualLinkReference "
-  //                              + connectionPoint.getVirtual_link_reference()
-  //                              + " of a VNFComponent is not contained in the "
-  //                              + "InternalVirtualLink "
-  //                              + internalVirtualLink);
-  //                    }
-  //                  }
-  //                }
-  //      if (!virtualLinkDescriptors.containsAll(internalVirtualLink)) {
-  //        throw new NetworkServiceIntegrityException(
-  //            "Regarding the VirtualNetworkFunctionDescriptor "
-  //                + virtualNetworkFunctionDescriptor.getName()
-  //                + ": the InternalVirtualLinks "
-  //                + internalVirtualLink
-  //                + " are not contained in the VirtualLinkDescriptors "
-  //                + virtualLinkDescriptors);
-  //      }
-
   private void checkIntegrityLifecycleEvents(
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor)
       throws NetworkServiceIntegrityException {
@@ -850,7 +856,7 @@ public class NSDUtils {
           ((OpenstackVimInstance) vimInstance).getFlavours()) {
         flavors.add(deploymentFlavour.getFlavour_key());
       }
-      //All "names" must be contained in the "flavors"
+      // All "names" must be contained in the "flavors"
       if (!flavors.containsAll(flavourNames)) {
         throw new NetworkServiceIntegrityException(
             "Regarding the VirtualNetworkFunctionDescriptor "

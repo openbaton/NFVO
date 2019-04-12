@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Open Baton (http://openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,9 +38,8 @@ public class RestPlugin {
   @Autowired PluginManager pluginManager;
 
   @ApiOperation(
-    value = "Download a plugin from the Open Baton Marketplace",
-    notes = "The Plugin can be downloaded by specifying the type, name and version in the URL"
-  )
+      value = "Download a plugin from the Open Baton Marketplace",
+      notes = "The Plugin can be downloaded by specifying the type, name and version in the URL")
   @RequestMapping(value = "{type}/{name}/{version:.+}", method = RequestMethod.GET)
   @ResponseStatus(HttpStatus.OK)
   public void downloadPlugin(
@@ -51,9 +50,8 @@ public class RestPlugin {
   }
 
   @ApiOperation(
-    value = "Retrieve all installed Vim Drivers",
-    notes = "Returns the names of all the Vim Drivers currently installed"
-  )
+      value = "Retrieve all installed Vim Drivers",
+      notes = "Returns the names of all the Vim Drivers currently installed")
   @RequestMapping(method = RequestMethod.GET)
   public @ResponseBody Set<String> getListVimDrivers() throws IOException {
     return pluginManager.listInstalledVimDrivers();

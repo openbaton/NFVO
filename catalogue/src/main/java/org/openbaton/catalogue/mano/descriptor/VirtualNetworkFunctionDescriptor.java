@@ -1,18 +1,17 @@
 /*
- * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package org.openbaton.catalogue.mano.descriptor;
@@ -46,7 +45,7 @@ import org.openbaton.catalogue.nfvo.RequiresParameters;
 @Entity
 public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
   /** Version of the VNF Descriptor. */
-  //private String descriptor_version;
+  // private String descriptor_version;
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<LifecycleEvent> lifecycle_event;
 
@@ -75,12 +74,11 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
    * VNF being described, see clause 6.3.1.5.
    */
   @OneToMany(
-    cascade = {
-      /*CascadeType.PERSIST, CascadeType.MERGE*/
-      CascadeType.ALL
-    },
-    fetch = FetchType.EAGER
-  )
+      cascade = {
+        /*CascadeType.PERSIST, CascadeType.MERGE*/
+        CascadeType.ALL
+      },
+      fetch = FetchType.EAGER)
   private Set<VNFDeploymentFlavour> deployment_flavour;
   /**
    * The VNF package may contain a file that lists all files in the package. This can be useful for
@@ -120,7 +118,7 @@ public class VirtualNetworkFunctionDescriptor extends NFVEntityDescriptor {
 
   private String updatedAt;
 
-  //NFVO Version
+  // NFVO Version
   private String nfvo_version;
 
   public String getCreatedAt() {

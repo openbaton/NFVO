@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Open Baton (http://openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,10 +41,9 @@ public class RestVirtualLink {
    * @return virtualLinkDescriptor
    */
   @RequestMapping(
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
   public VirtualLinkDescriptor create(
       @RequestBody @Valid VirtualLinkDescriptor virtualLinkDescriptor) {
@@ -98,11 +97,10 @@ public class RestVirtualLink {
    * @return Configuration The Configuration updated
    */
   @RequestMapping(
-    value = "{id}",
-    method = RequestMethod.PUT,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "{id}",
+      method = RequestMethod.PUT,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.ACCEPTED)
   public VirtualLinkDescriptor update(
       @RequestBody @Valid VirtualLinkDescriptor virtualLinkDescriptor_new,

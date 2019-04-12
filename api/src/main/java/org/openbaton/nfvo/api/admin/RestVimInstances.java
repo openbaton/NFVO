@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Open Baton (http://openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,14 +62,12 @@ public class RestVimInstances {
    * @return datacenter: The datacenter filled with values from the core
    */
   @ApiOperation(
-    value = "Adding a Vim Instance",
-    notes = "Takes a Vim Instance json in the request body"
-  )
+      value = "Adding a Vim Instance",
+      notes = "Takes a Vim Instance json in the request body")
   @RequestMapping(
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
   public BaseVimInstance create(
       @RequestBody @Valid BaseVimInstance vimInstance,
@@ -85,9 +83,8 @@ public class RestVimInstances {
    * @param id: The Datacenter's id to be deleted
    */
   @ApiOperation(
-    value = " Removing a Vim Instance",
-    notes = "Deletes the Vim Instance belonging to the id specified in the URL"
-  )
+      value = " Removing a Vim Instance",
+      notes = "Deletes the Vim Instance belonging to the id specified in the URL")
   @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(
@@ -104,14 +101,12 @@ public class RestVimInstances {
    * @throws BadRequestException if something is wrong with the request
    */
   @RequestMapping(
-    value = "/multipledelete",
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "/multipledelete",
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   @ApiOperation(
-    value = "Removing multiple VIM Instances",
-    notes = "Delete Request takes a list of VIM Instance IDs"
-  )
+      value = "Removing multiple VIM Instances",
+      notes = "Delete Request takes a list of VIM Instance IDs")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void multipleDelete(
       @RequestBody @Valid List<String> ids, @RequestHeader(value = "project-id") String projectId)
@@ -125,10 +120,9 @@ public class RestVimInstances {
    * @return List<Datacenter>: The List of Datacenters available
    */
   @ApiOperation(
-    value = "Retrieving all Vim Instances",
-    notes =
-        "This method returns the list of all the VimInstances on-boarded in this project identified by the header project-id"
-  )
+      value = "Retrieving all Vim Instances",
+      notes =
+          "This method returns the list of all the VimInstances on-boarded in this project identified by the header project-id")
   @RequestMapping(method = RequestMethod.GET)
   public List<BaseVimInstance> findAll(
       @RequestHeader(value = "project-id") String projectId,
@@ -153,9 +147,8 @@ public class RestVimInstances {
    * @return Datacenter: The Datacenter selected
    */
   @ApiOperation(
-    value = "Retrieve a Vim Instance",
-    notes = "Returns the Vim Instance JSON belonging to the id specified in the URL"
-  )
+      value = "Retrieve a Vim Instance",
+      notes = "Returns the Vim Instance JSON belonging to the id specified in the URL")
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
   public BaseVimInstance findById(
       @PathVariable("id") String id,
@@ -181,16 +174,14 @@ public class RestVimInstances {
    * @return VimInstance the VimInstance updated
    */
   @ApiOperation(
-    value = "Updating a Vim Instance",
-    notes =
-        "Takes a Vim Instance as JSON and updates the Vim Instance with the id specified in the URL"
-  )
+      value = "Updating a Vim Instance",
+      notes =
+          "Takes a Vim Instance as JSON and updates the Vim Instance with the id specified in the URL")
   @RequestMapping(
-    value = "{id}",
-    method = RequestMethod.PUT,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "{id}",
+      method = RequestMethod.PUT,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.ACCEPTED)
   public BaseVimInstance update(
       @RequestBody @Valid BaseVimInstance new_vimInstance,
@@ -208,9 +199,9 @@ public class RestVimInstances {
    * @return Set<NFVImage>
    */
   @ApiOperation(
-    value = "Retrieve the data about images on a Vim Instance",
-    notes = "Retrieve the data for all images on the Vim Instance which id is specified in the URL"
-  )
+      value = "Retrieve the data about images on a Vim Instance",
+      notes =
+          "Retrieve the data for all images on the Vim Instance which id is specified in the URL")
   @RequestMapping(value = "{id}/images", method = RequestMethod.GET)
   public Set<? extends BaseNfvImage> getAllImages(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
@@ -229,10 +220,9 @@ public class RestVimInstances {
    * @return {@code NFVImage} selected
    */
   @ApiOperation(
-    value = "Returns the data about an Image from the Vim Instance",
-    notes =
-        "Retrieve the data for a specific image on the Vim Instance which id is specified in the URL"
-  )
+      value = "Returns the data about an Image from the Vim Instance",
+      notes =
+          "Retrieve the data for a specific image on the Vim Instance which id is specified in the URL")
   @RequestMapping(value = "{idVim}/images/{idImage}", method = RequestMethod.GET)
   public BaseNfvImage getImage(
       @PathVariable("idVim") String idVim,
@@ -251,9 +241,8 @@ public class RestVimInstances {
    * @throws VimException
    */
   @ApiOperation(
-    value = "Adds an image to the Vim Instance",
-    notes = "Adds an image to the Vim Instance with id specified in the URL"
-  )
+      value = "Adds an image to the Vim Instance",
+      notes = "Adds an image to the Vim Instance with id specified in the URL")
   @RequestMapping(value = "{id}/images", method = RequestMethod.POST)
   public BaseNfvImage addImage(
       @PathVariable("id") String id,
@@ -273,9 +262,8 @@ public class RestVimInstances {
    * @throws VimException
    */
   @ApiOperation(
-    value = "Updates the data of an image on the Vim Instance",
-    notes = "Updates an image to the Vim Instance with id specified in the URL"
-  )
+      value = "Updates the data of an image on the Vim Instance",
+      notes = "Updates an image to the Vim Instance with id specified in the URL")
   @RequestMapping(value = "{idVim}/images/{idImage}", method = RequestMethod.PUT)
   public BaseNfvImage updateImage(
       @PathVariable("idVim") String idVim,
@@ -294,9 +282,8 @@ public class RestVimInstances {
    * @throws VimException
    */
   @ApiOperation(
-    value = "Remove an image on the Vim Instance",
-    notes = "Remove the specified by id image from the vim instance"
-  )
+      value = "Remove an image on the Vim Instance",
+      notes = "Remove the specified by id image from the vim instance")
   @RequestMapping(value = "{idVim}/images/{idImage}", method = RequestMethod.DELETE)
   public void deleteImage(
       @PathVariable("idVim") String idVim,
@@ -314,9 +301,8 @@ public class RestVimInstances {
    * @return Datacenter: The Datacenter selected
    */
   @ApiOperation(
-    value = "Refreshes the data about the Vim Instance",
-    notes = "Refreshes the data about the Vim Instance and returns it"
-  )
+      value = "Refreshes the data about the Vim Instance",
+      notes = "Refreshes the data about the Vim Instance and returns it")
   @RequestMapping(value = "{id}/refresh", method = RequestMethod.GET)
   public BaseVimInstance refresh(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)

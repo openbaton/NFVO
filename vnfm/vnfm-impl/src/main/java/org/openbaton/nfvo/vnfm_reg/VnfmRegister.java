@@ -1,18 +1,17 @@
 /*
- * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package org.openbaton.nfvo.vnfm_reg;
@@ -56,7 +55,8 @@ public class VnfmRegister implements org.openbaton.vnfm.interfaces.register.Vnfm
   public void register(VnfmManagerEndpoint endpoint) throws AlreadyExistingException {
     log.debug("Persisting: " + endpoint);
     for (VnfmManagerEndpoint endpointExisting : vnfmEndpointRepository.findAll()) {
-      //TODO: decide whether the type or the endpoint (or both) is the unique identifier. strategy here is different than in unregister function
+      // TODO: decide whether the type or the endpoint (or both) is the unique identifier. strategy
+      // here is different than in unregister function
       if (endpointExisting.getEndpoint().equals(endpoint.getEndpoint())
           && endpointExisting.getType().equals(endpoint.getType())
           && endpointExisting.getEndpointType().equals(endpoint.getEndpointType()))
@@ -92,7 +92,7 @@ public class VnfmRegister implements org.openbaton.vnfm.interfaces.register.Vnfm
   public void unregister(VnfmManagerEndpoint endpoint) {
     Iterable<VnfmManagerEndpoint> vnfmManagerEndpoints = vnfmEndpointRepository.findAll();
     for (VnfmManagerEndpoint vnfmManagerEndpoint : vnfmManagerEndpoints) {
-      //TODO: decide whether the type or the endpoint (or both) is the unique identifier
+      // TODO: decide whether the type or the endpoint (or both) is the unique identifier
       if (endpoint.getType().equals(vnfmManagerEndpoint.getType())) {
         log.info("Unregistered vnfm: " + endpoint.getType());
         this.vnfmEndpointRepository.delete(vnfmManagerEndpoint.getId());

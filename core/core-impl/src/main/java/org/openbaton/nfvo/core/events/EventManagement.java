@@ -1,18 +1,17 @@
 /*
- * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package org.openbaton.nfvo.core.events;
@@ -44,7 +43,7 @@ import org.springframework.stereotype.Service;
 @ConfigurationProperties
 public class EventManagement implements org.openbaton.nfvo.core.interfaces.EventManagement {
 
-  @Value("${nfvo.rabbit.brokerIp:localhost}")
+  @Value("${spring.rabbitmq.host:localhost}")
   private String brokerIp;
 
   @Autowired private EventEndpointRepository eventEndpointRepository;
@@ -79,7 +78,7 @@ public class EventManagement implements org.openbaton.nfvo.core.interfaces.Event
     Iterable<EventEndpoint> eventEndpoints = eventEndpointRepository.findAll();
     for (EventEndpoint eventEndpoint : eventEndpoints) {
       if (eventEndpoint.getType().ordinal() == EndpointType.REST.ordinal()) {
-        //TODO check if endpoint is reachable
+        // TODO check if endpoint is reachable
         try {
           URL url = new URL(eventEndpoint.getEndpoint());
           if (!pingHost(url.getHost(), url.getPort(), 3000)) {

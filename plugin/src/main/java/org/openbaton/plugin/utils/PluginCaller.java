@@ -1,18 +1,17 @@
 /*
- * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package org.openbaton.plugin.utils;
@@ -29,6 +28,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import org.apache.commons.codec.binary.Base64;
 import org.openbaton.catalogue.nfvo.PluginMessage;
@@ -184,13 +184,17 @@ public class PluginCaller {
             }
           });
 
-      //Check if plugin is still up
+      // Check if plugin is still up
       if (!RabbitManager.getQueues(brokerIp, username, password, virtualHost, managementPort)
           .contains(pluginId)) {
         throw new PluginException("Plugin with id: " + pluginId + " not existing anymore...");
       }
       if (returnType != null) {
-        String res = response.take();
+        String res = response.poll(this.timeout, TimeUnit.MILLISECONDS);
+        if (res == null) {
+          throw new PluginException(
+              String.format("Plugin did not responded after %d milliseconds", this.timeout));
+        }
         JsonObject jsonObject = gson.fromJson(res, JsonObject.class);
 
         JsonElement exceptionJson = jsonObject.get("exception");

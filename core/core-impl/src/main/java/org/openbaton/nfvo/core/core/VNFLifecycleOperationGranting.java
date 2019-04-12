@@ -1,18 +1,17 @@
 /*
- * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package org.openbaton.nfvo.core.core;
@@ -62,10 +61,10 @@ public class VNFLifecycleOperationGranting
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) throws VimException {
     Map<String, BaseVimInstance> result = new HashMap<>();
 
-    //HashMap holds how many VNFCInstances are needed to deploy on a specific VimInstance
+    // HashMap holds how many VNFCInstances are needed to deploy on a specific VimInstance
     HashMap<BaseVimInstance, Integer> countVDUsOnVimInstances = new HashMap<>();
 
-    //Find how many VNFCInstances are needed to deploy on a specific VimInstance
+    // Find how many VNFCInstances are needed to deploy on a specific VimInstance
     log.info("Granting Lifecycle Operation for vnfr: " + virtualNetworkFunctionRecord.getName());
     for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
       for (String vimName : vdu.getVimInstanceName()) {
@@ -93,7 +92,7 @@ public class VNFLifecycleOperationGranting
       }
     }
 
-    //Check if enough resources are available for the deployment
+    // Check if enough resources are available for the deployment
     log.debug("Checking if enough resources are available on the defined VimInstance.");
     for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
       BaseVimInstance vimInstanceChosen =
@@ -167,7 +166,7 @@ public class VNFLifecycleOperationGranting
       Quota leftQuota = vimBroker.getLeftQuota(vimInstance);
       log.debug("Left Quota on VimInstance " + vimInstance.getName() + " at start is " + leftQuota);
 
-      //Fetch the Flavor for getting allocated resources needed
+      // Fetch the Flavor for getting allocated resources needed
       DeploymentFlavour flavor = null;
       for (DeploymentFlavour currentFlavor : ((OpenstackVimInstance) vimInstance).getFlavours()) {
         if (currentFlavor
@@ -180,7 +179,7 @@ public class VNFLifecycleOperationGranting
       if (flavor == null)
         throw new VimException(
             "deployment flavor object is null, it means that there is no PoP supporting the deployment flavour selected");
-      //Subtract needed resources from the left resources
+      // Subtract needed resources from the left resources
       int nc = 0;
 
       for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu()) {
@@ -200,7 +199,8 @@ public class VNFLifecycleOperationGranting
                 + leftQuota);
       }
 
-      //If one value is negative, it is not possible to deploy the VNFR on (at least on one VimInstance) -> return false
+      // If one value is negative, it is not possible to deploy the VNFR on (at least on one
+      // VimInstance) -> return false
       if (leftQuota.getInstances() < 0 || leftQuota.getRam() < 0 || leftQuota.getCores() < 0) {
         log.error(
             "Not enough resources are available to deploy VNFR "

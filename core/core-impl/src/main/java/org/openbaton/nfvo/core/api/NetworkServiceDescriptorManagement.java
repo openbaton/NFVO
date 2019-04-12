@@ -1,18 +1,17 @@
 /*
- * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package org.openbaton.nfvo.core.api;
@@ -131,7 +130,7 @@ public class NetworkServiceDescriptorManagement
 
     Iterable<VnfmManagerEndpoint> endpoints = vnfmManagerEndpointRepository.findAll();
 
-    nsdUtils.checkEndpoint(networkServiceDescriptor, endpoints);
+    // nsdUtils.checkEndpoint(networkServiceDescriptor, endpoints);
 
     log.trace("Creating " + networkServiceDescriptor);
 
@@ -325,7 +324,7 @@ public class NetworkServiceDescriptorManagement
   @Override
   public void deleteVnfDescriptor(String idNsd, String idVnfd, String projectId)
       throws EntityInUseException, NotFoundException, NotAllowedException {
-    //Get all NSD referencing the VNFD identified by idVnfd
+    // Get all NSD referencing the VNFD identified by idVnfd
     List<NetworkServiceDescriptor> nsds =
         nsdRepository.findByVnfd_idAndProjectId(idVnfd, projectId);
 
@@ -334,7 +333,8 @@ public class NetworkServiceDescriptorManagement
       if (!nsd.getId().equals(idNsd))
         throw new EntityInUseException(
             "NSD with id: " + nsd.getId() + " is still onboarded and referencing this VNFD");
-      // If this NSD contains only 1 VNFD, this operation cannot be performed (check integrity constraints in NSD)
+      // If this NSD contains only 1 VNFD, this operation cannot be performed (check integrity
+      // constraints in NSD)
       else if (nsd.getId().equals(idNsd) && nsd.getVnfd().size() == 1) {
         throw new NotAllowedException("NSD with id: " + idNsd + " cannot contain less than 1 vnfd");
       }
@@ -649,9 +649,17 @@ public class NetworkServiceDescriptorManagement
           throw new WrongStatusException(
               "The NetworkServiceRecord "
                   + nsr.getName()
+                  + " ("
+                  + nsr.getId()
+                  + ")"
                   + " created from the NetworkServiceDescriptor "
                   + networkServiceDescriptor.getName()
-                  + " is not yet in ACTIVE");
+                  + " ("
+                  + networkServiceDescriptor.getId()
+                  + ")"
+                  + " is not yet in ACTIVE state but in "
+                  + nsr.getStatus()
+                  + ".");
         }
       }
     }

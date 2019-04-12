@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.openbaton.nfvo.common.utils.viminstance;
 
 import java.util.*;
@@ -39,6 +55,11 @@ public class VimInstanceUtils {
         .equals(AmazonVimInstance.class.getCanonicalName())) {
       ((AmazonVimInstance) vim).setSecretKey("**********");
     }
+  }
+
+  public static String getVimNameWithoutAvailabilityZone(String vimName) {
+    if (vimName.contains(":")) return vimName.split(":")[0];
+    return vimName;
   }
 
   public static void updatePrivateInfo(BaseVimInstance vimNew, BaseVimInstance vimOld) {
@@ -193,7 +214,7 @@ public class VimInstanceUtils {
                       && ((DockerImage) i).getTags().contains(imageName))
           .collect(Collectors.toList());
     } else if (vimInstance instanceof AmazonVimInstance) {
-      //in case of Amazon Instance the image check is delegated to amazon plugin
+      // in case of Amazon Instance the image check is delegated to amazon plugin
       AWSImage skipImage = new AWSImage();
       skipImage.setExtId(imageName);
       return Collections.singletonList(skipImage);
@@ -263,6 +284,7 @@ public class VimInstanceUtils {
       return network;
     } else if (vimInstance instanceof DockerVimInstance) {
       DockerNetwork networkdc = new DockerNetwork();
+      networkdc.setMetadata(getMetadataFromVLName(vlr.getName(), networkServiceDescriptor));
       networkdc.setName(vlr.getName());
       networkdc.setSubnet(
           getCidrFromVLName(
@@ -273,6 +295,16 @@ public class VimInstanceUtils {
       networkb.setName(vlr.getName());
       return networkb;
     }
+  }
+
+  private static Map<String, String> getMetadataFromVLName(
+      String virtual_link_reference, NetworkServiceDescriptor networkServiceDescriptor) {
+    for (VirtualLinkDescriptor vld : networkServiceDescriptor.getVld()) {
+      if (vld.getName().equals(virtual_link_reference)) {
+        return vld.getMetadata();
+      }
+    }
+    return new HashMap<>();
   }
 
   private static String getCidrFromVLName(
@@ -300,7 +332,8 @@ public class VimInstanceUtils {
   public static boolean isVNFDConnectionPointExisting(
       VNFDConnectionPoint vnfdConnectionPoint, BaseNetwork network) {
     if (network.getName().equals(vnfdConnectionPoint.getVirtual_link_reference())
-        || network.getExtId().equals(vnfdConnectionPoint.getVirtual_link_reference())) {
+        || network.getExtId().equals(vnfdConnectionPoint.getVirtual_link_reference())
+        || network.getExtId().equals(vnfdConnectionPoint.getVirtual_link_reference_id())) {
       if (vnfdConnectionPoint.getFixedIp() != null
           && !vnfdConnectionPoint.getFixedIp().equals("")) {
         if (network instanceof Network) {

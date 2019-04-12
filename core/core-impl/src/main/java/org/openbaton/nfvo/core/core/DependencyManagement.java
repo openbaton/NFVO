@@ -1,18 +1,17 @@
 /*
- * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package org.openbaton.nfvo.core.core;
@@ -93,7 +92,7 @@ public class DependencyManagement
       log.trace(vnfRecordDependency.getTarget() + " == " + virtualNetworkFunctionRecord.getName());
       if (vnfRecordDependency.getTarget().equals(virtualNetworkFunctionRecord.getName())) {
         dep++;
-        //waiting for them to finish
+        // waiting for them to finish
         Set<String> notInitIds =
             getNotInitializedVnfrSource(vnfRecordDependency.getIdType().keySet(), nsr);
         if (!notInitIds.isEmpty()) {
@@ -112,7 +111,7 @@ public class DependencyManagement
                   + virtualNetworkFunctionRecord.getName()
                   + " with dependency "
                   + vnfRecordDependency);
-          //send sendMessageToVNFR to VNFR
+          // send sendMessageToVNFR to VNFR
           if (nsr.getStatus().ordinal() != Status.ERROR.ordinal()) {
             OrVnfmGenericMessage orVnfmGenericMessage =
                 new OrVnfmGenericMessage(virtualNetworkFunctionRecord, Action.MODIFY);
@@ -134,7 +133,7 @@ public class DependencyManagement
   }
 
   @Override
-  public synchronized void fillDependecyParameters(
+  public synchronized void fillDependencyParameters(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord) {
 
     log.info(
@@ -157,7 +156,7 @@ public class DependencyManagement
         vnfRecordDependency = vnfrDependencyRepository.findFirstById(vnfRecordDependency.getId());
 
         Set<String> keyParameters =
-            fillDependecyParameters(virtualNetworkFunctionRecord, vnfRecordDependency);
+            fillDependencyParameters(virtualNetworkFunctionRecord, vnfRecordDependency);
 
         if (!vnfRecordDependency.getTarget().equals(virtualNetworkFunctionRecord.getName())) {
           fillVnfcParameters(virtualNetworkFunctionRecord, vnfRecordDependency, keyParameters);
@@ -181,7 +180,7 @@ public class DependencyManagement
         }
       }
       log.info(
-          "Filled parameter for depedendency target = "
+          "Filled parameter for dependendency target = "
               + vnfRecordDependency.getTarget()
               + " with parameters: "
               + vnfRecordDependency.getParameters()
@@ -202,7 +201,7 @@ public class DependencyManagement
     for (VirtualDeploymentUnit virtualDeploymentUnit : virtualNetworkFunctionRecord.getVdu())
       for (VNFCInstance vnfcInstance : virtualDeploymentUnit.getVnfc_instance()) {
 
-        //log.debug("VNFComponent id: " + vnfcInstance.getVnfComponent().getId());
+        // log.debug("VNFComponent id: " + vnfcInstance.getVnfComponent().getId());
         log.debug("VNFRecordDependency is " + vnfRecordDependency);
         log.debug("VNFCDependencyParameters is " + vnfcDependencyParameters);
 
@@ -272,7 +271,7 @@ public class DependencyManagement
   }
 
   @Override
-  public Set<String> fillDependecyParameters(
+  public Set<String> fillDependencyParameters(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
       VNFRecordDependency vnfRecordDependency) {
     DependencyParameters dp =

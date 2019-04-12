@@ -1,18 +1,17 @@
 /*
- * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package org.openbaton.nfvo.common.configuration;
@@ -29,30 +28,4 @@ public class RabbitConfiguration {
   public static final String EXCHANGE_NAME_OPENBATON = "openbaton-exchange";
   public static final String EXCHANGE_TYPE_OPENBATON = "topic";
   public static final String EXCHANGE_DURABLE_OPENBATON = "true";
-
-  //  /**
-  //   * Extension of Spring-AMQP's {@link ConditionalRejectingErrorHandler.DefaultExceptionStrategy}.
-  //   * It regards a {@link JsonSyntaxException}, which may appear while demarshalling a message from a
-  //   * queue, as fatal and drops it. Otherwise the message would be sent back to the queue resulting
-  //   * in an infinite loop.
-  //   */
-  //  private class HandleJsonSyntaxExceptionStrategy implements FatalExceptionStrategy {
-  //
-  //    private Logger log = LoggerFactory.getLogger(this.getClass());
-  //
-  //    @Override
-  //    public boolean isFatal(Throwable t) {
-  //      if (t instanceof ListenerExecutionFailedException
-  //          && (t.getCause() instanceof MessageConversionException
-  //              || t.getCause() instanceof JsonSyntaxException)) {
-  //        log.error(
-  //            "Fatal message conversion error; message rejected; "
-  //                + "it will be dropped or routed to a dead letter exchange, if so configured: "
-  //                + ((ListenerExecutionFailedException) t).getFailedMessage(),
-  //            t);
-  //        return true;
-  //      }
-  //      return false;
-  //    }
-  //  }
 }

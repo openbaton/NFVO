@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Open Baton (http://openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -57,15 +58,14 @@ public class RestUsers {
    * @return user
    */
   @ApiOperation(
-    value = "Adding a User",
-    notes = "The User data is passed as JSON in the Request Body"
-  )
+      value = "Adding a User",
+      notes = "The User data is passed as JSON in the Request Body")
   @RequestMapping(
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
   public User create(@RequestBody @Valid User user)
       throws PasswordWeakException, NotAllowedException, BadRequestException, NotFoundException {
     log.info("Adding user: " + user.getUsername());
@@ -84,11 +84,11 @@ public class RestUsers {
    * @param id : the id of user to be removed
    */
   @ApiOperation(
-    value = "Remove a User",
-    notes = "Removes the user with the id specified in the URL. Admin privileges needed!"
-  )
+      value = "Remove a User",
+      notes = "Removes the user with the id specified in the URL. Admin privileges needed!")
   @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
   public void delete(@PathVariable("id") String id) throws NotAllowedException, NotFoundException {
     log.info("Removing user with id " + id);
     if (isAdmin()) {
@@ -104,14 +104,12 @@ public class RestUsers {
   }
 
   @ApiOperation(
-    value = "Remove multiple Users",
-    notes = "Removes all users part of the List of ids passed in the Request Body"
-  )
+      value = "Remove multiple Users",
+      notes = "Removes all users part of the List of ids passed in the Request Body")
   @RequestMapping(
-    value = "/multipledelete",
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "/multipledelete",
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void multipleDelete(@RequestBody @Valid List<String> ids) throws NotFoundException {
     if (userManagement != null) {
@@ -141,9 +139,8 @@ public class RestUsers {
    * @return User: The User selected
    */
   @ApiOperation(
-    value = "Retrieve a User",
-    notes = "Retrieves a user based on the username specified in the URL"
-  )
+      value = "Retrieve a User",
+      notes = "Retrieves a user based on the username specified in the URL")
   @RequestMapping(value = "{username}", method = RequestMethod.GET)
   public User findById(@PathVariable("username") String username) throws NotFoundException {
     log.trace("find User with username " + username);
@@ -167,31 +164,28 @@ public class RestUsers {
    * @return User The User updated
    */
   @ApiOperation(
-    value = "Update a User",
-    notes =
-        "Updates a user based on the username specified in the url and the updated user body in the request"
-  )
+      value = "Update a User",
+      notes =
+          "Updates a user based on the username specified in the url and the updated user body in the request")
   @RequestMapping(
-    value = "{username}",
-    method = RequestMethod.PUT,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "{username}",
+      method = RequestMethod.PUT,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.ACCEPTED)
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
   public User update(@RequestBody @Valid User new_user)
       throws NotAllowedException, BadRequestException, NotFoundException {
     return userManagement.update(new_user);
   }
 
   @ApiOperation(
-    value = "Changing the current User's password",
-    notes = "The current user can change his password by providing a new one"
-  )
+      value = "Changing the current User's password",
+      notes = "The current user can change his password by providing a new one")
   @RequestMapping(
-    value = "changepwd",
-    method = RequestMethod.PUT,
-    consumes = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "changepwd",
+      method = RequestMethod.PUT,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.ACCEPTED)
   public void changePassword(@RequestBody /*@Valid*/ JsonObject newPwd)
       throws UnauthorizedUserException, PasswordWeakException {
@@ -202,15 +196,14 @@ public class RestUsers {
   }
 
   @ApiOperation(
-    value = "Changing a User's password",
-    notes = "If you want to change another User's password, you have to be an admin"
-  )
+      value = "Changing a User's password",
+      notes = "If you want to change another User's password, you have to be an admin")
   @RequestMapping(
-    value = "changepwd/{username}",
-    method = RequestMethod.PUT,
-    consumes = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "changepwd/{username}",
+      method = RequestMethod.PUT,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.ACCEPTED)
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
   public void changePasswordOf(
       @PathVariable("username") String username, @RequestBody /*@Valid*/ JsonObject newPwd)
       throws UnauthorizedUserException, PasswordWeakException, NotFoundException,

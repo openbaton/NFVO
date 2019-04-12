@@ -1,18 +1,17 @@
 /*
- * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package org.openbaton.nfvo.cli;
@@ -74,7 +73,7 @@ public class OpenbatonCLI implements CommandLineRunner {
   private static final Map<String, String> helpCommandList =
       new HashMap<String, String>() {
         {
-          //mgmt
+          // mgmt
           put("help", "Print the usage");
           put("exit", "Exit the application");
           put("installPlugin", "install a plugin");
@@ -85,7 +84,7 @@ public class OpenbatonCLI implements CommandLineRunner {
           put("listUsers", "list all Users");
           put("changeLog", "Change log level");
 
-          //admin
+          // admin
           put("listDescriptors", "show all Network Service Descriptors");
           put("listRecords", "show all Network Service Records");
           put("deleteRecord", "delete the Network Service Record with given id");

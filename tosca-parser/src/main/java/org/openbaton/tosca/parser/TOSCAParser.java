@@ -1,18 +1,17 @@
 /*
- * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package org.openbaton.tosca.parser;
@@ -206,7 +205,7 @@ public class TOSCAParser {
     virtualLinkReferences.addAll(vnf.getRequirements().getVirtualLinks());
 
     // ADD VLs
-    //ArrayList<String> vl_list = vnf.getRequirements().getVirtualLinks();
+    // ArrayList<String> vl_list = vnf.getRequirements().getVirtualLinks();
     Set<InternalVirtualLink> vls = new HashSet<>();
 
     for (VLNodeTemplate vl : topologyTemplate.getVLNodes()) {
@@ -216,9 +215,10 @@ public class TOSCAParser {
       }
     }
     vnfd.setVirtual_link(vls);
-    vnfd.setLifecycle_event(vnf.getInterfaces().getOpLifecycle());
+    if (vnf.getInterfaces() != null && vnf.getInterfaces().getLifecycle() != null)
+      vnfd.setLifecycle_event(vnf.getInterfaces().getOpLifecycle());
 
-    //ADD CONFIGURATIONS
+    // ADD CONFIGURATIONS
     if (vnf.getProperties().getConfigurations() != null) {
       Configuration configuration = new Configuration();
       configuration.setName(vnf.getProperties().getConfigurations().getName());
@@ -275,6 +275,10 @@ public class TOSCAParser {
       throw new NotFoundException("No type specified in inputs!");
     vnfd.setType(VNFDTemplate.getInputs().getType());
 
+    if (VNFDTemplate.getInputs().getAuto_scale_policy() != null) {
+      vnfd.setAuto_scale_policy(
+          VNFDTemplate.getInputs().getAuto_scale_policy().getAutoScalePolicySet());
+    }
     // ADD VDUs
     Set<VirtualDeploymentUnit> vdus = new HashSet<>();
     for (VDUNodeTemplate vdu : VNFDTemplate.getTopology_template().getVDUNodes()) {
@@ -291,9 +295,11 @@ public class TOSCAParser {
     }
 
     vnfd.setVirtual_link(vls);
-    vnfd.setLifecycle_event(VNFDTemplate.getInputs().getInterfaces().getOpLifecycle());
+    if (VNFDTemplate.getInputs().getInterfaces() != null
+        && VNFDTemplate.getInputs().getInterfaces().getLifecycle() != null)
+      vnfd.setLifecycle_event(VNFDTemplate.getInputs().getInterfaces().getOpLifecycle());
 
-    //ADD CONFIGURATIONS
+    // ADD CONFIGURATIONS
     if (VNFDTemplate.getInputs().getConfigurations() != null) {
 
       VNFConfigurations configurations = VNFDTemplate.getInputs().getConfigurations();

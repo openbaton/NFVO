@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Open Baton (http://openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,11 +68,10 @@ public class RestCSAR {
   @RequestMapping(value = "/api/v1/csar-nsd", method = RequestMethod.POST)
   @ResponseBody
   @ApiOperation(
-    value = "Add a CSAR Network Service",
-    notes =
-        "The request parameter 'file' specifies an archive which is needed to onboard a Network Service as CSAR. "
-            + "On how to create such an archive refer to: http://openbaton.github.io/documentation/tosca-CSAR-onboarding/"
-  )
+      value = "Add a CSAR Network Service",
+      notes =
+          "The request parameter 'file' specifies an archive which is needed to onboard a Network Service as CSAR. "
+              + "On how to create such an archive refer to: http://openbaton.github.io/documentation/tosca-CSAR-onboarding/")
   public NetworkServiceDescriptor onboardNSD(
       @RequestParam("file") MultipartFile file,
       @RequestHeader(value = "project-id") String projectId)
@@ -107,10 +106,9 @@ public class RestCSAR {
 
   @ApiOperation(value = "", notes = "", hidden = true)
   @RequestMapping(
-    value = "/api/v1/csar-vnf/marketdownload",
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "/api/v1/csar-vnf/marketdownload",
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   public String marketDownloadVNF(
       @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
       throws IOException, PluginException, VimException, NotFoundException, IncompatibleVNFPackage,
@@ -158,15 +156,13 @@ public class RestCSAR {
   }
 
   @ApiOperation(
-    value = "Download a Network Service CSAR from the Open Baton Marketplace",
-    notes =
-        "The Request Body takes a JSON with the parameter link which holds the URL to the CSAR on the Open Baton Marketplace"
-  )
+      value = "Download a Network Service CSAR from the Open Baton Marketplace",
+      notes =
+          "The Request Body takes a JSON with the parameter link which holds the URL to the CSAR on the Open Baton Marketplace")
   @RequestMapping(
-    value = "/api/v1/csar-ns/marketdownload",
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "/api/v1/csar-ns/marketdownload",
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   public String marketDownloadNS(
       @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
       throws IOException, PluginException, VimException, NotFoundException, IncompatibleVNFPackage,

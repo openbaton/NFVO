@@ -1,18 +1,17 @@
 /*
- * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package org.openbaton.tosca.parser;
@@ -30,7 +29,6 @@ import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
 import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.VNFPackage;
 import org.openbaton.catalogue.nfvo.images.BaseNfvImage;
-import org.openbaton.catalogue.nfvo.images.NFVImage;
 import org.openbaton.exceptions.*;
 import org.openbaton.nfvo.core.interfaces.VNFPackageManagement;
 import org.openbaton.nfvo.repositories.VNFDRepository;
@@ -139,7 +137,7 @@ public class CSARParser {
     }
   }
 
-  //TODO what is the need of such method? Only for testing purposes?
+  // TODO what is the need of such method? Only for testing purposes?
   public void parseVNFCSAR(String vnfd_csar) throws Exception {
 
     try (InputStream csar = new FileInputStream(vnfd_csar)) {
@@ -170,15 +168,14 @@ public class CSARParser {
           InterruptedException, EntityUnreachableException, ExecutionException {
 
     Map<String, Object> metadata;
-    NFVImage image = new NFVImage();
 
     Yaml yaml = new Yaml();
     metadata = yaml.loadAs(new String(this.vnfMetadata.toByteArray()), Map.class);
-    //Get configuration for NFVImage
-    vnfPackage = vnfPackageManagement.handleMetadata(metadata, vnfPackage, image);
+    // Get configuration for NFVImage
+    vnfPackage = vnfPackageManagement.handleMetadata(metadata, vnfPackage);
 
     return vnfPackageManagement.handleImage(
-        vnfPackage, null, virtualNetworkFunctionDescriptor, image, metadata, projectId);
+        vnfPackage, null, virtualNetworkFunctionDescriptor, metadata, projectId);
   }
 
   private String saveVNFD(

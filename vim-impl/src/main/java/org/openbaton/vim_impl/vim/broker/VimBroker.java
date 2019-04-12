@@ -1,18 +1,17 @@
 /*
- * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package org.openbaton.vim_impl.vim.broker;
@@ -47,7 +46,7 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
   @Value("${nfvo.rabbit.management.port:15672}")
   private String managementPort;
 
-  @Value("${nfvo.rabbit.brokerIp:localhost}")
+  @Value("${spring.rabbitmq.host:localhost}")
   private String brokerIp;
 
   public String getBrokerIp() {
@@ -224,11 +223,11 @@ public class VimBroker implements org.openbaton.nfvo.vim_interfaces.vim.VimBroke
 
     List<Server> servers = vim.queryResources(vimInstance);
     log.debug("MaximalQuota is: " + maximalQuota);
-    //Calculate used resource by servers (cpus, ram)
+    // Calculate used resource by servers (cpus, ram)
     for (Server server : servers) {
-      //Subtract instances
+      // Subtract instances
       maximalQuota.setInstances(maximalQuota.getInstances() - 1);
-      //Subtract used ram and cpus
+      // Subtract used ram and cpus
       DeploymentFlavour flavor = server.getFlavor();
       maximalQuota.setRam(
           maximalQuota.getRam()

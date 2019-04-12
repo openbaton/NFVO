@@ -1,18 +1,17 @@
 /*
- * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package org.openbaton.nfvo.core.utils;
@@ -92,10 +91,10 @@ public class NSRUtils {
   }
 
   public static void setDependencies(
-      NetworkServiceDescriptor networkServiceDescriptor,
+      Set<VirtualNetworkFunctionDescriptor> vnfds,
+      Set<VNFDependency> vnfDependencies,
       NetworkServiceRecord networkServiceRecord) {
-
-    for (VNFDependency vnfDependency : networkServiceDescriptor.getVnf_dependency()) {
+    for (VNFDependency vnfDependency : vnfDependencies) {
       boolean found = false;
       for (VNFRecordDependency vnfRecordDependency : networkServiceRecord.getVnf_dependency()) {
         if (vnfRecordDependency
@@ -104,8 +103,7 @@ public class NSRUtils {
                 vnfDependency
                     .getTarget())) { // if there is a vnfRecordDepenendency with the same target
           // I find the source
-          for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
-              networkServiceDescriptor.getVnfd()) {
+          for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : vnfds) {
             log.debug(
                 "Source is: "
                     + vnfDependency.getSource()
@@ -123,7 +121,7 @@ public class NSRUtils {
                   vnfRecordDependency
                       .getParameters()
                       .get(virtualNetworkFunctionDescriptor.getType());
-              //If there are no dependencyParameter of that type
+              // If there are no dependencyParameter of that type
               if (dependencyParameters == null) {
                 dependencyParameters = new DependencyParameters();
                 dependencyParameters.setParameters(new HashMap<>());
@@ -144,8 +142,7 @@ public class NSRUtils {
         VNFRecordDependency vnfRecordDependency = new VNFRecordDependency();
         vnfRecordDependency.setIdType(new HashMap<>());
         vnfRecordDependency.setParameters(new HashMap<>());
-        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
-            networkServiceDescriptor.getVnfd()) {
+        for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor : vnfds) {
 
           if (vnfDependency.getSource().equals(virtualNetworkFunctionDescriptor.getName())) {
             vnfRecordDependency
@@ -181,6 +178,15 @@ public class NSRUtils {
     }
   }
 
+  public static void setDependencies(
+      NetworkServiceDescriptor networkServiceDescriptor,
+      NetworkServiceRecord networkServiceRecord) {
+    setDependencies(
+        networkServiceDescriptor.getVnfd(),
+        networkServiceDescriptor.getVnf_dependency(),
+        networkServiceRecord);
+  }
+
   private static VirtualLinkRecord createVirtualLinkRecord(
       VirtualLinkDescriptor virtualLinkDescriptor) {
     VirtualLinkRecord virtualLinkRecord = new VirtualLinkRecord();
@@ -206,8 +212,8 @@ public class NSRUtils {
     virtualLinkRecord.setVnffgr_reference(new HashSet<>());
     virtualLinkRecord.setConnection(new HashSet<>());
 
-    //TODO think about test_access -> different types on VLD and VLR
-    //virtualLinkRecord.setTest_access("");
+    // TODO think about test_access -> different types on VLD and VLR
+    // virtualLinkRecord.setTest_access("");
 
     virtualLinkRecord.setQos(new HashSet<>());
     for (String qos : virtualLinkDescriptor.getQos()) {

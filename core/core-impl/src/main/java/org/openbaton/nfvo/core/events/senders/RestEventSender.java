@@ -1,18 +1,17 @@
 /*
- * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package org.openbaton.nfvo.core.events.senders;
@@ -21,6 +20,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.util.concurrent.Future;
 import org.apache.http.HttpResponse;
+import org.apache.http.NoHttpResponseException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -62,18 +62,41 @@ public class RestEventSender implements EventSender {
       request.addHeader("accept", "application/json");
       StringEntity params = new StringEntity(json);
       request.setEntity(params);
-      HttpResponse response = httpClient.execute(request);
-      log.trace(
-          String.format(
-              "Response status is [%d]: %s",
-              response.getStatusLine().getStatusCode(),
-              response.getStatusLine().getReasonPhrase()));
+      int attempts = 5;
+      for (int i = 0; i < attempts; i++) {
+        try {
+          HttpResponse response = httpClient.execute(request);
+          log.trace(
+              String.format(
+                  "Response status is [%d]: %s",
+                  response.getStatusLine().getStatusCode(),
+                  response.getStatusLine().getReasonPhrase()));
+          break;
+        } catch (NoHttpResponseException e) {
+          if (i == attempts - 1) {
+            log.warn(
+                "After "
+                    + attempts
+                    + " attempts there is still no response from the listening event server");
+            throw e;
+          } else {
+            log.warn("No response from listening event server. Next sending attempt in one second");
+            try {
+              Thread.sleep(1000);
+            } catch (InterruptedException ie) {
+
+            }
+          }
+        }
+      }
     } catch (Exception ignored) {
       log.warn(
           "Impossible to reach the endpoint with name: "
               + endpoint.getName()
-              + " via rest POST at url:"
-              + endpoint.getEndpoint());
+              + " via rest POST at url "
+              + endpoint.getEndpoint()
+              + " because: "
+              + ignored.getMessage());
     }
     return new AsyncResult<>(null);
   }

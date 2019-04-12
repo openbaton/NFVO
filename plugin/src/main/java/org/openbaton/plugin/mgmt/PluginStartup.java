@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Open Baton (http://openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,7 +115,8 @@ public class PluginStartup {
     if (folder.isDirectory()) {
       for (File jar : folder.listFiles()) {
         if (jar.getAbsolutePath().endsWith(".jar")) {
-          // quick workaround for avoiding a null pointer exception when plugin names is not like the expected one (pluginname-version)..
+          // quick workaround for avoiding a null pointer exception when plugin names is not like
+          // the expected one (pluginname-version)..
           String absolutePath = jar.getAbsolutePath();
           String pluginName =
               absolutePath.substring(absolutePath.lastIndexOf("/") + 1, absolutePath.length());
@@ -156,7 +157,7 @@ public class PluginStartup {
               pluginLogPath);
         } else log.warn(jar.getAbsolutePath() + " is not a jar file");
       }
-    } else log.error(folderPath + " must be a folder");
+    }
   }
 
   public static void destroy() {

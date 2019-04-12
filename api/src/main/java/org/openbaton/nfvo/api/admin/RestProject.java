@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Open Baton (http://openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,14 +57,12 @@ public class RestProject {
    * @return project
    */
   @ApiOperation(
-    value = "Adding a Project",
-    notes = "Project data has to be passed as JSON in the Request Body."
-  )
+      value = "Adding a Project",
+      notes = "Project data has to be passed as JSON in the Request Body.")
   @RequestMapping(
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
   public Project create(@RequestBody @Valid Project project)
       throws NotAllowedException, NotFoundException {
@@ -82,9 +80,8 @@ public class RestProject {
    * @param id : the id of project to be removed
    */
   @ApiOperation(
-    value = "Remove a Project",
-    notes = "Specify the id of the project that will be deleted in the URL"
-  )
+      value = "Remove a Project",
+      notes = "Specify the id of the project that will be deleted in the URL")
   @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(@PathVariable("id") String id)
@@ -98,14 +95,12 @@ public class RestProject {
   }
 
   @ApiOperation(
-    value = "Removing multiple Projects",
-    notes = "In the Request Body pass a list of project ids that have to be deleted"
-  )
+      value = "Removing multiple Projects",
+      notes = "In the Request Body pass a list of project ids that have to be deleted")
   @RequestMapping(
-    value = "/multipledelete",
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "/multipledelete",
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void multipleDelete(@RequestBody @Valid List<String> ids)
       throws NotAllowedException, NotFoundException, EntityInUseException, BadRequestException {
@@ -175,15 +170,13 @@ public class RestProject {
    * @return Project The Project updated
    */
   @ApiOperation(
-    value = "Update a Project",
-    notes = "The Request Body holds the Project as JSON that will be updated."
-  )
+      value = "Update a Project",
+      notes = "The Request Body holds the Project as JSON that will be updated.")
   @RequestMapping(
-    value = "{id}",
-    method = RequestMethod.PUT,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "{id}",
+      method = RequestMethod.PUT,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.ACCEPTED)
   public Project update(@RequestBody @Valid Project new_project)
       throws NotFoundException, NotAllowedException {

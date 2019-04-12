@@ -18,51 +18,31 @@ package org.openbaton.catalogue.nfvo.messages;
 
 import org.openbaton.catalogue.mano.record.VirtualNetworkFunctionRecord;
 import org.openbaton.catalogue.nfvo.Action;
+import org.openbaton.catalogue.nfvo.Script;
 import org.openbaton.catalogue.nfvo.messages.Interfaces.OrVnfmMessage;
 
-/** Created by mob on 14.09.15. */
-public class OrVnfmErrorMessage extends OrVnfmMessage {
+public class OrVnfmExecuteScriptMessage extends OrVnfmMessage {
 
+  private Script script;
   private VirtualNetworkFunctionRecord vnfr;
-  private String message;
 
-  public OrVnfmErrorMessage() {
-    this.action = Action.ERROR;
+  public OrVnfmExecuteScriptMessage() {
+    this.action = Action.EXECUTE;
   }
 
-  public OrVnfmErrorMessage(VirtualNetworkFunctionRecord vnfr, String message) {
-    this.vnfr = vnfr;
-    this.message = message;
-    this.action = Action.ERROR;
+  public Script getScript() {
+    return script;
   }
 
-  public String getMessage() {
-    return message;
-  }
-
-  public void setMessage(String message) {
-    this.message = message;
-  }
-
-  public VirtualNetworkFunctionRecord getVnfr() {
-    return vnfr;
+  public void setScript(Script script) {
+    this.script = script;
   }
 
   public void setVnfr(VirtualNetworkFunctionRecord vnfr) {
     this.vnfr = vnfr;
   }
 
-  @Override
-  public String toString() {
-    return "OrVnfmErrorMessage{"
-        + "action='"
-        + Action.ERROR
-        + '\''
-        + "message='"
-        + message
-        + '\''
-        + ", vnfr="
-        + vnfr
-        + '}';
+  public VirtualNetworkFunctionRecord getVnfr() {
+    return vnfr;
   }
 }

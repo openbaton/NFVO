@@ -1,18 +1,17 @@
 /*
- * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package org.openbaton.nfvo.vnfm_reg.tasks;
@@ -59,7 +58,7 @@ public class UpdatevnfrTask extends AbstractTask {
             + virtualNetworkFunctionRecord.getId());
     VirtualNetworkFunctionRecord virtualNetworkFunctionRecord_nfvo =
         vnfrRepository.findOne(virtualNetworkFunctionRecord.getId());
-    //Updating VNFR
+    // Updating VNFR
     virtualNetworkFunctionRecord_nfvo.setStatus(virtualNetworkFunctionRecord.getStatus());
     virtualNetworkFunctionRecord_nfvo.setName(virtualNetworkFunctionRecord.getName());
     virtualNetworkFunctionRecord_nfvo.setDeployment_flavour_key(
@@ -88,12 +87,12 @@ public class UpdatevnfrTask extends AbstractTask {
         updateConfiguration(
             virtualNetworkFunctionRecord_nfvo.getConfigurations(),
             virtualNetworkFunctionRecord.getConfigurations()));
-    //TODO Update more parameters
-    //Updating VDUs
+    // TODO Update more parameters
+    // Updating VDUs
     Set<VirtualDeploymentUnit> vdus = new HashSet<>();
     boolean found = false;
     for (VirtualDeploymentUnit vdu_manager : virtualNetworkFunctionRecord.getVdu()) {
-      //VDU ID is null -> NEW
+      // VDU ID is null -> NEW
       if (vdu_manager.getId() == null) {
         vdus.add(vdu_manager);
         log.debug(
@@ -104,7 +103,7 @@ public class UpdatevnfrTask extends AbstractTask {
         continue;
       }
       for (VirtualDeploymentUnit vdu_nfvo : virtualNetworkFunctionRecord_nfvo.getVdu()) {
-        //Found VDU -> Updating
+        // Found VDU -> Updating
         if (vdu_nfvo.getId().equals(vdu_manager.getId())) {
           found = true;
           log.debug(
@@ -121,10 +120,10 @@ public class UpdatevnfrTask extends AbstractTask {
           vdu_nfvo.setVirtual_network_bandwidth_resource(
               vdu_manager.getVirtual_network_bandwidth_resource());
           vdu_nfvo.setVm_image(vdu_manager.getVm_image());
-          //Updating VNFComponents
+          // Updating VNFComponents
           vdu_nfvo.setVnfc(updateVNFComponents(vdu_nfvo.getVnfc(), vdu_manager.getVnfc()));
           log.debug("Update: VNFCs of VDU (" + vdu_nfvo.getId() + "): " + vdu_nfvo.getVnfc());
-          //Updating VNFCInstances
+          // Updating VNFCInstances
           vdu_nfvo.setVnfc_instance(
               updateVNFCInstances(vdu_nfvo.getVnfc_instance(), vdu_manager.getVnfc_instance()));
           log.debug(
@@ -136,7 +135,7 @@ public class UpdatevnfrTask extends AbstractTask {
           break;
         }
       }
-      //VDU was not found -> NEW
+      // VDU was not found -> NEW
       if (!found) {
         vdus.add(vdu_manager);
         log.debug("Update: added new VDU " + vdu_manager.getId());
@@ -155,31 +154,31 @@ public class UpdatevnfrTask extends AbstractTask {
       Set<VNFComponent> vnfComponents_nfvo, Set<VNFComponent> vnfComponents_manager) {
     Set<VNFComponent> components = new HashSet<>();
     boolean found = false;
-    //Updating existing Components, adding new ones and ignoring old ones
+    // Updating existing Components, adding new ones and ignoring old ones
     for (VNFComponent vnfComponent_manager : vnfComponents_manager) {
-      //VNFCInstance ID is null -> NEW
+      // VNFCInstance ID is null -> NEW
       if (vnfComponent_manager.getId() == null) {
         components.add(vnfComponent_manager);
         log.debug("Update: added new VNFC " + vnfComponent_manager);
         continue;
       }
       for (VNFComponent vnfComponent_nfvo : vnfComponents_nfvo) {
-        //Found Instance -> Updating
+        // Found Instance -> Updating
         if (vnfComponent_nfvo.getId().equals(vnfComponent_manager.getId())) {
           log.debug("Update: Updating exsting VNFComponent " + vnfComponent_nfvo.getId());
           found = true;
-          //Update Instance
+          // Update Instance
           vnfComponent_nfvo.setConnection_point(
               updateVNFDConnectionPoints(
                   vnfComponent_nfvo.getConnection_point(),
                   vnfComponent_manager.getConnection_point()));
-          //Add updated VNFCInstance
+          // Add updated VNFCInstance
           components.add(vnfComponent_nfvo);
-          //Proceed with the next VNFCInstance
+          // Proceed with the next VNFCInstance
           break;
         }
       }
-      //VNFCInstance was not found -> NEW
+      // VNFCInstance was not found -> NEW
       if (!found) {
         components.add(vnfComponent_manager);
         log.debug("Update: Added new VNFComponent " + vnfComponent_manager.getId());
@@ -193,20 +192,20 @@ public class UpdatevnfrTask extends AbstractTask {
       Set<VNFCInstance> vnfcInstances_nfvo, Set<VNFCInstance> vnfcInstances_manager) {
     Set<VNFCInstance> instances = new HashSet<>();
     boolean found = false;
-    //Updating existing Instances, adding new ones and ignoring old ones
+    // Updating existing Instances, adding new ones and ignoring old ones
     for (VNFCInstance vnfcInstance_manager : vnfcInstances_manager) {
-      //VNFCInstance ID is null -> NEW
+      // VNFCInstance ID is null -> NEW
       if (vnfcInstance_manager.getId() == null) {
         instances.add(vnfcInstance_manager);
         log.debug("Update: added new VNFC instance " + vnfcInstance_manager);
         continue;
       }
       for (VNFCInstance vnfcInstance_nfvo : vnfcInstances_nfvo) {
-        //Found Instance -> Updating
+        // Found Instance -> Updating
         if (vnfcInstance_nfvo.getId().equals(vnfcInstance_manager.getId())) {
           log.debug("Update: Updating existing VNFCInstance " + vnfcInstance_nfvo.getId());
           found = true;
-          //Updating Instance
+          // Updating Instance
           vnfcInstance_nfvo.setHostname(vnfcInstance_manager.getHostname());
           vnfcInstance_nfvo.setVim_id(vnfcInstance_manager.getVim_id());
           vnfcInstance_nfvo.setVc_id(vnfcInstance_manager.getVc_id());
@@ -215,13 +214,13 @@ public class UpdatevnfrTask extends AbstractTask {
               updateVNFDConnectionPoints(
                   vnfcInstance_nfvo.getConnection_point(),
                   vnfcInstance_manager.getConnection_point()));
-          //Add updated VNFCInstance
+          // Add updated VNFCInstance
           instances.add(vnfcInstance_nfvo);
-          //Proceed with the next VNFCInstance
+          // Proceed with the next VNFCInstance
           break;
         }
       }
-      //VNFCInstance was not found -> NEW
+      // VNFCInstance was not found -> NEW
       if (!found) {
         instances.add(vnfcInstance_manager);
         log.debug("Update: Added new Component " + vnfcInstance_manager.getId());
@@ -246,16 +245,16 @@ public class UpdatevnfrTask extends AbstractTask {
       Set<ConfigurationParameter> configurationParameters_manager) {
     Set<ConfigurationParameter> configurationParameters = new HashSet<>();
     boolean found = false;
-    //Updating existing Components, adding new ones and ignoring old ones
+    // Updating existing Components, adding new ones and ignoring old ones
     for (ConfigurationParameter configurationParameter_manager : configurationParameters_manager) {
-      //VNFCInstance ID is null -> NEW
+      // VNFCInstance ID is null -> NEW
       if (configurationParameter_manager.getId() == null) {
         configurationParameters.add(configurationParameter_manager);
         log.debug("Update: Added new ConfigurationParameter " + configurationParameter_manager);
         continue;
       }
       for (ConfigurationParameter configurationParameter_nfvo : configurationParameters_nfvo) {
-        //Found Instance -> Updating
+        // Found Instance -> Updating
         if (configurationParameter_nfvo.getId().equals(configurationParameter_manager.getId())) {
           log.debug(
               "Update: Updating existing ConfigurationParameter "
@@ -263,13 +262,13 @@ public class UpdatevnfrTask extends AbstractTask {
           found = true;
           configurationParameter_nfvo.setConfKey(configurationParameter_manager.getConfKey());
           configurationParameter_nfvo.setValue(configurationParameter_manager.getValue());
-          //Add updated ConfigurationParameter
+          // Add updated ConfigurationParameter
           configurationParameters.add(configurationParameter_nfvo);
-          //Proceed with the next ConfigurationParameter
+          // Proceed with the next ConfigurationParameter
           break;
         }
       }
-      //ConfigurationParameter was not found -> NEW
+      // ConfigurationParameter was not found -> NEW
       if (!found) {
         configurationParameters.add(configurationParameter_manager);
         log.debug(
@@ -285,16 +284,16 @@ public class UpdatevnfrTask extends AbstractTask {
       Set<VNFDConnectionPoint> vnfdConnectionPoints_manager) {
     Set<VNFDConnectionPoint> vnfdConnectionPoints = new HashSet<>();
     boolean found = false;
-    //Updating existing VNFDConnectionPoints, adding new ones and ignoring old ones
+    // Updating existing VNFDConnectionPoints, adding new ones and ignoring old ones
     for (VNFDConnectionPoint vnfdConnectionPoint_manager : vnfdConnectionPoints_manager) {
-      //VNFDConnectionPoint ID is null -> NEW
+      // VNFDConnectionPoint ID is null -> NEW
       if (vnfdConnectionPoint_manager.getId() == null) {
         vnfdConnectionPoints.add(vnfdConnectionPoint_manager);
         log.debug("Update: Added new VNFDConnectionPoint " + vnfdConnectionPoint_manager);
         continue;
       }
       for (VNFDConnectionPoint vnfdConnectionPoint_nfvo : vnfdConnectionPoints_nfvo) {
-        //Found VNFDConnectionPoint -> Updating
+        // Found VNFDConnectionPoint -> Updating
         if (vnfdConnectionPoint_nfvo.getId().equals(vnfdConnectionPoint_manager.getId())) {
           found = true;
           log.debug(
@@ -302,13 +301,13 @@ public class UpdatevnfrTask extends AbstractTask {
           vnfdConnectionPoint_nfvo.setVirtual_link_reference(
               vnfdConnectionPoint_manager.getVirtual_link_reference());
           vnfdConnectionPoint_nfvo.setType(vnfdConnectionPoint_manager.getType());
-          //Add updated VNFDConnectionPoint
+          // Add updated VNFDConnectionPoint
           vnfdConnectionPoints.add(vnfdConnectionPoint_nfvo);
-          //Proceed with the next VNFDConnectionPoint
+          // Proceed with the next VNFDConnectionPoint
           break;
         }
       }
-      //VNFDConnectionPoint not found -> NEW
+      // VNFDConnectionPoint not found -> NEW
       if (!found) {
         vnfdConnectionPoints.add(vnfdConnectionPoint_manager);
         log.debug("Update: Added new VNFDConnectionPoint " + vnfdConnectionPoint_manager.getId());

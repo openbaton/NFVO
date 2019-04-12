@@ -1,18 +1,17 @@
 /*
- * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package org.openbaton.nfvo.core.interfaces;
@@ -31,7 +30,7 @@ public interface DependencyManagement {
   int provisionDependencies(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException;
 
-  void fillDependecyParameters(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
+  void fillDependencyParameters(VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
 
   VNFRecordDependency getDependencyForAVNFRecordTarget(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord);
@@ -44,7 +43,7 @@ public interface DependencyManagement {
       VNFRecordDependency vnfRecordDependency,
       Set<String> parameterKeys);
 
-  Set<String> fillDependecyParameters(
+  Set<String> fillDependencyParameters(
       VirtualNetworkFunctionRecord virtualNetworkFunctionRecord,
       VNFRecordDependency vnfRecordDependency);
 

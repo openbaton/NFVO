@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Open Baton (http://openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,15 +56,13 @@ public class RestKeys {
    * @param key object containing the key which needs to be uploaded
    */
   @ApiOperation(
-    value = " Importing a Key",
-    notes =
-        "Pass the Key as JSON content in the Request Body. The Key should contain the name and public key."
-  )
+      value = " Importing a Key",
+      notes =
+          "Pass the Key as JSON content in the Request Body. The Key should contain the name and public key.")
   @RequestMapping(
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
   public Key importKey(
       @RequestHeader(value = "project-id") String projectId, @RequestBody @Valid Key key)
@@ -79,15 +77,13 @@ public class RestKeys {
    * @param name : name of the key to be created
    */
   @ApiOperation(
-    value = "Generate a Key",
-    notes =
-        "Generates a new key for the given project from a name that is passed in the Request Body"
-  )
+      value = "Generate a Key",
+      notes =
+          "Generates a new key for the given project from a name that is passed in the Request Body")
   @RequestMapping(
-    value = "generate",
-    method = RequestMethod.POST,
-    produces = MediaType.TEXT_PLAIN_VALUE
-  )
+      value = "generate",
+      method = RequestMethod.POST,
+      produces = MediaType.TEXT_PLAIN_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
   public String generateKey(
       @RequestHeader(value = "project-id") String projectId, @RequestBody String name)
@@ -111,14 +107,12 @@ public class RestKeys {
   }
 
   @ApiOperation(
-    value = "Remove multiple Keys",
-    notes = "The ids of the Keys is passed in a list in the Request Body"
-  )
+      value = "Remove multiple Keys",
+      notes = "The ids of the Keys is passed in a list in the Request Body")
   @RequestMapping(
-    value = "/multipledelete",
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "/multipledelete",
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void multipleDelete(
       @RequestHeader(value = "project-id") String projectId, @RequestBody @Valid List<String> ids)
@@ -134,9 +128,8 @@ public class RestKeys {
    * @return List<User>: The list of Users available
    */
   @ApiOperation(
-    value = "Retrieve all Keys",
-    notes = "Returns all the keys created for the project with id specified in the header"
-  )
+      value = "Retrieve all Keys",
+      notes = "Returns all the keys created for the project with id specified in the header")
   @RequestMapping(method = RequestMethod.GET)
   public List<Key> findAll(@RequestHeader(value = "project-id") String projectId) {
     return (List<Key>) keyManagement.query(projectId);

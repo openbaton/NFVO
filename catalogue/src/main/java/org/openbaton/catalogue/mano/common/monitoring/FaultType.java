@@ -1,18 +1,17 @@
 /*
- * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package org.openbaton.catalogue.mano.common.monitoring;
@@ -20,7 +19,7 @@ package org.openbaton.catalogue.mano.common.monitoring;
 /** Created by mob on 26.10.15. */
 public enum FaultType {
 
-  //Compute faults
+  // Compute faults
   COMPUTE,
   COMPUTE_HOGS,
   COMPUTE_HOGS_CPU,
@@ -29,7 +28,7 @@ public enum FaultType {
   COMPUTE_CODE_CORRUPTION,
   COMPUTE_DATA_CORRUPTION,
 
-  //IO faults
+  // IO faults
   IO,
 
   IO_NETWORK_FRAME_RECEIVE,
@@ -48,6 +47,6 @@ public enum FaultType {
   IO_STORAGE_BLOCK_WRITE_DROP,
   IO_STORAGE_BLOCK_WRITE_DELAY,
 
-  //SERVICE FAULT
+  // SERVICE FAULT
   VNF_NOT_AVAILABLE
 }

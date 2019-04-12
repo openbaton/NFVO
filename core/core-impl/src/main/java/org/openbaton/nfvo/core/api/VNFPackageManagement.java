@@ -1,18 +1,17 @@
 /*
- * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package org.openbaton.nfvo.core.api;
@@ -182,7 +181,6 @@ public class VNFPackageManagement
 
     VNFPackage vnfPackage = new VNFPackage();
     VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor = null;
-    NFVImage image = new NFVImage();
 
     Map<String, Object> metadata = null;
     byte[] imageFile = new byte[0];
@@ -190,7 +188,8 @@ public class VNFPackageManagement
         new ArchiveStreamFactory()
             .createArchiveInputStream("tar", new ByteArrayInputStream(pack))) {
       TarArchiveEntry entry;
-      // Here there are almost no checks whether keys exists or not, since the check has been done in the CheckVNFPackage class
+      // Here there are almost no checks whether keys exists or not, since the check has been done
+      // in the CheckVNFPackage class
       while ((entry = (TarArchiveEntry) tarFile.getNextEntry()) != null) {
         if (entry.isFile() && !entry.getName().startsWith("./._")) {
           byte[] content = new byte[(int) entry.getSize()];
@@ -201,9 +200,9 @@ public class VNFPackageManagement
             Yaml yaml = new Yaml();
             String yamlString = new String(content);
             metadata = (Map<String, Object>) yaml.load(yamlString);
-            vnfPackage = handleMetadata(metadata, vnfPackage, image);
+            vnfPackage = handleMetadata(metadata, vnfPackage);
           } else if (!entry.getName().startsWith("scripts/") && entry.getName().endsWith(".json")) {
-            //this must be the vnfd
+            // this must be the vnfd
             virtualNetworkFunctionDescriptor = handleVirtualNetworkFunctionDescriptor(content);
           } else if (entry.getName().startsWith("scripts/")) {
             Script script = new Script();
@@ -225,7 +224,7 @@ public class VNFPackageManagement
           "Error reading the VNF package, ensure the archive is not corrupted", e);
     }
     if (virtualNetworkFunctionDescriptor == null)
-      throw new BadFormatException("Missing VNFD in pacakge");
+      throw new BadFormatException("Missing VNFD in package");
     if (metadata == null) throw new BadFormatException("Missing Metadata.yaml in pacakge");
 
     if (virtualNetworkFunctionDescriptor.getVnfPackageLocation() != null) {
@@ -238,12 +237,13 @@ public class VNFPackageManagement
       vnfPackage.setScripts(new HashSet<>());
     }
 
-    lock.lock();
-    try {
-      handleImage(
-          vnfPackage, imageFile, virtualNetworkFunctionDescriptor, image, metadata, projectId);
-    } finally {
-      lock.unlock();
+    if (vnfPackage.getImage() != null) {
+      lock.lock();
+      try {
+        handleImage(vnfPackage, imageFile, virtualNetworkFunctionDescriptor, metadata, projectId);
+      } finally {
+        lock.unlock();
+      }
     }
     VNFPackageMetadata vnfPackageMetadata =
         handleVnfPackageMetadata(
@@ -264,8 +264,6 @@ public class VNFPackageManagement
     vnfdParameters.put("name", virtualNetworkFunctionDescriptor.getName());
     vnfdParameters.put("vendor", virtualNetworkFunctionDescriptor.getVendor());
     CheckVNFPackage.checkCommonParametersWithVNFD(vnfPackageMetadataParameters, vnfdParameters);
-
-    vnfPackage.setImage(image);
 
     vnfPackage.setProjectId(projectId);
     // check if package already exists
@@ -316,7 +314,8 @@ public class VNFPackageManagement
     VNFComponent component =
         virtualNetworkFunctionDescriptor.getVdu().iterator().next().getVnfc().iterator().next();
 
-    // Try to find smartly a floating IP to be used for the ssh_ip property. This IP will be used by the fixed-host VNFM for connecting to the VNF machine.
+    // Try to find smartly a floating IP to be used for the ssh_ip property. This IP will be used by
+    // the fixed-host VNFM for connecting to the VNF machine.
     // For floating IP we mean an IP which the fixed-host VNFM can connect to.
     // If the VNFC has multiple floating IPs, only one is needed for accessing it..
     String floatingIp = "";
@@ -331,7 +330,8 @@ public class VNFPackageManagement
       }
     }
 
-    // At this point the floating IP could be empty, find the virtual link with the random floating IP
+    // At this point the floating IP could be empty, find the virtual link with the random floating
+    // IP
     if (floatingIp.equals(""))
       for (VNFDConnectionPoint vnfdConnectionPoint : component.getConnection_point()) {
         if (vnfdConnectionPoint.getFloatingIp() != null
@@ -342,7 +342,8 @@ public class VNFPackageManagement
         }
       }
 
-    // Only one IP, username and password shall be set, because here we specify only the information for accessing the VNFC through the fixed-host VNFM.
+    // Only one IP, username and password shall be set, because here we specify only the information
+    // for accessing the VNFC through the fixed-host VNFM.
 
     Set<ConfigurationParameter> configurationParameters = new HashSet<>();
 
@@ -403,7 +404,7 @@ public class VNFPackageManagement
     vnfPackageMetadata.setName((String) metadata.get("name"));
     vnfPackage.setName((String) metadata.get("name"));
     vnfPackageMetadata.setVnfmType(endpoint);
-    //Check version compatibility between VNF Package and actual NFVO
+    // Check version compatibility between VNF Package and actual NFVO
     String vnfPackageNFVOVersion = null;
     vnfPackageMetadata.setProjectId(projectId);
     vnfPackageMetadata.setType(type);
@@ -473,12 +474,11 @@ public class VNFPackageManagement
     return vnfPackageMetadata;
   }
 
-  public VNFPackage handleMetadata(
-      Map<String, Object> metadata, VNFPackage vnfPackage, NFVImage image)
+  public VNFPackage handleMetadata(Map<String, Object> metadata, VNFPackage vnfPackage)
       throws BadFormatException {
 
-    //Get configuration for NFVImage
-    String[] requiredPackageKeys = new String[] {"name", "image", "vim_types"};
+    // Get configuration for NFVImage
+    String[] requiredPackageKeys = new String[] {"name", "vim_types"};
     for (String requiredKey : requiredPackageKeys) {
       if (!metadata.containsKey(requiredKey)) {
         throw new BadFormatException(
@@ -519,7 +519,7 @@ public class VNFPackageManagement
         if (metadata.containsKey("image-config")) {
           log.debug("image-config: " + metadata.get("image-config"));
           Map<String, Object> imageConfig = (Map<String, Object>) metadata.get("image-config");
-          //Check if all required keys are available
+          // Check if all required keys are available
           String[] requiredImageConfig =
               new String[] {
                 "name", "diskFormat", "containerFormat", "minCPU", "minDisk", "minRam", "isPublic"
@@ -534,6 +534,7 @@ public class VNFPackageManagement
                   "Not defined value of key: " + requiredKey + " of image-config in Metadata.yaml");
             }
           }
+          NFVImage image = new NFVImage();
           image.setName((String) imageConfig.get("name"));
           image.setDiskFormat(((String) imageConfig.get("diskFormat")).toUpperCase());
           image.setContainerFormat(((String) imageConfig.get("containerFormat")).toUpperCase());
@@ -547,10 +548,9 @@ public class VNFPackageManagement
           throw new BadFormatException(
               "The image-config is not defined. Please define it to upload a new image");
         }
+      } else {
+        vnfPackage.setImage(new NFVImage());
       }
-    } else {
-      throw new BadFormatException(
-          "The image details are not defined. Please define it to use the right image");
     }
 
     return vnfPackage;
@@ -561,12 +561,12 @@ public class VNFPackageManagement
       VNFPackage vnfPackage,
       byte[] imageFile,
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
-      NFVImage image,
       Map<String, Object> metadata,
       String projectId)
       throws NotFoundException, PluginException, VimException, BadRequestException, IOException,
           AlreadyExistingException, InterruptedException, ExecutionException, BadFormatException {
 
+    NFVImage image = (NFVImage) vnfPackage.getImage();
     if (vnfPackage.getScriptsLink() != null) {
       if (vnfPackage.getScripts() != null && !vnfPackage.getScripts().isEmpty()) {
         log.debug(
@@ -709,7 +709,7 @@ public class VNFPackageManagement
 
   private String getNfvoVersionWithoutSNAPSHOT() throws NotFoundException {
     String version = VNFPackageManagement.class.getPackage().getImplementationVersion();
-    //this is because you are running it into an IDE
+    // this is because you are running it into an IDE
     if (version == null) {
       if (nfvoVersion == null || nfvoVersion.equals("null") || nfvoVersion.isEmpty()) {
         throw new NotFoundException(
@@ -785,7 +785,7 @@ public class VNFPackageManagement
       throw new UnauthorizedUserException(
           "Not found VNFPackage " + id + ". Either not existing or not under the project chosen.");
     }
-    //TODO remove image in the VIM
+    // TODO remove image in the VIM
     Iterable<VirtualNetworkFunctionDescriptor> virtualNetworkFunctionDescriptors =
         vnfdRepository.findAll();
     for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :

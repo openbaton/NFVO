@@ -1,18 +1,17 @@
 /*
- * Copyright (c) 2016 Open Baton (http://www.openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package org.openbaton.nfvo.vnfm_reg.tasks.abstracts;
@@ -95,9 +94,9 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
 
   protected void saveVirtualNetworkFunctionRecord() throws NsrNotFoundException {
 
-    lock.lock();
     if (networkServiceRecordRepository.exists(virtualNetworkFunctionRecord.getParent_ns_id())) {
       try {
+        lock.lock();
         log.trace(
             "ACTION is: "
                 + action
@@ -153,37 +152,11 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
       result = this.doWork();
     } catch (NsrNotFoundException e) {
       log.warn(e.getLocalizedMessage());
+    } catch (VimException e) {
+      return handleVimException(e);
     } catch (ExecutionException e) {
       if (e.getCause() instanceof VimException) {
-
-        e.printStackTrace();
-        log.error(e.getMessage());
-        HistoryLifecycleEvent lifecycleEvent = new HistoryLifecycleEvent();
-        lifecycleEvent.setEvent(Event.ERROR.name());
-        SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd'-'HH:mm:ss:SSS'-'z");
-        lifecycleEvent.setExecutedAt(format.format(new Date()));
-        lifecycleEvent.setDescription(e.getCause().getMessage());
-        VNFCInstance vnfcInstance = ((VimException) e.getCause()).getVnfcInstance();
-
-        if (vnfcInstance != null) {
-          log.info("The VM was not correctly deployed. ExtId is: " + vnfcInstance.getVc_id());
-          log.debug("Details are: " + vnfcInstance);
-          for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
-            if (vdu.getId()
-                .equals(((VimException) e.getCause()).getVirtualDeploymentUnit().getId())) {
-              vdu.getVnfc_instance().add(vnfcInstance);
-
-              log.debug("Found VDU and set vnfcInstance");
-            }
-          }
-        }
-        virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
-        try {
-          saveVirtualNetworkFunctionRecord();
-        } catch (NotFoundException e1) {
-          log.error(e1.getLocalizedMessage());
-        }
-        return new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
+        return handleVimException((VimException) e.getCause());
       } else if (e.getCause() instanceof VimDriverException) {
         return handleVimDriverException((VimDriverException) e.getCause());
       } else {
@@ -203,11 +176,49 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
               action, virtualNetworkFunctionRecord, virtualNetworkFunctionRecord.getProjectId());
       EventNFVO eventNFVO = new EventNFVO(this);
       eventNFVO.setEventNFVO(eventPublic);
+      log.debug(
+          "Publishing eventNFVO for VNFR: "
+              + virtualNetworkFunctionRecord.getName()
+              + " and action "
+              + action);
       publisher.publishEvent(eventNFVO);
       return null;
     } else {
       return result;
     }
+  }
+
+  private NFVMessage handleVimException(VimException e) {
+    e.printStackTrace();
+    log.error(e.getMessage());
+    HistoryLifecycleEvent lifecycleEvent = new HistoryLifecycleEvent();
+    lifecycleEvent.setEvent(Event.ERROR.name());
+    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd'-'HH:mm:ss:SSS'-'z");
+    lifecycleEvent.setExecutedAt(format.format(new Date()));
+    lifecycleEvent.setDescription(e.getMessage());
+    VNFCInstance vnfcInstance = e.getVnfcInstance();
+
+    if (vnfcInstance != null) {
+      log.info("The VM was not correctly deployed. ExtId is: " + vnfcInstance.getVc_id());
+      log.debug("Details are: " + vnfcInstance);
+      for (VirtualDeploymentUnit vdu : virtualNetworkFunctionRecord.getVdu()) {
+        if (vdu.getId().equals(e.getVirtualDeploymentUnit().getId())) {
+          if (vdu.getVnfc_instance() == null) {
+            vdu.setVnfc_instance(new LinkedHashSet<>());
+          }
+          vdu.getVnfc_instance().add(vnfcInstance);
+
+          log.debug("Found VDU and set vnfcInstance");
+        }
+      }
+    }
+    virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
+    try {
+      saveVirtualNetworkFunctionRecord();
+    } catch (NotFoundException e1) {
+      log.error(e1.getLocalizedMessage());
+    }
+    return new OrVnfmErrorMessage(virtualNetworkFunctionRecord, e.getMessage());
   }
 
   private NFVMessage handleVimDriverException(VimDriverException e) {
@@ -218,6 +229,9 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
     lifecycleEvent.setDescription(e.getMessage());
     SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd'-'HH:mm:ss:SSS'-'z");
     lifecycleEvent.setExecutedAt(format.format(new Date()));
+    if (virtualNetworkFunctionRecord.getLifecycle_event_history() == null) {
+      virtualNetworkFunctionRecord.setLifecycle_event_history(new LinkedHashSet<>());
+    }
     virtualNetworkFunctionRecord.getLifecycle_event_history().add(lifecycleEvent);
     virtualNetworkFunctionRecord.setStatus(Status.ERROR);
     try {
@@ -259,17 +273,20 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
     }
     if (log.isDebugEnabled()) {
       log.error(
-          "There was an uncaught exception in task: "
-              + virtualNetworkFunctionRecord.getTask()
-              + ". ",
-          e);
+          "There was an uncaught exception in task: " + virtualNetworkFunctionRecord.getTask(), e);
     } else {
-      log.error("There was an uncaught exception. Message is: " + e.getMessage());
+      log.error(
+          String.format(
+              "There was an uncaught exception for VNFR %s in task %s. Message is: %s",
+              virtualNetworkFunctionRecord.getName(),
+              virtualNetworkFunctionRecord.getTask(),
+              e.getMessage()));
     }
 
     EventFinishEvent eventFinishEvent = new EventFinishEvent();
     eventFinishEvent.setAction(Action.ERROR);
     virtualNetworkFunctionRecord.setStatus(Status.ERROR);
+    setHistoryLifecycleEvent();
     try {
       saveVirtualNetworkFunctionRecord();
     } catch (NotFoundException e1) {
@@ -355,12 +372,14 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
 
               log.debug("VNFCInstance: " + instanceInVNFR.getHostname());
 
-              // if vnfciStarted is not null then the START message received refers to the VNFCInstance
+              // if vnfciStarted is not null then the START message received refers to the
+              // VNFCInstance
               if (vnfciStarted != null) {
                 if (instanceInVNFR.getId().equals(vnfciStarted.getId())) {
                   instanceInVNFR.setState("ACTIVE");
                 }
-              } else { // START refers to the VNFR then the status of all the VNFCInstance is set to "ACTIVE"
+              } else { // START refers to the VNFR then the status of all the VNFCInstance is set to
+                // "ACTIVE"
                 instanceInVNFR.setState("ACTIVE");
               }
             }
@@ -388,7 +407,8 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
               if (instanceInVNFR.getState().equals("ACTIVE")) {
                 stopVNFR = false;
               }
-            } else { // STOP refers to the VNFR then the status of all the VNFCInstance is set to "INACTIVE"
+            } else { // STOP refers to the VNFR then the status of all the VNFCInstance is set to
+              // "INACTIVE"
               instanceInVNFR.setState("INACTIVE");
             }
           }
@@ -451,7 +471,7 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
     return true;
   }
 
-  protected void setHistoryLifecycleEvent() {
+  protected synchronized void setHistoryLifecycleEvent() {
     HistoryLifecycleEvent lifecycleEvent = new HistoryLifecycleEvent();
     lifecycleEvent.setEvent(event);
     SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd'-'HH:mm:ss:SSS'-'z");
@@ -466,7 +486,8 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
   }
 
   protected void printOldAndNewHibernateVersion() {
-    if (vnfrRepository.exists(virtualNetworkFunctionRecord.getId())) {
+    if (virtualNetworkFunctionRecord.getId() != null
+        && vnfrRepository.exists(virtualNetworkFunctionRecord.getId())) {
       VirtualNetworkFunctionRecord existing =
           vnfrRepository.findFirstById(virtualNetworkFunctionRecord.getId());
 
@@ -486,26 +507,24 @@ public abstract class AbstractTask implements org.openbaton.vnfm.interfaces.task
       virtualNetworkFunctionRecord
           .getVdu()
           .forEach(
-              vdu -> {
-                log.trace(
-                    this.event
-                        + ": VDU ("
-                        + vdu.getId()
-                        + ") received with hibernate version = "
-                        + vdu.getHbVersion());
-              });
+              vdu ->
+                  log.trace(
+                      this.event
+                          + ": VDU ("
+                          + vdu.getId()
+                          + ") received with hibernate version = "
+                          + vdu.getHbVersion()));
 
       existing
           .getVdu()
           .forEach(
-              vdu -> {
-                log.trace(
-                    this.event
-                        + ": VDU ("
-                        + vdu.getId()
-                        + ") existing hibernate version is = "
-                        + vdu.getHbVersion());
-              });
+              vdu ->
+                  log.trace(
+                      this.event
+                          + ": VDU ("
+                          + vdu.getId()
+                          + ") existing hibernate version is = "
+                          + vdu.getHbVersion()));
     }
   }
 }

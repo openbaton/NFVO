@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Open Baton (http://openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,8 @@ public class Utils {
 
     ProcessBuilder processBuilder =
         new ProcessBuilder(
-            //            "java", "-jar", path, name, brokerIp, port, "" + consumers, username, password);
+            //            "java", "-jar", path, name, brokerIp, port, "" + consumers, username,
+            // password);
             "java", "-jar", path, name, brokerIp, port, "" + consumers);
     Date dNow = new Date();
     SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss");

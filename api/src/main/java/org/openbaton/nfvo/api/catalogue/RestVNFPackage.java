@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Open Baton (http://openbaton.org)
+ * Copyright (c) 2015-2018 Open Baton (http://openbaton.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,11 +58,10 @@ public class RestVNFPackage {
 
   /** Adds a new VNFPackage to the VNFPackages repository */
   @ApiOperation(
-    value = "Adding a VNFPackage",
-    notes =
-        "The request parameter 'file' specifies an archive which is needed to instantiate a VNFPackage. "
-            + "On how to create such an archive refer to: http://openbaton.github.io/documentation/vnfpackage/"
-  )
+      value = "Adding a VNFPackage",
+      notes =
+          "The request parameter 'file' specifies an archive which is needed to instantiate a VNFPackage. "
+              + "On how to create such an archive refer to: http://openbaton.github.io/documentation/vnfpackage/")
   @RequestMapping(method = RequestMethod.POST)
   @ResponseBody
   public VirtualNetworkFunctionDescriptor onboard(
@@ -88,15 +87,13 @@ public class RestVNFPackage {
   }
 
   @ApiOperation(
-    value = "Adding a VNFPackage from the Open Baton marketplace",
-    notes =
-        "The JSON object in the request body contains a field named link, which holds the URL to the package on the Open Baton Marketplace"
-  )
+      value = "Adding a VNFPackage from the Open Baton marketplace",
+      notes =
+          "The JSON object in the request body contains a field named link, which holds the URL to the package on the Open Baton Marketplace")
   @RequestMapping(
-    value = "/marketdownload",
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "/marketdownload",
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   public String marketDownload(
       @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
       throws IOException, PluginException, VimException, NotFoundException, IncompatibleVNFPackage,
@@ -120,15 +117,13 @@ public class RestVNFPackage {
   }
 
   @ApiOperation(
-    value = "Adding a VNFPackage from the Package Repository",
-    notes =
-        "The JSON object in the request body contains a field named link, which holds the URL to the package on the Open Baton Marketplace"
-  )
+      value = "Adding a VNFPackage from the Package Repository",
+      notes =
+          "The JSON object in the request body contains a field named link, which holds the URL to the package on the Open Baton Marketplace")
   @RequestMapping(
-    value = "/package-repository-download",
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "/package-repository-download",
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   public String packageRepositoryDownload(
       @RequestBody JsonObject link, @RequestHeader(value = "project-id") String projectId)
       throws IOException, PluginException, VimException, NotFoundException, IncompatibleVNFPackage,
@@ -157,9 +152,8 @@ public class RestVNFPackage {
    * @param id: id of the package to delete
    */
   @ApiOperation(
-    value = "Remove a VNFPackage",
-    notes = "The id of the package that has to be removed in in the URL"
-  )
+      value = "Remove a VNFPackage",
+      notes = "The id of the package that has to be removed in in the URL")
   @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(
@@ -174,14 +168,12 @@ public class RestVNFPackage {
    * @throws NotFoundException, WrongAction
    */
   @ApiOperation(
-    value = "Removing multiple VNFPackages",
-    notes = "A list of VNF Package ids has to be provided in the Request Body"
-  )
+      value = "Removing multiple VNFPackages",
+      notes = "A list of VNF Package ids has to be provided in the Request Body")
   @RequestMapping(
-    value = "/multipledelete",
-    method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "/multipledelete",
+      method = RequestMethod.POST,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void multipleDelete(
       @RequestBody @Valid List<String> ids, @RequestHeader(value = "project-id") String projectId)
@@ -195,23 +187,20 @@ public class RestVNFPackage {
    * @return List<VNFPackage>: The list of VNFPackages available
    */
   @ApiOperation(
-    value = "Retrieve all VNFPackages",
-    notes = "Returns all VNF Packages onboarded on the specified project"
-  )
+      value = "Retrieve all VNFPackages",
+      notes = "Returns all VNF Packages onboarded on the specified project")
   @RequestMapping(method = RequestMethod.GET)
   public List<VNFPackage> findAll(@RequestHeader(value = "project-id") String projectId) {
     return (List<VNFPackage>) vnfPackageManagement.queryByProjectId(projectId);
   }
 
   @ApiOperation(
-    value = "Retrieve a script from a VNF Package",
-    notes = "The ids of the package and the script are provided in the URL"
-  )
+      value = "Retrieve a script from a VNF Package",
+      notes = "The ids of the package and the script are provided in the URL")
   @RequestMapping(
-    value = "{id}/scripts/{scriptId}",
-    method = RequestMethod.GET,
-    produces = MediaType.TEXT_PLAIN_VALUE
-  )
+      value = "{id}/scripts/{scriptId}",
+      method = RequestMethod.GET,
+      produces = MediaType.TEXT_PLAIN_VALUE)
   public String getScript(
       @PathVariable("id") String id,
       @PathVariable("scriptId") String scriptId,
@@ -229,15 +218,13 @@ public class RestVNFPackage {
   }
 
   @ApiOperation(
-    value = "Update a script of a VNF Package",
-    notes = "The updated script has to be passed in the Request Body"
-  )
+      value = "Update a script of a VNF Package",
+      notes = "The updated script has to be passed in the Request Body")
   @RequestMapping(
-    value = "{id}/scripts/{scriptId}",
-    method = RequestMethod.PUT,
-    produces = MediaType.TEXT_PLAIN_VALUE,
-    consumes = MediaType.TEXT_PLAIN_VALUE
-  )
+      value = "{id}/scripts/{scriptId}",
+      method = RequestMethod.PUT,
+      produces = MediaType.TEXT_PLAIN_VALUE,
+      consumes = MediaType.TEXT_PLAIN_VALUE)
   public String updateScript(
       @PathVariable("id") String vnfPackageId,
       @PathVariable("scriptId") String scriptId,
@@ -265,9 +252,8 @@ public class RestVNFPackage {
    * @return VNFPackage: The VNFPackage selected
    */
   @ApiOperation(
-    value = "Retrieve a VNFPackage",
-    notes = "Returns the VNF Package corresponding to the id specified in the URL"
-  )
+      value = "Retrieve a VNFPackage",
+      notes = "Returns the VNF Package corresponding to the id specified in the URL")
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
   public VNFPackage findById(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
@@ -285,15 +271,13 @@ public class RestVNFPackage {
    * @return VNFPackage The VNFPackage updated
    */
   @ApiOperation(
-    value = "Update a VNFPackage",
-    notes = "The updated VNF Package is passed in the request body"
-  )
+      value = "Update a VNFPackage",
+      notes = "The updated VNF Package is passed in the request body")
   @RequestMapping(
-    value = "{id}",
-    method = RequestMethod.PUT,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+      value = "{id}",
+      method = RequestMethod.PUT,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.ACCEPTED)
   public VNFPackage update(
       @RequestBody @Valid VNFPackage vnfPackage_new,
