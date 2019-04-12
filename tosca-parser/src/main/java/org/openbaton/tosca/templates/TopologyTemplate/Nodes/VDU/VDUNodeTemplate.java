@@ -16,9 +16,9 @@
 
 package org.openbaton.tosca.templates.TopologyTemplate.Nodes.VDU;
 
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.openbaton.tosca.templates.TopologyTemplate.Nodes.NodeTemplate;
 
 @SuppressWarnings({"unsafe", "unchecked"})
@@ -26,7 +26,7 @@ public class VDUNodeTemplate {
 
   private String type;
   private String name;
-  private Set<String> artifacts = new LinkedHashSet<>();
+  private List<String> artifacts = new ArrayList<>();
   private VDUProperties properties;
 
   public VDUNodeTemplate(NodeTemplate nodeTemplate, String name) {
@@ -61,11 +61,11 @@ public class VDUNodeTemplate {
     this.type = type;
   }
 
-  public Set<String> getArtifacts() {
+  public List<String> getArtifacts() {
     return artifacts;
   }
 
-  public void setArtifacts(LinkedHashSet<String> vduArtifact) {
+  public void setArtifacts(ArrayList<String> vduArtifact) {
     this.artifacts = vduArtifact;
   }
 

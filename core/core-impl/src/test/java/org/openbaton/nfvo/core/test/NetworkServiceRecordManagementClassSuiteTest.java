@@ -494,7 +494,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
           {
             VirtualDeploymentUnit vdu = new VirtualDeploymentUnit();
             vdu.setVm_image(
-                new LinkedHashSet<String>() {
+                new ArrayList<String>() {
                   {
                     add("mocked_image");
                   }
@@ -560,7 +560,7 @@ public class NetworkServiceRecordManagementClassSuiteTest {
             highAvailability.setResiliencyLevel(ResiliencyLevel.ACTIVE_STANDBY_STATELESS);
             vdu.setHigh_availability(highAvailability);
             vdu.setVm_image(
-                new LinkedHashSet<String>() {
+                new ArrayList<String>() {
                   {
                     add("mocked_image");
                   }

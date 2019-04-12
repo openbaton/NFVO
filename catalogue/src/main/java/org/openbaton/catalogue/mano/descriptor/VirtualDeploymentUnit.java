@@ -16,6 +16,7 @@
 
 package org.openbaton.catalogue.mano.descriptor;
 
+import java.util.List;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
@@ -24,6 +25,8 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.Min;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.openbaton.catalogue.mano.common.HighAvailability;
 import org.openbaton.catalogue.mano.common.LifecycleEvent;
 import org.openbaton.catalogue.mano.common.faultmanagement.FaultManagementPolicy;
@@ -46,7 +49,8 @@ public class VirtualDeploymentUnit extends BaseEntity {
    * virtualisation containers as per (ETSI GS NFV-SWA 001 [i.8]).
    */
   @ElementCollection(fetch = FetchType.EAGER)
-  private Set<String> vm_image;
+  @Fetch(FetchMode.SELECT)
+  private List<String> vm_image;
   /** Reference to the VDU (vnfd:vdu:id) used to instantiate this element. */
   private String parent_vdu;
   /**
@@ -126,11 +130,11 @@ public class VirtualDeploymentUnit extends BaseEntity {
     this.vnfc_instance = vnfc_instance;
   }
 
-  public Set<String> getVm_image() {
+  public List<String> getVm_image() {
     return vm_image;
   }
 
-  public void setVm_image(Set<String> vm_image) {
+  public void setVm_image(List<String> vm_image) {
     this.vm_image = vm_image;
   }
 
