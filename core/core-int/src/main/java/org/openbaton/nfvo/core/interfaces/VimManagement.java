@@ -84,4 +84,6 @@ public interface VimManagement {
       throws PluginException, NotFoundException, VimException;
 
   BaseVimInstance query(String vim_id);
+
+  BaseVimInstance queryByProjectIdAndName(String projectId, String name) throws NotFoundException;
 }

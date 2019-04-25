@@ -364,6 +364,14 @@ public class VimManagement implements org.openbaton.nfvo.core.interfaces.VimMana
     return vimRepository.findFirstById(vimId);
   }
 
+  @Override
+  public BaseVimInstance queryByProjectIdAndName(String projectId, String name)
+      throws NotFoundException {
+    BaseVimInstance vim = vimRepository.findByProjectIdAndName(projectId, name);
+    if (vim == null) throw new NotFoundException("Not found vim Instance with name " + name);
+    return vim;
+  }
+
   /**
    * Validate if the Vim instance has all the required fields filled with values.
    *
