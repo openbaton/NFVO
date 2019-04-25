@@ -165,6 +165,15 @@ public class RestVimInstances {
     return vim;
   }
 
+  /**
+   * Returns the Datacenter selected by name
+   *
+   * @param name: The Datacenter's name
+   * @return Datacenter: The Datacenter requested
+   */
+  @ApiOperation(
+      value = "Retrieve a Vim Instance by name",
+      notes = "Returns the Vim Instance JSON belonging to the name specified")
   @GetMapping(value = "search/findByName")
   public BaseVimInstance findByName(
       @RequestParam String name, @RequestHeader(value = "project-id") String projectId)
