@@ -34,6 +34,8 @@ import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.core.interfaces.ComponentManager;
 import org.openbaton.nfvo.core.interfaces.VimManagement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -49,8 +51,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/datacenters")
 public class RestVimInstances {
 
-  //	TODO add log prints
-  //	private Logger log = LoggerFactory.getLogger(this.getClass());
+  private Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private VimManagement vimManagement;
   @Autowired private ComponentManager componentManager;
@@ -74,6 +75,7 @@ public class RestVimInstances {
       @RequestHeader(value = "project-id") String projectId)
       throws VimException, PluginException, IOException, BadRequestException, ExecutionException,
           InterruptedException {
+    log.info("Adding vim instance: " + vimInstance);
     return vimManagement.add(vimInstance, projectId).get();
   }
 
@@ -90,6 +92,7 @@ public class RestVimInstances {
   public void delete(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException, BadRequestException {
+    log.info("Deleting vim instance id: " + id);
     vimManagement.delete(id, projectId);
   }
 
@@ -111,6 +114,7 @@ public class RestVimInstances {
   public void multipleDelete(
       @RequestBody @Valid List<String> ids, @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException, BadRequestException {
+    log.info("Deleting vim instance ids: " + ids);
     for (String id : ids) vimManagement.delete(id, projectId);
   }
 
@@ -131,12 +135,12 @@ public class RestVimInstances {
     String[] tokenArray = token.split(" ");
     if (tokenArray.length < 2) throw new BadFormatException("The passed token has a wrong format.");
     token = tokenArray[1];
+    log.info("Retrieving all vim instances");
     Iterable<BaseVimInstance> vimInstances = vimManagement.queryByProjectId(projectId);
     if (!componentManager.isService(token))
       for (BaseVimInstance vim : vimInstances) {
         handlePrivateInfo(vim);
       }
-
     return (List<BaseVimInstance>) vimInstances;
   }
 
@@ -155,6 +159,7 @@ public class RestVimInstances {
       @RequestHeader(value = "project-id") String projectId,
       @RequestHeader(value = "authorization") String token)
       throws NotFoundException, BadFormatException {
+    log.info("Retrieving vim instance id: " + id);
     BaseVimInstance vim = vimManagement.query(id, projectId);
     if (vim == null) throw new NotFoundException("VIM Instance with ID " + id + " not found.");
     String[] tokenArray = token.split(" ");
@@ -169,7 +174,7 @@ public class RestVimInstances {
   /**
    * This operation updates the Network Service Descriptor (NSD)
    *
-   * @param new_vimInstance the new datacenter to be updated to
+   * @param newVimInstance the new datacenter to be updated to
    * @param id the id of the old datacenter
    * @return VimInstance the VimInstance updated
    */
@@ -184,12 +189,14 @@ public class RestVimInstances {
       produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.ACCEPTED)
   public BaseVimInstance update(
-      @RequestBody @Valid BaseVimInstance new_vimInstance,
+      @RequestBody @Valid BaseVimInstance newVimInstance,
       @PathVariable("id") String id,
       @RequestHeader(value = "project-id") String projectId)
       throws VimException, PluginException, IOException, BadRequestException, NotFoundException,
           ExecutionException, InterruptedException {
-    return vimManagement.update(new_vimInstance, id, projectId).get();
+    log.info("Updating vim instance with id: " + id);
+    log.debug("New vim instance: " + newVimInstance);
+    return vimManagement.update(newVimInstance, id, projectId).get();
   }
 
   /**
@@ -206,6 +213,7 @@ public class RestVimInstances {
   public Set<? extends BaseNfvImage> getAllImages(
       @PathVariable("id") String id, @RequestHeader(value = "project-id") String projectId)
       throws NotFoundException {
+    log.info("Retrieving images from vim instance id: " + id);
     BaseVimInstance vimInstance = vimManagement.query(id, projectId);
     if (vimInstance == null)
       throw new NotFoundException("VIM Instance with ID " + id + " not found.");
@@ -229,6 +237,7 @@ public class RestVimInstances {
       @PathVariable("idImage") String idImage,
       @RequestHeader(value = "project-id") String projectId)
       throws EntityUnreachableException, NotFoundException {
+    log.info("Retrieving image " + idImage + " from vim instance id: " + idVim);
     return vimManagement.queryImage(idVim, idImage, projectId);
   }
 
@@ -250,6 +259,8 @@ public class RestVimInstances {
       @RequestHeader(value = "project-id") String projectId)
       throws VimException, PluginException, EntityUnreachableException, IOException,
           NotFoundException {
+    log.info("Adding image to vim instance id: " + id);
+    log.debug("Image to add: " + nfvImage);
     return vimManagement.addImage(id, nfvImage, projectId);
   }
 
@@ -291,6 +302,7 @@ public class RestVimInstances {
       @RequestHeader(value = "project-id") String projectId)
       throws VimException, PluginException, EntityUnreachableException, IOException,
           NotFoundException {
+    log.info("Deleting image " + idImage + " from vim instance id: " + idVim);
     vimManagement.deleteImage(idVim, idImage, projectId);
   }
 
@@ -311,6 +323,7 @@ public class RestVimInstances {
     BaseVimInstance vimInstance = vimManagement.query(id, projectId);
     if (vimInstance == null)
       throw new NotFoundException("VIM Instance with ID " + id + " not found.");
+    log.info("Refreshing vim instance: " + id);
     vimManagement.refresh(vimInstance, true).get();
     return vimInstance;
   }
