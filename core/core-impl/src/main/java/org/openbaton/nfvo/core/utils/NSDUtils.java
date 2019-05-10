@@ -16,6 +16,8 @@
 
 package org.openbaton.nfvo.core.utils;
 
+import static org.openbaton.nfvo.common.utils.viminstance.VimInstanceUtils.getVimNameWithoutAvailabilityZone;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -244,12 +246,7 @@ public class NSDUtils {
     for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
       if (vdu.getVimInstanceName() != null) {
         for (String name : vdu.getVimInstanceName()) {
-          String vimName;
-          if (name.contains(":")) {
-            vimName = name.split(":")[0];
-          } else {
-            vimName = name;
-          }
+          String vimName = getVimNameWithoutAvailabilityZone(name);
           log.debug("vim instance name=" + vimName);
           boolean fetched = false;
           for (BaseVimInstance vimInstance : vimInstances) {
@@ -519,7 +516,35 @@ public class NSDUtils {
       virtualNetworkFunctionDescriptor.setVdu(new HashSet<>());
     }
   }
+  
+  private BaseVimInstance checkIntegrityVimInstance(
+      VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
+      VirtualDeploymentUnit virtualDeploymentUnit,
+      String vimName)
+      throws NetworkServiceIntegrityException {
+    BaseVimInstance vimInstance = null;
+    for (BaseVimInstance vi :
+        vimRepository.findByProjectId(virtualNetworkFunctionDescriptor.getProjectId())) {
 
+      if (getVimNameWithoutAvailabilityZone(vimName).equals(vi.getName())) {
+        vimInstance = vi;
+        log.debug("Got vim with auth: " + vimInstance.getAuthUrl());
+        break;
+      }
+    }
+
+    if (vimInstance == null) {
+      throw new NetworkServiceIntegrityException(
+          "Not found VIM with name "
+              + vimName
+              + " referenced by VNFD "
+              + virtualNetworkFunctionDescriptor.getName()
+              + " and VDU "
+              + virtualDeploymentUnit.getName());
+    }
+    return vimInstance;
+  }
+  
   private void checkIntegrityVDU(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor)
       throws NetworkServiceIntegrityException {
     int i = 1;
@@ -657,33 +682,6 @@ public class NSDUtils {
     }
     return false;
   }
-
-  //                for (VNFComponent vnfComponent : virtualDeploymentUnit.getVnfc()) {
-  //                  for (VNFDConnectionPoint connectionPoint : vnfComponent.getConnection_point())
-  // {
-  //                    if (!internalVirtualLink.contains(
-  //                        connectionPoint.getVirtual_link_reference())) {
-  //                      throw new NetworkServiceIntegrityException(
-  //                          "Regarding the VirtualNetworkFunctionDescriptor "
-  //                              + virtualNetworkFunctionDescriptor.getName()
-  //                              + ": in one of the VirtualDeploymentUnit, the "
-  //                              + "virtualLinkReference "
-  //                              + connectionPoint.getVirtual_link_reference()
-  //                              + " of a VNFComponent is not contained in the "
-  //                              + "InternalVirtualLink "
-  //                              + internalVirtualLink);
-  //                    }
-  //                  }
-  //                }
-  //      if (!virtualLinkDescriptors.containsAll(internalVirtualLink)) {
-  //        throw new NetworkServiceIntegrityException(
-  //            "Regarding the VirtualNetworkFunctionDescriptor "
-  //                + virtualNetworkFunctionDescriptor.getName()
-  //                + ": the InternalVirtualLinks "
-  //                + internalVirtualLink
-  //                + " are not contained in the VirtualLinkDescriptors "
-  //                + virtualLinkDescriptors);
-  //      }
 
   private void checkIntegrityLifecycleEvents(
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor)

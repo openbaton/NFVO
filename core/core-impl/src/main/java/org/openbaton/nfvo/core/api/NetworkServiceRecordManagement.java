@@ -16,6 +16,8 @@
 
 package org.openbaton.nfvo.core.api;
 
+import static org.openbaton.nfvo.common.utils.viminstance.VimInstanceUtils.getVimNameWithoutAvailabilityZone;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,7 +30,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import java.util.regex.Pattern;
 import javax.persistence.EntityManager;
 import org.openbaton.catalogue.api.DeployNSRBody;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
@@ -326,6 +327,17 @@ public class NetworkServiceRecordManagement
         }
         vduVimInstances.put(vdu.getId(), instanceNames);
         // vduVimInstances now contains all possible vim instance names for a specific vdu
+        for (String vimInstanceName : instanceNames) {
+
+          String name = getVimNameWithoutAvailabilityZone(vimInstanceName);
+          BaseVimInstance vimInstance =
+              vimInstanceRepository.findByProjectIdAndName(vdu.getProjectId(), name);
+
+          if (vimInstance == null) {
+            throw new NotFoundException("Not found VIM instance: " + vimInstanceName);
+          }
+        }
+
       }
 
       // TODO it better: Check if the chosen VIM has ENOUGH Resources for deployment
@@ -549,11 +561,7 @@ public class NetworkServiceRecordManagement
       List<String> finalVimInstanceNames = new ArrayList<>();
       vimInstanceNames.forEach(
           n -> {
-            if (n.contains(":")) {
-              finalVimInstanceNames.add(n.split(Pattern.quote(":"))[0]);
-            } else {
-              finalVimInstanceNames.add(n);
-            }
+            finalVimInstanceNames.add(getVimNameWithoutAvailabilityZone(n));
           });
       if (vimInstanceRepository
           .findByProjectId(projectId)
@@ -1221,14 +1229,21 @@ public class NetworkServiceRecordManagement
           networkServiceDescriptor.getVnfd()) {
 
         for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
-          Set<String> instanceNames = getVimNamesToUse(body, vdu);
-          // check if the chosen VIMs do exist
-          for (String vim : instanceNames) {
-            String name = vim.contains(":") ? vim.split(":")[0] : vim;
-            if (vimInstanceRepository.findByProjectIdAndName(
-                    virtualNetworkFunctionDescriptor.getProjectId(), name)
-                == null)
-              throw new NotFoundException("A VIM instance with name " + vim + " does not exist.");
+          Set<String> instanceNames = getRuntimeDeploymentInfo(body, vdu);
+          log.debug("Checking vim instance support");
+          instanceNames =
+              checkIfVimAreSupportedByPackage(virtualNetworkFunctionDescriptor, instanceNames);
+          vduVimInstances.put(vdu.getId(), instanceNames);
+          // vduVimInstances now contains all possible vim instance names for a specific vdu
+          for (String vimInstanceName : instanceNames) {
+
+            String name = getVimNameWithoutAvailabilityZone(vimInstanceName);
+            BaseVimInstance vimInstance =
+                vimInstanceRepository.findByProjectIdAndName(vdu.getProjectId(), name);
+
+            if (vimInstance == null) {
+              throw new NotFoundException("Not found VIM instance: " + vimInstanceName);
+            }
           }
           log.debug("Checking if VNFPackage restricts usage of certain VIM types");
           checkIfVimTypesAreSupportedByPackage(virtualNetworkFunctionDescriptor, instanceNames);
@@ -1630,27 +1645,35 @@ public class NetworkServiceRecordManagement
     if (vnfPackage == null
         || vnfPackage.getVimTypes() == null
         || vnfPackage.getVimTypes().size() == 0) {
-      log.warn("VNFPackage does not provide supported VIM. I will skip the check!");
-    } else {
-      for (String vimInstanceName : instanceNames) {
-        BaseVimInstance vimInstance;
-        for (BaseVimInstance vi : vimInstanceRepository.findByProjectId(vnfd.getProjectId())) {
-          if (vimInstanceName.equals(vi.getName())) {
-            vimInstance = vi;
-            log.debug("Found vim instance " + vimInstance.getName());
-            log.debug(
-                "Checking if "
-                    + vimInstance.getType()
-                    + " is contained in "
-                    + vnfPackage.getVimTypes());
-            String type = vimInstance.getType();
-            if (type.contains(".")) {
-              type = type.split("\\.")[0];
-            }
-            if (!vnfPackage.getVimTypes().contains(type)) {
-              throw new org.openbaton.exceptions.BadRequestException(
-                  "The Vim Instance chosen does not support the VNFD " + vnfd.getName());
-            }
+      log.warn("VNFPackage does not provide supported VIM types. I will skip the check!");
+      return instanceNames;
+    }
+
+    log.debug("Performing VIM type check for VIM instances...");
+    Set<String> checkedVimInstanceNames = new HashSet<>();
+    for (String vimInstanceName : instanceNames) {
+      for (BaseVimInstance vimInstance :
+          vimInstanceRepository.findByProjectId(vnfd.getProjectId())) {
+
+        if (getVimNameWithoutAvailabilityZone(vimInstanceName).equals(vimInstance.getName())) {
+          log.debug("Found vim instance " + vimInstance.getName());
+          log.debug(
+              "Checking if "
+                  + vimInstance.getType()
+                  + " is contained in "
+                  + vnfPackage.getVimTypes());
+          String type = vimInstance.getType();
+          if (type.contains(".")) {
+            type = type.split("\\.")[0];
+          }
+          if (vnfPackage.getVimTypes().contains(type)) {
+            checkedVimInstanceNames.add(vimInstanceName);
+          } else {
+            log.warn(
+                "The Vim Instance "
+                    + vimInstance.getName()
+                    + " chosen does not support the VNFD "
+                    + vnfd.getName());
           }
         }
       }

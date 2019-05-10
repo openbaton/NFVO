@@ -400,7 +400,6 @@ public class NetworkServiceRecordManagementClassSuiteTest {
                 add(vnfmManagerEndpoint);
               }
             });
-
     nsrManagement.onboard(networkServiceDescriptor.getId(), projectId, null, null, null, null);
   }
 
