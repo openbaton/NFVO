@@ -311,7 +311,7 @@ public class NetworkServiceRecordManagement
           if (vimInstanceRepository.findByProjectIdAndName(projectId, name) == null)
             throw new NotFoundException("A VIM instance with name " + vim + " does not exist.");
         }
-        checkIfVimTypesAreSupportedByPackage(vnfd, instanceNames);
+        checkIfVimAreSupportedByPackage(vnfd, instanceNames);
         // if no VIMs were provided, then use all available VIMs in the used project
         if (instanceNames.isEmpty()) {
           log.debug(
@@ -337,7 +337,6 @@ public class NetworkServiceRecordManagement
             throw new NotFoundException("Not found VIM instance: " + vimInstanceName);
           }
         }
-
       }
 
       // TODO it better: Check if the chosen VIM has ENOUGH Resources for deployment
@@ -1246,7 +1245,7 @@ public class NetworkServiceRecordManagement
             }
           }
           log.debug("Checking if VNFPackage restricts usage of certain VIM types");
-          checkIfVimTypesAreSupportedByPackage(virtualNetworkFunctionDescriptor, instanceNames);
+          checkIfVimAreSupportedByPackage(virtualNetworkFunctionDescriptor, instanceNames);
           // if no VIMs were provided, then use all available VIMs in the used project
           if (instanceNames.isEmpty()) {
             log.debug(
@@ -1639,8 +1638,20 @@ public class NetworkServiceRecordManagement
     }
   }
 
-  private void checkIfVimTypesAreSupportedByPackage(
+  private Set<String> checkIfVimAreSupportedByPackage(
       VirtualNetworkFunctionDescriptor vnfd, Set<String> instanceNames) throws BadRequestException {
+
+    if (instanceNames.size() == 0) {
+      log.debug(
+          "No VIM instances selected for the deployment of VNF "
+              + vnfd.getName()
+              + ". Adding all available VIM Instances...");
+      for (BaseVimInstance vimInstance :
+          vimInstanceRepository.findByProjectId(vnfd.getProjectId())) {
+        instanceNames.add(vimInstance.getName());
+      }
+    }
+
     VNFPackage vnfPackage = vnfPackageRepository.findFirstById(vnfd.getVnfPackageLocation());
     if (vnfPackage == null
         || vnfPackage.getVimTypes() == null
@@ -1678,6 +1689,46 @@ public class NetworkServiceRecordManagement
         }
       }
     }
+
+    if (checkedVimInstanceNames.size() == 0) {
+      throw new org.openbaton.exceptions.BadRequestException(
+          "No Vim Instance found for supporting the VNFD "
+              + vnfd.getName()
+              + " (looking for vim type: "
+              + (vnfPackage != null ? vnfPackage.getVimTypes() : null)
+              + ")");
+    }
+    log.debug("Vim Instances chosen are: " + checkedVimInstanceNames);
+    return checkedVimInstanceNames;
+  }
+
+  // get vim instance names from the VNFD or the DeployNSRbody otherwise
+  private Set<String> getRuntimeDeploymentInfo(DeployNSRBody body, VirtualDeploymentUnit vdu)
+      throws NotFoundException {
+    Set<String> instanceNames = null;
+
+    if (body == null
+        || body.getVduVimInstances() == null
+        || body.getVduVimInstances().get(vdu.getName()) == null
+        || body.getVduVimInstances().get(vdu.getName()).isEmpty()) {
+
+      if (vdu.getVimInstanceName() == null || vdu.getVimInstanceName().size() == 0) {
+        List<BaseVimInstance> vimInstances =
+            vimInstanceRepository.findByProjectId(vdu.getProjectId());
+        if (vimInstances.size() == 0)
+          throw new NotFoundException(
+              "No PoP of the corresponding type in the catalogue. Must be registered first...");
+        else instanceNames = new HashSet<>();
+        for (BaseVimInstance vimInstance : vimInstances) {
+          instanceNames.add(vimInstance.getName());
+        }
+      } else {
+        instanceNames = vdu.getVimInstanceName();
+      }
+    } else {
+      instanceNames = body.getVduVimInstances().get(vdu.getName());
+    }
+    return instanceNames;
   }
 
   /**

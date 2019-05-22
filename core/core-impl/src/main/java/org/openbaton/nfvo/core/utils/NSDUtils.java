@@ -516,7 +516,7 @@ public class NSDUtils {
       virtualNetworkFunctionDescriptor.setVdu(new HashSet<>());
     }
   }
-  
+
   private BaseVimInstance checkIntegrityVimInstance(
       VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor,
       VirtualDeploymentUnit virtualDeploymentUnit,
@@ -544,7 +544,7 @@ public class NSDUtils {
     }
     return vimInstance;
   }
-  
+
   private void checkIntegrityVDU(VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor)
       throws NetworkServiceIntegrityException {
     int i = 1;
