@@ -17,11 +17,9 @@
 package org.openbaton.nfvo.security.config;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import javax.annotation.PostConstruct;
+import org.openbaton.nfvo.security.authentication.CustomClientDetailsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +38,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
+import org.springframework.security.oauth2.provider.client.BaseClientDetails;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
@@ -54,6 +53,8 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
   @Autowired private AuthenticationManager authenticationManager;
 
   private TokenStore tokenStore = new InMemoryTokenStore();
+
+  private CustomClientDetailsService customClientDetailsService;
 
   @Value("${nfvo.security.user.token.validity:1200}")
   private int userTokenValidityDuration;
@@ -78,14 +79,10 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
 
   @Override
   public void configure(ClientDetailsServiceConfigurer client) throws Exception {
-    client
-        .inMemory()
-        .withClient("openbatonOSClient")
-        .secret("secret")
-        .authorizedGrantTypes("refresh_token", "password")
-        .scopes("read", "write")
-        .accessTokenValiditySeconds(userTokenValidityDuration)
-        .resourceIds(RESOURCE_ID);
+    customClientDetailsService = new CustomClientDetailsService();
+    BaseClientDetails openbatonOSClient = buildOpenBatonOSClient();
+    customClientDetailsService.addclientDetails(openbatonOSClient);
+    client.withClientDetails(customClientDetailsService);
   }
 
   /**
@@ -96,30 +93,10 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
    * @return the oauth2 service token
    */
   public OAuth2AccessToken getNewServiceToken(String serviceName) {
-    Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+    Set<GrantedAuthority> authorities = new HashSet<>();
     authorities.add(new SimpleGrantedAuthority("ADMIN"));
 
-    Map<String, String> requestParameters = new HashMap<>();
-    Set<String> scope = new HashSet<>();
-    scope.add("write");
-    scope.add("read");
-    Set<String> resourceIds = new HashSet<>();
-    Set<String> responseTypes = new HashSet<>();
-    responseTypes.add("code");
-    Map<String, Serializable> extensionProperties = new HashMap<>();
-
-    OAuth2Request oAuth2Request =
-        new OAuth2Request(
-            requestParameters,
-            serviceName,
-            authorities,
-            true,
-            scope,
-            resourceIds,
-            null,
-            responseTypes,
-            extensionProperties);
-
+    OAuth2Request oAuth2Request = buildOAuth2Request(serviceName, authorities);
     User userPrincipal =
         new User(serviceName, "" + Math.random() * 1000, true, true, true, true, authorities);
 
@@ -127,8 +104,47 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
         new UsernamePasswordAuthenticationToken(userPrincipal, null, authorities);
     OAuth2Authentication auth = new OAuth2Authentication(oAuth2Request, authenticationToken);
 
+    BaseClientDetails externalServiceClientDetails = buildExternalServiceClientDetails(serviceName);
+    customClientDetailsService.addclientDetails(externalServiceClientDetails);
+
     OAuth2AccessToken token = serviceTokenServices.createAccessToken(auth);
     log.trace("New Service token: " + token);
     return token;
+  }
+
+  private OAuth2Request buildOAuth2Request(String serviceName, Set<GrantedAuthority> authorities) {
+    Map<String, String> requestParameters = new HashMap<>();
+    Set<String> scopes = new HashSet<>(Arrays.asList("read", "write"));
+    Set<String> resourceIds = new HashSet<>();
+    Set<String> responseTypes = new HashSet<>();
+    responseTypes.add("code");
+    Map<String, Serializable> extensionProperties = new HashMap<>();
+
+    return new OAuth2Request(
+        requestParameters,
+        serviceName,
+        authorities,
+        true,
+        scopes,
+        resourceIds,
+        null,
+        responseTypes,
+        extensionProperties);
+  }
+
+  private BaseClientDetails buildOpenBatonOSClient() {
+    BaseClientDetails openbatonOSClient =
+        new BaseClientDetails(
+            "openbatonOSClient", RESOURCE_ID, "read,write", "refresh_token,password", "ADMIN");
+    openbatonOSClient.setClientSecret("secret");
+    openbatonOSClient.setAccessTokenValiditySeconds(userTokenValidityDuration);
+    return openbatonOSClient;
+  }
+
+  private BaseClientDetails buildExternalServiceClientDetails(String serviceName) {
+    BaseClientDetails externalServiceClientDetails =
+        new BaseClientDetails(serviceName, "", "read,write", "refresh_token,password", "ADMIN");
+    externalServiceClientDetails.setAccessTokenValiditySeconds(serviceTokenValidityDuration);
+    return externalServiceClientDetails;
   }
 }
