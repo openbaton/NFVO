@@ -26,27 +26,54 @@ import org.openbaton.exceptions.VimException;
 /** Created by mpa on 30/04/15. */
 public interface NetworkManagement {
 
-  /** This operation allows adding new VNF software images to the image repository. */
+  /**
+   * Add a network to a VIM instance.
+   *
+   * @param vimInstance vim to which the network is added
+   * @param network network to add
+   * @return added network
+   * @throws VimException exception
+   * @throws PluginException exception
+   * @throws BadRequestException exception
+   */
   BaseNetwork add(BaseVimInstance vimInstance, BaseNetwork network)
       throws VimException, PluginException, BadRequestException;
 
-  /** This operation allows deleting in the VNF software images from the image repository. */
+  /**
+   * Delete a network from a VIM instance.
+   *
+   * @param vimInstance vim from which to delete network
+   * @param network network to delete
+   * @throws VimException exception
+   * @throws PluginException exception
+   */
   void delete(BaseVimInstance vimInstance, BaseNetwork network)
       throws VimException, PluginException;
 
-  /** This operation allows updating the VNF software images in the image repository. */
+  /**
+   * Update an existing network on a VIM instance.
+   *
+   * @param vimInstance vim on which to update the network
+   * @param new_network the new network
+   * @return the updated network
+   * @throws VimException exception
+   * @throws PluginException exception
+   */
   BaseNetwork update(BaseVimInstance vimInstance, Network new_network)
       throws VimException, PluginException;
 
   /**
-   * This operation allows querying the information of the VNF software images in the image
-   * repository.
+   * Return all networks.
+   *
+   * @return the networks
    */
   Iterable<BaseNetwork> query();
 
   /**
-   * This operation allows querying the information of the VNF software image in the image
-   * repository.
+   * Return a network specified by its ID.
+   *
+   * @param id ID of network
+   * @return the network
    */
   BaseNetwork query(String id);
 }

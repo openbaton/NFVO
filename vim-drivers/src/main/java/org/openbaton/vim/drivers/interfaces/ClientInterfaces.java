@@ -98,6 +98,10 @@ public interface ClientInterfaces {
   BaseNfvImage addImage(BaseVimInstance vimInstance, BaseNfvImage image, String image_url)
       throws VimDriverException;
 
+  BaseNfvImage addImage(
+      BaseVimInstance vimInstance, BaseNfvImage image, String image_url, String imageRepoToken)
+      throws VimDriverException;
+
   BaseNfvImage updateImage(BaseVimInstance vimInstance, BaseNfvImage image)
       throws VimDriverException;
 

@@ -24,15 +24,15 @@ public interface VNFComponentManagment {
   /**
    * Returns the list of VNFComponents
    *
-   * @return Iterable<VNFComponent>
+   * @return the VNFComponents as an Iterable
    */
   Iterable<VNFComponent> query();
 
   /**
    * Returns the VNFComponent selected by id
    *
-   * @param id of VNFComponent
-   * @return VNFComponent
+   * @param id ID of VNFComponent
+   * @return the VNFComponent
    */
   VNFComponent query(String id);
 }

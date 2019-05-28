@@ -195,7 +195,7 @@ public class ResourceManagement implements org.openbaton.nfvo.core.interfaces.Re
   @Async
   public Future<Void> release(
       VirtualDeploymentUnit virtualDeploymentUnit, VNFCInstance vnfcInstance)
-      throws VimException, ExecutionException, InterruptedException, PluginException {
+      throws ExecutionException, InterruptedException, PluginException, VimException {
     BaseVimInstance vimInstance = vimInstanceRepository.findFirstById(vnfcInstance.getVim_id());
     org.openbaton.nfvo.vim_interfaces.resource_management.ResourceManagement vim =
         vimBroker.getVim(vimInstance.getType());

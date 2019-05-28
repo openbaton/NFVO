@@ -62,7 +62,11 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
   @Value("${nfvo.security.service.token.validity:31556952}")
   private int serviceTokenValidityDuration;
 
+  @Value("${nfvo.security.image.token.validity:15}")
+  private int imageTokenValidityDuration;
+
   private DefaultTokenServices serviceTokenServices;
+  private DefaultTokenServices imageTokenServices;
 
   @PostConstruct
   public void init() {
@@ -70,6 +74,11 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
     serviceTokenServices.setSupportRefreshToken(true);
     serviceTokenServices.setTokenStore(tokenStore);
     serviceTokenServices.setAccessTokenValiditySeconds(serviceTokenValidityDuration);
+
+    imageTokenServices = new DefaultTokenServices();
+    imageTokenServices.setSupportRefreshToken(false);
+    imageTokenServices.setTokenStore(tokenStore);
+    imageTokenServices.setAccessTokenValiditySeconds(imageTokenValidityDuration);
   }
 
   @Override
@@ -112,6 +121,71 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
     return token;
   }
 
+  /**
+   * Method returns a token that can be used to request a specific image file contained in the
+   * NFVImage repository from the REST API.
+   *
+   * @param imageId ID of the image that can be retrieved with the token
+   * @return the oauth2 token for fetching image files from the image repository
+   */
+  public String getNewImageToken(String imageId) {
+    Set<GrantedAuthority> authorities = new HashSet<>();
+    authorities.add(new SimpleGrantedAuthority(imageId));
+
+    OAuth2Request oAuth2Request = buildOAuth2Request("vimdriver" + imageId, authorities);
+
+    User userPrincipal =
+        new User(
+            "vimdriver" + imageId, "" + Math.random() * 1000, true, true, true, true, authorities);
+
+    UsernamePasswordAuthenticationToken authenticationToken =
+        new UsernamePasswordAuthenticationToken(userPrincipal, null, authorities);
+    OAuth2Authentication auth = new OAuth2Authentication(oAuth2Request, authenticationToken);
+
+    OAuth2AccessToken token = imageTokenServices.createAccessToken(auth);
+    return token.getValue();
+  }
+
+  /**
+   * Validates an image token against an image ID. If the token is able to grant access to the image
+   * file, this method returns true otherwise false.
+   *
+   * @param token the token passed to the REST API
+   * @param imageId ID of the NFVImage
+   * @return
+   */
+  public boolean validateImageToken(String token, String imageId) {
+    OAuth2AccessToken imageToken = imageTokenServices.readAccessToken(token);
+    if (imageToken == null || imageToken.isExpired() || !imageToken.getScope().contains(imageId))
+      return false;
+    return true;
+  }
+
+  /**
+   * Revokes the passed image token.
+   *
+   * @param token the token to revoke
+   */
+  public void removeImageToken(String token) {
+    imageTokenServices.revokeToken(token);
+  }
+
+  private BaseClientDetails buildOpenBatonOSClient() {
+    BaseClientDetails openbatonOSClient =
+        new BaseClientDetails(
+            "openbatonOSClient", RESOURCE_ID, "read,write", "refresh_token,password", "ADMIN");
+    openbatonOSClient.setClientSecret("secret");
+    openbatonOSClient.setAccessTokenValiditySeconds(userTokenValidityDuration);
+    return openbatonOSClient;
+  }
+
+  private BaseClientDetails buildExternalServiceClientDetails(String serviceName) {
+    BaseClientDetails externalServiceClientDetails =
+        new BaseClientDetails(serviceName, "", "read,write", "refresh_token,password", "ADMIN");
+    externalServiceClientDetails.setAccessTokenValiditySeconds(serviceTokenValidityDuration);
+    return externalServiceClientDetails;
+  }
+
   private OAuth2Request buildOAuth2Request(String serviceName, Set<GrantedAuthority> authorities) {
     Map<String, String> requestParameters = new HashMap<>();
     Set<String> scopes = new HashSet<>(Arrays.asList("read", "write"));
@@ -130,21 +204,5 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
         null,
         responseTypes,
         extensionProperties);
-  }
-
-  private BaseClientDetails buildOpenBatonOSClient() {
-    BaseClientDetails openbatonOSClient =
-        new BaseClientDetails(
-            "openbatonOSClient", RESOURCE_ID, "read,write", "refresh_token,password", "ADMIN");
-    openbatonOSClient.setClientSecret("secret");
-    openbatonOSClient.setAccessTokenValiditySeconds(userTokenValidityDuration);
-    return openbatonOSClient;
-  }
-
-  private BaseClientDetails buildExternalServiceClientDetails(String serviceName) {
-    BaseClientDetails externalServiceClientDetails =
-        new BaseClientDetails(serviceName, "", "read,write", "refresh_token,password", "ADMIN");
-    externalServiceClientDetails.setAccessTokenValiditySeconds(serviceTokenValidityDuration);
-    return externalServiceClientDetails;
   }
 }

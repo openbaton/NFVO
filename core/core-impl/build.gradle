@@ -30,7 +30,9 @@ dependencies {
     compile 'org.jgrapht:jgrapht-core:0.9.2'
 
     compile 'commons-validator:commons-validator:1.5.1'
-    compile 'org.apache.commons:commons-compress:1.9'
+    compile 'org.apache.commons:commons-compress:1.18'
+    compile 'commons-codec:commons-codec:1.11'
+
     compile group: 'commons-net', name: 'commons-net', version: '3.6'
 
 

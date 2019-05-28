@@ -16,15 +16,10 @@
 
 package org.openbaton.vim_impl.vim;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.openbaton.catalogue.mano.common.DeploymentFlavour;
 import org.openbaton.catalogue.mano.common.Ip;
@@ -42,12 +37,17 @@ import org.openbaton.catalogue.nfvo.networks.Network;
 import org.openbaton.catalogue.nfvo.networks.Subnet;
 import org.openbaton.catalogue.nfvo.viminstances.AmazonVimInstance;
 import org.openbaton.catalogue.nfvo.viminstances.BaseVimInstance;
+import org.openbaton.catalogue.nfvo.viminstances.DockerVimInstance;
 import org.openbaton.catalogue.nfvo.viminstances.OpenstackVimInstance;
 import org.openbaton.catalogue.security.Key;
 import org.openbaton.exceptions.PluginException;
 import org.openbaton.exceptions.VimDriverException;
 import org.openbaton.exceptions.VimException;
 import org.openbaton.nfvo.common.utils.viminstance.VimInstanceUtils;
+import org.openbaton.nfvo.core.interfaces.NfvImageRepoManagement;
+import org.openbaton.nfvo.core.interfaces.VimManagement;
+import org.openbaton.nfvo.repositories.NFVImageRepository;
+import org.openbaton.nfvo.security.config.OAuth2AuthorizationServerConfig;
 import org.openbaton.nfvo.vim_interfaces.vim.Vim;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
@@ -57,8 +57,16 @@ import org.springframework.stereotype.Service;
 
 /** Created by lto on 06/04/16. */
 @Service
-@Scope(value = "prototype")
+@Scope
 public class GenericVIM extends Vim {
+
+  private NFVImageRepository nfvImageRepository;
+  private NfvImageRepoManagement nfvImageRepoManagement;
+  private VimManagement vimManagement;
+  private OAuth2AuthorizationServerConfig securityServerConfig;
+
+  // used to prevent the simultaneous upload of the same image to one VIM
+  private static final Map<String, Object> uploadImageLockMap = new HashMap<>();
 
   public GenericVIM(
       String type,
@@ -83,6 +91,12 @@ public class GenericVIM extends Vim {
         pluginName,
         pluginTimeout,
         port);
+    nfvImageRepoManagement =
+        context.getBean("nfvImageRepoManagement", NfvImageRepoManagement.class);
+    nfvImageRepository = context.getBean("NFVImageRepository", NFVImageRepository.class);
+    vimManagement = context.getBean("vimManagement", VimManagement.class);
+    securityServerConfig =
+        context.getBean("OAuth2AuthorizationServerConfig", OAuth2AuthorizationServerConfig.class);
   }
 
   public GenericVIM() {}
@@ -899,18 +913,125 @@ public class GenericVIM extends Vim {
             + vimInstance.getName());
   }
 
+  /**
+   * Based on the passed image names, this method returns an identifier for one of the images. If no
+   * matching image is found on an OpenStack VIM, it checks the image repository for a suitable
+   * image and sends a request to the VIM driver to upload it to the VIM.
+   *
+   * @param vmImages names of possible images to use
+   * @param vimInstance the VIM instance on which the image has to be
+   * @return the external ID of the found image
+   */
   private String chooseImage(Collection<String> vmImages, BaseVimInstance vimInstance)
       throws VimException {
     log.debug("Choosing Image...");
     log.debug("Requested: " + vmImages);
 
     if (vmImages != null && !vmImages.isEmpty()) {
-      // TODO implement choose, actually this should return the first one, so good
+      // choose the first matching active image available on the VIM
       for (String imageName : vmImages) {
         Optional<BaseNfvImage> extId =
             VimInstanceUtils.findActiveImagesByName(vimInstance, imageName).stream().findFirst();
         if (extId.isPresent()) {
           return extId.get().getExtId();
+        }
+      }
+      // no active image found on VIM. upload the image if possible
+      log.debug("Requested images not on VIM. Let's see if one of them is in the image repository");
+      for (String imageName : vmImages) {
+        BaseNfvImage imageToUpload = null;
+        String url = "";
+        if (vimInstance instanceof OpenstackVimInstance) {
+          imageToUpload =
+              nfvImageRepository.findOneByNameAndProjectIdAndIsInImageRepoIsTrue(
+                  imageName, vimInstance.getProjectId());
+          if (imageToUpload != null) {
+            log.info("Found NFVImage (" + imageToUpload.getId() + ") in image repository");
+            if (((NFVImage) imageToUpload).isStoredLocally())
+              url =
+                  nfvImageRepoManagement.getUrlForLocallyStoredNfvImage(((NFVImage) imageToUpload));
+            else url = ((NFVImage) imageToUpload).getUrl();
+          } else continue;
+        } else if (vimInstance instanceof DockerVimInstance) {
+          continue;
+          // TODO here we can implement uploading behaviour for Docker images
+        } else if (vimInstance instanceof AmazonVimInstance) {
+          continue;
+          // TODO here we can implement uploading behaviour for AWS images
+        } else {
+          log.error(
+              "This should never happen as long as no new VIM type is added. Otherwise you have to update this code.");
+        }
+
+        try {
+          Object lock;
+          String key = String.format("%s%s", vimInstance.getId(), imageName);
+          synchronized (uploadImageLockMap) {
+            lock = uploadImageLockMap.computeIfAbsent(key, k -> new Object());
+          }
+          synchronized (lock) {
+            try {
+              vimInstance = vimManagement.refresh(vimInstance, true).get();
+            } catch (InterruptedException | ExecutionException | PluginException | IOException e) {
+              throw new VimException("Unable to refresh VIM with ID " + vimInstance.getId(), e);
+            }
+            Optional<BaseNfvImage> extId =
+                VimInstanceUtils.findActiveImagesByName(vimInstance, imageName)
+                    .stream()
+                    .findFirst();
+            if (extId.isPresent()) {
+              return extId.get().getExtId();
+            }
+            log.info(
+                "Uploading image "
+                    + imageName
+                    + " ("
+                    + imageToUpload.getId()
+                    + ") to VIM "
+                    + vimInstance.getName()
+                    + " ("
+                    + vimInstance.getId()
+                    + ")");
+
+            if (vimInstance instanceof OpenstackVimInstance) {
+              if (((NFVImage) imageToUpload).isStoredLocally()) {
+                String imageRepoToken = "";
+                try {
+                  imageRepoToken = securityServerConfig.getNewImageToken(imageToUpload.getId());
+                  return client
+                      .addImage(vimInstance, imageToUpload, url, imageRepoToken)
+                      .getExtId();
+                } finally {
+                  securityServerConfig.removeImageToken(imageRepoToken);
+                }
+              } else {
+                return client.addImage(vimInstance, imageToUpload, url).getExtId();
+              }
+            }
+          }
+        } catch (VimDriverException e) {
+          log.error(
+              "Exception while uploading image "
+                  + imageName
+                  + " ("
+                  + imageToUpload.getId()
+                  + ") to VIM "
+                  + vimInstance.getName()
+                  + " ("
+                  + vimInstance.getId()
+                  + "): "
+                  + e.getMessage());
+          throw new VimException(
+              "Exception while uploading image "
+                  + imageName
+                  + " ("
+                  + imageToUpload.getId()
+                  + ") to VIM "
+                  + vimInstance.getName()
+                  + " ("
+                  + vimInstance.getId()
+                  + ")",
+              e);
         }
       }
       throw new VimException(

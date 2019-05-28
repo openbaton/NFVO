@@ -802,7 +802,7 @@ public class RestNetworkServiceRecord {
       @RequestHeader(value = "project-id") String projectId,
       @RequestBody @Valid JsonObject body)
       throws NotFoundException, BadFormatException, BadRequestException, ExecutionException,
-          InterruptedException, IOException, VimException, PluginException {
+          InterruptedException, IOException, VimException, PluginException, VimDriverException {
     NetworkServiceRecord nsr = networkServiceRecordManagement.query(idNsr, projectId);
     VirtualNetworkFunctionRecord vnfRecord =
         networkServiceRecordManagement.getVirtualNetworkFunctionRecord(idNsr, idVnfr, projectId);
@@ -837,8 +837,9 @@ public class RestNetworkServiceRecord {
       @PathVariable("idNsr") String nsrId,
       @PathVariable("idVnfr") String vnfrId,
       @RequestHeader(value = "project-id") String projectId)
-      throws NotFoundException, InterruptedException, BadRequestException, VimException,
-          ExecutionException, PluginException, IOException, BadFormatException {
+      throws NotFoundException, InterruptedException, BadRequestException, AlreadyExistingException,
+          VimException, ExecutionException, PluginException, IOException, BadFormatException,
+          VimDriverException {
     log.debug("Received request for restarting a VNFR");
     if (!body.has("imageName") || !body.getAsJsonPrimitive("imageName").isString())
       throw new BadRequestException(

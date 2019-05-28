@@ -41,7 +41,6 @@ import org.openbaton.catalogue.mano.descriptor.VNFComponent;
 import org.openbaton.catalogue.mano.descriptor.VNFDConnectionPoint;
 import org.openbaton.catalogue.mano.descriptor.VirtualDeploymentUnit;
 import org.openbaton.catalogue.mano.descriptor.VirtualNetworkFunctionDescriptor;
-import org.openbaton.catalogue.mano.record.*;
 import org.openbaton.catalogue.mano.record.NetworkServiceRecord;
 import org.openbaton.catalogue.mano.record.Status;
 import org.openbaton.catalogue.mano.record.VNFCInstance;
@@ -204,7 +203,7 @@ public class NetworkServiceRecordManagement
   public VirtualNetworkFunctionRecord restartVnfr(
       NetworkServiceRecord nsr, String vnfrId, String imageName, String projectId)
       throws NotFoundException, IOException, BadRequestException, VimException, PluginException,
-          ExecutionException, InterruptedException, BadFormatException {
+          ExecutionException, InterruptedException, BadFormatException, VimDriverException {
 
     // check if the nsr status is in ACTIVE
     if (!nsrRepository.existsByIdAndProjectIdAndStatus(nsr.getId(), projectId, Status.ACTIVE))
@@ -305,10 +304,28 @@ public class NetworkServiceRecordManagement
       for (VirtualDeploymentUnit vdu : vnfd.getVdu()) {
         // get the vim instance names on where to deploy the vdu
         log.debug("Checking vim instance support");
-        Set<String> instanceNames = getRuntimeDeploymentInfo(body, vdu);
-        instanceNames = checkIfVimAreSupportedByPackage(vnfd, instanceNames);
+        Set<String> instanceNames = getVimNamesToUse(body, vdu);
+        // check if the chosen VIMs do exist
+        for (String vim : instanceNames) {
+          String name = vim.contains(":") ? vim.split(":")[0] : vim;
+          if (vimInstanceRepository.findByProjectIdAndName(projectId, name) == null)
+            throw new NotFoundException("A VIM instance with name " + vim + " does not exist.");
+        }
+        checkIfVimAreSupportedByPackage(vnfd, instanceNames);
+        // if no VIMs were provided, then use all available VIMs in the used project
+        if (instanceNames.isEmpty()) {
+          log.debug(
+              "No VIM instances specified in VDU "
+                  + vdu.getId()
+                  + " and no VIM passed while launching NSR.");
+          instanceNames = useAllAvailableVims(vnfd);
+          log.debug(
+              "Using all possible VIM instances for VDU "
+                  + vdu.getId()
+                  + ": "
+                  + String.join(", ", instanceNames));
+        }
         vduVimInstances.put(vdu.getId(), instanceNames);
-
         // vduVimInstances now contains all possible vim instance names for a specific vdu
         for (String vimInstanceName : instanceNames) {
 
@@ -1210,9 +1227,6 @@ public class NetworkServiceRecordManagement
       for (VirtualNetworkFunctionDescriptor virtualNetworkFunctionDescriptor :
           networkServiceDescriptor.getVnfd()) {
 
-        virtualNetworkFunctionDescriptor.setCreatedAt(NSRUtils.getFormat().format(new Date()));
-        virtualNetworkFunctionDescriptor.setUpdatedAt(NSRUtils.getFormat().format(new Date()));
-
         for (VirtualDeploymentUnit vdu : virtualNetworkFunctionDescriptor.getVdu()) {
           Set<String> instanceNames = getRuntimeDeploymentInfo(body, vdu);
           log.debug("Checking vim instance support");
@@ -1230,6 +1244,22 @@ public class NetworkServiceRecordManagement
               throw new NotFoundException("Not found VIM instance: " + vimInstanceName);
             }
           }
+          log.debug("Checking if VNFPackage restricts usage of certain VIM types");
+          checkIfVimAreSupportedByPackage(virtualNetworkFunctionDescriptor, instanceNames);
+          // if no VIMs were provided, then use all available VIMs in the used project
+          if (instanceNames.isEmpty()) {
+            log.debug(
+                "No VIM instances specified in VDU "
+                    + vdu.getId()
+                    + " and no VIM passed while launching NSR.");
+            instanceNames = useAllAvailableVims(virtualNetworkFunctionDescriptor);
+            log.debug(
+                "Using all possible VIM instances for VDU "
+                    + vdu.getId()
+                    + ": "
+                    + String.join(", ", instanceNames));
+          }
+          vduVimInstances.put(vdu.getId(), instanceNames);
         }
       }
 
@@ -1268,6 +1298,47 @@ public class NetworkServiceRecordManagement
         networkServiceDescriptor, networkServiceRecord, body, vduVimInstances, monitoringIp);
     log.debug("Returning NSR " + networkServiceRecord.getName());
     return networkServiceRecord;
+  }
+
+  /**
+   * Returns a set of all the VIM names that are possible to use to deploy a VNFD. This means all
+   * the VIM instances have to be in the same project as the VNFD and only those VIM instances are
+   * selected which are not restricted by type in the VNF package which is belonging to the VNFD.
+   *
+   * @param vnfd
+   * @return a set of VIM names available for deployment
+   * @throws BadRequestException if no VIM instance is able to support the VNFD
+   */
+  private Set<String> useAllAvailableVims(VirtualNetworkFunctionDescriptor vnfd)
+      throws BadRequestException {
+    Set<String> instanceNames = new HashSet<>();
+    VNFPackage vnfPackage = vnfPackageRepository.findFirstById(vnfd.getVnfPackageLocation());
+
+    for (BaseVimInstance vimInstance : vimInstanceRepository.findByProjectId(vnfd.getProjectId())) {
+      if (vnfPackage == null
+          || vnfPackage.getVimTypes() == null
+          || vnfPackage.getVimTypes().isEmpty()) {
+        instanceNames.add(vimInstance.getName());
+      } else {
+        String type = vimInstance.getType();
+        if (type.contains(".")) {
+          type = type.split("\\.")[0];
+        }
+        if (vnfPackage.getVimTypes().contains(type)) {
+          instanceNames.add(vimInstance.getName());
+        }
+      }
+    }
+
+    if (instanceNames.isEmpty()) {
+      throw new org.openbaton.exceptions.BadRequestException(
+          "No Vim Instance found for supporting the VNFD "
+              + vnfd.getName()
+              + " (looking for vim type: "
+              + (vnfPackage != null ? vnfPackage.getVimTypes() : null)
+              + ")");
+    }
+    return instanceNames;
   }
 
   private void checkSshInfo(NetworkServiceDescriptor nsd, DeployNSRBody body)
@@ -1661,6 +1732,44 @@ public class NetworkServiceRecordManagement
   }
 
   /**
+   * Returns a set of VIM names that shall be used for deploying a VDU. If the DeployNSRBody
+   * parameter (filled while launching an NSR) contains a list of VIM names then they are returned.
+   * Otherwise it returns the list of VIM names which is specified directly in the VDU.
+   *
+   * @param body
+   * @param vdu
+   * @return
+   * @throws NotFoundException
+   */
+  private Set<String> getVimNamesToUse(DeployNSRBody body, VirtualDeploymentUnit vdu)
+      throws NotFoundException {
+    Set<String> instanceNames = new HashSet<>();
+
+    if (body == null
+        || body.getVduVimInstances() == null
+        || body.getVduVimInstances().get(vdu.getName()) == null
+        || body.getVduVimInstances().get(vdu.getName()).isEmpty()) {
+
+      if (vdu.getVimInstanceName() != null && vdu.getVimInstanceName().size() > 0) {
+        log.debug(
+            "Using VIM instances defined in the VDU ("
+                + vdu.getId()
+                + "): "
+                + String.join(", ", vdu.getVimInstanceName()));
+        instanceNames = vdu.getVimInstanceName();
+      }
+    } else {
+      log.debug(
+          "Using VIM instances passed while launching the NSR for VDU "
+              + vdu.getId()
+              + ": "
+              + String.join(", ", body.getVduVimInstances().get(vdu.getName())));
+      instanceNames = body.getVduVimInstances().get(vdu.getName());
+    }
+    return instanceNames;
+  }
+
+  /**
    * Execute the update of a NSR
    *
    * @param newNsr
@@ -1711,7 +1820,7 @@ public class NetworkServiceRecordManagement
   public VirtualNetworkFunctionRecord upgradeVnfr(
       String nsrId, String vnfrId, String projectId, String upgradeVnfdId)
       throws NotFoundException, BadFormatException, ExecutionException, InterruptedException,
-          IOException, BadRequestException, VimException, PluginException {
+          IOException, BadRequestException, VimException, PluginException, VimDriverException {
 
     NetworkServiceRecord nsr = nsrRepository.findFirstByIdAndProjectId(nsrId, projectId);
 
